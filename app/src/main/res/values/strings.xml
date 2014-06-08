@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Transmission Remote</string>
+
+                    <!-- Drawer -->
+    <!-- Servers -->
+    <string name="drawer_servers">Servers</string>
+
+    <!-- Actions -->
+    <string name="drawer_actions">Actions</string>
+    <string name="drawer_actions_open_torrent">Open torrent</string>
+    <string name="drawer_actions_start_all_torrents">Start all torrents</string>
+    <string name="drawer_actions_pause_all_torrents">Pause all torrents</string>
+
+    <!-- Filters -->
+    <string name="drawer_filters">Filters</string>
+    <string name="drawer_filters_all">All</string>
+    <string name="drawer_filters_active">Active</string>
+    <string name="drawer_filters_downloading">Downloading</string>
+    <string name="drawer_filters_seeding">Seeding</string>
+    <string name="drawer_filters_paused">Paused</string>
+    <string name="drawer_filters_stopped">Stopped</string>
+
+    <!-- Sort by -->
+    <string name="drawer_sort_by">Sort by</string>
+    <string name="drawer_sort_by_name">Name</string>
+    <string name="drawer_sort_by_size">Size</string>
+    <string name="drawer_sort_by_time_remaining">Time remaining</string>
+
+    <!-- Preferences -->
+    <string name="drawer_preferences">Preferences</string>
+    <string name="drawer_preferences_server">Server</string>
+    <string name="drawer_preferences_remote">Remote</string>
+
+    <string name="drawer_open">Open drawer</string>
+    <string name="drawer_close">Close drawer</string>
+
+</resources>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<pre-dex-items>
+
+    <item
+        dex="/Users/yury/Documents/Sources/TransmissionRemote/app/build/intermediates/pre-dexed/debug/android-support-v4-939764392faf3f8d0f7a5546dc83a29f920ba872.jar"
+        jar="/Users/yury/Documents/Sources/TransmissionRemote/libs/android-support-v4.jar"
+        jumboMode="false"
+        revision="19.1.0"
+        sha1="ded9acc6a9792b8f1afc470f0c9cd36d178914cd"/>
+
+</pre-dex-items>

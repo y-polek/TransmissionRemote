@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+                    <!-- Drawer -->
+    <color name="drawer_background_color">#ff4f4f4f</color>
+
+    <color name="drawer_list_group_text_color">#ffc6c6c6</color>
+    <color name="drawer_list_item_text_color">#fff0f0f0</color>
+
+    <color name="drawer_list_group_divider_color">#ff9e9e9e</color>
+    <color name="drawer_list_item_divider_color">#ff494949</color>
+</resources>

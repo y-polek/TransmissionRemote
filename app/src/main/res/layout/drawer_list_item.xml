@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <TextView android:id="@+id/drawer_list_group_text"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/drawer_list_group_height"
+        android:layout_marginLeft="@dimen/drawer_list_group_left_margin"
+        android:gravity="center_vertical"
+        android:textSize="@dimen/drawer_list_group_text_size"
+        android:textStyle="bold"
+        android:textColor="@color/drawer_list_group_text_color" />
+
+    <FrameLayout android:id="@+id/drawer_list_group_divider"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/drawer_list_group_divider_height"
+        android:background="@color/drawer_list_group_divider_color" />
+
+    <TextView android:id="@+id/drawer_list_item_text"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/drawer_list_item_height"
+        android:layout_marginLeft="@dimen/drawer_list_item_left_margin"
+        android:gravity="center_vertical"
+        android:textSize="@dimen/drawer_list_item_text_size"
+        android:textColor="@color/drawer_list_item_text_color" />
+
+    <FrameLayout android:id="@+id/drawer_list_item_divider"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/drawer_list_item_divider_height"
+        android:background="@color/drawer_list_item_divider_color" />
+
+</LinearLayout>
