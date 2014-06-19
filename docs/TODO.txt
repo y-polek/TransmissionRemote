@@ -1,0 +1,1 @@
+1. Automatic discovery with Bonjour

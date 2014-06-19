@@ -3,7 +3,7 @@
 
     <string name="app_name">Transmission Remote</string>
 
-                    <!-- Drawer -->
+                <!-- Drawer -->
     <!-- Servers -->
     <string name="drawer_servers">Servers</string>
 
@@ -32,8 +32,20 @@
     <string name="drawer_preferences">Preferences</string>
     <string name="drawer_preferences_server">Server</string>
     <string name="drawer_preferences_remote">Remote</string>
-
     <string name="drawer_open">Open drawer</string>
     <string name="drawer_close">Close drawer</string>
+    <string name="title_activity_add_server">AddServerActivity</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+                <!-- Add Server -->
+    <string name="server_parameters">Server Parameters</string>
+    <string name="server_name_hint">Server name</string>
+    <string name="server_host_hint">Host name or IP address</string>
+    <string name="server_port_hint">Port</string>
+    <string name="authentication">Authentication</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
 
 </resources>

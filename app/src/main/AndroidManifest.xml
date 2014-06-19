@@ -3,6 +3,7 @@
     package="net.yupol.transmissionremote.app" >
 
     <application
+        android:name=".TransmissionRemote"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
@@ -16,6 +17,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".server.AddServerActivity"
+            android:label="@string/title_activity_add_server" >
+        </activity>
     </application>
+
+    <uses-permission android:name="android.permission.INTERNET" />
 
 </manifest>

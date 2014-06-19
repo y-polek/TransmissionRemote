@@ -1,16 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-                    <!-- Drawer -->
+    <dimen name="default_layout_margin">16dp</dimen>
+    <dimen name="default_text_margin">8dp</dimen>
+    <dimen name="default_edit_text_height">48dp</dimen>
+    <dimen name="default_edit_text_padding">4dp</dimen>
+
+                <!-- Drawer -->
     <dimen name="drawer_list_group_text_size">18sp</dimen>
     <dimen name="drawer_list_item_text_size">18sp</dimen>
-
     <dimen name="drawer_list_group_left_margin">16dp</dimen>
     <dimen name="drawer_list_item_left_margin">24dp</dimen>
-
     <dimen name="drawer_list_group_height">32dp</dimen>
     <dimen name="drawer_list_item_height">48dp</dimen>
-
     <dimen name="drawer_list_group_divider_height">2dp</dimen>
     <dimen name="drawer_list_item_divider_height">1dp</dimen>
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+
+                <!-- Add Server -->
+    <dimen name="add_server_title_size">20sp</dimen>
+    <dimen name="add_server_group_margin">16dp</dimen>
 
 </resources>

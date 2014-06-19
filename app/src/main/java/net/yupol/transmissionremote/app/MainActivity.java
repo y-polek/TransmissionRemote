@@ -3,8 +3,14 @@ package net.yupol.transmissionremote.app;
 import android.app.Activity;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.res.Configuration;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
@@ -14,6 +20,12 @@ import android.widget.ListView;
 
 import net.yupol.transmissionremote.app.drawer.Drawer;
 import net.yupol.transmissionremote.app.drawer.DrawerItem;
+import net.yupol.transmissionremote.app.server.AddServerActivity;
+import net.yupol.transmissionremote.app.server.Server;
+import net.yupol.transmissionremote.app.transport.Remote;
+
+import java.io.IOException;
+import java.util.List;
 
 public class MainActivity extends Activity implements Drawer.OnItemSelectedListener {
 
@@ -21,19 +33,12 @@ public class MainActivity extends Activity implements Drawer.OnItemSelectedListe
 
     private ActionBarDrawerToggle mDrawerToggle;
 
+    private TorrentListFragment torrentListFragment;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        FragmentManager fm = getFragmentManager();
-
-        TorrentListFragment torrentListFragment = (TorrentListFragment) fm.findFragmentById(R.id.torrent_list_container);
-        if (torrentListFragment == null) {
-            FragmentTransaction ft = fm.beginTransaction();
-            ft.add(R.id.torrent_list_container, new TorrentListFragment());
-            ft.commit();
-        }
+        setContentView(R.layout.main_activity);
 
         ListView drawerList = (ListView) findViewById(R.id.drawer_list);
 
@@ -62,6 +67,28 @@ public class MainActivity extends Activity implements Drawer.OnItemSelectedListe
 
         getActionBar().setDisplayHomeAsUpEnabled(true);
         getActionBar().setHomeButtonEnabled(true);
+
+        FragmentManager fm = getFragmentManager();
+
+        torrentListFragment = (TorrentListFragment) fm.findFragmentById(R.id.torrent_list_container);
+        if (torrentListFragment == null) {
+            FragmentTransaction ft = fm.beginTransaction();
+            ft.add(R.id.torrent_list_container, new TorrentListFragment());
+            ft.commit();
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        TransmissionRemote app = TransmissionRemote.getApplication(this);
+        List<Server> servers = app.getServers();
+        // TODO: add servers to drawer
+        if (servers.isEmpty()) {
+            Intent intent = new Intent(this, AddServerActivity.class);
+            startActivityForResult(intent, 0);
+        }
     }
 
     @Override

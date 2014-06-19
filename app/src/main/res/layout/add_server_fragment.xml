@@ -1,0 +1,76 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".startup.AddServerFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_gravity="center_vertical"
+        android:layout_margin="@dimen/default_layout_margin">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/default_text_margin"
+            android:text="@string/server_parameters"
+            android:textStyle="bold"
+            android:textSize="@dimen/add_server_title_size" />
+
+        <include layout="@layout/separator" />
+
+        <EditText android:id="@+id/server_name_edit_text"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/default_edit_text_height"
+            android:paddingTop="@dimen/default_edit_text_padding"
+            android:paddingBottom="@dimen/default_edit_text_padding"
+            android:layout_marginBottom="@dimen/add_server_group_margin"
+            android:hint="@string/server_name_hint"
+            android:singleLine="true"
+            android:maxLength="20" />
+
+        <EditText android:id="@+id/host_edit_text"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/default_edit_text_height"
+            android:paddingTop="@dimen/default_edit_text_padding"
+            android:paddingBottom="@dimen/default_edit_text_padding"
+            android:hint="@string/server_host_hint"
+            android:singleLine="true" />
+
+        <EditText android:id="@+id/port_edit_text"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/default_edit_text_height"
+            android:paddingTop="@dimen/default_edit_text_padding"
+            android:paddingBottom="@dimen/default_edit_text_padding"
+            android:layout_marginBottom="@dimen/add_server_group_margin"
+            android:hint="@string/server_port_hint"
+            android:singleLine="true"
+            android:numeric="decimal"
+            android:text="@integer/default_port" />
+
+        <CheckBox
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/default_edit_text_height"
+            android:text="@string/authentication" />
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/default_edit_text_height"
+            android:paddingTop="@dimen/default_edit_text_padding"
+            android:paddingBottom="@dimen/default_edit_text_padding"
+            android:hint="@string/username"
+            android:singleLine="true" />
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/default_edit_text_height"
+            android:paddingTop="@dimen/default_edit_text_padding"
+            android:paddingBottom="@dimen/default_edit_text_padding"
+            android:hint="@string/password"
+            android:singleLine="true"
+            android:password="true" />
+    </LinearLayout>
+
+</FrameLayout>
