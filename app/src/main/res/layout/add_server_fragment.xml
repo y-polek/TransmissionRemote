@@ -47,15 +47,15 @@
             android:layout_marginBottom="@dimen/add_server_group_margin"
             android:hint="@string/server_port_hint"
             android:singleLine="true"
-            android:numeric="decimal"
+            android:numeric="integer"
             android:text="@integer/default_port" />
 
-        <CheckBox
+        <CheckBox android:id="@+id/aunthentication_checkbox"
             android:layout_width="match_parent"
             android:layout_height="@dimen/default_edit_text_height"
             android:text="@string/authentication" />
 
-        <EditText
+        <EditText android:id="@+id/user_name_edit_text"
             android:layout_width="match_parent"
             android:layout_height="@dimen/default_edit_text_height"
             android:paddingTop="@dimen/default_edit_text_padding"
@@ -63,7 +63,7 @@
             android:hint="@string/username"
             android:singleLine="true" />
 
-        <EditText
+        <EditText android:id="@+id/password_edit_text"
             android:layout_width="match_parent"
             android:layout_height="@dimen/default_edit_text_height"
             android:paddingTop="@dimen/default_edit_text_padding"
@@ -71,6 +71,7 @@
             android:hint="@string/password"
             android:singleLine="true"
             android:password="true" />
+
     </LinearLayout>
 
 </FrameLayout>

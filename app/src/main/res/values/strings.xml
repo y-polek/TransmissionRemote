@@ -40,12 +40,16 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
                 <!-- Add Server -->
-    <string name="server_parameters">Server Parameters</string>
+    <string name="add_new_server_title">Add new server</string>
+    <string name="server_parameters">Server parameters</string>
     <string name="server_name_hint">Server name</string>
     <string name="server_host_hint">Host name or IP address</string>
-    <string name="server_port_hint">Port</string>
+    <string name="server_port_hint">Port number</string>
     <string name="authentication">Authentication</string>
     <string name="username">Username</string>
     <string name="password">Password</string>
+    <string name="server_name_error_message">Name must be non-empty</string>
+    <string name="host_name_error_message">Please, enter IP address or hostname of the computer on which Transmission launched</string>
+    <string name="port_number_error_message">Please, enter port number. It must be the same as specified in \'Listening port\' field on \'Remote\' tab of Transmission preferences dialog</string>
 
 </resources>

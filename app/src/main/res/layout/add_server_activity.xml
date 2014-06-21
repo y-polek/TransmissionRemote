@@ -1,13 +1,26 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="net.yupol.transmissionremote.app.server.AddServerActivity">
+    android:layout_height="wrap_content">
 
-    <fragment android:name="net.yupol.transmissionremote.app.server.AddServerFragment"
-        android:id="@+id/add_server_fragment"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="top"/>
+        android:orientation="vertical">
 
-</FrameLayout>
+        <FrameLayout android:id="@+id/add_server_fragment_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top" />
+
+        <Button android:id="@+id/ok_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="@dimen/default_layout_margin"
+            android:paddingLeft="@dimen/add_server_ok_button_padding"
+            android:paddingRight="@dimen/add_server_ok_button_padding"
+            android:text="@android:string/ok" />
+
+    </LinearLayout>
+
+</ScrollView>

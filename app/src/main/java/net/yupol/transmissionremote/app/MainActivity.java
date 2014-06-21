@@ -29,7 +29,9 @@ import java.util.List;
 
 public class MainActivity extends Activity implements Drawer.OnItemSelectedListener {
 
-    private static final String TAG = MainActivity.class.getName();
+    private static final String TAG = MainActivity.class.getSimpleName();
+
+    public static int REQUEST_CODE_SERVER_PARAMS = 1;
 
     private ActionBarDrawerToggle mDrawerToggle;
 
@@ -87,7 +89,17 @@ public class MainActivity extends Activity implements Drawer.OnItemSelectedListe
         // TODO: add servers to drawer
         if (servers.isEmpty()) {
             Intent intent = new Intent(this, AddServerActivity.class);
-            startActivityForResult(intent, 0);
+            startActivityForResult(intent, REQUEST_CODE_SERVER_PARAMS);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_CODE_SERVER_PARAMS) {
+            if (resultCode == RESULT_OK) {
+                Server server = data.getParcelableExtra(AddServerActivity.EXTRA_SEVER);
+                Log.d(TAG, "New server: " + server);
+            }
         }
     }
 
@@ -113,5 +125,9 @@ public class MainActivity extends Activity implements Drawer.OnItemSelectedListe
         if (mDrawerToggle.onOptionsItemSelected(item))
             return true;
         return super.onOptionsItemSelected(item);
+    }
+
+    private void addNewServer(Server server) {
+
     }
 }

@@ -21,5 +21,6 @@
                 <!-- Add Server -->
     <dimen name="add_server_title_size">20sp</dimen>
     <dimen name="add_server_group_margin">16dp</dimen>
+    <dimen name="add_server_ok_button_padding">48dp</dimen>
 
 </resources>
