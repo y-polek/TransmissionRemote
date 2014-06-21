@@ -12,6 +12,7 @@ import net.yupol.transmissionremote.app.R;
 
 public class AddServerActivity extends Activity {
 
+    public static final String PARAM_CANCELABLE = "param_cancelable";
     public static final String EXTRA_SEVER = "extra_server";
 
     private AddServerFragment addServerFragment;
@@ -42,5 +43,18 @@ public class AddServerActivity extends Activity {
                 }
             }
         });
+
+        Button cancelButton = (Button) findViewById(R.id.cancel_button);
+        boolean isCancelable = getIntent().getBooleanExtra(PARAM_CANCELABLE, true);
+        cancelButton.setVisibility(isCancelable ? View.VISIBLE : View.GONE);
+        if (isCancelable) {
+            cancelButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    setResult(RESULT_CANCELED);
+                    finish();
+                }
+            });
+        }
     }
 }

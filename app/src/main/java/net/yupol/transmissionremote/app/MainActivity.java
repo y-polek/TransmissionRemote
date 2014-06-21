@@ -89,6 +89,7 @@ public class MainActivity extends Activity implements Drawer.OnItemSelectedListe
         // TODO: add servers to drawer
         if (servers.isEmpty()) {
             Intent intent = new Intent(this, AddServerActivity.class);
+            intent.putExtra(AddServerActivity.PARAM_CANCELABLE, false);
             startActivityForResult(intent, REQUEST_CODE_SERVER_PARAMS);
         }
     }
