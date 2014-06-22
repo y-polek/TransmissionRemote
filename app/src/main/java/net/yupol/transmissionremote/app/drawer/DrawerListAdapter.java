@@ -9,11 +9,13 @@ import android.widget.TextView;
 
 import net.yupol.transmissionremote.app.R;
 
+import java.util.List;
+
 public  class DrawerListAdapter extends BaseAdapter {
 
-    private DrawerGroupItem[] groups;
+    private List<DrawerGroupItem> groups;
 
-    public DrawerListAdapter(DrawerGroupItem[] groups) {
+    public DrawerListAdapter(List<DrawerGroupItem> groups) {
         this.groups = groups;
     }
 
@@ -22,7 +24,7 @@ public  class DrawerListAdapter extends BaseAdapter {
         int count = 0;
         for (DrawerGroupItem group : groups) {
             count++;
-            count += group.getItems().length;
+            count += group.getItems().size();
         }
         return count;
     }
@@ -41,7 +43,18 @@ public  class DrawerListAdapter extends BaseAdapter {
                 i++;
             }
         }
+        return null;
+    }
 
+    public DrawerGroupItem getGroupItem(DrawerItem drawerItem) {
+        for (DrawerGroupItem group : groups) {
+            if (drawerItem.equals(group))
+                return group;
+            for (DrawerItem item : group.getItems()) {
+                if (drawerItem.equals(item))
+                    return group;
+            }
+        }
         return null;
     }
 
@@ -97,7 +110,7 @@ public  class DrawerListAdapter extends BaseAdapter {
         visibleDivider.setVisibility(View.VISIBLE);
         invisibleDivider.setVisibility(View.GONE);
 
-        visibleView.setText(item.getTextResource());
+        visibleView.setText(item.getText());
 
         return itemView;
     }

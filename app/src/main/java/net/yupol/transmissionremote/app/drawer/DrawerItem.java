@@ -4,17 +4,17 @@ import android.content.Context;
 
 public class DrawerItem {
 
-    private int textResId;
+    private String text;
 
-    public DrawerItem(int textResId) {
-        this.textResId = textResId;
+    public DrawerItem(String text) {
+        this.text = text;
     }
 
-    public int getTextResource() {
-        return textResId;
+    public DrawerItem(int textResId, Context context) {
+        this(context.getString(textResId));
     }
 
-    public String getText(Context context) {
-        return context.getText(textResId).toString();
+    public String getText() {
+        return text;
     }
 }
