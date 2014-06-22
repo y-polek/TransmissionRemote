@@ -30,16 +30,17 @@ public class Drawer implements ListView.OnItemClickListener {
     private void initItemList(Context c) {
         groups = new ArrayList<>();
         // Servers
-        groups.add(new DrawerGroupItem(Groups.SERVERS.ordinal(), c.getString(R.string.drawer_servers)));
+        groups.add(new DrawerGroupItem(Groups.SERVERS.id(), c.getString(R.string.drawer_servers),
+                new NewServerDrawerItem(c)));
 
         // Actions
-        groups.add(new DrawerGroupItem(Groups.ACTIONS.ordinal(), c.getString(R.string.drawer_actions),
+        groups.add(new DrawerGroupItem(Groups.ACTIONS.id(), c.getString(R.string.drawer_actions),
                 new DrawerItem(R.string.drawer_actions_open_torrent, c),
                 new DrawerItem(R.string.drawer_actions_start_all_torrents, c),
                 new DrawerItem(R.string.drawer_actions_pause_all_torrents, c)));
 
         // Filters
-        groups.add(new DrawerGroupItem(Groups.FILTERS.ordinal(), c.getString(R.string.drawer_filters),
+        groups.add(new DrawerGroupItem(Groups.FILTERS.id(), c.getString(R.string.drawer_filters),
                 new DrawerItem(R.string.drawer_filters_all, c),
                 new DrawerItem(R.string.drawer_filters_active, c),
                 new DrawerItem(R.string.drawer_filters_downloading, c),
@@ -48,13 +49,13 @@ public class Drawer implements ListView.OnItemClickListener {
                 new DrawerItem(R.string.drawer_filters_stopped, c)));
 
         // Sort by
-        groups.add(new DrawerGroupItem(Groups.SORT_BY.ordinal(), c.getString(R.string.drawer_sort_by),
+        groups.add(new DrawerGroupItem(Groups.SORT_BY.id(), c.getString(R.string.drawer_sort_by),
                 new DrawerItem(R.string.drawer_sort_by_name, c),
                 new DrawerItem(R.string.drawer_sort_by_size, c),
                 new DrawerItem(R.string.drawer_sort_by_time_remaining, c)));
 
         // Preferences
-        groups.add(new DrawerGroupItem(Groups.PREFERENCES.ordinal(), c.getString(R.string.drawer_preferences),
+        groups.add(new DrawerGroupItem(Groups.PREFERENCES.id(), c.getString(R.string.drawer_preferences),
                 new DrawerItem(R.string.drawer_preferences_server, c),
                 new DrawerItem(R.string.drawer_preferences_remote, c)));
     }
@@ -72,7 +73,8 @@ public class Drawer implements ListView.OnItemClickListener {
     }
 
     public void addServer(Server server) {
-        findGroupById(Groups.SERVERS.ordinal()).addItem(new ServerDrawerItem(server));
+        DrawerGroupItem group = findGroupById(Groups.SERVERS.id());
+        group.addItem(new ServerDrawerItem(server), group.getItems().size() - 1);
         listAdapter.notifyDataSetChanged();
     }
 
@@ -89,11 +91,15 @@ public class Drawer implements ListView.OnItemClickListener {
         public void onDrawerItemSelected(DrawerGroupItem groupItem, DrawerItem item);
     }
 
-    private static enum Groups {
+    public static enum Groups {
         SERVERS,
         ACTIONS,
         FILTERS,
         SORT_BY,
-        PREFERENCES
+        PREFERENCES;
+
+        public int id() {
+            return ordinal();
+        }
     }
 }

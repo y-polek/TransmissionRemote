@@ -1,6 +1,8 @@
 package net.yupol.transmissionremote.app.drawer;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
+import android.media.Image;
 
 public class DrawerItem {
 
@@ -16,5 +18,9 @@ public class DrawerItem {
 
     public String getText() {
         return text;
+    }
+
+    public Drawable getImage() {
+        return null;
     }
 }

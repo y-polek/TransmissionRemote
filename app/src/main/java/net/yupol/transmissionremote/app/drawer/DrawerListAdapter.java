@@ -1,10 +1,12 @@
 package net.yupol.transmissionremote.app.drawer;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import net.yupol.transmissionremote.app.R;
@@ -90,6 +92,7 @@ public  class DrawerListAdapter extends BaseAdapter {
         TextView itemTextView = (TextView) itemView.findViewById(R.id.drawer_list_item_text);
         View groupDivider = itemView.findViewById(R.id.drawer_list_group_divider);
         View itemDivider = itemView.findViewById(R.id.drawer_list_item_divider);
+        ImageView imageView = (ImageView) itemView.findViewById(R.id.item_image);
 
         TextView visibleView, invisibleView;
         View visibleDivider, invisibleDivider;
@@ -98,11 +101,16 @@ public  class DrawerListAdapter extends BaseAdapter {
             invisibleView = itemTextView;
             visibleDivider = groupDivider;
             invisibleDivider = itemDivider;
+            imageView.setVisibility(View.GONE);
         } else {
             visibleView = itemTextView;
             invisibleView = groupTextView;
             visibleDivider = itemDivider;
             invisibleDivider = groupDivider;
+            Drawable image = item.getImage();
+            imageView.setVisibility(image != null ? View.VISIBLE : View.GONE);
+            if (image != null)
+                imageView.setImageDrawable(image);
         }
 
         visibleView.setVisibility(View.VISIBLE);

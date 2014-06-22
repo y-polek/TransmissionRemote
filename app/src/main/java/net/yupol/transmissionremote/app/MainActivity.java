@@ -17,6 +17,8 @@ import android.widget.ListView;
 import net.yupol.transmissionremote.app.drawer.Drawer;
 import net.yupol.transmissionremote.app.drawer.DrawerGroupItem;
 import net.yupol.transmissionremote.app.drawer.DrawerItem;
+import net.yupol.transmissionremote.app.drawer.NewServerDrawerItem;
+import net.yupol.transmissionremote.app.drawer.ServerDrawerItem;
 import net.yupol.transmissionremote.app.server.AddServerActivity;
 import net.yupol.transmissionremote.app.server.Server;
 
@@ -109,6 +111,15 @@ public class MainActivity extends Activity implements Drawer.OnItemSelectedListe
     @Override
     public void onDrawerItemSelected(DrawerGroupItem group, DrawerItem item) {
         Log.d(TAG, "item '" + item.getText() + "' in group '" + group.getText() + "' selected");
+
+        if (group.getId() == Drawer.Groups.SERVERS.id()) {
+            if (item instanceof NewServerDrawerItem) {
+                startActivityForResult(new Intent(this, AddServerActivity.class), REQUEST_CODE_SERVER_PARAMS);
+            } else if (item instanceof ServerDrawerItem) {
+                Server server = ((ServerDrawerItem) item).getServer();
+                Log.d(TAG, "selected server: " + server);
+            }
+        }
     }
 
     @Override
