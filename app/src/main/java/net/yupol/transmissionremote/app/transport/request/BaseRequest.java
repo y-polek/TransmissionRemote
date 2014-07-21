@@ -1,4 +1,4 @@
-package net.yupol.transmissionremote.app.transport.requests;
+package net.yupol.transmissionremote.app.transport.request;
 
 import android.util.Log;
 

@@ -1,15 +1,71 @@
 package net.yupol.transmissionremote.app;
 
-import android.app.Fragment;
+import android.app.ListFragment;
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.TextView;
 
-public class TorrentListFragment extends Fragment {
+import net.yupol.transmissionremote.app.transport.Torrent;
+
+import java.util.Collections;
+import java.util.List;
+
+public class TorrentListFragment extends ListFragment {
+
+    private List<Torrent> torrents = Collections.emptyList();
+
+    public TorrentListFragment() {
+        setListAdapter(new BaseAdapter() {
+            @Override
+            public int getCount() {
+                return torrents.size();
+            }
+
+            @Override
+            public Torrent getItem(int position) {
+                return torrents.get(position);
+            }
+
+            @Override
+            public long getItemId(int position) {
+                return position;
+            }
+
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent) {
+                View itemView;
+
+                if (convertView == null) {
+                    LayoutInflater li = (LayoutInflater) parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                    itemView = li.inflate(R.layout.torrent_list_item, parent, false);
+                } else {
+                    itemView = convertView;
+                }
+
+                Torrent torrent = getItem(position);
+
+                TextView nameText = (TextView) itemView.findViewById(R.id.name);
+                nameText.setText(torrent.getName());
+
+                TextView donePercentageText = (TextView) itemView.findViewById(R.id.done_percentage);
+                donePercentageText.setText(String.format("%.2f%%", 100 * torrent.getPercentDone()));
+
+                return itemView;
+            }
+        });
+    }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.torrent_list_fragment, container, false);
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+    }
+
+    public void torrentsUpdated(List<Torrent> torrents) {
+        this.torrents = torrents;
+        ((BaseAdapter) getListAdapter()).notifyDataSetInvalidated();
     }
 }

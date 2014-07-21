@@ -53,4 +53,6 @@
     <string name="port_number_error_message">Please, enter port number. It must be the same as specified in \'Listening port\' field on \'Remote\' tab of Transmission preferences dialog</string>
     <string name="add_new_server_drawer_item">Add server</string>
 
+    <string name="empty_torrent_list_text">No downloads</string>
+
 </resources>

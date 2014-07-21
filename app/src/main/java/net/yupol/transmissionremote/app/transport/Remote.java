@@ -2,9 +2,11 @@ package net.yupol.transmissionremote.app.transport;
 
 import android.util.Log;
 
-import net.yupol.transmissionremote.app.transport.requests.CheckPortRequest;
-import net.yupol.transmissionremote.app.transport.requests.Request;
-import net.yupol.transmissionremote.app.transport.requests.UpdateTorrentsRequest;
+import net.yupol.transmissionremote.app.server.Server;
+import net.yupol.transmissionremote.app.transport.request.CheckPortRequest;
+import net.yupol.transmissionremote.app.transport.request.Request;
+import net.yupol.transmissionremote.app.transport.request.UpdateTorrentsRequest;
+import net.yupol.transmissionremote.app.transport.response.Response;
 
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
@@ -38,8 +40,12 @@ public class Remote {
     private URI uri;
     private String sessionId = "";
 
-    public Remote(String rootUrl) {
-        String urlStr = new StringBuilder(rootUrl).append('/').append(URL_ENDING).toString();
+    public Remote(Server server) {
+
+        String urlStr = new StringBuilder("http://")
+                .append(server.getHost())
+                .append(':').append(server.getPort())
+                .append('/').append(URL_ENDING).toString();
         try {
             uri = new URI(urlStr);
         } catch (URISyntaxException e) {
@@ -63,46 +69,13 @@ public class Remote {
 
         HttpClient httpClient = new DefaultHttpClient();
         HttpResponse httpResponse = httpClient.execute(post);
-        Response response = new Response(httpResponse);
-
-        Log.d(TAG, "Response: " + response.getBody());
+        Response response = request.responseWrapper(httpResponse);
 
         if (response.getStatusCode() == HttpStatus.SC_CONFLICT && resendIfWrongId) {
             sessionId = response.getSessionId();
-            sendRequest(request, false);
+            response = sendRequest(request, false);
         }
 
         return response;
-    }
-
-    public boolean checkPort() throws IOException {
-        Request request = new CheckPortRequest();
-
-        Response response = sendRequest(request, true);
-
-        if (response.getStatusCode() != HttpStatus.SC_OK)
-            return false;
-
-        String body = response.getBody();
-
-        try {
-            JSONObject jsonBody = new JSONObject(body);
-            JSONObject argumentsObj = jsonBody.getJSONObject("arguments");
-            return argumentsObj.getBoolean("port-is-open");
-        } catch (JSONException e) {
-            Log.e(TAG, "Can't parse checkPort response", e);
-            return false;
-        }
-    }
-
-    public void updateTorrents() throws IOException {
-        Request request = new UpdateTorrentsRequest();
-
-        Response response = sendRequest(request, true);
-
-
-
-
-
     }
 }

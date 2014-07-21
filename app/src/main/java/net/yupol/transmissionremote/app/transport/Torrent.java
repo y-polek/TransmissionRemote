@@ -1,6 +1,82 @@
 package net.yupol.transmissionremote.app.transport;
 
+import android.util.Log;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public class Torrent {
+
+    private static final String TAG = Torrent.class.getSimpleName();
+
+    private int id;
+    private String name;
+    private long addedData;
+    private long totalSize;
+    private double percentDone;
+    private Status status;
+
+    public Torrent(JSONObject obj) {
+        id = obj.optInt(Metadata.ID);
+        name = obj.optString(Metadata.NAME);
+        addedData = obj.optLong(Metadata.ADDED_DATE);
+        totalSize = obj.optLong(Metadata.TOTAL_SIZE);
+        percentDone = obj.optDouble(Metadata.PERCENT_DONE);
+        status = Status.fromValue(obj.optInt(Metadata.STATUS, -1));
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public long getAddedData() {
+        return addedData;
+    }
+
+    public long getTotalSize() {
+        return totalSize;
+    }
+
+    public double getPercentDone() {
+        return percentDone;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    @Override
+    public String toString() {
+        return "Torrent{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", addedData=" + addedData +
+                ", totalSize=" + totalSize +
+                ", percentDone=" + percentDone +
+                ", status=" + status +
+                '}';
+    }
+
+    public static List<Torrent> fromArray(JSONArray array) {
+        List<Torrent> torrents = new ArrayList<>(array.length());
+        for (int i=0; i<array.length(); i++) {
+            JSONObject torrentObj = array.optJSONObject(i);
+            if (torrentObj != null) {
+                torrents.add(new Torrent(torrentObj));
+            } else {
+                Log.e(TAG, "Non object in torrents array at index " + i);
+            }
+        }
+        return torrents;
+    }
+
     public static class Metadata {
         public static final String ID = "id";
         public static final String ADDED_DATE = "addedDate";
@@ -48,5 +124,30 @@ public class Torrent {
         public static final String IS_PRIVATE = "isPrivate";
         public static final String PIECE_COUNT = "pieceCount";
         public static final String PIECE_SIZE = "pieceSize";
+    }
+
+    public static enum Status {
+        UNKNOWN(-1),
+        STOPPED(0),
+        CHECK_WAIT(1),
+        CHECK(2),
+        DOWNLOAD_WAIT(3),
+        DOWNLOAD(4),
+        SEED_WAIT(5),
+        SEED(6);
+
+        private int value;
+
+        private Status(int value) {
+            this.value = value;
+        }
+
+        public static Status fromValue(int value) {
+            for (Status status : values()) {
+                if (status.value == value)
+                    return status;
+            }
+            return UNKNOWN;
+        }
     }
 }
