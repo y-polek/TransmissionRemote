@@ -23,7 +23,9 @@ public class UpdateTorrentsRequest extends BaseRequest {
             Torrent.Metadata.PERCENT_DONE,
             Torrent.Metadata.TOTAL_SIZE,
             Torrent.Metadata.ADDED_DATE,
-            Torrent.Metadata.STATUS
+            Torrent.Metadata.STATUS,
+            Torrent.Metadata.RATE_DOWNLOAD,
+            Torrent.Metadata.RATE_UPLOAD
     };
 
     public UpdateTorrentsRequest() {

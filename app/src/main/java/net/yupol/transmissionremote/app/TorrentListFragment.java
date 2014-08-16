@@ -7,9 +7,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import net.yupol.transmissionremote.app.transport.Torrent;
+
+import org.apache.commons.io.FileUtils;
 
 import java.util.Collections;
 import java.util.List;
@@ -46,6 +50,10 @@ public class TorrentListFragment extends ListFragment {
                     itemView = convertView;
                 }
 
+                int bgColorId = position%2 == 0 ? R.color.torrent_list_odd_item_background
+                        : R.color.torrent_list_even_item_background;
+                itemView.setBackgroundColor(getResources().getColor(bgColorId));
+
                 Torrent torrent = getItem(position);
 
                 TextView nameText = (TextView) itemView.findViewById(R.id.name);
@@ -53,6 +61,14 @@ public class TorrentListFragment extends ListFragment {
 
                 TextView donePercentageText = (TextView) itemView.findViewById(R.id.done_percentage);
                 donePercentageText.setText(String.format("%.2f%%", 100 * torrent.getPercentDone()));
+
+                ProgressBar progressBar = (ProgressBar) itemView.findViewById(R.id.progress_bar);
+                progressBar.setProgress((int) (torrent.getPercentDone() * progressBar.getMax()));
+
+                TextView downloadRateText = (TextView) itemView.findViewById(R.id.download_rate);
+                downloadRateText.setText(FileUtils.byteCountToDisplaySize(torrent.getDownloadRate()) + "/s");
+                TextView uploadRateText = (TextView) itemView.findViewById(R.id.upload_rate);
+                uploadRateText.setText(FileUtils.byteCountToDisplaySize(torrent.getDownloadRate()) + "/s");
 
                 return itemView;
             }

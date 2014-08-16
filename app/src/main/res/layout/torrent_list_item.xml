@@ -2,19 +2,61 @@
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:background="@android:color/darker_gray">
+    android:paddingLeft="8dp"
+    android:paddingRight="8dp"
+    android:paddingTop="4dp"
+    android:paddingBottom="4dp">
 
     <TextView android:id="@+id/name"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/torrent_list_name_text_size"
+        android:textStyle="bold"
+        android:text="Some Name"/>
 
-    <TextView android:id="@+id/done_percentage"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView android:id="@+id/done_percentage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/torrent_list_status_text_size"
+            android:text="99.99%"/>
 
-    <ProgressBar
+        <TextView android:id="@+id/upload_rate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:textSize="@dimen/torrent_list_status_text_size"
+            android:text="1.22 MB/s"/>
+        <ImageView android:id="@+id/upload_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="2dp"
+            android:paddingBottom="2dp"
+            android:layout_toLeftOf="@id/upload_rate"
+            android:layout_alignTop="@id/upload_rate"
+            android:layout_alignBottom="@id/upload_rate"
+            android:src="@drawable/upload_icon"/>
+        <TextView android:id="@+id/download_rate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@id/upload_icon"
+            android:textSize="@dimen/torrent_list_status_text_size"
+            android:text="8.5 MB/s"/>
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="2dp"
+            android:layout_toLeftOf="@id/download_rate"
+            android:layout_alignTop="@id/download_rate"
+            android:layout_alignBottom="@id/download_rate"
+            android:src="@drawable/download_icon"/>
+    </RelativeLayout>
+
+    <ProgressBar android:id="@+id/progress_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:progress="15"

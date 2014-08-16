@@ -9,4 +9,9 @@
 
     <color name="drawer_list_group_divider_color">#ff9e9e9e</color>
     <color name="drawer_list_item_divider_color">#ff494949</color>
+
+                    <!-- Torrent list -->
+    <color name="torrent_list_background">#ffffff</color>
+    <color name="torrent_list_odd_item_background">#ffe6e6e6</color>
+    <color name="torrent_list_even_item_background">#fff5f5f5</color>
 </resources>
