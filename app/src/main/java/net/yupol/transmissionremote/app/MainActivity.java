@@ -128,7 +128,8 @@ public class MainActivity extends Activity implements Drawer.OnItemSelectedListe
 
     @Override
     protected void onPause() {
-        torrentUpdater.stop();
+        if (torrentUpdater != null)
+            torrentUpdater.stop();
         stopTransportThread();
         super.onPause();
     }
