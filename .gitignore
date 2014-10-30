@@ -4,7 +4,7 @@
 *.class
 bin/
 gen/
-build/*
+build/
 .classpath
 .project
 .idea
