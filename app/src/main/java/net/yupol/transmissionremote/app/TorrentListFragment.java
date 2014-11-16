@@ -2,23 +2,27 @@ package net.yupol.transmissionremote.app;
 
 import android.app.ListFragment;
 import android.content.Context;
+import android.graphics.Paint;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import net.yupol.transmissionremote.app.transport.Torrent;
+import com.google.common.base.Strings;
 
-import org.apache.commons.io.FileUtils;
+import net.yupol.transmissionremote.app.transport.Torrent;
+import net.yupol.transmissionremote.app.utils.SizeUtils;
 
 import java.util.Collections;
 import java.util.List;
 
 public class TorrentListFragment extends ListFragment {
+
+    private static final String MAX_STRING = "999.9 MB/s";
 
     private List<Torrent> torrents = Collections.emptyList();
 
@@ -66,13 +70,24 @@ public class TorrentListFragment extends ListFragment {
                 progressBar.setProgress((int) (torrent.getPercentDone() * progressBar.getMax()));
 
                 TextView downloadRateText = (TextView) itemView.findViewById(R.id.download_rate);
-                downloadRateText.setText(FileUtils.byteCountToDisplaySize(torrent.getDownloadRate()) + "/s");
+                downloadRateText.setText(speedText(torrent.getDownloadRate()));
+
                 TextView uploadRateText = (TextView) itemView.findViewById(R.id.upload_rate);
-                uploadRateText.setText(FileUtils.byteCountToDisplaySize(torrent.getUploadRate()) + "/s");
+                uploadRateText.setText(speedText(torrent.getUploadRate()));
+
+                Rect bounds = new Rect();
+                downloadRateText.getPaint().getTextBounds(MAX_STRING, 0, MAX_STRING.length(), bounds);
+                int maxWidth = bounds.width();
+                downloadRateText.setWidth(maxWidth);
+                uploadRateText.setWidth(maxWidth);
 
                 return itemView;
             }
         });
+    }
+
+    private String speedText(long bytes) {
+        return Strings.padStart(SizeUtils.displayableSize(bytes), 5, ' ') + "/s";
     }
 
     @Override
