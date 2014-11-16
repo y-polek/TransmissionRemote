@@ -68,7 +68,7 @@ public class TorrentListFragment extends ListFragment {
                 TextView downloadRateText = (TextView) itemView.findViewById(R.id.download_rate);
                 downloadRateText.setText(FileUtils.byteCountToDisplaySize(torrent.getDownloadRate()) + "/s");
                 TextView uploadRateText = (TextView) itemView.findViewById(R.id.upload_rate);
-                uploadRateText.setText(FileUtils.byteCountToDisplaySize(torrent.getDownloadRate()) + "/s");
+                uploadRateText.setText(FileUtils.byteCountToDisplaySize(torrent.getUploadRate()) + "/s");
 
                 return itemView;
             }
