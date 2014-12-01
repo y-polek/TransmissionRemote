@@ -1,5 +1,7 @@
 package net.yupol.transmissionremote.app.drawer;
 
+import net.yupol.transmissionremote.app.R;
+
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -33,5 +35,10 @@ public class DrawerGroupItem extends DrawerItem {
 
     public List<DrawerItem> getItems() {
         return items;
+    }
+
+    @Override
+    protected int getLayoutId() {
+        return R.layout.drawer_list_group_item;
     }
 }

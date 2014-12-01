@@ -15,17 +15,17 @@
             android:layout_gravity="center_vertical" />
         <TextView android:id="@+id/drawer_list_item_text"
             android:layout_width="wrap_content"
-            android:layout_height="@dimen/drawer_list_item_height"
-            android:layout_marginLeft="@dimen/drawer_list_image_text_margin"
+            android:layout_height="@dimen/drawer_list_group_height"
+            android:layout_marginLeft="@dimen/drawer_list_group_left_margin"
             android:gravity="center_vertical"
-            android:textSize="@dimen/drawer_list_item_text_size"
-            android:text="Item text"
-            android:textColor="@color/drawer_list_item_text_color" />
+            android:textSize="@dimen/drawer_list_group_text_size"
+            android:textStyle="bold"
+            android:text="Group text"
+            android:textColor="@color/drawer_list_group_text_color" />
     </LinearLayout>
 
     <FrameLayout android:id="@+id/drawer_list_item_divider"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/drawer_list_item_divider_height"
-        android:background="@color/drawer_list_item_divider_color" />
-
+        android:layout_height="@dimen/drawer_list_group_divider_height"
+        android:background="@color/drawer_list_group_divider_color" />
 </LinearLayout>

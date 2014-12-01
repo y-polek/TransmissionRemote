@@ -75,51 +75,6 @@ public  class DrawerListAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-
-        DrawerItem item = getItem(position);
-
-        View itemView;
-
-        if (convertView == null) {
-            LayoutInflater li = (LayoutInflater) parent.getContext()
-                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            itemView = li.inflate(R.layout.drawer_list_item, parent, false);
-        } else {
-            itemView = convertView;
-        }
-
-        TextView groupTextView = (TextView) itemView.findViewById(R.id.drawer_list_group_text);
-        TextView itemTextView = (TextView) itemView.findViewById(R.id.drawer_list_item_text);
-        View groupDivider = itemView.findViewById(R.id.drawer_list_group_divider);
-        View itemDivider = itemView.findViewById(R.id.drawer_list_item_divider);
-        ImageView imageView = (ImageView) itemView.findViewById(R.id.item_image);
-
-        TextView visibleView, invisibleView;
-        View visibleDivider, invisibleDivider;
-        if (item instanceof DrawerGroupItem) {
-            visibleView = groupTextView;
-            invisibleView = itemTextView;
-            visibleDivider = groupDivider;
-            invisibleDivider = itemDivider;
-            imageView.setVisibility(View.GONE);
-        } else {
-            visibleView = itemTextView;
-            invisibleView = groupTextView;
-            visibleDivider = itemDivider;
-            invisibleDivider = groupDivider;
-            Drawable image = item.getImage();
-            imageView.setVisibility(image != null ? View.VISIBLE : View.GONE);
-            if (image != null)
-                imageView.setImageDrawable(image);
-        }
-
-        visibleView.setVisibility(View.VISIBLE);
-        invisibleView.setVisibility(View.GONE);
-        visibleDivider.setVisibility(View.VISIBLE);
-        invisibleDivider.setVisibility(View.GONE);
-
-        visibleView.setText(item.getText());
-
-        return itemView;
+        return getItem(position).getView(parent);
     }
 }
