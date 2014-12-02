@@ -25,7 +25,8 @@ public class UpdateTorrentsRequest extends BaseRequest {
             Torrent.Metadata.ADDED_DATE,
             Torrent.Metadata.STATUS,
             Torrent.Metadata.RATE_DOWNLOAD,
-            Torrent.Metadata.RATE_UPLOAD
+            Torrent.Metadata.RATE_UPLOAD,
+            Torrent.Metadata.LEFT_UNTIL_DONE
     };
 
     public UpdateTorrentsRequest() {

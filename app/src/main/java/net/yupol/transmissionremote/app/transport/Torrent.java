@@ -20,6 +20,7 @@ public class Torrent {
     private Status status;
     private int downloadRate;
     private int uploadRate;
+    private int leftUntilDone;
 
     public Torrent(JSONObject obj) {
         id = obj.optInt(Metadata.ID);
@@ -30,6 +31,7 @@ public class Torrent {
         status = Status.fromValue(obj.optInt(Metadata.STATUS, -1));
         downloadRate = obj.optInt(Metadata.RATE_DOWNLOAD);
         uploadRate = obj.optInt(Metadata.RATE_UPLOAD);
+        leftUntilDone = obj.optInt(Metadata.LEFT_UNTIL_DONE);
     }
 
     public int getId() {
@@ -64,6 +66,10 @@ public class Torrent {
         return uploadRate;
     }
 
+    public int getLeftUntilDone() {
+        return leftUntilDone;
+    }
+
     @Override
     public String toString() {
         return "Torrent{" +
@@ -73,6 +79,7 @@ public class Torrent {
                 ", totalSize=" + totalSize +
                 ", percentDone=" + percentDone +
                 ", status=" + status +
+                ", leftUntilDone=" + leftUntilDone +
                 '}';
     }
 

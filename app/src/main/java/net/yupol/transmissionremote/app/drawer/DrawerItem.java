@@ -26,7 +26,11 @@ public class DrawerItem {
         return text;
     }
 
-    public Drawable getImage() {
+    public Drawable getLeftImage() {
+        return null;
+    }
+
+    public Drawable getRightImage() {
         return null;
     }
 
@@ -36,14 +40,19 @@ public class DrawerItem {
         View itemView = li.inflate(getLayoutId(), parent, false);
 
         TextView itemTextView = (TextView) itemView.findViewById(R.id.drawer_list_item_text);
-        ImageView imageView = (ImageView) itemView.findViewById(R.id.item_image);
+        ImageView leftImageView = (ImageView) itemView.findViewById(R.id.item_image_left);
+        ImageView rightImageView = (ImageView) itemView.findViewById(R.id.item_image_right);
 
         itemTextView.setText(getText());
 
-        Drawable image = getImage();
-        if (image != null)
-            imageView.setImageDrawable(image);
-        imageView.setVisibility(image != null ? View.VISIBLE : View.GONE);
+        Drawable leftImage = getLeftImage();
+        Drawable rightImage = getRightImage();
+        if (leftImage != null)
+            leftImageView.setImageDrawable(leftImage);
+        if (rightImage != null)
+            rightImageView.setImageDrawable(rightImage);
+        leftImageView.setVisibility(leftImage != null ? View.VISIBLE : View.GONE);
+        rightImageView.setVisibility(rightImage != null ? View.VISIBLE : View.GONE);
 
         return itemView;
     }

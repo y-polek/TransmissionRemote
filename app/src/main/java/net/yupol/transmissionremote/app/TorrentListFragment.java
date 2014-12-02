@@ -2,7 +2,6 @@ package net.yupol.transmissionremote.app;
 
 import android.app.ListFragment;
 import android.content.Context;
-import android.graphics.Paint;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -18,6 +17,7 @@ import net.yupol.transmissionremote.app.transport.Torrent;
 import net.yupol.transmissionremote.app.utils.SizeUtils;
 
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class TorrentListFragment extends ListFragment {
@@ -25,6 +25,8 @@ public class TorrentListFragment extends ListFragment {
     private static final String MAX_STRING = "999.9 MB/s";
 
     private List<Torrent> torrents = Collections.emptyList();
+
+    private Comparator<Torrent> comparator;
 
     public TorrentListFragment() {
         setListAdapter(new BaseAdapter() {
@@ -97,6 +99,14 @@ public class TorrentListFragment extends ListFragment {
 
     public void torrentsUpdated(List<Torrent> torrents) {
         this.torrents = torrents;
+        if (comparator != null)
+        Collections.sort(this.torrents, comparator);
         ((BaseAdapter) getListAdapter()).notifyDataSetInvalidated();
+    }
+
+    public void setSort(Comparator comparator) {
+        this.comparator = comparator;
+        if (torrents != null && !torrents.isEmpty())
+            torrentsUpdated(torrents);
     }
 }

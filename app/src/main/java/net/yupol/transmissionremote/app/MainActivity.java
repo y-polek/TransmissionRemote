@@ -19,6 +19,7 @@ import android.widget.Toast;
 
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
+import com.google.common.base.Optional;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.FluentIterable;
 
@@ -27,6 +28,7 @@ import net.yupol.transmissionremote.app.drawer.DrawerGroupItem;
 import net.yupol.transmissionremote.app.drawer.DrawerItem;
 import net.yupol.transmissionremote.app.drawer.NewServerDrawerItem;
 import net.yupol.transmissionremote.app.drawer.ServerDrawerItem;
+import net.yupol.transmissionremote.app.drawer.SortDrawerGroupItem;
 import net.yupol.transmissionremote.app.server.AddServerActivity;
 import net.yupol.transmissionremote.app.server.Server;
 import net.yupol.transmissionremote.app.transport.Torrent;
@@ -158,6 +160,12 @@ public class MainActivity extends Activity implements Drawer.OnItemSelectedListe
                     startTransportThread(server);
                 }
             }
+        } else if (group.getId() == Drawer.Groups.SORT_BY.id()) {
+            ((SortDrawerGroupItem) group).itemSelected(item);
+            drawer.refresh();
+
+            if (torrentListFragment != null)
+                torrentListFragment.setSort(((SortDrawerGroupItem) group).getComparator());
         }
     }
 

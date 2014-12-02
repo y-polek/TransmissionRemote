@@ -17,7 +17,7 @@ public class NewServerDrawerItem extends DrawerItem {
     }
 
     @Override
-    public Drawable getImage() {
+    public Drawable getLeftImage() {
         return image;
     }
 }

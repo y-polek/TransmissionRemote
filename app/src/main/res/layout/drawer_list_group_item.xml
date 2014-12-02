@@ -6,22 +6,27 @@
     android:layout_height="wrap_content">
 
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/drawer_list_item_left_margin">
-        <ImageView android:id="@+id/item_image"
+        android:layout_marginLeft="@dimen/drawer_list_group_margin"
+        android:layout_marginRight="@dimen/drawer_list_item_margin">
+        <ImageView android:id="@+id/item_image_left"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical" />
+            android:layout_gravity="center_vertical"/>
         <TextView android:id="@+id/drawer_list_item_text"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="@dimen/drawer_list_group_height"
-            android:layout_marginLeft="@dimen/drawer_list_group_left_margin"
+            android:layout_marginLeft="@dimen/drawer_list_image_text_margin"
             android:gravity="center_vertical"
+            android:layout_weight="1"
             android:textSize="@dimen/drawer_list_group_text_size"
             android:textStyle="bold"
-            android:text="Group text"
             android:textColor="@color/drawer_list_group_text_color" />
+        <ImageView android:id="@+id/item_image_right"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"/>
     </LinearLayout>
 
     <FrameLayout android:id="@+id/drawer_list_item_divider"

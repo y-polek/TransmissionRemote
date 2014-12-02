@@ -10,6 +10,7 @@ import com.google.common.collect.FluentIterable;
 
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.server.Server;
+import net.yupol.transmissionremote.app.sorting.TorrentComparators;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,10 +50,10 @@ public class Drawer implements ListView.OnItemClickListener {
                 new DrawerItem(R.string.drawer_filters_stopped, c)));
 
         // Sort by
-        groups.add(new DrawerGroupItem(Groups.SORT_BY.id(), c.getString(R.string.drawer_sort_by),
-                new DrawerItem(R.string.drawer_sort_by_name, c),
-                new DrawerItem(R.string.drawer_sort_by_size, c),
-                new DrawerItem(R.string.drawer_sort_by_time_remaining, c)));
+        groups.add(new SortDrawerGroupItem(Groups.SORT_BY.id(), c.getString(R.string.drawer_sort_by),
+                new SortDrawerItem(R.string.drawer_sort_by_name, c, TorrentComparators.NAME),
+                new SortDrawerItem(R.string.drawer_sort_by_size, c, TorrentComparators.SIZE),
+                new SortDrawerItem(R.string.drawer_sort_by_time_remaining, c, TorrentComparators.TIME_REMAINING)));
 
         // Preferences
         groups.add(new DrawerGroupItem(Groups.PREFERENCES.id(), c.getString(R.string.drawer_preferences),
@@ -70,6 +71,10 @@ public class Drawer implements ListView.OnItemClickListener {
 
     public void setOnItemSelectedListener(OnItemSelectedListener listener) {
         this.listener = listener;
+    }
+
+    public void refresh() {
+        listAdapter.notifyDataSetChanged();
     }
 
     public void addServer(Server server) {
