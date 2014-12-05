@@ -58,7 +58,7 @@ public class Drawer implements ListView.OnItemClickListener {
         // Preferences
         groups.add(new DrawerGroupItem(Groups.PREFERENCES.id(), c.getString(R.string.drawer_preferences),
                 new DrawerItem(R.string.drawer_preferences_server, c),
-                new DrawerItem(R.string.drawer_preferences_remote, c)));
+                new RemotePrefsDrawerItem(R.string.drawer_preferences_remote, c)));
     }
 
     @Override

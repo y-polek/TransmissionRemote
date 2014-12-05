@@ -3,6 +3,7 @@ package net.yupol.transmissionremote.app;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
@@ -83,6 +84,12 @@ public class TransmissionRemote extends Application {
     public void setActiveServer(Server server) {
         activeServer = server;
         persistActiveServer();
+    }
+
+    public int getUpdateInterval() {
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+        return Integer.parseInt(sp.getString(getString(R.string.update_interval_key),
+                getString(R.string.update_interval_default_value)));
     }
 
     private void persistServerList() {

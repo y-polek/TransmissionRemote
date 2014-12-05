@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="net.yupol.transmissionremote.app" >
 
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:name=".TransmissionRemote"
         android:allowBackup="true"
@@ -22,8 +24,8 @@
             android:name=".server.AddServerActivity"
             android:label="@string/title_activity_add_server" >
         </activity>
-    </application>
+        <activity android:name=".preferences.RemotePreferencesActivity"/>
 
-    <uses-permission android:name="android.permission.INTERNET" />
+    </application>
 
 </manifest>

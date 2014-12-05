@@ -34,6 +34,8 @@ public class DrawerItem {
         return null;
     }
 
+    public void itemSelected() {}
+
     public View getView(ViewGroup parent) {
         LayoutInflater li = (LayoutInflater) parent.getContext()
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);

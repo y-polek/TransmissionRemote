@@ -55,4 +55,8 @@
 
     <string name="empty_torrent_list_text">No downloads</string>
 
+    <!-- Preferences -->
+    <string name="update_interval_title">Update interval</string>
+    <string name="update_interval_summary">Torrent list update interval</string>
+
 </resources>

@@ -5,10 +5,12 @@ import android.app.Activity;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.preference.PreferenceManager;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
@@ -19,8 +21,6 @@ import android.widget.Toast;
 
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
-import com.google.common.base.Optional;
-import com.google.common.collect.Collections2;
 import com.google.common.collect.FluentIterable;
 
 import net.yupol.transmissionremote.app.drawer.Drawer;
@@ -42,7 +42,7 @@ import net.yupol.transmissionremote.app.transport.response.Response;
 import java.util.List;
 
 public class MainActivity extends Activity implements Drawer.OnItemSelectedListener,
-            TorrentUpdater.TorrentUpdateListener {
+            TorrentUpdater.TorrentUpdateListener, SharedPreferences.OnSharedPreferenceChangeListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
@@ -110,6 +110,7 @@ public class MainActivity extends Activity implements Drawer.OnItemSelectedListe
     @Override
     protected void onResume() {
         super.onResume();
+        PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
 
         List<Server> servers = application.getServers();
         if (servers.isEmpty()) {
@@ -118,7 +119,7 @@ public class MainActivity extends Activity implements Drawer.OnItemSelectedListe
             startActivityForResult(intent, REQUEST_CODE_SERVER_PARAMS);
         } else {
             Server server = application.getActiveServer();
-            torrentUpdater = new TorrentUpdater(server, this);
+            torrentUpdater = new TorrentUpdater(server, this, application.getUpdateInterval());
             startTransportThread(server);
 
             Log.d(TAG, "Check port message sent");
@@ -133,6 +134,7 @@ public class MainActivity extends Activity implements Drawer.OnItemSelectedListe
         if (torrentUpdater != null)
             torrentUpdater.stop();
         stopTransportThread();
+        PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(this);
         super.onPause();
     }
 
@@ -149,6 +151,8 @@ public class MainActivity extends Activity implements Drawer.OnItemSelectedListe
     @Override
     public void onDrawerItemSelected(DrawerGroupItem group, DrawerItem item) {
         Log.d(TAG, "item '" + item.getText() + "' in group '" + group.getText() + "' selected");
+
+        item.itemSelected();
 
         if (group.getId() == Drawer.Groups.SERVERS.id()) {
             if (item instanceof NewServerDrawerItem) {
@@ -211,7 +215,7 @@ public class MainActivity extends Activity implements Drawer.OnItemSelectedListe
 
         if (application.getServers().size() == 1) {
             application.setActiveServer(server);
-            torrentUpdater = new TorrentUpdater(server, this);
+            torrentUpdater = new TorrentUpdater(server, this, application.getUpdateInterval());
             // TODO: drawer.setActiveServer(server);
             startTransportThread(server);
         }
@@ -267,9 +271,14 @@ public class MainActivity extends Activity implements Drawer.OnItemSelectedListe
                 Log.d(TAG, "Port " + application.getActiveServer().getPort() + " is closed");
             }
         }
+    }
 
-
-
-
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        if (key.equals(getString(R.string.update_interval_key))) {
+            if (torrentUpdater != null) {
+                torrentUpdater.setTimeout(application.getUpdateInterval());
+            }
+        }
     }
 }

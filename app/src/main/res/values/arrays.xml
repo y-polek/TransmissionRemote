@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="pref_update_interval_entries">
+        <item>1 sec</item>
+        <item>2 secs</item>
+        <item>5 secs</item>
+        <item>10 secs</item>
+        <item>15 secs</item>
+        <item>30 secs</item>
+        <item>60 secs</item>
+    </array>
+
+    <string-array name="pref_update_interval_entry_values">
+        <item>1</item>
+        <item>2</item>
+        <item>5</item>
+        <item>10</item>
+        <item>15</item>
+        <item>30</item>
+        <item>60</item>
+    </string-array>
+</resources>

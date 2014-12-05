@@ -1,5 +1,7 @@
 package net.yupol.transmissionremote.app;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
@@ -17,23 +19,24 @@ public class TorrentUpdater extends Handler {
 
     private static final String TAG = TorrentUpdater.class.getSimpleName();
 
-    private long timeout = 1_000;
+    private volatile int timeout;
     private Server server;
     private TorrentUpdateListener listener;
     private TransportThread transportThread;
     private UpdaterThread updaterThread;
 
 
-    public TorrentUpdater(Server server, TorrentUpdateListener listener) {
+    public TorrentUpdater(Server server, TorrentUpdateListener listener, int timeout) {
         this.server = server;
         this.listener = listener;
+        this.timeout = timeout;
     }
 
     /**
      * Sets requests timeout.
-     * @param timeout time in milliseconds
+     * @param timeout time in seconds
      */
-    public void setTimeout(long timeout) {
+    public void setTimeout(int timeout) {
         this.timeout = timeout;
     }
 
@@ -80,7 +83,7 @@ public class TorrentUpdater extends Handler {
             while (!interrupted()) {
                 sendRequest();
                 try {
-                    TimeUnit.MILLISECONDS.sleep(timeout);
+                    TimeUnit.SECONDS.sleep(timeout);
                 } catch (InterruptedException e) {
                     break;
                 }
