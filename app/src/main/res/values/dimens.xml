@@ -5,6 +5,8 @@
     <dimen name="default_text_margin">8dp</dimen>
     <dimen name="default_edit_text_height">48dp</dimen>
     <dimen name="default_edit_text_padding">4dp</dimen>
+    <dimen name="default_padding">8dp</dimen>
+    <dimen name="default_big_padding">16dp</dimen>
 
                 <!-- Drawer -->
     <dimen name="drawer_list_group_text_size">18sp</dimen>
@@ -28,5 +30,11 @@
                 <!-- Torrent list -->
     <dimen name="torrent_list_name_text_size">21sp</dimen>
     <dimen name="torrent_list_status_text_size">15sp</dimen>
+
+                <!-- Preferences -->
+    <dimen name="pref_title_size">20sp</dimen>
+    <dimen name="pref_text_size">17sp</dimen>
+    <dimen name="pref_description_text_size">14sp</dimen>
+    <dimen name="server_pref_edittext_width">80dp</dimen>
 
 </resources>

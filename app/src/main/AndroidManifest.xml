@@ -25,6 +25,7 @@
             android:label="@string/title_activity_add_server" >
         </activity>
         <activity android:name=".preferences.RemotePreferencesActivity"/>
+        <activity android:name=".preferences.ServerPreferencesActivity"/>
 
     </application>
 

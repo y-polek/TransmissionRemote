@@ -28,18 +28,26 @@ import net.yupol.transmissionremote.app.drawer.DrawerGroupItem;
 import net.yupol.transmissionremote.app.drawer.DrawerItem;
 import net.yupol.transmissionremote.app.drawer.NewServerDrawerItem;
 import net.yupol.transmissionremote.app.drawer.ServerDrawerItem;
+import net.yupol.transmissionremote.app.drawer.ServerPrefsDrawerItem;
 import net.yupol.transmissionremote.app.drawer.SortDrawerGroupItem;
+import net.yupol.transmissionremote.app.preferences.ServerPreferencesActivity;
 import net.yupol.transmissionremote.app.server.AddServerActivity;
 import net.yupol.transmissionremote.app.server.Server;
 import net.yupol.transmissionremote.app.transport.Torrent;
 import net.yupol.transmissionremote.app.transport.TransportThread;
 import net.yupol.transmissionremote.app.transport.request.CheckPortRequest;
 import net.yupol.transmissionremote.app.transport.request.Request;
+import net.yupol.transmissionremote.app.transport.request.SessionSetRequest;
 import net.yupol.transmissionremote.app.transport.request.UpdateTorrentsRequest;
 import net.yupol.transmissionremote.app.transport.response.CheckPortResponse;
 import net.yupol.transmissionremote.app.transport.response.Response;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 
 public class MainActivity extends Activity implements Drawer.OnItemSelectedListener,
             TorrentUpdater.TorrentUpdateListener, SharedPreferences.OnSharedPreferenceChangeListener {
@@ -47,9 +55,11 @@ public class MainActivity extends Activity implements Drawer.OnItemSelectedListe
     private static final String TAG = MainActivity.class.getSimpleName();
 
     public static int REQUEST_CODE_SERVER_PARAMS = 1;
+    public static int REQUEST_CODE_SERVER_PREFERENCES = 2;
 
     private TransmissionRemote application;
     private TransportThread transportThread;
+    private Queue<Request> pendingRequests = new LinkedList<>();
     private TorrentUpdater torrentUpdater;
 
     private Drawer drawer;
@@ -110,6 +120,7 @@ public class MainActivity extends Activity implements Drawer.OnItemSelectedListe
     @Override
     protected void onResume() {
         super.onResume();
+        Log.d(TAG, "onResume");
         PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
 
         List<Server> servers = application.getServers();
@@ -140,10 +151,26 @@ public class MainActivity extends Activity implements Drawer.OnItemSelectedListe
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.d(TAG, "onActivityResult");
         if (requestCode == REQUEST_CODE_SERVER_PARAMS) {
             if (resultCode == RESULT_OK) {
                 Server server = data.getParcelableExtra(AddServerActivity.EXTRA_SEVER);
                 addNewServer(server);
+            }
+        } else if (requestCode == REQUEST_CODE_SERVER_PREFERENCES) {
+            if (resultCode == RESULT_OK) {
+                String prefsExtra = data.getStringExtra(ServerPreferencesActivity.EXTRA_SERVER_PREFERENCES);
+                JSONObject preferences;
+                try {
+                    preferences = new JSONObject(prefsExtra);
+                } catch (JSONException e) {
+                    Log.e(TAG, "Can't parse session preferences as JSON object: '" + prefsExtra + "'");
+                    return;
+                }
+
+                Log.d(TAG, "preferences: " + preferences);
+
+                pendingRequests.offer(new SessionSetRequest(preferences));
             }
         }
     }
@@ -170,6 +197,12 @@ public class MainActivity extends Activity implements Drawer.OnItemSelectedListe
 
             if (torrentListFragment != null)
                 torrentListFragment.setSort(((SortDrawerGroupItem) group).getComparator());
+        } else if (group.getId() == Drawer.Groups.PREFERENCES.id()) {
+            if (item instanceof ServerPrefsDrawerItem) {
+                startActivityForResult(
+                        new Intent(this, ServerPreferencesActivity.class),
+                        REQUEST_CODE_SERVER_PREFERENCES);
+            }
         }
     }
 
@@ -237,12 +270,18 @@ public class MainActivity extends Activity implements Drawer.OnItemSelectedListe
         };
         transportThread = new TransportThread(server, responseHandler);
         transportThread.start();
+        while (!pendingRequests.isEmpty()) {
+            Message msg = transportThread.getHandler().obtainMessage(TransportThread.REQUEST);
+            msg.obj = pendingRequests.poll();
+            transportThread.getHandler().sendMessage(msg);
+        }
     }
 
     private void stopTransportThread() {
         if (transportThread != null) {
             transportThread.quit();
             transportThread = null;
+            pendingRequests.clear();
         }
     }
 

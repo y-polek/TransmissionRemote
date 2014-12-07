@@ -25,7 +25,7 @@ import java.net.URISyntaxException;
 
 public class Remote {
 
-    private static final String TAG = Remote.class.getName();
+    private static final String TAG = Remote.class.getSimpleName();
 
     private static final String URL_ENDING = "transmission/rpc";
 
@@ -55,6 +55,8 @@ public class Remote {
 
     public Response sendRequest(Request request, boolean resendIfWrongId) throws IOException {
 
+        Log.d(TAG, "Remote.sendRequest() resend: " + resendIfWrongId + " body: " + request.getBody());
+
         request.setSessionId(sessionId);
 
         HttpPost post = new HttpPost(uri);
@@ -72,7 +74,10 @@ public class Remote {
         Response response = request.responseWrapper(httpResponse);
 
         if (response.getStatusCode() == HttpStatus.SC_CONFLICT && resendIfWrongId) {
+            Log.d(TAG, "SC_CONFLICT resend: " + resendIfWrongId + " response: " + response.getBody());
+            Log.d(TAG, "Old session ID: " + sessionId);
             sessionId = response.getSessionId();
+            Log.d(TAG, "New session ID: " + sessionId);
             response = sendRequest(request, false);
         }
 

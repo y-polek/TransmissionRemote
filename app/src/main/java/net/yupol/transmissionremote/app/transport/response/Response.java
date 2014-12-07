@@ -5,18 +5,17 @@ import android.util.Log;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStream;
 
-import static com.google.common.base.Preconditions.*;
+import static com.google.common.base.Preconditions.checkNotNull;
 
-public abstract class Response {
+public class Response {
 
-    private static final String TAG = Response.class.getName();
+    private static final String TAG = Response.class.getSimpleName();
 
     private static final String HEADER_SESSION_ID = "X-Transmission-Session-Id";
     private static final String SUCCESS_STRING = "success";

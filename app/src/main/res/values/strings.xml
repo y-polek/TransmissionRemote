@@ -58,5 +58,12 @@
     <!-- Preferences -->
     <string name="update_interval_title">Update interval</string>
     <string name="update_interval_summary">Torrent list update interval</string>
+    <string name="server_preferences">Server Preferences</string>
+    <string name="global_bandwidth_limits">Global bandwidth limits</string>
+    <string name="download_rate">Download rate:</string>
+    <string name="upload_rate">Upload rate:</string>
+    <string name="kbps">KB/s</string>
+    <string name="turtle_speed_limits">Speed Limit mode</string>
+    <string name="turtle_speed_limits_description">When enabled Speed Limit overrides the global bandwidth limits</string>
 
 </resources>

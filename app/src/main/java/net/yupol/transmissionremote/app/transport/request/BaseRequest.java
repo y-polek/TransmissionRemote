@@ -2,7 +2,10 @@ package net.yupol.transmissionremote.app.transport.request;
 
 import android.util.Log;
 
+import net.yupol.transmissionremote.app.transport.response.Response;
+
 import org.apache.http.Header;
+import org.apache.http.HttpResponse;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.protocol.HTTP;
 import org.json.JSONException;
@@ -47,6 +50,11 @@ public abstract class BaseRequest implements Request {
     @Override
     public void setSessionId(String sessionId) {
         this.sessionId = sessionId;
+    }
+
+    @Override
+    public Response responseWrapper(HttpResponse httpResponse) {
+        return new Response(httpResponse);
     }
 
     protected abstract JSONObject getArguments();
