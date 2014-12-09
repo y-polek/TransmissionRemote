@@ -37,4 +37,6 @@
     <dimen name="pref_description_text_size">14sp</dimen>
     <dimen name="server_pref_edittext_width">80dp</dimen>
 
+                <!-- Toolbar -->
+    <dimen name="toolbar_text_size">20sp</dimen>
 </resources>

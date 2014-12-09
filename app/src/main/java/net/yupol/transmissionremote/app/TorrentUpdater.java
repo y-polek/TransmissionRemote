@@ -1,7 +1,5 @@
 package net.yupol.transmissionremote.app;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;

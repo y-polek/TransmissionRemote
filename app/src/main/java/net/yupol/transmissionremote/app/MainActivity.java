@@ -65,6 +65,7 @@ public class MainActivity extends Activity implements Drawer.OnItemSelectedListe
     private Drawer drawer;
     private ActionBarDrawerToggle drawerToggle;
     private TorrentListFragment torrentListFragment;
+    private ToolbarFragment toolbarFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,6 +114,14 @@ public class MainActivity extends Activity implements Drawer.OnItemSelectedListe
             torrentListFragment = new TorrentListFragment();
             FragmentTransaction ft = fm.beginTransaction();
             ft.add(R.id.torrent_list_container, torrentListFragment);
+            ft.commit();
+        }
+
+        toolbarFragment = (ToolbarFragment) fm.findFragmentById(R.id.toolbar_container);
+        if (toolbarFragment == null) {
+            toolbarFragment = new ToolbarFragment();
+            FragmentTransaction ft = fm.beginTransaction();
+            ft.add(R.id.toolbar_container, toolbarFragment);
             ft.commit();
         }
     }
@@ -229,6 +238,7 @@ public class MainActivity extends Activity implements Drawer.OnItemSelectedListe
     public void onTorrentUpdate(List<Torrent> torrents) {
         if (torrentListFragment != null) {
             torrentListFragment.torrentsUpdated(torrents);
+            toolbarFragment.torrentsUpdated(torrents);
         }
 
         String text = Joiner.on("\n").join(FluentIterable.from(torrents).transform(new Function<Torrent, String>() {

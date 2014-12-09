@@ -6,7 +6,6 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
 import com.google.common.base.Function;
-import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.google.common.collect.FluentIterable;
 
@@ -28,6 +27,7 @@ public class TransmissionRemote extends Application {
 
     private List<Server> servers = new LinkedList<>();
     private Server activeServer;
+    private boolean speedLimitEnabled;
 
     @Override
     public void onCreate() {
@@ -90,6 +90,14 @@ public class TransmissionRemote extends Application {
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
         return Integer.parseInt(sp.getString(getString(R.string.update_interval_key),
                 getString(R.string.update_interval_default_value)));
+    }
+
+    public void setSpeedLimitEnabled(boolean isEnabled) {
+        speedLimitEnabled = isEnabled;
+    }
+
+    public boolean isSpeedLimitEnabled() {
+        return speedLimitEnabled;
     }
 
     private void persistServerList() {

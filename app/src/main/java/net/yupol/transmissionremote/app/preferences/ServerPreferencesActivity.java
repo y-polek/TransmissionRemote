@@ -50,6 +50,7 @@ public class ServerPreferencesActivity extends Activity {
                 if (msg.obj instanceof SessionGetResponse) {
                     SessionGetResponse response = (SessionGetResponse) msg.obj;
                     if (response.getStatusCode() == HttpStatus.SC_OK) {
+                        ((TransmissionRemote) getApplication()).setSpeedLimitEnabled(response.isAltSpeedEnabled());
                         showPreferencesFragment(toFragmentArguments(response));
                     } else {
                         // TODO: show error message

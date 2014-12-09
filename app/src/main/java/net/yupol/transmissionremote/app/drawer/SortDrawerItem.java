@@ -7,7 +7,6 @@ import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.sorting.SortOrder;
 import net.yupol.transmissionremote.app.transport.Torrent;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 
@@ -25,7 +24,7 @@ public class SortDrawerItem extends DrawerItem {
         baseComparator = comparator;
 
         ascImage = c.getResources().getDrawable(R.drawable.arrow_up);
-        descImage = c.getResources().getDrawable(R.drawable.arrow_down);
+        descImage = c.getResources().getDrawable(R.drawable.arrow_down_gray);
     }
 
     public void setSorting(SortOrder sortOrder) {
