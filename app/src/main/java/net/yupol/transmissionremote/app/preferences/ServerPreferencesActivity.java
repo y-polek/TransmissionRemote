@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.app.NavUtils;
+import android.view.MenuItem;
 
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.TransmissionRemote;
@@ -17,7 +19,13 @@ import net.yupol.transmissionremote.app.transport.response.SessionGetResponse;
 
 import org.apache.http.HttpStatus;
 
-import static net.yupol.transmissionremote.app.preferences.ServerPreferences.*;
+import static net.yupol.transmissionremote.app.preferences.ServerPreferences.ALT_SPEED_LIMIT_DOWN;
+import static net.yupol.transmissionremote.app.preferences.ServerPreferences.ALT_SPEED_LIMIT_ENABLED;
+import static net.yupol.transmissionremote.app.preferences.ServerPreferences.ALT_SPEED_LIMIT_UP;
+import static net.yupol.transmissionremote.app.preferences.ServerPreferences.SPEED_LIMIT_DOWN;
+import static net.yupol.transmissionremote.app.preferences.ServerPreferences.SPEED_LIMIT_DOWN_ENABLED;
+import static net.yupol.transmissionremote.app.preferences.ServerPreferences.SPEED_LIMIT_UP;
+import static net.yupol.transmissionremote.app.preferences.ServerPreferences.SPEED_LIMIT_UP_ENABLED;
 
 public class ServerPreferencesActivity extends Activity {
 
@@ -33,6 +41,7 @@ public class ServerPreferencesActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.server_preferences_activity);
         setTitle(R.string.server_preferences);
+        getActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     @Override
@@ -67,17 +76,7 @@ public class ServerPreferencesActivity extends Activity {
 
     @Override
     public void onBackPressed() {
-        ServerPreferencesFragment fragment = (ServerPreferencesFragment)
-                getFragmentManager().findFragmentByTag(SERVER_PREFERENCES_FRAGMENT_TAG);
-        if (fragment != null) {
-            Intent result = new Intent();
-            result.putExtra(EXTRA_SERVER_PREFERENCES, fragment.getPreferences().toString());
-            setResult(RESULT_OK, result);
-        } else {
-            setResult(RESULT_CANCELED);
-        }
-
-        finish();
+        doFinish();
     }
 
     @Override
@@ -97,6 +96,30 @@ public class ServerPreferencesActivity extends Activity {
         if (preferencesFragment != null) ft.remove(preferencesFragment);
         ft.add(R.id.progress_bar_fragment_container, new ProgressbarFragment());
         ft.commit();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                doFinish();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void doFinish() {
+        ServerPreferencesFragment fragment = (ServerPreferencesFragment)
+                getFragmentManager().findFragmentByTag(SERVER_PREFERENCES_FRAGMENT_TAG);
+        if (fragment != null) {
+            Intent result = new Intent();
+            result.putExtra(EXTRA_SERVER_PREFERENCES, fragment.getPreferences().toString());
+            setResult(RESULT_OK, result);
+        } else {
+            setResult(RESULT_CANCELED);
+        }
+
+        finish();
     }
 
     private void showPreferencesFragment(Bundle arguments) {

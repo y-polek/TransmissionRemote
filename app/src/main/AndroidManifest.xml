@@ -12,7 +12,8 @@
         android:theme="@style/AppTheme" >
         <activity
             android:name=".MainActivity"
-            android:label="@string/app_name" >
+            android:label="@string/app_name"
+            android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -24,8 +25,12 @@
             android:name=".server.AddServerActivity"
             android:label="@string/title_activity_add_server" >
         </activity>
-        <activity android:name=".preferences.RemotePreferencesActivity"/>
-        <activity android:name=".preferences.ServerPreferencesActivity"/>
+        <activity android:name=".preferences.RemotePreferencesActivity">
+            <meta-data android:name="android.support.PARENT_ACTIVITY" android:value=".MainActivity"/>
+        </activity>
+        <activity android:name=".preferences.ServerPreferencesActivity">
+            <meta-data android:name="android.support.PARENT_ACTIVITY" android:value=".MainActivity"/>
+        </activity>
 
     </application>
 
