@@ -1,35 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
-<pre-dex-items>
+<items version="2" >
 
     <item
-        dex="/Users/yury/Documents/Sources/TransmissionRemote/app/build/intermediates/pre-dexed/debug/spring-android-core-1.0.1.RELEASE-34c4f653624e0a2b25e36eac50d96f305fd653e8.jar"
         jar="/Users/yury/.gradle/caches/modules-2/files-2.1/org.springframework.android/spring-android-core/1.0.1.RELEASE/e68f0e8e4b636ee30c4de58953be38d9b72a5e3b/spring-android-core-1.0.1.RELEASE.jar"
         jumboMode="false"
-        revision="19.1.0"
-        sha1="e68f0e8e4b636ee30c4de58953be38d9b72a5e3b"/>
+        revision="21.1.2"
+        sha1="e68f0e8e4b636ee30c4de58953be38d9b72a5e3b">
+        <dex dex="/Users/yury/Documents/Sources/TransmissionRemote/app/build/intermediates/pre-dexed/debug/spring-android-core-1.0.1.RELEASE-34c4f653624e0a2b25e36eac50d96f305fd653e8.jar" />
+    </item>
     <item
-        dex="/Users/yury/Documents/Sources/TransmissionRemote/app/build/intermediates/pre-dexed/debug/spring-android-rest-template-1.0.1.RELEASE-b691a60615f17782ec9ae3360c6222fb3daf144b.jar"
         jar="/Users/yury/.gradle/caches/modules-2/files-2.1/org.springframework.android/spring-android-rest-template/1.0.1.RELEASE/e132d929bd181941f79b0d63edafb8a86ae6fd33/spring-android-rest-template-1.0.1.RELEASE.jar"
         jumboMode="false"
-        revision="19.1.0"
-        sha1="e132d929bd181941f79b0d63edafb8a86ae6fd33"/>
+        revision="21.1.2"
+        sha1="e132d929bd181941f79b0d63edafb8a86ae6fd33">
+        <dex dex="/Users/yury/Documents/Sources/TransmissionRemote/app/build/intermediates/pre-dexed/debug/spring-android-rest-template-1.0.1.RELEASE-b691a60615f17782ec9ae3360c6222fb3daf144b.jar" />
+    </item>
     <item
-        dex="/Users/yury/Documents/Sources/TransmissionRemote/app/build/intermediates/pre-dexed/debug/commons-io-2.4-bb83baa3a08e602c15bffaa89105666c56c3d955.jar"
+        jar="/Users/yury/Documents/Sources/TransmissionRemote/app/build/intermediates/exploded-aar/com.android.support/support-v4/21.0.3/classes.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="2c91c949a45a21cdecf26e03951e46c7beec9ad8">
+        <dex dex="/Users/yury/Documents/Sources/TransmissionRemote/app/build/intermediates/pre-dexed/debug/classes-2ee0e832cc4dc22a0ab8e12db5377ed91dfac5b9.jar" />
+    </item>
+    <item
+        jar="/Applications/adt-bundle-mac-x86_64/sdk/extras/android/m2repository/com/android/support/support-annotations/21.0.3/support-annotations-21.0.3.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="4b74cefe1f0c1b819e7260c8627a14674e37fd35">
+        <dex dex="/Users/yury/Documents/Sources/TransmissionRemote/app/build/intermediates/pre-dexed/debug/support-annotations-21.0.3-5fcb6ab5b44a575924a36f3d1295945808dbeb08.jar" />
+    </item>
+    <item
+        jar="/Users/yury/.gradle/caches/modules-2/files-2.1/com.google.guava/guava/18.0/cce0823396aa693798f8882e64213b1772032b09/guava-18.0.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="cce0823396aa693798f8882e64213b1772032b09">
+        <dex dex="/Users/yury/Documents/Sources/TransmissionRemote/app/build/intermediates/pre-dexed/debug/guava-18.0-55cb56d45e95fa296e09e7f1e07a9f19f5fed18e.jar" />
+    </item>
+    <item
+        jar="/Users/yury/Documents/Sources/TransmissionRemote/app/build/intermediates/exploded-aar/com.android.support/support-v4/21.0.3/libs/internal_impl-21.0.3.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="01ec05bfbafcc07646ba813000bf2ef11742dd03">
+        <dex dex="/Users/yury/Documents/Sources/TransmissionRemote/app/build/intermediates/pre-dexed/debug/internal_impl-21.0.3-2cabe843d052620ee7baefb48f92e2e41b0e400f.jar" />
+    </item>
+    <item
         jar="/Users/yury/.gradle/caches/modules-2/files-2.1/commons-io/commons-io/2.4/b1b6ea3b7e4aa4f492509a4952029cd8e48019ad/commons-io-2.4.jar"
         jumboMode="false"
-        revision="19.1.0"
-        sha1="b1b6ea3b7e4aa4f492509a4952029cd8e48019ad"/>
-    <item
-        dex="/Users/yury/Documents/Sources/TransmissionRemote/app/build/intermediates/pre-dexed/debug/support-v4-19.1.0-4f01b48a4bc9fc674712b55355eabe3a0d88409d.jar"
-        jar="/Applications/adt-bundle-mac-x86_64/sdk/extras/android/m2repository/com/android/support/support-v4/19.1.0/support-v4-19.1.0.jar"
-        jumboMode="false"
-        revision="19.1.0"
-        sha1="85f201b380937e61a9dce6ca90ccf6872abbfb67"/>
-    <item
-        dex="/Users/yury/Documents/Sources/TransmissionRemote/app/build/intermediates/pre-dexed/debug/guava-17.0-bb0703f57a2c5ddbbdfe454d031500ee6397cd8a.jar"
-        jar="/Users/yury/.gradle/caches/modules-2/files-2.1/com.google.guava/guava/17.0/9c6ef172e8de35fd8d4d8783e4821e57cdef7445/guava-17.0.jar"
-        jumboMode="false"
-        revision="19.1.0"
-        sha1="9c6ef172e8de35fd8d4d8783e4821e57cdef7445"/>
+        revision="21.1.2"
+        sha1="b1b6ea3b7e4aa4f492509a4952029cd8e48019ad">
+        <dex dex="/Users/yury/Documents/Sources/TransmissionRemote/app/build/intermediates/pre-dexed/debug/commons-io-2.4-bb83baa3a08e602c15bffaa89105666c56c3d955.jar" />
+    </item>
 
-</pre-dex-items>
+</items>
