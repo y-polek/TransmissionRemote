@@ -1,11 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
-<pre-dex-items>
+<items version="2" >
 
     <item
-        dex="/Users/yury/Documents/Sources/TransmissionRemote/app/build/intermediates/pre-dexed/debug/android-support-v4-939764392faf3f8d0f7a5546dc83a29f920ba872.jar"
-        jar="/Users/yury/Documents/Sources/TransmissionRemote/libs/android-support-v4.jar"
+        jar="/Users/yury/Documents/Sources/TransmissionRemote/app/build/intermediates/exploded-aar/com.android.support/support-v4/21.0.3/classes.jar"
         jumboMode="false"
         revision="19.1.0"
-        sha1="ded9acc6a9792b8f1afc470f0c9cd36d178914cd"/>
+        sha1="2c91c949a45a21cdecf26e03951e46c7beec9ad8">
+        <dex dex="/Users/yury/Documents/Sources/TransmissionRemote/app/build/intermediates/pre-dexed/debug/classes-2ee0e832cc4dc22a0ab8e12db5377ed91dfac5b9.jar" />
+    </item>
+    <item
+        jar="/Users/yury/Documents/Sources/TransmissionRemote/app/build/intermediates/exploded-aar/com.android.support/support-v4/21.0.3/libs/internal_impl-21.0.3.jar"
+        jumboMode="false"
+        revision="19.1.0"
+        sha1="01ec05bfbafcc07646ba813000bf2ef11742dd03">
+        <dex dex="/Users/yury/Documents/Sources/TransmissionRemote/app/build/intermediates/pre-dexed/debug/internal_impl-21.0.3-2cabe843d052620ee7baefb48f92e2e41b0e400f.jar" />
+    </item>
+    <item
+        jar="/Applications/adt-bundle-mac-x86_64/sdk/extras/android/m2repository/com/android/support/support-annotations/21.0.3/support-annotations-21.0.3.jar"
+        jumboMode="false"
+        revision="19.1.0"
+        sha1="4b74cefe1f0c1b819e7260c8627a14674e37fd35">
+        <dex dex="/Users/yury/Documents/Sources/TransmissionRemote/app/build/intermediates/pre-dexed/debug/support-annotations-21.0.3-5fcb6ab5b44a575924a36f3d1295945808dbeb08.jar" />
+    </item>
 
-</pre-dex-items>
+</items>
