@@ -1,21 +1,23 @@
 package net.yupol.transmissionremote.app.transport.request;
 
-import net.yupol.transmissionremote.app.transport.response.Response;
-
-import org.apache.http.HttpResponse;
 import org.json.JSONObject;
 
-public class SessionSetRequest extends BaseRequest {
+public class SessionSetRequest extends Request<Void> {
 
     private JSONObject arguments;
 
     public SessionSetRequest(JSONObject arguments) {
-        super("session-set");
+        super(Void.class);
         this.arguments = arguments;
     }
 
     @Override
-    protected JSONObject getArguments() {
-        return arguments;
+    protected String getMethod() {
+        return "session-set";
+    }
+
+    @Override
+    protected String getArguments() {
+        return arguments.toString();
     }
 }

@@ -3,7 +3,6 @@ package net.yupol.transmissionremote.app.transport;
 import android.util.Log;
 
 import net.yupol.transmissionremote.app.server.Server;
-import net.yupol.transmissionremote.app.transport.request.CheckPortRequest;
 import net.yupol.transmissionremote.app.transport.request.Request;
 import net.yupol.transmissionremote.app.transport.request.UpdateTorrentsRequest;
 import net.yupol.transmissionremote.app.transport.response.Response;
@@ -15,8 +14,6 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;

@@ -77,7 +77,7 @@ public class ToolbarFragment extends Fragment {
 
         app = (TransmissionRemote) getActivity().getApplication();
 
-        sendRequest(new SessionGetRequest());
+        //sendRequest(new SessionGetRequest());
     }
 
     public void torrentsUpdated(List<Torrent> torrents) {

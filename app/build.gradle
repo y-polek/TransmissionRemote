@@ -47,4 +47,7 @@ dependencies {
         exclude (group: 'com.google.android', module: 'android')
         exclude (group: 'org.apache.httpcomponents', module: 'httpclient')
     }
+    compile('com.google.http-client:google-http-client-jackson2:1.19.0') {
+        exclude (group: 'org.apache.httpcomponents', module: 'httpclient')
+    }
 }

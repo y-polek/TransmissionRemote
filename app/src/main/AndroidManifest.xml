@@ -3,6 +3,7 @@
     package="net.yupol.transmissionremote.app" >
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:name=".TransmissionRemote"
@@ -32,6 +33,8 @@
             <meta-data android:name="android.support.PARENT_ACTIVITY" android:value=".MainActivity"/>
         </activity>
 
+        <service android:name="com.octo.android.robospice.UncachedSpiceService"
+            android:exported="false" />
     </application>
 
 </manifest>

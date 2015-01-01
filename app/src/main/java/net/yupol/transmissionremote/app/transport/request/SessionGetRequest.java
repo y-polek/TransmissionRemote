@@ -1,24 +1,20 @@
 package net.yupol.transmissionremote.app.transport.request;
 
-import net.yupol.transmissionremote.app.transport.response.Response;
-import net.yupol.transmissionremote.app.transport.response.SessionGetResponse;
+import net.yupol.transmissionremote.app.model.json.ServerSettings;
 
-import org.apache.http.HttpResponse;
-import org.json.JSONObject;
-
-public class SessionGetRequest extends BaseRequest {
+public class SessionGetRequest extends Request<ServerSettings> {
 
     public SessionGetRequest() {
-        super("session-get");
+        super(ServerSettings.class);
     }
 
     @Override
-    protected JSONObject getArguments() {
-        return new JSONObject();
+    protected String getMethod() {
+        return "session-get";
     }
 
     @Override
-    public Response responseWrapper(HttpResponse httpResponse) {
-        return new SessionGetResponse(httpResponse);
+    protected String getArguments() {
+        return null;
     }
 }

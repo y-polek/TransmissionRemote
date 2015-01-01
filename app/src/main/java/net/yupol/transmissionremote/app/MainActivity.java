@@ -1,7 +1,6 @@
 package net.yupol.transmissionremote.app;
 
 import android.app.ActionBar;
-import android.app.Activity;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Intent;
@@ -33,6 +32,7 @@ import net.yupol.transmissionremote.app.drawer.SortDrawerGroupItem;
 import net.yupol.transmissionremote.app.preferences.ServerPreferencesActivity;
 import net.yupol.transmissionremote.app.server.AddServerActivity;
 import net.yupol.transmissionremote.app.server.Server;
+import net.yupol.transmissionremote.app.transport.BaseSpiceActivity;
 import net.yupol.transmissionremote.app.transport.Torrent;
 import net.yupol.transmissionremote.app.transport.TransportThread;
 import net.yupol.transmissionremote.app.transport.request.CheckPortRequest;
@@ -49,7 +49,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
-public class MainActivity extends Activity implements Drawer.OnItemSelectedListener,
+public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSelectedListener,
             TorrentUpdater.TorrentUpdateListener, SharedPreferences.OnSharedPreferenceChangeListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
