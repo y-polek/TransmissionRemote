@@ -26,12 +26,25 @@ android {
     packagingOptions {
         exclude 'META-INF/notice.txt'
         exclude 'META-INF/license.txt'
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/NOTICE.txt'
     }
 }
 
 dependencies {
     compile 'com.android.support:support-v4:21.+'
     compile 'com.google.guava:guava:18.+'
-    compile 'commons-io:commons-io:2.4'
-    compile 'org.springframework.android:spring-android-rest-template:1.0.1.RELEASE'
+    compile('com.octo.android.robospice:robospice:1.4.14') {
+        exclude (group: 'commons-io', module: 'commons-io')
+    }
+    compile('com.octo.android.robospice:robospice-google-http-client:1.4.14') {
+        exclude (group: 'org.apache.httpcomponents', module: 'httpclient')
+        exclude (group: 'commons-io', module: 'commons-io')
+    }
+    compile('com.google.http-client:google-http-client-gson:1.19.0') {
+        exclude module: 'xpp3'
+        exclude group: 'stax'
+        exclude (group: 'com.google.android', module: 'android')
+        exclude (group: 'org.apache.httpcomponents', module: 'httpclient')
+    }
 }
