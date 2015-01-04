@@ -1,9 +1,11 @@
 package net.yupol.transmissionremote.app.transport.request;
 
-public class PortTestRequest extends Request<Boolean> {
+import net.yupol.transmissionremote.app.model.json.PortTestResult;
+
+public class PortTestRequest extends Request<PortTestResult> {
 
     public PortTestRequest() {
-        super(Boolean.class);
+        super(PortTestResult.class);
     }
 
     @Override

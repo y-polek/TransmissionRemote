@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActionBarDrawerToggle;
@@ -21,6 +20,8 @@ import android.widget.Toast;
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
 import com.google.common.collect.FluentIterable;
+import com.octo.android.robospice.persistence.exception.SpiceException;
+import com.octo.android.robospice.request.listener.RequestListener;
 
 import net.yupol.transmissionremote.app.drawer.Drawer;
 import net.yupol.transmissionremote.app.drawer.DrawerGroupItem;
@@ -29,16 +30,15 @@ import net.yupol.transmissionremote.app.drawer.NewServerDrawerItem;
 import net.yupol.transmissionremote.app.drawer.ServerDrawerItem;
 import net.yupol.transmissionremote.app.drawer.ServerPrefsDrawerItem;
 import net.yupol.transmissionremote.app.drawer.SortDrawerGroupItem;
+import net.yupol.transmissionremote.app.model.json.PortTestResult;
 import net.yupol.transmissionremote.app.preferences.ServerPreferencesActivity;
 import net.yupol.transmissionremote.app.server.AddServerActivity;
 import net.yupol.transmissionremote.app.server.Server;
 import net.yupol.transmissionremote.app.transport.BaseSpiceActivity;
 import net.yupol.transmissionremote.app.transport.Torrent;
-import net.yupol.transmissionremote.app.transport.TransportThread;
-import net.yupol.transmissionremote.app.transport.request.CheckPortRequest;
+import net.yupol.transmissionremote.app.transport.request.PortTestRequest;
 import net.yupol.transmissionremote.app.transport.request.Request;
 import net.yupol.transmissionremote.app.transport.request.SessionSetRequest;
-import net.yupol.transmissionremote.app.transport.request.UpdateTorrentsRequest;
 import net.yupol.transmissionremote.app.transport.response.CheckPortResponse;
 import net.yupol.transmissionremote.app.transport.response.Response;
 
@@ -58,7 +58,6 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
     public static int REQUEST_CODE_SERVER_PREFERENCES = 2;
 
     private TransmissionRemote application;
-    private TransportThread transportThread;
     private Queue<Request> pendingRequests = new LinkedList<>();
     private TorrentUpdater torrentUpdater;
 
@@ -138,14 +137,25 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
             intent.putExtra(AddServerActivity.PARAM_CANCELABLE, false);
             startActivityForResult(intent, REQUEST_CODE_SERVER_PARAMS);
         } else {
-            Server server = application.getActiveServer();
-            torrentUpdater = new TorrentUpdater(server, this, application.getUpdateInterval());
-            startTransportThread(server);
+            torrentUpdater = new TorrentUpdater(getTransportManager(), this, application.getUpdateInterval());
 
-            Log.d(TAG, "Check port message sent");
-            Message msg = transportThread.getHandler().obtainMessage(TransportThread.REQUEST);
-            msg.obj = new CheckPortRequest();
-            transportThread.getHandler().sendMessage(msg);
+            getTransportManager().doRequest(new PortTestRequest(), new RequestListener<PortTestResult>() {
+                @Override
+                public void onRequestFailure(SpiceException spiceException) {
+
+                }
+
+                @Override
+                public void onRequestSuccess(PortTestResult result) {
+                    if (result.isOpen()) {
+                        torrentUpdater.start();
+                    } else {
+                        Toast.makeText(MainActivity.this, "Port " + application.getActiveServer().getPort() +
+                                " is closed. Check Transmission settings.", Toast.LENGTH_LONG).show();
+                        Log.d(TAG, "Port " + application.getActiveServer().getPort() + " is closed");
+                    }
+                }
+            });
         }
     }
 
@@ -153,7 +163,6 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
     protected void onPause() {
         if (torrentUpdater != null)
             torrentUpdater.stop();
-        stopTransportThread();
         PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(this);
         super.onPause();
     }
@@ -197,7 +206,6 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
                 Server server = ((ServerDrawerItem) item).getServer();
                 if (server != application.getActiveServer()) {
                     application.setActiveServer(server);
-                    startTransportThread(server);
                 }
             }
         } else if (group.getId() == Drawer.Groups.SORT_BY.id()) {
@@ -258,47 +266,9 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
 
         if (application.getServers().size() == 1) {
             application.setActiveServer(server);
-            torrentUpdater = new TorrentUpdater(server, this, application.getUpdateInterval());
+            torrentUpdater = new TorrentUpdater(getTransportManager(), this, application.getUpdateInterval());
             // TODO: drawer.setActiveServer(server);
-            startTransportThread(server);
         }
-    }
-
-    private void startTransportThread(Server server) {
-        stopTransportThread();
-        Handler responseHandler = new Handler() {
-            @Override
-            public void handleMessage(Message msg) {
-                switch (msg.what) {
-                    case TransportThread.RESPONSE:
-                        handleResponse(msg);
-                        break;
-                    default:
-                        Log.e(TAG, "Unknown message: " + msg);
-                }
-            }
-        };
-        transportThread = new TransportThread(server, responseHandler);
-        transportThread.start();
-        while (!pendingRequests.isEmpty()) {
-            Message msg = transportThread.getHandler().obtainMessage(TransportThread.REQUEST);
-            msg.obj = pendingRequests.poll();
-            transportThread.getHandler().sendMessage(msg);
-        }
-    }
-
-    private void stopTransportThread() {
-        if (transportThread != null) {
-            transportThread.quit();
-            transportThread = null;
-            pendingRequests.clear();
-        }
-    }
-
-    private void sendRequest(Request request) {
-        Message msg = transportThread.getHandler().obtainMessage(TransportThread.REQUEST);
-        msg.obj = request;
-        transportThread.getHandler().sendMessage(msg);
     }
 
     private void handleResponse(Message msg) {
@@ -312,7 +282,7 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
         if (response instanceof CheckPortResponse) {
             boolean isOpen = ((CheckPortResponse) response).isOpen();
             if (isOpen) {
-                sendRequest(new UpdateTorrentsRequest());
+                //sendRequest(new UpdateTorrentsRequest());
                 torrentUpdater.start();
             } else {
                 Toast.makeText(this, "Port " + application.getActiveServer().getPort() +

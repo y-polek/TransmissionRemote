@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.widget.Button;
 
 import com.google.common.base.Function;
 import com.google.common.base.Predicates;
@@ -19,6 +20,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import javax.annotation.Nonnull;
+
 public class TransmissionRemote extends Application {
 
     private static final String SHARED_PREFS_NAME = "transmission_remote_shared_prefs";
@@ -27,6 +30,8 @@ public class TransmissionRemote extends Application {
 
     private List<Server> servers = new LinkedList<>();
     private Server activeServer;
+    private List<OnActiveServerChangedListener> activeServerListeners = new LinkedList<>();
+
     private boolean speedLimitEnabled;
 
     @Override
@@ -51,6 +56,7 @@ public class TransmissionRemote extends Application {
         if (activeServerInJson != null) {
             try {
                 activeServer = Server.fromJson(new JSONObject(activeServerInJson));
+                fireActiveServerChangedEvent();
             } catch (JSONException e) {
                 activeServer = null;
             }
@@ -84,6 +90,21 @@ public class TransmissionRemote extends Application {
     public void setActiveServer(Server server) {
         activeServer = server;
         persistActiveServer();
+        fireActiveServerChangedEvent();
+    }
+
+    public void addOnActiveServerChangedListener(@Nonnull OnActiveServerChangedListener listener) {
+        activeServerListeners.add(listener);
+    }
+
+    public void removeOnActiveServerChangedListener(@Nonnull OnActiveServerChangedListener listener) {
+        activeServerListeners.remove(listener);
+    }
+
+    private void fireActiveServerChangedEvent() {
+        for (OnActiveServerChangedListener listener : activeServerListeners) {
+            listener.serverChanged(activeServer);
+        }
     }
 
     public int getUpdateInterval() {
@@ -121,5 +142,9 @@ public class TransmissionRemote extends Application {
         SharedPreferences.Editor editor = sp.edit();
         editor.putString(KEY_ACTIVE_SERVER, serverInJson);
         editor.commit();
+    }
+
+    public static interface OnActiveServerChangedListener {
+        public void serverChanged(Server newServer);
     }
 }

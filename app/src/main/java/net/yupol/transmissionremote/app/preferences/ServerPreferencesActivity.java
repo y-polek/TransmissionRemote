@@ -1,23 +1,20 @@
 package net.yupol.transmissionremote.app.preferences;
 
-import android.app.Activity;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.support.v4.app.NavUtils;
+import android.util.Log;
 import android.view.MenuItem;
+
+import com.octo.android.robospice.persistence.exception.SpiceException;
+import com.octo.android.robospice.request.listener.RequestListener;
 
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.TransmissionRemote;
-import net.yupol.transmissionremote.app.server.Server;
-import net.yupol.transmissionremote.app.transport.TransportThread;
+import net.yupol.transmissionremote.app.model.json.ServerSettings;
+import net.yupol.transmissionremote.app.transport.BaseSpiceActivity;
 import net.yupol.transmissionremote.app.transport.request.SessionGetRequest;
-import net.yupol.transmissionremote.app.transport.response.SessionGetResponse;
-
-import org.apache.http.HttpStatus;
 
 import static net.yupol.transmissionremote.app.preferences.ServerPreferences.ALT_SPEED_LIMIT_DOWN;
 import static net.yupol.transmissionremote.app.preferences.ServerPreferences.ALT_SPEED_LIMIT_ENABLED;
@@ -27,14 +24,12 @@ import static net.yupol.transmissionremote.app.preferences.ServerPreferences.SPE
 import static net.yupol.transmissionremote.app.preferences.ServerPreferences.SPEED_LIMIT_UP;
 import static net.yupol.transmissionremote.app.preferences.ServerPreferences.SPEED_LIMIT_UP_ENABLED;
 
-public class ServerPreferencesActivity extends Activity {
+public class ServerPreferencesActivity extends BaseSpiceActivity {
 
     private static final String TAG = ServerPreferencesActivity.class.getSimpleName();
     private static final String SERVER_PREFERENCES_FRAGMENT_TAG = "server_preferences_fragment_tag";
 
     public static final String EXTRA_SERVER_PREFERENCES = "extra_server_preferences";
-
-    private TransportThread transportThread;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,28 +45,18 @@ public class ServerPreferencesActivity extends Activity {
 
         showProgressbarFragment();
 
-        TransmissionRemote app = (TransmissionRemote) getApplication();
-        Server server = app.getActiveServer();
-
-        transportThread = new TransportThread(server, new Handler() {
+        getTransportManager().doRequest(new SessionGetRequest(), new RequestListener<ServerSettings>() {
             @Override
-            public void handleMessage(Message msg) {
-                if (msg.obj instanceof SessionGetResponse) {
-                    SessionGetResponse response = (SessionGetResponse) msg.obj;
-                    if (response.getStatusCode() == HttpStatus.SC_OK) {
-                        ((TransmissionRemote) getApplication()).setSpeedLimitEnabled(response.isAltSpeedEnabled());
-                        showPreferencesFragment(toFragmentArguments(response));
-                    } else {
-                        // TODO: show error message
-                    }
-                }
+            public void onRequestFailure(SpiceException spiceException) {
+                Log.e(TAG, "Failed to obtain server settings");
+            }
+
+            @Override
+            public void onRequestSuccess(ServerSettings serverSettings) {
+                ((TransmissionRemote) getApplication()).setSpeedLimitEnabled(serverSettings.isAltSpeedEnabled());
+                showPreferencesFragment(toFragmentArguments(serverSettings));
             }
         });
-        transportThread.start();
-
-        Message msg = transportThread.getHandler().obtainMessage(TransportThread.REQUEST);
-        msg.obj = new SessionGetRequest();
-        transportThread.getHandler().sendMessage(msg);
     }
 
     @Override
@@ -82,7 +67,6 @@ public class ServerPreferencesActivity extends Activity {
     @Override
     protected void onPause() {
         super.onPause();
-        transportThread.quit();
     }
 
     private void showProgressbarFragment() {
@@ -137,15 +121,15 @@ public class ServerPreferencesActivity extends Activity {
         ft.commit();
     }
 
-    private Bundle toFragmentArguments(SessionGetResponse resp) {
+    private Bundle toFragmentArguments(ServerSettings settings) {
         Bundle b = new Bundle();
-        b.putInt(SPEED_LIMIT_DOWN, resp.getSpeedLimitDown());
-        b.putBoolean(SPEED_LIMIT_DOWN_ENABLED, resp.isSpeedLimitDownEnabled());
-        b.putInt(SPEED_LIMIT_UP, resp.getSpeedLimitUp());
-        b.putBoolean(SPEED_LIMIT_UP_ENABLED, resp.isSpeedLimitUpEnabled());
-        b.putInt(ALT_SPEED_LIMIT_DOWN, resp.getAltSpeedDown());
-        b.putInt(ALT_SPEED_LIMIT_UP, resp.getAltSpeedUp());
-        b.putBoolean(ALT_SPEED_LIMIT_ENABLED, resp.isAltSpeedEnabled());
+        b.putInt(SPEED_LIMIT_DOWN, settings.getSpeedLimitDown());
+        b.putBoolean(SPEED_LIMIT_DOWN_ENABLED, settings.isSpeedLimitDownEnabled());
+        b.putInt(SPEED_LIMIT_UP, settings.getSpeedLimitUp());
+        b.putBoolean(SPEED_LIMIT_UP_ENABLED, settings.isSpeedLimitUpEnabled());
+        b.putInt(ALT_SPEED_LIMIT_DOWN, settings.getAltSpeedDown());
+        b.putInt(ALT_SPEED_LIMIT_UP, settings.getAltSpeedUp());
+        b.putBoolean(ALT_SPEED_LIMIT_ENABLED, settings.isAltSpeedEnabled());
         return b;
     }
 }

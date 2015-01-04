@@ -4,20 +4,24 @@ import android.util.Log;
 
 import com.google.api.client.http.ByteArrayContent;
 import com.google.api.client.http.GenericUrl;
+import com.google.api.client.http.HttpContent;
 import com.google.api.client.http.HttpHeaders;
 import com.google.api.client.http.HttpRequest;
+import com.google.api.client.http.HttpRequestFactory;
 import com.google.api.client.http.HttpResponse;
+import com.google.api.client.json.JsonObjectParser;
 import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.common.base.Optional;
 import com.octo.android.robospice.request.googlehttpclient.GoogleHttpClientSpiceRequest;
 
+import net.yupol.transmissionremote.app.model.json.PortTestResult;
 import net.yupol.transmissionremote.app.server.Server;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.http.protocol.HTTP;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
+import java.io.StringReader;
+import java.util.Arrays;
 
 import javax.annotation.Nonnull;
 
@@ -29,10 +33,10 @@ public abstract class Request<RESULT> extends GoogleHttpClientSpiceRequest<RESUL
     private static final String URL_ENDING = "transmission/rpc";
 
     private Server server;
-    private String sessionId;
+    private String sessionId = "";
+    private String responseSessionId;
 
     private int statusCode = -1;
-    private String responseBody;
 
     public Request(Class<RESULT> resultClass) {
         super(resultClass);
@@ -46,12 +50,12 @@ public abstract class Request<RESULT> extends GoogleHttpClientSpiceRequest<RESUL
         this.sessionId = sessionId;
     }
 
-    public int getStatusCode() {
+    public int getResponseStatusCode() {
         return statusCode;
     }
 
-    public String getResponseBody() {
-        return responseBody;
+    public String getResponseSessionId() {
+        return responseSessionId;
     }
 
     @Override
@@ -62,30 +66,39 @@ public abstract class Request<RESULT> extends GoogleHttpClientSpiceRequest<RESUL
 
         String url = "http://" + server.getHost() + ':' + server.getPort() + "/" + URL_ENDING;
 
-        HttpRequest request = getHttpRequestFactory().buildGetRequest(new GenericUrl(url));
+        HttpRequestFactory requestFactory = getHttpRequestFactory();
+        Log.d(TAG, "requestFactory: " + requestFactory);
+
+        String body = Optional.fromNullable(createBody()).or("");
+        HttpContent content = new ByteArrayContent("application/json", body.getBytes());
+
+        HttpRequest request = requestFactory.buildPostRequest(new GenericUrl(url), content);
+        request.setThrowExceptionOnExecuteError(false);
+        request.setNumberOfRetries(0);
 
         HttpHeaders headers = new HttpHeaders()
-                .set(HTTP.CONTENT_TYPE, "json")
+                .setContentType("json")
                 .set(HEADER_SESSION_ID, sessionId);
         request.setHeaders(headers);
 
-        request.setContent(new ByteArrayContent("application/json", createBody().getBytes()));
+        JsonObjectParser jsonParser = new JsonObjectParser.Builder(new JacksonFactory())
+                .setWrapperKeys(Arrays.asList("arguments")).build();
 
-        request.setParser(new JacksonFactory().createJsonObjectParser());
+        String testJson = "{\"arguments\":{\"port-is-open\":false},\"result\":\"success\"}";
+        PortTestResult result = jsonParser.parseAndClose(new StringReader(testJson), PortTestResult.class);
+        Log.d(TAG, "test result: " + result);
+
+        request.setParser(jsonParser);
         HttpResponse response = null;
         try {
             response = request.execute();
         } finally {
             if (response != null) {
                 statusCode = response.getStatusCode();
-                try {
-                    responseBody = IOUtils.toString(response.getContent());
-                } catch (IOException e) {
-                    responseBody = null;
-                }
+                responseSessionId = response.getHeaders().getFirstHeaderStringValue(HEADER_SESSION_ID);
             } else {
                 statusCode = -1;
-                responseBody = null;
+                responseSessionId = null;
             }
         }
         return response.parseAs(getResultType());

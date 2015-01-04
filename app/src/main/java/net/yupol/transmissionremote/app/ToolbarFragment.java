@@ -3,8 +3,6 @@ package net.yupol.transmissionremote.app;
 import android.app.Activity;
 import android.app.Fragment;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,12 +11,12 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.google.common.base.Strings;
+import com.octo.android.robospice.persistence.exception.SpiceException;
+import com.octo.android.robospice.request.listener.RequestListener;
 
 import net.yupol.transmissionremote.app.preferences.ServerPreferences;
+import net.yupol.transmissionremote.app.transport.BaseSpiceActivity;
 import net.yupol.transmissionremote.app.transport.Torrent;
-import net.yupol.transmissionremote.app.transport.TransportThread;
-import net.yupol.transmissionremote.app.transport.request.Request;
-import net.yupol.transmissionremote.app.transport.request.SessionGetRequest;
 import net.yupol.transmissionremote.app.transport.request.SessionSetRequest;
 import net.yupol.transmissionremote.app.transport.response.Response;
 import net.yupol.transmissionremote.app.transport.response.SessionGetResponse;
@@ -38,7 +36,6 @@ public class ToolbarFragment extends Fragment {
     private boolean speedLimitEnabled;
     private ImageButton speedLimitButton;
 
-    private TransportThread transportThread;
     private TextView downloadRateText;
     private TextView uploadRateText;
 
@@ -66,9 +63,6 @@ public class ToolbarFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-
-        if (transportThread != null)
-            transportThread.quit();
     }
 
     @Override
@@ -110,30 +104,23 @@ public class ToolbarFragment extends Fragment {
             Log.e(TAG, "Failed to create session arguments JSON object", e);
         }
 
-        sendRequest(new SessionSetRequest(sessionArgs));
-    }
-
-    private TransportThread getTransportThread() {
-        if (transportThread == null) {
-            TransmissionRemote app = (TransmissionRemote) getActivity().getApplication();
-            transportThread = new TransportThread(app.getActiveServer(), new Handler() {
+        // TODO: send SessionSetRequest
+        Activity activity = getActivity();
+        if (activity instanceof BaseSpiceActivity) {
+            ((BaseSpiceActivity) activity).getTransportManager().doRequest(new SessionSetRequest(sessionArgs), new RequestListener<Void>() {
                 @Override
-                public void handleMessage(Message msg) {
-                    if (msg.obj instanceof Response) {
-                        handleResponse((Response) msg.obj);
-                    }
+                public void onRequestFailure(SpiceException spiceException) {
+                    Log.d(TAG, "Failed to update session settings");
+                }
+
+                @Override
+                public void onRequestSuccess(Void aVoid) {
+                    Log.e(TAG, "Session settings updated successfully");
                 }
             });
-            transportThread.start();
+        } else {
+            Log.e(TAG, "ToolbarFragment should be used with Activities extended from BaseSpiceActivity to be able to use transport system");
         }
-        return transportThread;
-    }
-
-    private void sendRequest(Request request) {
-        TransportThread transportThread = getTransportThread();
-        Message msg = transportThread.getHandler().obtainMessage(TransportThread.REQUEST);
-        msg.obj = request;
-        transportThread.getHandler().sendMessage(msg);
     }
 
     private void handleResponse(Response response) {

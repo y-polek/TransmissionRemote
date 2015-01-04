@@ -2,57 +2,41 @@ package net.yupol.transmissionremote.app.transport;
 
 import android.app.Activity;
 
-import com.octo.android.robospice.SpiceManager;
-import com.octo.android.robospice.UncachedSpiceService;
-import com.octo.android.robospice.persistence.exception.SpiceException;
-import com.octo.android.robospice.request.CachedSpiceRequest;
-import com.octo.android.robospice.request.SpiceRequest;
-import com.octo.android.robospice.request.listener.RequestListener;
-import com.octo.android.robospice.request.listener.SpiceServiceAdapter;
-import com.octo.android.robospice.request.listener.SpiceServiceListener;
-
-import net.yupol.transmissionremote.app.transport.request.Request;
+import net.yupol.transmissionremote.app.TransmissionRemote;
+import net.yupol.transmissionremote.app.server.Server;
 
 public class BaseSpiceActivity extends Activity {
-    private final SpiceManager spiceManager = new SpiceManager(UncachedSpiceService.class);
-    private final SpiceServiceListener spiceServiceListener = new SpiceServiceAdapter() {
-        @Override
-        public void onRequestSucceeded(CachedSpiceRequest<?> request, RequestProcessingContext requestProcessingContext) {
 
+    private final SpiceTransportManager transportManager = new SpiceTransportManager();
+    private final TransmissionRemote.OnActiveServerChangedListener activeServerListener = new TransmissionRemote.OnActiveServerChangedListener() {
+        @Override
+        public void serverChanged(Server newServer) {
+            transportManager.setServer(newServer);
         }
     };
 
-    {
-        spiceManager.addSpiceServiceListener(spiceServiceListener);
-    }
-
     @Override
     protected void onStart() {
-        spiceManager.start(this);
+        TransmissionRemote app = (TransmissionRemote) getApplication();
+        transportManager.setServer(app.getActiveServer());
+        app.addOnActiveServerChangedListener(activeServerListener);
+
+        transportManager.start(this);
+
         super.onStart();
     }
 
     @Override
     protected void onStop() {
-        spiceManager.shouldStop();
+        transportManager.shouldStop();
+
+        TransmissionRemote app = (TransmissionRemote) getApplication();
+        app.removeOnActiveServerChangedListener(activeServerListener);
+
         super.onStop();
     }
 
-    public SpiceManager getSpiceManager() {
-        return spiceManager;
-    }
-
-    public <T> void doRequest(final Request<T> request, RequestListener<T> listener) {
-        spiceManager.execute(request, new RepeaterRequestListener<T>(listener, new RequestListener<T>() {
-            @Override
-            public void onRequestFailure(SpiceException spiceException) {
-                
-            }
-
-            @Override
-            public void onRequestSuccess(T t) {
-
-            }
-        }));
+    public TransportManager getTransportManager() {
+        return transportManager;
     }
 }

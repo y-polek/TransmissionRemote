@@ -4,12 +4,15 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
-import net.yupol.transmissionremote.app.server.Server;
-import net.yupol.transmissionremote.app.transport.Torrent;
-import net.yupol.transmissionremote.app.transport.TransportThread;
-import net.yupol.transmissionremote.app.transport.request.UpdateTorrentsRequest;
+import com.octo.android.robospice.persistence.exception.SpiceException;
+import com.octo.android.robospice.request.listener.RequestListener;
+
+import net.yupol.transmissionremote.app.model.json.Torrent;
+import net.yupol.transmissionremote.app.transport.TransportManager;
+import net.yupol.transmissionremote.app.transport.request.GetTorrentsRequest;
 import net.yupol.transmissionremote.app.transport.response.UpdateTorrentsResponse;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -18,14 +21,13 @@ public class TorrentUpdater extends Handler {
     private static final String TAG = TorrentUpdater.class.getSimpleName();
 
     private volatile int timeout;
-    private Server server;
+    private TransportManager transportManager;
     private TorrentUpdateListener listener;
-    private TransportThread transportThread;
     private UpdaterThread updaterThread;
 
 
-    public TorrentUpdater(Server server, TorrentUpdateListener listener, int timeout) {
-        this.server = server;
+    public TorrentUpdater(TransportManager transportManager, TorrentUpdateListener listener, int timeout) {
+        this.transportManager = transportManager;
         this.listener = listener;
         this.timeout = timeout;
     }
@@ -39,8 +41,6 @@ public class TorrentUpdater extends Handler {
     }
 
     public void start() {
-        transportThread = new TransportThread(server, this);
-        transportThread.start();
         updaterThread = new UpdaterThread();
         updaterThread.start();
     }
@@ -55,7 +55,6 @@ public class TorrentUpdater extends Handler {
 
     public void stop() {
         updaterThread.interrupt();
-        transportThread.quit();
     }
 
     @Override
@@ -65,13 +64,13 @@ public class TorrentUpdater extends Handler {
                     " UpdateTorrentsResponse object in its 'obj' field");
         }
 
-        UpdateTorrentsResponse response = (UpdateTorrentsResponse) msg.obj;
+        /*UpdateTorrentsResponse response = (UpdateTorrentsResponse) msg.obj;
         if (response.getResult()) {
             List<Torrent> torrents = response.getTorrents();
             listener.onTorrentUpdate(torrents);
         } else {
             Log.e(TAG, "Failed to update torrents: " + response.toString());
-        }
+        }*/
     }
 
     private class UpdaterThread extends Thread {
@@ -89,13 +88,23 @@ public class TorrentUpdater extends Handler {
         }
 
         private void sendRequest() {
-            Message msg = transportThread.getHandler().obtainMessage(TransportThread.REQUEST);
-            msg.obj = new UpdateTorrentsRequest();
-            transportThread.getHandler().sendMessage(msg);
+            final GetTorrentsRequest request = new GetTorrentsRequest();
+            transportManager.doRequest(request, new RequestListener<Torrent[]>() {
+                @Override
+                public void onRequestFailure(SpiceException spiceException) {
+                    Log.d(TAG, "GetTorrentsRequest failed. SC: " + request.getResponseStatusCode());
+
+                }
+
+                @Override
+                public void onRequestSuccess(Torrent[] torrents) {
+                    Log.d(TAG, "Torrents: " + Arrays.toString(torrents));
+                }
+            });
         }
     }
 
     public static interface TorrentUpdateListener {
-        public void onTorrentUpdate(List<Torrent> torrents);
+        public void onTorrentUpdate(List<net.yupol.transmissionremote.app.transport.Torrent> torrents);
     }
 }

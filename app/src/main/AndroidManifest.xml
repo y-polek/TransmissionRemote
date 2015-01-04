@@ -33,7 +33,7 @@
             <meta-data android:name="android.support.PARENT_ACTIVITY" android:value=".MainActivity"/>
         </activity>
 
-        <service android:name="com.octo.android.robospice.UncachedSpiceService"
+        <service android:name=".transport.NoCacheGoogleHttpClientSpiceService"
             android:exported="false" />
     </application>
 
