@@ -1,6 +1,7 @@
 package net.yupol.transmissionremote.app.transport;
 
 import android.app.Activity;
+import android.os.Bundle;
 
 import net.yupol.transmissionremote.app.TransmissionRemote;
 import net.yupol.transmissionremote.app.server.Server;
@@ -16,11 +17,17 @@ public class BaseSpiceActivity extends Activity {
     };
 
     @Override
-    protected void onStart() {
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
         TransmissionRemote app = (TransmissionRemote) getApplication();
-        transportManager.setServer(app.getActiveServer());
         app.addOnActiveServerChangedListener(activeServerListener);
 
+        transportManager.setServer(app.getActiveServer());
+    }
+
+    @Override
+    protected void onStart() {
         transportManager.start(this);
 
         super.onStart();
@@ -30,10 +37,15 @@ public class BaseSpiceActivity extends Activity {
     protected void onStop() {
         transportManager.shouldStop();
 
+        super.onStop();
+    }
+
+    @Override
+    protected void onDestroy() {
         TransmissionRemote app = (TransmissionRemote) getApplication();
         app.removeOnActiveServerChangedListener(activeServerListener);
 
-        super.onStop();
+        super.onDestroy();
     }
 
     public TransportManager getTransportManager() {

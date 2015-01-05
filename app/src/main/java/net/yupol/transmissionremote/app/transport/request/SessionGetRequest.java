@@ -2,6 +2,8 @@ package net.yupol.transmissionremote.app.transport.request;
 
 import net.yupol.transmissionremote.app.model.json.ServerSettings;
 
+import org.json.JSONObject;
+
 public class SessionGetRequest extends Request<ServerSettings> {
 
     public SessionGetRequest() {
@@ -14,7 +16,7 @@ public class SessionGetRequest extends Request<ServerSettings> {
     }
 
     @Override
-    protected String getArguments() {
+    protected JSONObject getArguments() {
         return null;
     }
 }

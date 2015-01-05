@@ -9,6 +9,13 @@
         <dex dex="/home/yury/Documents/src/transmission-remote/app/build/intermediates/pre-dexed/debug/robospice-google-http-client-1.4.14-e81cbc949418942268830b634706d04f12ae7cab.jar" />
     </item>
     <item
+        jar="/home/yury/.gradle/caches/modules-2/files-2.1/com.google.http-client/google-http-client-jackson2/1.19.0/81dbf9795d387d5e80e55346582d5f2fb81a42eb/google-http-client-jackson2-1.19.0.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="81dbf9795d387d5e80e55346582d5f2fb81a42eb">
+        <dex dex="/home/yury/Documents/src/transmission-remote/app/build/intermediates/pre-dexed/debug/google-http-client-jackson2-1.19.0-2f294f304407ff63c434c30ef54b661d7feeb516.jar" />
+    </item>
+    <item
         jar="/home/yury/.gradle/caches/modules-2/files-2.1/com.octo.android.robospice/robospice-cache/1.4.14/1a13bea0b3ae105c44cb6be7fc76b6d36098faf5/robospice-cache-1.4.14.jar"
         jumboMode="false"
         revision="21.1.2"
@@ -42,13 +49,6 @@
         revision="21.1.2"
         sha1="f6c3aed1cdfa21b5c1737c915186ea93a95a58bd">
         <dex dex="/home/yury/Documents/src/transmission-remote/app/build/intermediates/pre-dexed/debug/jackson-core-2.1.3-f03e2498a2509090ed740211bc867df88f1b2980.jar" />
-    </item>
-    <item
-        jar="/home/yury/.gradle/caches/modules-2/files-2.1/com.google.http-client/google-http-client-jackson2/1.19.0/81dbf9795d387d5e80e55346582d5f2fb81a42eb/google-http-client-jackson2-1.19.0.jar"
-        jumboMode="false"
-        revision="21.1.2"
-        sha1="81dbf9795d387d5e80e55346582d5f2fb81a42eb">
-        <dex dex="/home/yury/Documents/src/transmission-remote/app/build/intermediates/pre-dexed/debug/google-http-client-jackson2-1.19.0-2f294f304407ff63c434c30ef54b661d7feeb516.jar" />
     </item>
     <item
         jar="/home/yury/.gradle/caches/modules-2/files-2.1/com.google.code.gson/gson/2.1/2e66da15851f9f5b5079228f856c2f090ba98c38/gson-2.1.jar"

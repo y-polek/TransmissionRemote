@@ -16,7 +16,13 @@ import net.yupol.transmissionremote.app.R;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import static net.yupol.transmissionremote.app.preferences.ServerPreferences.*;
+import static net.yupol.transmissionremote.app.model.json.ServerSettings.ALT_SPEED_LIMIT_DOWN;
+import static net.yupol.transmissionremote.app.model.json.ServerSettings.ALT_SPEED_LIMIT_ENABLED;
+import static net.yupol.transmissionremote.app.model.json.ServerSettings.ALT_SPEED_LIMIT_UP;
+import static net.yupol.transmissionremote.app.model.json.ServerSettings.SPEED_LIMIT_DOWN;
+import static net.yupol.transmissionremote.app.model.json.ServerSettings.SPEED_LIMIT_DOWN_ENABLED;
+import static net.yupol.transmissionremote.app.model.json.ServerSettings.SPEED_LIMIT_UP;
+import static net.yupol.transmissionremote.app.model.json.ServerSettings.SPEED_LIMIT_UP_ENABLED;
 
 public class ServerPreferencesFragment extends Fragment {
 

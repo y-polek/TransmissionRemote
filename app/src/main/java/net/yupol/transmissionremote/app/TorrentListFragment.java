@@ -13,9 +13,10 @@ import android.widget.TextView;
 
 import com.google.common.base.Strings;
 
-import net.yupol.transmissionremote.app.transport.Torrent;
+import net.yupol.transmissionremote.app.model.json.Torrent;
 import net.yupol.transmissionremote.app.utils.SizeUtils;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -98,13 +99,13 @@ public class TorrentListFragment extends ListFragment {
     }
 
     public void torrentsUpdated(List<Torrent> torrents) {
-        this.torrents = torrents;
+        this.torrents = new ArrayList<>(torrents);
         if (comparator != null)
         Collections.sort(this.torrents, comparator);
         ((BaseAdapter) getListAdapter()).notifyDataSetInvalidated();
     }
 
-    public void setSort(Comparator comparator) {
+    public void setSort(Comparator<Torrent> comparator) {
         this.comparator = comparator;
         if (torrents != null && !torrents.isEmpty())
             torrentsUpdated(torrents);

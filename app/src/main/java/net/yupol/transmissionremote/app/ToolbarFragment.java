@@ -14,12 +14,13 @@ import com.google.common.base.Strings;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
 
-import net.yupol.transmissionremote.app.preferences.ServerPreferences;
+import net.yupol.transmissionremote.app.model.json.ServerSettings;
+import net.yupol.transmissionremote.app.model.json.Torrent;
+import net.yupol.transmissionremote.app.server.Server;
 import net.yupol.transmissionremote.app.transport.BaseSpiceActivity;
-import net.yupol.transmissionremote.app.transport.Torrent;
+import net.yupol.transmissionremote.app.transport.TransportManager;
+import net.yupol.transmissionremote.app.transport.request.SessionGetRequest;
 import net.yupol.transmissionremote.app.transport.request.SessionSetRequest;
-import net.yupol.transmissionremote.app.transport.response.Response;
-import net.yupol.transmissionremote.app.transport.response.SessionGetResponse;
 import net.yupol.transmissionremote.app.utils.SizeUtils;
 
 import org.json.JSONException;
@@ -57,6 +58,20 @@ public class ToolbarFragment extends Fragment {
         downloadRateText = (TextView) view.findViewById(R.id.download_speed_text);
         uploadRateText = (TextView) view.findViewById(R.id.upload_speed_text);
 
+        if (app.getActiveServer() != null) {
+            updateSpeedLimitSettings();
+        } else {
+            app.addOnActiveServerChangedListener(new TransmissionRemote.OnActiveServerChangedListener() {
+                @Override
+                public void serverChanged(Server newServer) {
+                    if (newServer != null) {
+                        updateSpeedLimitSettings();
+                        app.removeOnActiveServerChangedListener(this);
+                    }
+                }
+            });
+        }
+
         return view;
     }
 
@@ -70,8 +85,6 @@ public class ToolbarFragment extends Fragment {
         super.onAttach(activity);
 
         app = (TransmissionRemote) getActivity().getApplication();
-
-        //sendRequest(new SessionGetRequest());
     }
 
     public void torrentsUpdated(List<Torrent> torrents) {
@@ -99,36 +112,50 @@ public class ToolbarFragment extends Fragment {
 
         JSONObject sessionArgs = new JSONObject();
         try {
-            sessionArgs.put(ServerPreferences.ALT_SPEED_LIMIT_ENABLED, speedLimitEnabled);
+            sessionArgs.put(ServerSettings.ALT_SPEED_LIMIT_ENABLED, speedLimitEnabled);
         } catch (JSONException e) {
             Log.e(TAG, "Failed to create session arguments JSON object", e);
         }
 
-        // TODO: send SessionSetRequest
-        Activity activity = getActivity();
-        if (activity instanceof BaseSpiceActivity) {
-            ((BaseSpiceActivity) activity).getTransportManager().doRequest(new SessionSetRequest(sessionArgs), new RequestListener<Void>() {
-                @Override
-                public void onRequestFailure(SpiceException spiceException) {
-                    Log.d(TAG, "Failed to update session settings");
-                }
+        getTransportManager().doRequest(new SessionSetRequest(sessionArgs), new RequestListener<Void>() {
+            @Override
+            public void onRequestFailure(SpiceException spiceException) {
+                Log.d(TAG, "Failed to update session settings");
+            }
 
-                @Override
-                public void onRequestSuccess(Void aVoid) {
-                    Log.e(TAG, "Session settings updated successfully");
-                }
-            });
-        } else {
-            Log.e(TAG, "ToolbarFragment should be used with Activities extended from BaseSpiceActivity to be able to use transport system");
-        }
+            @Override
+            public void onRequestSuccess(Void aVoid) {
+                Log.e(TAG, "Session settings updated successfully");
+            }
+        });
     }
 
-    private void handleResponse(Response response) {
-        if (response instanceof SessionGetResponse) {
-            SessionGetResponse sessionGetResponse = (SessionGetResponse) response;
-            speedLimitEnabled = sessionGetResponse.isAltSpeedEnabled();
-            app.setSpeedLimitEnabled(speedLimitEnabled);
-            updateSpeedLimitButton();
+    private TransportManager getTransportManager() {
+        Activity activity = getActivity();
+        if (activity == null) {
+            throw new IllegalStateException("getTransportManager() should be called after onAttach()");
         }
+
+        if (!(activity instanceof BaseSpiceActivity)) {
+            throw new IllegalStateException("ToolbarFragment should be used with Activities extended from BaseSpiceActivity to be able to use transport system");
+        }
+
+        return ((BaseSpiceActivity) activity).getTransportManager();
+    }
+
+    private void updateSpeedLimitSettings() {
+        getTransportManager().doRequest(new SessionGetRequest(), new RequestListener<ServerSettings>() {
+            @Override
+            public void onRequestFailure(SpiceException spiceException) {
+                Log.e(TAG, "Failed to get server settings");
+            }
+
+            @Override
+            public void onRequestSuccess(ServerSettings serverSettings) {
+                speedLimitEnabled = serverSettings.isAltSpeedEnabled();
+                app.setSpeedLimitEnabled(speedLimitEnabled);
+                updateSpeedLimitButton();
+            }
+        });
     }
 }

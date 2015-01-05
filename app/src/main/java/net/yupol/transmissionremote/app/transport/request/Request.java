@@ -14,13 +14,11 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.common.base.Optional;
 import com.octo.android.robospice.request.googlehttpclient.GoogleHttpClientSpiceRequest;
 
-import net.yupol.transmissionremote.app.model.json.PortTestResult;
 import net.yupol.transmissionremote.app.server.Server;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.StringReader;
 import java.util.Arrays;
 
 import javax.annotation.Nonnull;
@@ -71,6 +69,7 @@ public abstract class Request<RESULT> extends GoogleHttpClientSpiceRequest<RESUL
 
         String body = Optional.fromNullable(createBody()).or("");
         HttpContent content = new ByteArrayContent("application/json", body.getBytes());
+        Log.d(TAG, "requestBody: " + body);
 
         HttpRequest request = requestFactory.buildPostRequest(new GenericUrl(url), content);
         request.setThrowExceptionOnExecuteError(false);
@@ -83,12 +82,10 @@ public abstract class Request<RESULT> extends GoogleHttpClientSpiceRequest<RESUL
 
         JsonObjectParser jsonParser = new JsonObjectParser.Builder(new JacksonFactory())
                 .setWrapperKeys(Arrays.asList("arguments")).build();
-
-        String testJson = "{\"arguments\":{\"port-is-open\":false},\"result\":\"success\"}";
-        PortTestResult result = jsonParser.parseAndClose(new StringReader(testJson), PortTestResult.class);
-        Log.d(TAG, "test result: " + result);
-
         request.setParser(jsonParser);
+
+        //{"arguments":{"torrents":[{"addedDate":1414699844,"id":1,"leftUntilDone":1785462784,"name":"chakra-2014.09-euler-x86_64.iso","percentDone":0.0146,"rateDownload":0,"rateUpload":0,"status":4,"totalSize":1811939328},{"addedDate":1414699617,"id":2,"leftUntilDone":994164736,"name":"kubuntu-14.10-desktop-amd64.iso","percentDone":0.1199,"rateDownload":5000,"rateUpload":0,"status":4,"totalSize":1129709568},{"addedDate":1414699694,"id":3,"leftUntilDone":1270988800,"name":"linuxmint-17-cinnamon-64bit-v2.iso","percentDone":0.0809,"rateDownload":5000,"rateUpload":0,"status":4,"totalSize":1382989824}]},"result":"success"}
+
         HttpResponse response = null;
         try {
             response = request.execute();
@@ -96,6 +93,9 @@ public abstract class Request<RESULT> extends GoogleHttpClientSpiceRequest<RESUL
             if (response != null) {
                 statusCode = response.getStatusCode();
                 responseSessionId = response.getHeaders().getFirstHeaderStringValue(HEADER_SESSION_ID);
+
+                /*String responseBody = IOUtils.toString(response.getContent());
+                Log.d(TAG, "responseBody: " + responseBody);*/
             } else {
                 statusCode = -1;
                 responseSessionId = null;
@@ -117,5 +117,5 @@ public abstract class Request<RESULT> extends GoogleHttpClientSpiceRequest<RESUL
 
     protected abstract String getMethod();
 
-    protected abstract String getArguments();
+    protected abstract JSONObject getArguments();
 }

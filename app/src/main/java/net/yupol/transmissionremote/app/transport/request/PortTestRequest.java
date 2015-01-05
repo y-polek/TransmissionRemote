@@ -2,6 +2,8 @@ package net.yupol.transmissionremote.app.transport.request;
 
 import net.yupol.transmissionremote.app.model.json.PortTestResult;
 
+import org.json.JSONObject;
+
 public class PortTestRequest extends Request<PortTestResult> {
 
     public PortTestRequest() {
@@ -14,7 +16,7 @@ public class PortTestRequest extends Request<PortTestResult> {
     }
 
     @Override
-    public String getArguments() {
+    public JSONObject getArguments() {
         return null;
     }
 }

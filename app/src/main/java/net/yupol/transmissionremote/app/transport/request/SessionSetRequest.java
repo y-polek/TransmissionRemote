@@ -17,7 +17,7 @@ public class SessionSetRequest extends Request<Void> {
     }
 
     @Override
-    protected String getArguments() {
-        return arguments.toString();
+    protected JSONObject getArguments() {
+        return arguments;
     }
 }

@@ -2,7 +2,7 @@ package net.yupol.transmissionremote.app.sorting;
 
 import com.google.common.base.Optional;
 
-import net.yupol.transmissionremote.app.transport.Torrent;
+import net.yupol.transmissionremote.app.model.json.Torrent;
 
 import java.util.Comparator;
 

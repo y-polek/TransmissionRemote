@@ -1,7 +1,7 @@
 package net.yupol.transmissionremote.app.drawer;
 
+import net.yupol.transmissionremote.app.model.json.Torrent;
 import net.yupol.transmissionremote.app.sorting.SortOrder;
-import net.yupol.transmissionremote.app.transport.Torrent;
 
 import java.util.Comparator;
 import java.util.List;

@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.os.Message;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
@@ -15,7 +14,6 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
@@ -31,16 +29,14 @@ import net.yupol.transmissionremote.app.drawer.ServerDrawerItem;
 import net.yupol.transmissionremote.app.drawer.ServerPrefsDrawerItem;
 import net.yupol.transmissionremote.app.drawer.SortDrawerGroupItem;
 import net.yupol.transmissionremote.app.model.json.PortTestResult;
+import net.yupol.transmissionremote.app.model.json.Torrent;
 import net.yupol.transmissionremote.app.preferences.ServerPreferencesActivity;
 import net.yupol.transmissionremote.app.server.AddServerActivity;
 import net.yupol.transmissionremote.app.server.Server;
 import net.yupol.transmissionremote.app.transport.BaseSpiceActivity;
-import net.yupol.transmissionremote.app.transport.Torrent;
 import net.yupol.transmissionremote.app.transport.request.PortTestRequest;
 import net.yupol.transmissionremote.app.transport.request.Request;
 import net.yupol.transmissionremote.app.transport.request.SessionSetRequest;
-import net.yupol.transmissionremote.app.transport.response.CheckPortResponse;
-import net.yupol.transmissionremote.app.transport.response.Response;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -142,18 +138,20 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
             getTransportManager().doRequest(new PortTestRequest(), new RequestListener<PortTestResult>() {
                 @Override
                 public void onRequestFailure(SpiceException spiceException) {
-
+                    Log.e(TAG, "Failed to check port");
                 }
 
                 @Override
                 public void onRequestSuccess(PortTestResult result) {
-                    if (result.isOpen()) {
+                    // FIXME: check if port is opened
+                    /*if (result.isOpen()) {
                         torrentUpdater.start();
                     } else {
                         Toast.makeText(MainActivity.this, "Port " + application.getActiveServer().getPort() +
                                 " is closed. Check Transmission settings.", Toast.LENGTH_LONG).show();
                         Log.d(TAG, "Port " + application.getActiveServer().getPort() + " is closed");
-                    }
+                    }*/
+                    torrentUpdater.start();
                 }
             });
         }
@@ -189,6 +187,17 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
                 Log.d(TAG, "preferences: " + preferences);
 
                 pendingRequests.offer(new SessionSetRequest(preferences));
+                getTransportManager().doRequest(new SessionSetRequest(preferences), new RequestListener<Void>() {
+                    @Override
+                    public void onRequestFailure(SpiceException spiceException) {
+                        Log.e(TAG, "Failed to set server preferences");
+                    }
+
+                    @Override
+                    public void onRequestSuccess(Void aVoid) {
+                        Log.i(TAG, "Server preferences set successfully");
+                    }
+                });
             }
         }
     }
@@ -268,27 +277,6 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
             application.setActiveServer(server);
             torrentUpdater = new TorrentUpdater(getTransportManager(), this, application.getUpdateInterval());
             // TODO: drawer.setActiveServer(server);
-        }
-    }
-
-    private void handleResponse(Message msg) {
-        if (!(msg.obj instanceof Response))
-            throw new IllegalArgumentException("Response message must contain Response object in its 'obj' field");
-
-        Response response = (Response) msg.obj;
-
-        Log.d(TAG, "Response received: " + response.getBody());
-
-        if (response instanceof CheckPortResponse) {
-            boolean isOpen = ((CheckPortResponse) response).isOpen();
-            if (isOpen) {
-                //sendRequest(new UpdateTorrentsRequest());
-                torrentUpdater.start();
-            } else {
-                Toast.makeText(this, "Port " + application.getActiveServer().getPort() +
-                        " is closed. Check Transmission settings.", Toast.LENGTH_LONG).show();
-                Log.d(TAG, "Port " + application.getActiveServer().getPort() + " is closed");
-            }
         }
     }
 

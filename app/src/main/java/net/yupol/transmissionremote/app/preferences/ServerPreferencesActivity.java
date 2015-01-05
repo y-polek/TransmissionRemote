@@ -16,13 +16,14 @@ import net.yupol.transmissionremote.app.model.json.ServerSettings;
 import net.yupol.transmissionremote.app.transport.BaseSpiceActivity;
 import net.yupol.transmissionremote.app.transport.request.SessionGetRequest;
 
-import static net.yupol.transmissionremote.app.preferences.ServerPreferences.ALT_SPEED_LIMIT_DOWN;
-import static net.yupol.transmissionremote.app.preferences.ServerPreferences.ALT_SPEED_LIMIT_ENABLED;
-import static net.yupol.transmissionremote.app.preferences.ServerPreferences.ALT_SPEED_LIMIT_UP;
-import static net.yupol.transmissionremote.app.preferences.ServerPreferences.SPEED_LIMIT_DOWN;
-import static net.yupol.transmissionremote.app.preferences.ServerPreferences.SPEED_LIMIT_DOWN_ENABLED;
-import static net.yupol.transmissionremote.app.preferences.ServerPreferences.SPEED_LIMIT_UP;
-import static net.yupol.transmissionremote.app.preferences.ServerPreferences.SPEED_LIMIT_UP_ENABLED;
+import static net.yupol.transmissionremote.app.model.json.ServerSettings.ALT_SPEED_LIMIT_DOWN;
+import static net.yupol.transmissionremote.app.model.json.ServerSettings.ALT_SPEED_LIMIT_ENABLED;
+import static net.yupol.transmissionremote.app.model.json.ServerSettings.ALT_SPEED_LIMIT_UP;
+import static net.yupol.transmissionremote.app.model.json.ServerSettings.SPEED_LIMIT_DOWN;
+import static net.yupol.transmissionremote.app.model.json.ServerSettings.SPEED_LIMIT_DOWN_ENABLED;
+import static net.yupol.transmissionremote.app.model.json.ServerSettings.SPEED_LIMIT_UP;
+import static net.yupol.transmissionremote.app.model.json.ServerSettings.SPEED_LIMIT_UP_ENABLED;
+
 
 public class ServerPreferencesActivity extends BaseSpiceActivity {
 

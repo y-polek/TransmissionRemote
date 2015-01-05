@@ -4,7 +4,6 @@ import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-import android.widget.Button;
 
 import com.google.common.base.Function;
 import com.google.common.base.Predicates;
@@ -94,7 +93,9 @@ public class TransmissionRemote extends Application {
     }
 
     public void addOnActiveServerChangedListener(@Nonnull OnActiveServerChangedListener listener) {
-        activeServerListeners.add(listener);
+        if (!activeServerListeners.contains(listener)) {
+            activeServerListeners.add(listener);
+        }
     }
 
     public void removeOnActiveServerChangedListener(@Nonnull OnActiveServerChangedListener listener) {
