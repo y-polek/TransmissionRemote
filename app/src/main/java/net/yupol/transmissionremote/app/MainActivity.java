@@ -29,38 +29,43 @@ import net.yupol.transmissionremote.app.drawer.ServerDrawerItem;
 import net.yupol.transmissionremote.app.drawer.ServerPrefsDrawerItem;
 import net.yupol.transmissionremote.app.drawer.SortDrawerGroupItem;
 import net.yupol.transmissionremote.app.model.json.PortTestResult;
+import net.yupol.transmissionremote.app.model.json.ServerSettings;
 import net.yupol.transmissionremote.app.model.json.Torrent;
 import net.yupol.transmissionremote.app.preferences.ServerPreferencesActivity;
 import net.yupol.transmissionremote.app.server.AddServerActivity;
 import net.yupol.transmissionremote.app.server.Server;
 import net.yupol.transmissionremote.app.transport.BaseSpiceActivity;
 import net.yupol.transmissionremote.app.transport.request.PortTestRequest;
-import net.yupol.transmissionremote.app.transport.request.Request;
+import net.yupol.transmissionremote.app.transport.request.SessionGetRequest;
 import net.yupol.transmissionremote.app.transport.request.SessionSetRequest;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSelectedListener,
             TorrentUpdater.TorrentUpdateListener, SharedPreferences.OnSharedPreferenceChangeListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
+    private static final int MIN_PREFS_UPDATE_INTERVAL = 5; // seconds
+
     public static int REQUEST_CODE_SERVER_PARAMS = 1;
     public static int REQUEST_CODE_SERVER_PREFERENCES = 2;
 
     private TransmissionRemote application;
-    private Queue<Request> pendingRequests = new LinkedList<>();
     private TorrentUpdater torrentUpdater;
 
     private Drawer drawer;
     private ActionBarDrawerToggle drawerToggle;
     private TorrentListFragment torrentListFragment;
     private ToolbarFragment toolbarFragment;
+
+    private Timer prefsUpdateTimer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,11 +109,11 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
 
         FragmentManager fm = getFragmentManager();
 
-        torrentListFragment = (TorrentListFragment) fm.findFragmentById(R.id.torrent_list_container);
-        if (torrentListFragment == null) {
-            torrentListFragment = new TorrentListFragment();
+        ProgressbarFragment progressbarFragment = (ProgressbarFragment) fm.findFragmentById(R.id.torrent_list_container);
+        if (progressbarFragment == null) {
+            progressbarFragment = new ProgressbarFragment();
             FragmentTransaction ft = fm.beginTransaction();
-            ft.add(R.id.torrent_list_container, torrentListFragment);
+            ft.add(R.id.torrent_list_container, progressbarFragment);
             ft.commit();
         }
 
@@ -155,14 +160,37 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
                 }
             });
         }
+
+        prefsUpdateTimer = new Timer("Preferences update timer");
+        prefsUpdateTimer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                getTransportManager().doRequest(new SessionGetRequest(), new RequestListener<ServerSettings>() {
+                    @Override
+                    public void onRequestFailure(SpiceException spiceException) {
+                        Log.e(TAG, "Failed to obtain server settings");
+                    }
+
+                    @Override
+                    public void onRequestSuccess(ServerSettings serverSettings) {
+                        application.setSpeedLimitEnabled(serverSettings.isAltSpeedEnabled());
+                    }
+                });
+            }
+        }, 0, TimeUnit.SECONDS.toMillis(Math.max(application.getUpdateInterval(), MIN_PREFS_UPDATE_INTERVAL)));
+
     }
 
     @Override
     protected void onPause() {
-        if (torrentUpdater != null)
-            torrentUpdater.stop();
-        PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(this);
         super.onPause();
+
+        if (torrentUpdater != null) {
+            torrentUpdater.stop();
+        }
+        PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(this);
+
+        prefsUpdateTimer.cancel();
     }
 
     @Override
@@ -185,8 +213,6 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
                 }
 
                 Log.d(TAG, "preferences: " + preferences);
-
-                pendingRequests.offer(new SessionSetRequest(preferences));
                 getTransportManager().doRequest(new SessionSetRequest(preferences), new RequestListener<Void>() {
                     @Override
                     public void onRequestFailure(SpiceException spiceException) {
@@ -253,6 +279,14 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
 
     @Override
     public void onTorrentUpdate(List<Torrent> torrents) {
+        if (torrentListFragment == null) {
+            FragmentManager fm = getFragmentManager();
+            torrentListFragment = new TorrentListFragment();
+            FragmentTransaction ft = fm.beginTransaction();
+            ft.replace(R.id.torrent_list_container, torrentListFragment);
+            ft.commit();
+        }
+
         if (torrentListFragment != null) {
             torrentListFragment.torrentsUpdated(torrents);
             toolbarFragment.torrentsUpdated(torrents);

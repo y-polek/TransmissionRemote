@@ -32,6 +32,7 @@ public class TransmissionRemote extends Application {
     private List<OnActiveServerChangedListener> activeServerListeners = new LinkedList<>();
 
     private boolean speedLimitEnabled;
+    private List<OnSpeedLimitChangedListener> speedLimitChangedListeners = new LinkedList<>();
 
     @Override
     public void onCreate() {
@@ -116,10 +117,23 @@ public class TransmissionRemote extends Application {
 
     public void setSpeedLimitEnabled(boolean isEnabled) {
         speedLimitEnabled = isEnabled;
+        for (OnSpeedLimitChangedListener l : speedLimitChangedListeners) {
+            l.speedLimitEnabledChanged(speedLimitEnabled);
+        }
     }
 
     public boolean isSpeedLimitEnabled() {
         return speedLimitEnabled;
+    }
+
+    public void addOnSpeedLimitEnabledChangedListener(@Nonnull OnSpeedLimitChangedListener listener) {
+        if (!speedLimitChangedListeners.contains(listener)) {
+            speedLimitChangedListeners.add(listener);
+        }
+    }
+
+    public void removeOnSpeedLimitEnabledChangedListener(@Nonnull OnSpeedLimitChangedListener listener) {
+        speedLimitChangedListeners.remove(listener);
     }
 
     private void persistServerList() {
@@ -147,5 +161,9 @@ public class TransmissionRemote extends Application {
 
     public static interface OnActiveServerChangedListener {
         public void serverChanged(Server newServer);
+    }
+
+    public static interface OnSpeedLimitChangedListener {
+        public void speedLimitEnabledChanged(boolean isEnabled);
     }
 }

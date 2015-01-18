@@ -10,6 +10,7 @@ import android.view.MenuItem;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
 
+import net.yupol.transmissionremote.app.ProgressbarFragment;
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.TransmissionRemote;
 import net.yupol.transmissionremote.app.model.json.ServerSettings;
@@ -98,7 +99,7 @@ public class ServerPreferencesActivity extends BaseSpiceActivity {
                 getFragmentManager().findFragmentByTag(SERVER_PREFERENCES_FRAGMENT_TAG);
         if (fragment != null) {
             Intent result = new Intent();
-            result.putExtra(EXTRA_SERVER_PREFERENCES, fragment.getPreferences().toString());
+            result.putExtra(EXTRA_SERVER_PREFERENCES, fragment.getChangedPreferences().toString());
             setResult(RESULT_OK, result);
         } else {
             setResult(RESULT_CANCELED);

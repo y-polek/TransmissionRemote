@@ -14,12 +14,11 @@ import com.google.common.base.Strings;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
 
+import net.yupol.transmissionremote.app.TransmissionRemote.OnSpeedLimitChangedListener;
 import net.yupol.transmissionremote.app.model.json.ServerSettings;
 import net.yupol.transmissionremote.app.model.json.Torrent;
-import net.yupol.transmissionremote.app.server.Server;
 import net.yupol.transmissionremote.app.transport.BaseSpiceActivity;
 import net.yupol.transmissionremote.app.transport.TransportManager;
-import net.yupol.transmissionremote.app.transport.request.SessionGetRequest;
 import net.yupol.transmissionremote.app.transport.request.SessionSetRequest;
 import net.yupol.transmissionremote.app.utils.SizeUtils;
 
@@ -40,6 +39,21 @@ public class ToolbarFragment extends Fragment {
     private TextView downloadRateText;
     private TextView uploadRateText;
 
+    private OnSpeedLimitChangedListener speedLimitChangedListener = new OnSpeedLimitChangedListener() {
+        @Override
+        public void speedLimitEnabledChanged(boolean isEnabled) {
+            speedLimitEnabled = isEnabled;
+            updateSpeedLimitButton();
+        }
+    };
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+
+        app = (TransmissionRemote) getActivity().getApplication();
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.toolbar_fragment, container, false);
@@ -58,33 +72,22 @@ public class ToolbarFragment extends Fragment {
         downloadRateText = (TextView) view.findViewById(R.id.download_speed_text);
         uploadRateText = (TextView) view.findViewById(R.id.upload_speed_text);
 
-        if (app.getActiveServer() != null) {
-            updateSpeedLimitSettings();
-        } else {
-            app.addOnActiveServerChangedListener(new TransmissionRemote.OnActiveServerChangedListener() {
-                @Override
-                public void serverChanged(Server newServer) {
-                    if (newServer != null) {
-                        updateSpeedLimitSettings();
-                        app.removeOnActiveServerChangedListener(this);
-                    }
-                }
-            });
-        }
-
         return view;
     }
 
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
+    public void onResume() {
+        super.onResume();
+
+        speedLimitEnabled = app.isSpeedLimitEnabled();
+        updateSpeedLimitButton();
+        app.addOnSpeedLimitEnabledChangedListener(speedLimitChangedListener);
     }
 
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-
-        app = (TransmissionRemote) getActivity().getApplication();
+    public void onPause() {
+        super.onPause();
+        app.removeOnSpeedLimitEnabledChangedListener(speedLimitChangedListener);
     }
 
     public void torrentsUpdated(List<Torrent> torrents) {
@@ -141,21 +144,5 @@ public class ToolbarFragment extends Fragment {
         }
 
         return ((BaseSpiceActivity) activity).getTransportManager();
-    }
-
-    private void updateSpeedLimitSettings() {
-        getTransportManager().doRequest(new SessionGetRequest(), new RequestListener<ServerSettings>() {
-            @Override
-            public void onRequestFailure(SpiceException spiceException) {
-                Log.e(TAG, "Failed to get server settings");
-            }
-
-            @Override
-            public void onRequestSuccess(ServerSettings serverSettings) {
-                speedLimitEnabled = serverSettings.isAltSpeedEnabled();
-                app.setSpeedLimitEnabled(speedLimitEnabled);
-                updateSpeedLimitButton();
-            }
-        });
     }
 }

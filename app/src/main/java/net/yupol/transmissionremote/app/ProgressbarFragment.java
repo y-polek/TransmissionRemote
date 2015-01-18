@@ -1,4 +1,4 @@
-package net.yupol.transmissionremote.app.preferences;
+package net.yupol.transmissionremote.app;
 
 import android.app.Fragment;
 import android.os.Bundle;
