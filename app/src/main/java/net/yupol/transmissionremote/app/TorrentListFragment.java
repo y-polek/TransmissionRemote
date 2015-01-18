@@ -102,7 +102,7 @@ public class TorrentListFragment extends ListFragment {
         this.torrents = new ArrayList<>(torrents);
         if (comparator != null)
         Collections.sort(this.torrents, comparator);
-        ((BaseAdapter) getListAdapter()).notifyDataSetInvalidated();
+        ((BaseAdapter) getListAdapter()).notifyDataSetChanged();
     }
 
     public void setSort(Comparator<Torrent> comparator) {
