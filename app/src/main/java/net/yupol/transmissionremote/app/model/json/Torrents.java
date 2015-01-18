@@ -6,6 +6,11 @@ import java.util.AbstractList;
 
 public class Torrents extends AbstractList<Torrent> {
 
+    /*
+     * Default constructor required for instantiating by JSON parsing tool
+     */
+    public Torrents() {}
+
     public Torrents(Torrent[] torrents) {
         this.torrents = torrents;
     }
