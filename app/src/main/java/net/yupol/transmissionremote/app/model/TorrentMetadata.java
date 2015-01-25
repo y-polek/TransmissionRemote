@@ -1,4 +1,4 @@
-package net.yupol.transmissionremote.app.transport;
+package net.yupol.transmissionremote.app.model;
 
 public class TorrentMetadata {
 

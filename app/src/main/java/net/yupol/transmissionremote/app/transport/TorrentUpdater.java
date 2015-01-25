@@ -1,4 +1,4 @@
-package net.yupol.transmissionremote.app;
+package net.yupol.transmissionremote.app.transport;
 
 import android.util.Log;
 
@@ -7,7 +7,6 @@ import com.octo.android.robospice.request.listener.RequestListener;
 
 import net.yupol.transmissionremote.app.model.json.Torrent;
 import net.yupol.transmissionremote.app.model.json.Torrents;
-import net.yupol.transmissionremote.app.transport.TransportManager;
 import net.yupol.transmissionremote.app.transport.request.GetTorrentsRequest;
 
 import java.util.List;
@@ -38,28 +37,29 @@ public class TorrentUpdater {
     }
 
     public void start() {
+        if (updaterThread != null) {
+            throw new IllegalStateException("TorrentUpdater thread already started");
+        }
         updaterThread = new UpdaterThread();
         updaterThread.start();
     }
 
-    public void pause() {
-
-    }
-
-    public void resume() {
-
-    }
-
     public void stop() {
         updaterThread.interrupt();
+        updaterThread = null;
     }
 
     private class UpdaterThread extends Thread {
 
+        private Boolean responseReceived;
+
         @Override
         public void run() {
-            while (!interrupted()) {
-                sendRequest();
+            while (!isInterrupted()) {
+                if (responseReceived == null || responseReceived) {
+                    responseReceived = false;
+                    sendRequest();
+                }
                 try {
                     TimeUnit.SECONDS.sleep(timeout);
                 } catch (InterruptedException e) {
@@ -74,13 +74,15 @@ public class TorrentUpdater {
                 @Override
                 public void onRequestFailure(SpiceException spiceException) {
                     Log.d(TAG, "GetTorrentsRequest failed. SC: " + request.getResponseStatusCode());
-
+                    responseReceived = Boolean.TRUE;
                 }
 
                 @Override
                 public void onRequestSuccess(Torrents torrents) {
-                    Log.d(TAG, "Torrents: " + torrents);
-                    listener.onTorrentUpdate(torrents);
+                    responseReceived = Boolean.TRUE;
+                    if (!isInterrupted()) {
+                        listener.onTorrentUpdate(torrents);
+                    }
                 }
             });
         }

@@ -35,6 +35,7 @@ import net.yupol.transmissionremote.app.preferences.ServerPreferencesActivity;
 import net.yupol.transmissionremote.app.server.AddServerActivity;
 import net.yupol.transmissionremote.app.server.Server;
 import net.yupol.transmissionremote.app.transport.BaseSpiceActivity;
+import net.yupol.transmissionremote.app.transport.TorrentUpdater;
 import net.yupol.transmissionremote.app.transport.request.PortTestRequest;
 import net.yupol.transmissionremote.app.transport.request.SessionGetRequest;
 import net.yupol.transmissionremote.app.transport.request.SessionSetRequest;
@@ -138,8 +139,6 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
             intent.putExtra(AddServerActivity.PARAM_CANCELABLE, false);
             startActivityForResult(intent, REQUEST_CODE_SERVER_PARAMS);
         } else {
-            torrentUpdater = new TorrentUpdater(getTransportManager(), this, application.getUpdateInterval());
-
             getTransportManager().doRequest(new PortTestRequest(), new RequestListener<PortTestResult>() {
                 @Override
                 public void onRequestFailure(SpiceException spiceException) {
@@ -156,6 +155,7 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
                                 " is closed. Check Transmission settings.", Toast.LENGTH_LONG).show();
                         Log.d(TAG, "Port " + application.getActiveServer().getPort() + " is closed");
                     }*/
+                    torrentUpdater = new TorrentUpdater(getTransportManager(), MainActivity.this, application.getUpdateInterval());
                     torrentUpdater.start();
                 }
             });
