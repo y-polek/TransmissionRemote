@@ -28,15 +28,14 @@ import net.yupol.transmissionremote.app.drawer.NewServerDrawerItem;
 import net.yupol.transmissionremote.app.drawer.ServerDrawerItem;
 import net.yupol.transmissionremote.app.drawer.ServerPrefsDrawerItem;
 import net.yupol.transmissionremote.app.drawer.SortDrawerGroupItem;
-import net.yupol.transmissionremote.app.model.json.PortTestResult;
 import net.yupol.transmissionremote.app.model.json.ServerSettings;
 import net.yupol.transmissionremote.app.model.json.Torrent;
 import net.yupol.transmissionremote.app.preferences.ServerPreferencesActivity;
 import net.yupol.transmissionremote.app.server.AddServerActivity;
 import net.yupol.transmissionremote.app.server.Server;
 import net.yupol.transmissionremote.app.transport.BaseSpiceActivity;
+import net.yupol.transmissionremote.app.transport.PortChecker;
 import net.yupol.transmissionremote.app.transport.TorrentUpdater;
-import net.yupol.transmissionremote.app.transport.request.PortTestRequest;
 import net.yupol.transmissionremote.app.transport.request.SessionGetRequest;
 import net.yupol.transmissionremote.app.transport.request.SessionSetRequest;
 
@@ -59,6 +58,7 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
     public static int REQUEST_CODE_SERVER_PREFERENCES = 2;
 
     private TransmissionRemote application;
+    private PortChecker portChecker;
     private TorrentUpdater torrentUpdater;
 
     private Drawer drawer;
@@ -139,14 +139,9 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
             intent.putExtra(AddServerActivity.PARAM_CANCELABLE, false);
             startActivityForResult(intent, REQUEST_CODE_SERVER_PARAMS);
         } else {
-            getTransportManager().doRequest(new PortTestRequest(), new RequestListener<PortTestResult>() {
+            portChecker = new PortChecker(getTransportManager(), new PortChecker.PortCheckResultListener() {
                 @Override
-                public void onRequestFailure(SpiceException spiceException) {
-                    Log.e(TAG, "Failed to check port");
-                }
-
-                @Override
-                public void onRequestSuccess(PortTestResult result) {
+                public void onPortCheckResults(boolean isOpen) {
                     // FIXME: check if port is opened
                     /*if (result.isOpen()) {
                         torrentUpdater.start();
@@ -159,6 +154,7 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
                     torrentUpdater.start();
                 }
             });
+            portChecker.startCheck();
         }
 
         prefsUpdateTimer = new Timer("Preferences update timer");
@@ -184,6 +180,10 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
     @Override
     protected void onPause() {
         super.onPause();
+
+        if (portChecker != null && portChecker.isRunning()) {
+            portChecker.cancel();
+        }
 
         if (torrentUpdater != null) {
             torrentUpdater.stop();
