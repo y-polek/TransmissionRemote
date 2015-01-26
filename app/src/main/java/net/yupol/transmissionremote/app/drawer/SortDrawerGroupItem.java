@@ -20,7 +20,8 @@ public class SortDrawerGroupItem extends DrawerGroupItem {
         super.addItem(item);
     }
 
-    public void itemSelected(DrawerItem drawerItem) {
+    @Override
+    public void childItemSelected(DrawerItem drawerItem) {
         if (!getItems().contains(drawerItem))
             throw new IllegalArgumentException("Group does not contain this item");
 

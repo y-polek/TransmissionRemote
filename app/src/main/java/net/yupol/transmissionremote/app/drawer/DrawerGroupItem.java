@@ -33,6 +33,8 @@ public class DrawerGroupItem extends DrawerItem {
         items.add(position, item);
     }
 
+    public void childItemSelected(DrawerItem item) {}
+
     public List<DrawerItem> getItems() {
         return items;
     }

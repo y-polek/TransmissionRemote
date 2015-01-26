@@ -11,6 +11,7 @@ import com.google.common.collect.FluentIterable;
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.server.Server;
 import net.yupol.transmissionremote.app.sorting.TorrentComparators;
+import net.yupol.transmissionremote.app.transport.TransportManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,14 +22,14 @@ public class Drawer implements ListView.OnItemClickListener {
     private DrawerListAdapter listAdapter;
     private OnItemSelectedListener listener;
 
-    public Drawer(ListView drawerList) {
-        initItemList(drawerList.getContext());
+    public Drawer(ListView drawerList, TransportManager tm) {
+        initItemList(drawerList.getContext(), tm);
         listAdapter = new DrawerListAdapter(groups);
         drawerList.setAdapter(listAdapter);
         drawerList.setOnItemClickListener(this);
     }
 
-    private void initItemList(Context c) {
+    private void initItemList(Context c, TransportManager tm) {
         groups = new ArrayList<>();
         // Servers
         groups.add(new DrawerGroupItem(Groups.SERVERS.id(), c.getString(R.string.drawer_servers),
@@ -37,8 +38,8 @@ public class Drawer implements ListView.OnItemClickListener {
         // Actions
         groups.add(new DrawerGroupItem(Groups.ACTIONS.id(), c.getString(R.string.drawer_actions),
                 new DrawerItem(R.string.drawer_actions_open_torrent, c),
-                new DrawerItem(R.string.drawer_actions_start_all_torrents, c),
-                new DrawerItem(R.string.drawer_actions_pause_all_torrents, c)));
+                new StartAllTorrentsDrawerItem(c, tm),
+                new PauseAllTorrentsDrawerItem(c, tm)));
 
         // Filters
         groups.add(new DrawerGroupItem(Groups.FILTERS.id(), c.getString(R.string.drawer_filters),

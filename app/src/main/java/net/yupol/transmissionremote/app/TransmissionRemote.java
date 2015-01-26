@@ -9,11 +9,13 @@ import com.google.common.base.Function;
 import com.google.common.base.Predicates;
 import com.google.common.collect.FluentIterable;
 
+import net.yupol.transmissionremote.app.model.json.Torrent;
 import net.yupol.transmissionremote.app.server.Server;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -33,6 +35,8 @@ public class TransmissionRemote extends Application {
 
     private boolean speedLimitEnabled;
     private List<OnSpeedLimitChangedListener> speedLimitChangedListeners = new LinkedList<>();
+
+    private Collection<Torrent> torrents = Collections.emptyList();
 
     @Override
     public void onCreate() {
@@ -134,6 +138,14 @@ public class TransmissionRemote extends Application {
 
     public void removeOnSpeedLimitEnabledChangedListener(@Nonnull OnSpeedLimitChangedListener listener) {
         speedLimitChangedListeners.remove(listener);
+    }
+
+    public void setTorrents(Collection<Torrent> torrents) {
+        this.torrents = torrents;
+    }
+
+    public Collection<Torrent> getTorrents() {
+        return torrents;
     }
 
     private void persistServerList() {

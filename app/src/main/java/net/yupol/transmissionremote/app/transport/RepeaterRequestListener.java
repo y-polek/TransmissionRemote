@@ -11,7 +11,7 @@ public class RepeaterRequestListener<RESULT> implements RequestListener<RESULT> 
     private RequestListener<RESULT> shuntListener;
 
     public RepeaterRequestListener(@Nonnull RequestListener<RESULT> listener,
-                                   @Nonnull RequestListener<RESULT> shuntListener) {
+                                   RequestListener<RESULT> shuntListener) {
         this.listener = listener;
         this.shuntListener = shuntListener;
     }
@@ -19,12 +19,14 @@ public class RepeaterRequestListener<RESULT> implements RequestListener<RESULT> 
     @Override
     public void onRequestFailure(SpiceException spiceException) {
         shuntListener.onRequestFailure(spiceException);
-        listener.onRequestFailure(spiceException);
+        if (listener != null)
+            listener.onRequestFailure(spiceException);
     }
 
     @Override
     public void onRequestSuccess(RESULT result) {
         shuntListener.onRequestSuccess(result);
-        listener.onRequestSuccess(result);
+        if (listener != null)
+            listener.onRequestSuccess(result);
     }
 }

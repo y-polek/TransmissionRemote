@@ -77,7 +77,7 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
 
         ListView drawerList = (ListView) findViewById(R.id.drawer_list);
 
-        drawer = new Drawer(drawerList);
+        drawer = new Drawer(drawerList, getTransportManager());
         for (Server server : application.getServers())
             drawer.addServer(server);
         drawer.setOnItemSelectedListener(this);
@@ -233,6 +233,7 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
         Log.d(TAG, "item '" + item.getText() + "' in group '" + group.getText() + "' selected");
 
         item.itemSelected();
+        group.childItemSelected(item);
 
         if (group.getId() == Drawer.Groups.SERVERS.id()) {
             if (item instanceof NewServerDrawerItem) {
@@ -244,9 +245,7 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
                 }
             }
         } else if (group.getId() == Drawer.Groups.SORT_BY.id()) {
-            ((SortDrawerGroupItem) group).itemSelected(item);
             drawer.refresh();
-
             if (torrentListFragment != null)
                 torrentListFragment.setSort(((SortDrawerGroupItem) group).getComparator());
         } else if (group.getId() == Drawer.Groups.PREFERENCES.id()) {
@@ -290,6 +289,7 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
         if (torrentListFragment != null) {
             torrentListFragment.torrentsUpdated(torrents);
             toolbarFragment.torrentsUpdated(torrents);
+            application.setTorrents(torrents);
         }
 
         String text = Joiner.on("\n").join(FluentIterable.from(torrents).transform(new Function<Torrent, String>() {
