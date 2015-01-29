@@ -20,7 +20,6 @@
     <string name="drawer_filters_downloading">Downloading</string>
     <string name="drawer_filters_seeding">Seeding</string>
     <string name="drawer_filters_paused">Paused</string>
-    <string name="drawer_filters_stopped">Stopped</string>
 
     <!-- Sort by -->
     <string name="drawer_sort_by">Sort by</string>

@@ -278,6 +278,8 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
 
     @Override
     public void onTorrentUpdate(List<Torrent> torrents) {
+        application.setTorrents(torrents);
+
         if (torrentListFragment == null) {
             FragmentManager fm = getFragmentManager();
             torrentListFragment = new TorrentListFragment();
@@ -286,11 +288,7 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
             ft.commit();
         }
 
-        if (torrentListFragment != null) {
-            torrentListFragment.torrentsUpdated(torrents);
-            toolbarFragment.torrentsUpdated(torrents);
-            application.setTorrents(torrents);
-        }
+        toolbarFragment.torrentsUpdated(torrents);
 
         String text = Joiner.on("\n").join(FluentIterable.from(torrents).transform(new Function<Torrent, String>() {
             @Override

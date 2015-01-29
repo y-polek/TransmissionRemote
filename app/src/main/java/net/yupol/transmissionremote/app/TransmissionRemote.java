@@ -6,11 +6,13 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
 import com.google.common.base.Function;
+import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.google.common.collect.FluentIterable;
 
 import net.yupol.transmissionremote.app.model.json.Torrent;
 import net.yupol.transmissionremote.app.server.Server;
+import net.yupol.transmissionremote.app.utils.Filters;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -37,6 +39,10 @@ public class TransmissionRemote extends Application {
     private List<OnSpeedLimitChangedListener> speedLimitChangedListeners = new LinkedList<>();
 
     private Collection<Torrent> torrents = Collections.emptyList();
+    private List<OnTorrentsUpdatedListener> torrentsUpdatedListeners = new LinkedList<>();
+
+    private Predicate<Torrent> filter = Filters.ALL;
+    private List<OnFilterSelectedListener> filterSelectedListeners = new LinkedList<>();
 
     @Override
     public void onCreate() {
@@ -142,10 +148,44 @@ public class TransmissionRemote extends Application {
 
     public void setTorrents(Collection<Torrent> torrents) {
         this.torrents = torrents;
+        for (OnTorrentsUpdatedListener listener : torrentsUpdatedListeners) {
+            listener.torrentsUpdated(torrents);
+        }
     }
 
     public Collection<Torrent> getTorrents() {
         return torrents;
+    }
+
+    public void addTorrentsUpdatedListener(OnTorrentsUpdatedListener listener) {
+        if (!torrentsUpdatedListeners.contains(listener)) {
+            torrentsUpdatedListeners.add(listener);
+        }
+    }
+
+    public void removeTorrentsUpdatedListener(OnTorrentsUpdatedListener listener) {
+        torrentsUpdatedListeners.remove(listener);
+    }
+
+    public void setFilter(@Nonnull Predicate<Torrent> filter) {
+        this.filter = filter;
+        for (OnFilterSelectedListener listener : filterSelectedListeners) {
+            listener.filterSelected(filter);
+        }
+    }
+
+    public Predicate<Torrent> getFilter() {
+        return filter;
+    }
+
+    public void addOnFilterSetListener(@Nonnull OnFilterSelectedListener listener) {
+        if (!filterSelectedListeners.contains(listener)) {
+            filterSelectedListeners.add(listener);
+        }
+    }
+
+    public void removeOnFilterSelectedListener(@Nonnull OnFilterSelectedListener listener) {
+        filterSelectedListeners.remove(listener);
     }
 
     private void persistServerList() {
@@ -177,5 +217,13 @@ public class TransmissionRemote extends Application {
 
     public static interface OnSpeedLimitChangedListener {
         public void speedLimitEnabledChanged(boolean isEnabled);
+    }
+
+    public static interface OnTorrentsUpdatedListener {
+        public void torrentsUpdated(Collection<Torrent> torrents);
+    }
+
+    public static interface OnFilterSelectedListener {
+        public void filterSelected(Predicate<Torrent> filter);
     }
 }

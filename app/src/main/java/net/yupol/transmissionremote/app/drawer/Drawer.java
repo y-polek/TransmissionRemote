@@ -12,6 +12,7 @@ import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.server.Server;
 import net.yupol.transmissionremote.app.sorting.TorrentComparators;
 import net.yupol.transmissionremote.app.transport.TransportManager;
+import net.yupol.transmissionremote.app.utils.Filters;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,12 +44,11 @@ public class Drawer implements ListView.OnItemClickListener {
 
         // Filters
         groups.add(new DrawerGroupItem(Groups.FILTERS.id(), c.getString(R.string.drawer_filters),
-                new DrawerItem(R.string.drawer_filters_all, c),
-                new DrawerItem(R.string.drawer_filters_active, c),
-                new DrawerItem(R.string.drawer_filters_downloading, c),
-                new DrawerItem(R.string.drawer_filters_seeding, c),
-                new DrawerItem(R.string.drawer_filters_paused, c),
-                new DrawerItem(R.string.drawer_filters_stopped, c)));
+                new FilterDrawerItem(R.string.drawer_filters_all, c, Filters.ALL),
+                new FilterDrawerItem(R.string.drawer_filters_active, c, Filters.ACTIVE),
+                new FilterDrawerItem(R.string.drawer_filters_downloading, c, Filters.DOWNLOADING),
+                new FilterDrawerItem(R.string.drawer_filters_seeding, c, Filters.SEEDING),
+                new FilterDrawerItem(R.string.drawer_filters_paused, c, Filters.PAUSED)));
 
         // Sort by
         groups.add(new SortDrawerGroupItem(Groups.SORT_BY.id(), c.getString(R.string.drawer_sort_by),
