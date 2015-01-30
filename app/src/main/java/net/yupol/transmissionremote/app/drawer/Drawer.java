@@ -9,6 +9,7 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.FluentIterable;
 
 import net.yupol.transmissionremote.app.R;
+import net.yupol.transmissionremote.app.TransmissionRemote;
 import net.yupol.transmissionremote.app.server.Server;
 import net.yupol.transmissionremote.app.sorting.TorrentComparators;
 import net.yupol.transmissionremote.app.transport.TransportManager;
@@ -19,11 +20,13 @@ import java.util.List;
 
 public class Drawer implements ListView.OnItemClickListener {
 
+    private ListView drawerList;
     private List<DrawerGroupItem> groups;
     private DrawerListAdapter listAdapter;
     private OnItemSelectedListener listener;
 
     public Drawer(ListView drawerList, TransportManager tm) {
+        this.drawerList = drawerList;
         initItemList(drawerList.getContext(), tm);
         listAdapter = new DrawerListAdapter(groups);
         drawerList.setAdapter(listAdapter);
@@ -33,31 +36,34 @@ public class Drawer implements ListView.OnItemClickListener {
     private void initItemList(Context c, TransportManager tm) {
         groups = new ArrayList<>();
         // Servers
-        groups.add(new DrawerGroupItem(Groups.SERVERS.id(), c.getString(R.string.drawer_servers),
+        groups.add(new DrawerGroupItem(Groups.SERVERS.id(), R.string.drawer_servers, c,
                 new NewServerDrawerItem(c)));
 
         // Actions
-        groups.add(new DrawerGroupItem(Groups.ACTIONS.id(), c.getString(R.string.drawer_actions),
+        groups.add(new DrawerGroupItem(Groups.ACTIONS.id(), R.string.drawer_actions, c,
                 new DrawerItem(R.string.drawer_actions_open_torrent, c),
                 new StartAllTorrentsDrawerItem(c, tm),
                 new PauseAllTorrentsDrawerItem(c, tm)));
 
         // Filters
-        groups.add(new DrawerGroupItem(Groups.FILTERS.id(), c.getString(R.string.drawer_filters),
+        FilterDrawerGroupItem filterGroup = new FilterDrawerGroupItem(Groups.FILTERS.id(), R.string.drawer_filters, c,
                 new FilterDrawerItem(R.string.drawer_filters_all, c, Filters.ALL),
                 new FilterDrawerItem(R.string.drawer_filters_active, c, Filters.ACTIVE),
                 new FilterDrawerItem(R.string.drawer_filters_downloading, c, Filters.DOWNLOADING),
                 new FilterDrawerItem(R.string.drawer_filters_seeding, c, Filters.SEEDING),
-                new FilterDrawerItem(R.string.drawer_filters_paused, c, Filters.PAUSED)));
+                new FilterDrawerItem(R.string.drawer_filters_paused, c, Filters.PAUSED));
+        TransmissionRemote app = (TransmissionRemote) drawerList.getContext().getApplicationContext();
+        filterGroup.setActiveFilter(app.getFilter());
+        groups.add(filterGroup);
 
         // Sort by
-        groups.add(new SortDrawerGroupItem(Groups.SORT_BY.id(), c.getString(R.string.drawer_sort_by),
+        groups.add(new SortDrawerGroupItem(Groups.SORT_BY.id(), R.string.drawer_sort_by, c,
                 new SortDrawerItem(R.string.drawer_sort_by_name, c, TorrentComparators.NAME),
                 new SortDrawerItem(R.string.drawer_sort_by_size, c, TorrentComparators.SIZE),
                 new SortDrawerItem(R.string.drawer_sort_by_time_remaining, c, TorrentComparators.TIME_REMAINING)));
 
         // Preferences
-        groups.add(new DrawerGroupItem(Groups.PREFERENCES.id(), c.getString(R.string.drawer_preferences),
+        groups.add(new DrawerGroupItem(Groups.PREFERENCES.id(), R.string.drawer_preferences, c,
                 new ServerPrefsDrawerItem(R.string.drawer_preferences_server, c),
                 new RemotePrefsDrawerItem(R.string.drawer_preferences_remote, c)));
     }
@@ -68,6 +74,8 @@ public class Drawer implements ListView.OnItemClickListener {
             DrawerItem item = listAdapter.getItem(position);
             listener.onDrawerItemSelected(listAdapter.getGroupItem(item), item);
         }
+
+        refresh();
     }
 
     public void setOnItemSelectedListener(OnItemSelectedListener listener) {
@@ -80,7 +88,7 @@ public class Drawer implements ListView.OnItemClickListener {
 
     public void addServer(Server server) {
         DrawerGroupItem group = findGroupById(Groups.SERVERS.id());
-        group.addItem(new ServerDrawerItem(server), group.getItems().size() - 1);
+        group.addItem(new ServerDrawerItem(server, drawerList.getContext()), group.getItems().size() - 1);
         listAdapter.notifyDataSetChanged();
     }
 

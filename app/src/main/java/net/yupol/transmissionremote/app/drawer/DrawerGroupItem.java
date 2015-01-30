@@ -1,5 +1,7 @@
 package net.yupol.transmissionremote.app.drawer;
 
+import android.content.Context;
+
 import net.yupol.transmissionremote.app.R;
 
 import java.util.Arrays;
@@ -11,8 +13,8 @@ public class DrawerGroupItem extends DrawerItem {
     private int id;
     private List<DrawerItem> items;
 
-    public DrawerGroupItem(int id, String text, DrawerItem ... items) {
-        super(text);
+    public DrawerGroupItem(int id, int textResId, Context context, DrawerItem ... items) {
+        super(textResId, context);
         this.id = id;
         this.items = new LinkedList<>(Arrays.asList(items));
     }

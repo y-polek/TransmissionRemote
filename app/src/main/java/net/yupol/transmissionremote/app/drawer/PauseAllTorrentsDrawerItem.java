@@ -15,7 +15,7 @@ public class PauseAllTorrentsDrawerItem extends DrawerItem {
     private TransportManager transportManager;
 
     public PauseAllTorrentsDrawerItem(Context context, TransportManager transportManager) {
-        super(context.getString(R.string.drawer_actions_pause_all_torrents));
+        super(R.string.drawer_actions_pause_all_torrents, context);
         app = (TransmissionRemote) context.getApplicationContext();
         this.transportManager = transportManager;
     }

@@ -1,5 +1,7 @@
 package net.yupol.transmissionremote.app.drawer;
 
+import android.content.Context;
+
 import net.yupol.transmissionremote.app.model.json.Torrent;
 import net.yupol.transmissionremote.app.sorting.SortOrder;
 
@@ -8,8 +10,8 @@ import java.util.List;
 
 public class SortDrawerGroupItem extends DrawerGroupItem {
 
-    public SortDrawerGroupItem(int id, String text, SortDrawerItem... items) {
-        super(id, text, items);
+    public SortDrawerGroupItem(int id, int textResId, Context context, SortDrawerItem... items) {
+        super(id, textResId, context, items);
     }
 
     @Override

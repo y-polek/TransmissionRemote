@@ -11,7 +11,7 @@ public class NewServerDrawerItem extends DrawerItem {
     private Drawable image;
 
     public NewServerDrawerItem(Context c) {
-        super(c.getString(R.string.add_new_server_drawer_item));
+        super(R.string.add_new_server_drawer_item, c);
 
         image = c.getResources().getDrawable(android.R.drawable.ic_menu_add);
     }

@@ -22,4 +22,8 @@ public class FilterDrawerItem extends DrawerItem {
     public void itemSelected() {
         app.setFilter(filter);
     }
+
+    public Predicate<Torrent> getFilter() {
+        return filter;
+    }
 }

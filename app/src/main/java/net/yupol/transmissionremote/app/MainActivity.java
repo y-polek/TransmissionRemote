@@ -245,7 +245,6 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
                 }
             }
         } else if (group.getId() == Drawer.Groups.SORT_BY.id()) {
-            drawer.refresh();
             if (torrentListFragment != null)
                 torrentListFragment.setSort(((SortDrawerGroupItem) group).getComparator());
         } else if (group.getId() == Drawer.Groups.PREFERENCES.id()) {

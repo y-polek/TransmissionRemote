@@ -1,6 +1,7 @@
 package net.yupol.transmissionremote.app.drawer;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,14 +13,17 @@ import net.yupol.transmissionremote.app.R;
 
 public class DrawerItem {
 
+    private Context context;
     private String text;
+    private boolean isActive;
 
-    public DrawerItem(String text) {
+    public DrawerItem(String text, Context context) {
         this.text = text;
+        this.context = context;
     }
 
     public DrawerItem(int textResId, Context context) {
-        this(context.getString(textResId));
+        this(context.getString(textResId), context);
     }
 
     public String getText() {
@@ -36,6 +40,10 @@ public class DrawerItem {
 
     public void itemSelected() {}
 
+    public void setActive(boolean isActive) {
+        this.isActive = isActive;
+    }
+
     public View getView(ViewGroup parent) {
         LayoutInflater li = (LayoutInflater) parent.getContext()
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -46,6 +54,10 @@ public class DrawerItem {
         ImageView rightImageView = (ImageView) itemView.findViewById(R.id.item_image_right);
 
         itemTextView.setText(getText());
+        if (isActive) {
+            itemTextView.setTypeface(null, Typeface.BOLD);
+            itemTextView.setTextColor(context.getResources().getColor(R.color.drawer_list_active_item_text_color));
+        }
 
         Drawable leftImage = getLeftImage();
         Drawable rightImage = getRightImage();
