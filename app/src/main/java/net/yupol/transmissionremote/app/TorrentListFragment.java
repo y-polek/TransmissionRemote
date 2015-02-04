@@ -125,6 +125,8 @@ public class TorrentListFragment extends ListFragment {
     public void onStart() {
         super.onStart();
         app.addTorrentsUpdatedListener(torrentsListener);
+        allTorrents = app.getTorrents();
+        updateTorrentList();
     }
 
     @Override

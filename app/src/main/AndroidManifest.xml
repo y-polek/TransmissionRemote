@@ -14,10 +14,10 @@
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
-            android:launchMode="singleTop">
+            android:launchMode="singleTop"
+            android:configChanges="orientation|screenSize|keyboardHidden">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -29,7 +29,8 @@
         <activity android:name=".preferences.RemotePreferencesActivity">
             <meta-data android:name="android.support.PARENT_ACTIVITY" android:value=".MainActivity"/>
         </activity>
-        <activity android:name=".preferences.ServerPreferencesActivity">
+        <activity android:name=".preferences.ServerPreferencesActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden">
             <meta-data android:name="android.support.PARENT_ACTIVITY" android:value=".MainActivity"/>
         </activity>
 

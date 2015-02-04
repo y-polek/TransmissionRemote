@@ -45,8 +45,10 @@ public class TorrentUpdater {
     }
 
     public void stop() {
-        updaterThread.interrupt();
-        updaterThread = null;
+        if (updaterThread != null) {
+            updaterThread.interrupt();
+            updaterThread = null;
+        }
     }
 
     private class UpdaterThread extends Thread {
