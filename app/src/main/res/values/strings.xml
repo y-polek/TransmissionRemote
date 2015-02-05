@@ -52,8 +52,6 @@
     <string name="port_number_error_message">Please, enter port number. It must be the same as specified in \'Listening port\' field on \'Remote\' tab of Transmission preferences dialog</string>
     <string name="add_new_server_drawer_item">Add server</string>
 
-    <string name="empty_torrent_list_text">No downloads</string>
-
     <!-- Preferences -->
     <string name="update_interval_title">Update interval</string>
     <string name="update_interval_summary">Torrent list update interval</string>
@@ -64,5 +62,8 @@
     <string name="kbps">KB/s</string>
     <string name="turtle_speed_limits">Speed Limit mode</string>
     <string name="turtle_speed_limits_description">When enabled Speed Limit overrides the global bandwidth limits</string>
+
+    <!-- Torrent List -->
+    <string name="unknown_error_message">Unknown error</string>
 
 </resources>

@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.app.ListFragment;
 import android.content.Context;
 import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,12 +17,19 @@ import com.google.common.base.Predicate;
 import com.google.common.base.Strings;
 import com.google.common.collect.FluentIterable;
 
+import net.yupol.transmissionremote.app.PauseResumeButton.State;
 import net.yupol.transmissionremote.app.TransmissionRemote.OnFilterSelectedListener;
 import net.yupol.transmissionremote.app.TransmissionRemote.OnTorrentsUpdatedListener;
 import net.yupol.transmissionremote.app.model.json.Torrent;
+import net.yupol.transmissionremote.app.transport.BaseSpiceActivity;
+import net.yupol.transmissionremote.app.transport.TransportManager;
+import net.yupol.transmissionremote.app.transport.request.Request;
+import net.yupol.transmissionremote.app.transport.request.StartTorrentRequest;
+import net.yupol.transmissionremote.app.transport.request.StopTorrentRequest;
 import net.yupol.transmissionremote.app.utils.SizeUtils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -86,7 +95,7 @@ public class TorrentListFragment extends ListFragment {
                         : R.color.torrent_list_even_item_background;
                 itemView.setBackgroundColor(getResources().getColor(bgColorId));
 
-                Torrent torrent = getItem(position);
+                final Torrent torrent = getItem(position);
 
                 TextView nameText = (TextView) itemView.findViewById(R.id.name);
                 nameText.setText(torrent.getName());
@@ -108,6 +117,50 @@ public class TorrentListFragment extends ListFragment {
                 int maxWidth = bounds.width();
                 downloadRateText.setWidth(maxWidth);
                 uploadRateText.setWidth(maxWidth);
+
+                PauseResumeButton pauseResumeBtn = (PauseResumeButton) itemView.findViewById(R.id.pause_resume_button);
+                boolean isPaused = isPaused(torrent.getStatus());
+                pauseResumeBtn.setState(isPaused ? State.RESUME : State.PAUSE);
+
+                pauseResumeBtn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        PauseResumeButton btn = (PauseResumeButton) v;
+                        State state = btn.getState();
+                        btn.toggleState();
+
+                        Activity activity = getActivity();
+                        if (activity instanceof BaseSpiceActivity) {
+                            TransportManager transportManager = ((BaseSpiceActivity) activity).getTransportManager();
+                            Request<Void> request = state == State.PAUSE
+                                    ? new StopTorrentRequest(Arrays.asList(torrent))
+                                    : new StartTorrentRequest(Arrays.asList(torrent));
+                            transportManager.doRequest(request, null);
+                        } else {
+                            Log.e(TAG, "Can't send Start/Stop request. " +
+                                    "Fragment should be used inside BaseSpiceActivity to be able to obtain TransportManager");
+                        }
+                    }
+                });
+
+                TextView errorMsgView = (TextView) itemView.findViewById(R.id.error_message);
+                Torrent.Error error = torrent.getError();
+                if (error == Torrent.Error.NONE) {
+                    errorMsgView.setVisibility(View.GONE);
+                } else {
+                    String errorMsg = torrent.getErrorMessage();
+                    if (errorMsg != null && !errorMsg.trim().isEmpty()) {
+                        errorMsgView.setVisibility(View.VISIBLE);
+                        errorMsgView.setText(errorMsg);
+                        int msgIconResId = error.isWarning() ? R.drawable.ic_action_warning : R.drawable.ic_action_error;
+                        Drawable msgIcon = getResources().getDrawable(msgIconResId);
+                        int size = getResources().getDimensionPixelSize(R.dimen.torrent_list_error_icon_size);
+                        msgIcon.setBounds(0, 0, size, size);
+                        errorMsgView.setCompoundDrawables(msgIcon, null, null, null);
+                    } else {
+                        errorMsgView.setVisibility(View.GONE);
+                    }
+                }
 
                 return itemView;
             }
@@ -157,5 +210,9 @@ public class TorrentListFragment extends ListFragment {
 
     private String speedText(long bytes) {
         return Strings.padStart(SizeUtils.displayableSize(bytes), 5, ' ') + "/s";
+    }
+
+    private boolean isPaused(Torrent.Status status) {
+        return status == Torrent.Status.STOPPED;
     }
 }

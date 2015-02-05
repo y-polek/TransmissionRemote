@@ -12,6 +12,9 @@ public class Torrent {
     @Key("rateDownload") private int downloadRate;
     @Key("rateUpload") private int uploadRate;
     @Key private int leftUntilDone;
+    @Key("error") private int errorId;
+    private Error error;
+    @Key private String errorString;
 
     public int getId() {
         return id;
@@ -47,6 +50,15 @@ public class Torrent {
 
     public int getLeftUntilDone() {
         return leftUntilDone;
+    }
+
+    public Error getError() {
+        if (error == null) error = Error.getById(errorId);
+        return error;
+    }
+
+    public String getErrorMessage() {
+        return errorString;
     }
 
     @Override
@@ -88,53 +100,31 @@ public class Torrent {
             return UNKNOWN;
         }
     }
-}
 
-/*
-ID = "id"
-ADDED_DATE = "addedDate"
-NAME = "name"
-TOTAL_SIZE = "totalSize"
-ERROR = "error"
-ERROR_STRING = "errorString"
-ETA = "eta"
-IS_FINISHED = "isFinished"
-IS_STALLED = "isStalled"
-LEFT_UNTIL_DONE = "leftUntilDone"
-METADATA_PERCENT_COMPLETE = "metadataPercentComplete"
-PEERS_CONNECTED = "peersConnected"
-PEERS_GETTING_FROM_US = "peersGettingFromUs"
-PEERS_SENDING_TO_US = "peersSendingToUs"
-PERCENT_DONE = "percentDone"
-QUEUE_POSITION = "queuePosition"
-RATE_DOWNLOAD = "rateDownload"
-RATE_UPLOAD = "rateUpload"
-RECHECK_PROGRESS = "recheckProgress"
-SEED_RATION_MODE = "seedRatioMode"
-SEED_RATION_LIMIT = "seedRatioLimit"
-SIZE_WHEN_DONE = "sizeWhenDone"
-STATUS = "status"
-TRACKERS = "trackers"
-DOWNLOAD_DIR = "downloadDir"
-UPLOADED_EVER = "uploadedEver"
-UPLOAD_RATION = "uploadRatio"
-WEBSEEDS_SENDING_TO_US = "webseedsSendingToUs"
-ACTIVITY_DATE = "activityDate"
-CORRUPT_EVER = "corruptEver"
-DESIRED_AVAILABLE = "desiredAvailable"
-DOWNLOAD_EVER = "downloadedEver"
-FILE_STATS = "fileStats"
-HAVE_UNCHECKED = "haveUnchecked"
-HAVE_VALID = "haveValid"
-PEERS = "peers"
-START_DATE = "startDate"
-TRACKER_STATS = "trackerStats"
-COMMENT = "comment"
-CREATOR = "creator"
-DATE_CREATED = "dateCreated"
-FILES = "files"
-HASH_STRING = "hashString"
-IS_PRIVATE = "isPrivate"
-PIECE_COUNT = "pieceCount"
-PIECE_SIZE = "pieceSize"
-*/
+    public static enum Error {
+        UNKNOWN(-1, false),
+        NONE(0, false),
+        TRACKER_WARNING(1, true),
+        TRACKER_ERROR(2, false),
+        LOCAL_ERROR(3, false);
+
+        private int id;
+        private boolean isWarning;
+
+        private Error(int id, boolean isWarning) {
+            this.id = id;
+            this.isWarning = isWarning;
+        }
+
+        public boolean isWarning() {
+            return isWarning;
+        }
+
+        public static Error getById(int id) {
+            for (Error e : Error.values()) {
+                if (e.id == id) return e;
+            }
+            return UNKNOWN;
+        }
+    }
+}

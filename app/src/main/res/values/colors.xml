@@ -16,6 +16,8 @@
     <color name="torrent_list_background">#ffffff</color>
     <color name="torrent_list_odd_item_background">#ffe6e6e6</color>
     <color name="torrent_list_even_item_background">#fff5f5f5</color>
+    <color name="torrent_list_error_text_color">#ff5e5e5e</color>
 
+                    <!-- Toolbar -->
     <color name="toolbar_background">#ffcccccc</color>
 </resources>

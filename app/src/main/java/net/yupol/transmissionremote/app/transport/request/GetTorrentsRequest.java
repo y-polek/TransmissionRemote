@@ -24,7 +24,9 @@ public class GetTorrentsRequest extends Request<Torrents> {
             TorrentMetadata.STATUS,
             TorrentMetadata.RATE_DOWNLOAD,
             TorrentMetadata.RATE_UPLOAD,
-            TorrentMetadata.LEFT_UNTIL_DONE
+            TorrentMetadata.LEFT_UNTIL_DONE,
+            TorrentMetadata.ERROR,
+            TorrentMetadata.ERROR_STRING
     };
 
     public GetTorrentsRequest() {

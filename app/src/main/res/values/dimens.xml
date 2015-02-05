@@ -28,8 +28,9 @@
     <dimen name="add_server_buttons_margin">16dp</dimen>
 
                 <!-- Torrent list -->
-    <dimen name="torrent_list_name_text_size">21sp</dimen>
-    <dimen name="torrent_list_status_text_size">15sp</dimen>
+    <dimen name="torrent_list_name_text_size">18sp</dimen>
+    <dimen name="torrent_list_status_text_size">14sp</dimen>
+    <dimen name="torrent_list_error_icon_size">21dp</dimen>
 
                 <!-- Preferences -->
     <dimen name="pref_title_size">20sp</dimen>

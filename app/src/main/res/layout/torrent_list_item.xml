@@ -3,65 +3,91 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:paddingLeft="8dp"
+    android:orientation="horizontal"
+    android:paddingLeft="4dp"
     android:paddingRight="8dp"
     android:paddingTop="4dp"
     android:paddingBottom="4dp">
 
-    <TextView android:id="@+id/name"
+    <net.yupol.transmissionremote.app.PauseResumeButton
+        xmlns:custom="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/pause_resume_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="@dimen/torrent_list_name_text_size"
-        android:textStyle="bold"
-        android:text="Some Name"/>
+        android:layout_gravity="center_vertical"
+        custom:pause_img_src="@drawable/pause"
+        custom:resume_img_src="@drawable/resume"
+        android:background="@null"/>
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <TextView android:id="@+id/done_percentage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="@dimen/torrent_list_status_text_size"
-            android:text="99.99%"/>
-
-        <ImageView android:id="@+id/upload_icon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingTop="2dp"
-            android:paddingBottom="2dp"
-            android:layout_alignParentEnd="true"
-            android:layout_alignTop="@id/done_percentage"
-            android:layout_alignBottom="@id/done_percentage"
-            android:src="@drawable/upload_icon"/>
-        <TextView android:id="@+id/upload_rate"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_toLeftOf="@id/upload_icon"
-            android:gravity="right"
-            android:textSize="@dimen/torrent_list_status_text_size"
-            android:text="1.22 MB/s"/>
-        <ImageView android:id="@+id/download_icon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="2dp"
-            android:layout_toLeftOf="@id/upload_rate"
-            android:layout_alignTop="@id/done_percentage"
-            android:layout_alignBottom="@id/done_percentage"
-            android:src="@drawable/download_icon"/>
-        <TextView android:id="@+id/download_rate"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_toLeftOf="@id/download_icon"
-            android:gravity="right"
-            android:textSize="@dimen/torrent_list_status_text_size"
-            android:text="8.5 MB/s"/>
-    </RelativeLayout>
-
-    <ProgressBar android:id="@+id/progress_bar"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:progress="15"
-        style="@android:style/Widget.Holo.ProgressBar.Horizontal"/>
+        android:paddingLeft="8dp"
+        android:orientation="vertical">
 
+        <TextView android:id="@+id/name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/torrent_list_name_text_size"
+            android:textStyle="bold"
+            android:maxLines="2"
+            android:text="Some Name"/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView android:id="@+id/done_percentage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/torrent_list_status_text_size"
+                android:text="99.99%"/>
+
+            <ImageView android:id="@+id/upload_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="2dp"
+                android:paddingBottom="2dp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignTop="@id/done_percentage"
+                android:layout_alignBottom="@id/done_percentage"
+                android:src="@drawable/upload_icon"/>
+            <TextView android:id="@+id/upload_rate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toLeftOf="@id/upload_icon"
+                android:gravity="right"
+                android:textSize="@dimen/torrent_list_status_text_size"
+                android:text="1.22 MB/s"/>
+            <ImageView android:id="@+id/download_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="2dp"
+                android:layout_toLeftOf="@id/upload_rate"
+                android:layout_alignTop="@id/done_percentage"
+                android:layout_alignBottom="@id/done_percentage"
+                android:src="@drawable/download_icon"/>
+            <TextView android:id="@+id/download_rate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toLeftOf="@id/download_icon"
+                android:gravity="right"
+                android:textSize="@dimen/torrent_list_status_text_size"
+                android:text="8.5 MB/s"/>
+        </RelativeLayout>
+
+        <ProgressBar android:id="@+id/progress_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:progress="15"
+            style="@android:style/Widget.Holo.ProgressBar.Horizontal"/>
+
+        <TextView android:id="@+id/error_message"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/torrent_list_error_text_color"
+            android:textSize="@dimen/torrent_list_status_text_size"
+            android:text="Error message"/>
+
+    </LinearLayout>
 </LinearLayout>
