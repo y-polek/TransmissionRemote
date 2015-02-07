@@ -36,7 +36,7 @@ public class Drawer implements ListView.OnItemClickListener {
     private void initItemList(Context c, TransportManager tm) {
         groups = new ArrayList<>();
         // Servers
-        groups.add(new DrawerGroupItem(Groups.SERVERS.id(), R.string.drawer_servers, c,
+        groups.add(new ServerDrawerGroupItem(Groups.SERVERS.id(), R.string.drawer_servers, c,
                 new NewServerDrawerItem(c)));
 
         // Actions
@@ -86,9 +86,11 @@ public class Drawer implements ListView.OnItemClickListener {
         listAdapter.notifyDataSetChanged();
     }
 
-    public void addServer(Server server) {
+    public void addServers(Server... servers) {
         DrawerGroupItem group = findGroupById(Groups.SERVERS.id());
-        group.addItem(new ServerDrawerItem(server, drawerList.getContext()), group.getItems().size() - 1);
+        for (Server server : servers) {
+            group.addItem(new ServerDrawerItem(server, drawerList.getContext()), group.getItems().size() - 1);
+        }
         listAdapter.notifyDataSetChanged();
     }
 

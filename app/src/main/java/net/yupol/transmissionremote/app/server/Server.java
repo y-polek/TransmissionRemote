@@ -7,7 +7,7 @@ import android.util.Log;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import static com.google.common.base.Preconditions.*;
+import javax.annotation.Nonnull;
 
 public class Server implements Parcelable {
 
@@ -20,9 +20,7 @@ public class Server implements Parcelable {
     private String userName;
     private String password;
 
-    public Server(String name, String host, int port) {
-        checkNotNull(name, "Name must be non null");
-        checkNotNull(host, "Host name must be non null");
+    public Server(@Nonnull String name, @Nonnull String host, int port) {
         if (port <=0 || port > 0xFFFF)
             throw new IllegalArgumentException("Port number value must be in range [1, 65535], actual value: " + port);
         this.name = name;
@@ -94,6 +92,36 @@ public class Server implements Parcelable {
             Log.e(TAG, "Failed to create Server object from JSON object: " + obj, e);
             return null;
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Server server = (Server) o;
+
+        if (port != server.port) return false;
+        if (useAuthentication != server.useAuthentication) return false;
+        if (!host.equals(server.host)) return false;
+        if (!name.equals(server.name)) return false;
+        if (password != null ? !password.equals(server.password) : server.password != null)
+            return false;
+        if (userName != null ? !userName.equals(server.userName) : server.userName != null)
+            return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = name.hashCode();
+        result = 31 * result + host.hashCode();
+        result = 31 * result + port;
+        result = 31 * result + (useAuthentication ? 1 : 0);
+        result = 31 * result + (userName != null ? userName.hashCode() : 0);
+        result = 31 * result + (password != null ? password.hashCode() : 0);
+        return result;
     }
 
     @Override

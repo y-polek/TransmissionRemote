@@ -57,6 +57,9 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
     public static int REQUEST_CODE_SERVER_PARAMS = 1;
     public static int REQUEST_CODE_SERVER_PREFERENCES = 2;
 
+    private static String TAG_PROGRESSBAR = "tag_progressbar";
+    private static String TAG_TORRENT_LIST = "tag_torrent_list";
+
     private TransmissionRemote application;
     private PortChecker portChecker;
     private TorrentUpdater torrentUpdater;
@@ -78,8 +81,6 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
         ListView drawerList = (ListView) findViewById(R.id.drawer_list);
 
         drawer = new Drawer(drawerList, getTransportManager());
-        for (Server server : application.getServers())
-            drawer.addServer(server);
         drawer.setOnItemSelectedListener(this);
 
         DrawerLayout drawerLayout = (DrawerLayout) findViewById(R.id.drawer);
@@ -108,16 +109,9 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
             actionBar.setHomeButtonEnabled(true);
         }
 
+        showProgressbarFragment();
+
         FragmentManager fm = getFragmentManager();
-
-        ProgressbarFragment progressbarFragment = (ProgressbarFragment) fm.findFragmentById(R.id.torrent_list_container);
-        if (progressbarFragment == null) {
-            progressbarFragment = new ProgressbarFragment();
-            FragmentTransaction ft = fm.beginTransaction();
-            ft.add(R.id.torrent_list_container, progressbarFragment);
-            ft.commit();
-        }
-
         toolbarFragment = (ToolbarFragment) fm.findFragmentById(R.id.toolbar_container);
         if (toolbarFragment == null) {
             toolbarFragment = new ToolbarFragment();
@@ -139,22 +133,7 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
             intent.putExtra(AddServerActivity.PARAM_CANCELABLE, false);
             startActivityForResult(intent, REQUEST_CODE_SERVER_PARAMS);
         } else {
-            portChecker = new PortChecker(getTransportManager(), new PortChecker.PortCheckResultListener() {
-                @Override
-                public void onPortCheckResults(boolean isOpen) {
-                    // FIXME: check if port is opened
-                    /*if (result.isOpen()) {
-                        torrentUpdater.start();
-                    } else {
-                        Toast.makeText(MainActivity.this, "Port " + application.getActiveServer().getPort() +
-                                " is closed. Check Transmission settings.", Toast.LENGTH_LONG).show();
-                        Log.d(TAG, "Port " + application.getActiveServer().getPort() + " is closed");
-                    }*/
-                    torrentUpdater = new TorrentUpdater(getTransportManager(), MainActivity.this, application.getUpdateInterval());
-                    torrentUpdater.start();
-                }
-            });
-            portChecker.startCheck();
+            startPortChecker();
         }
 
         prefsUpdateTimer = new Timer("Preferences update timer");
@@ -181,9 +160,7 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
     protected void onPause() {
         super.onPause();
 
-        if (portChecker != null && portChecker.isRunning()) {
-            portChecker.cancel();
-        }
+        stopPortChecker();
 
         if (torrentUpdater != null) {
             torrentUpdater.stop();
@@ -240,9 +217,7 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
                 startActivityForResult(new Intent(this, AddServerActivity.class), REQUEST_CODE_SERVER_PARAMS);
             } else if (item instanceof ServerDrawerItem) {
                 Server server = ((ServerDrawerItem) item).getServer();
-                if (server != application.getActiveServer()) {
-                    application.setActiveServer(server);
-                }
+                switchServer(server);
             }
         } else if (group.getId() == Drawer.Groups.SORT_BY.id()) {
             if (torrentListFragment != null)
@@ -279,13 +254,7 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
     public void onTorrentUpdate(List<Torrent> torrents) {
         application.setTorrents(torrents);
 
-        if (torrentListFragment == null) {
-            FragmentManager fm = getFragmentManager();
-            torrentListFragment = new TorrentListFragment();
-            FragmentTransaction ft = fm.beginTransaction();
-            ft.replace(R.id.torrent_list_container, torrentListFragment);
-            ft.commit();
-        }
+        showTorrentListFragment();
 
         toolbarFragment.torrentsUpdated(torrents);
 
@@ -300,9 +269,18 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
         Log.d(TAG, "Torrents:\n" + text);
     }
 
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        if (key.equals(getString(R.string.update_interval_key))) {
+            if (torrentUpdater != null) {
+                torrentUpdater.setTimeout(application.getUpdateInterval());
+            }
+        }
+    }
+
     private void addNewServer(Server server) {
         application.addServer(server);
-        drawer.addServer(server);
+        drawer.addServers(server);
 
         if (application.getServers().size() == 1) {
             application.setActiveServer(server);
@@ -311,12 +289,68 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
         }
     }
 
-    @Override
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        if (key.equals(getString(R.string.update_interval_key))) {
-            if (torrentUpdater != null) {
-                torrentUpdater.setTimeout(application.getUpdateInterval());
+    private void switchServer(Server server) {
+        Log.d(TAG, "server selected: " + server.getName() + " active server: " + application.getActiveServer().getName());
+        if (server.equals(application.getActiveServer())) return;
+
+        application.setActiveServer(server);
+
+        if (torrentUpdater != null) {
+            torrentUpdater.stop();
+        }
+
+        // stop old server's port checker if any and start for new server
+        stopPortChecker();
+        showProgressbarFragment();
+        toolbarFragment.reset();
+        startPortChecker();
+    }
+
+    private void startPortChecker() {
+        portChecker = new PortChecker(getTransportManager(), new PortChecker.PortCheckResultListener() {
+            @Override
+            public void onPortCheckResults(boolean isOpen) {
+                // FIXME: check if port is opened
+                    /*if (result.isOpen()) {
+                        torrentUpdater.start();
+                    } else {
+                        Toast.makeText(MainActivity.this, "Port " + application.getActiveServer().getPort() +
+                                " is closed. Check Transmission settings.", Toast.LENGTH_LONG).show();
+                        Log.d(TAG, "Port " + application.getActiveServer().getPort() + " is closed");
+                    }*/
+                torrentUpdater = new TorrentUpdater(getTransportManager(), MainActivity.this, application.getUpdateInterval());
+                torrentUpdater.start();
             }
+        });
+        portChecker.startCheck();
+    }
+
+    private void stopPortChecker() {
+        if (portChecker != null && portChecker.isRunning()) {
+            portChecker.cancel();
+        }
+    }
+
+    private void showProgressbarFragment() {
+        FragmentManager fm = getFragmentManager();
+        ProgressbarFragment progressbarFragment = (ProgressbarFragment) fm.findFragmentByTag(TAG_PROGRESSBAR);
+        if (progressbarFragment == null) {
+            progressbarFragment = new ProgressbarFragment();
+            FragmentTransaction ft = fm.beginTransaction();
+            ft.replace(R.id.torrent_list_container, progressbarFragment, TAG_PROGRESSBAR);
+            ft.commit();
+        }
+        torrentListFragment = null;
+    }
+
+    private void showTorrentListFragment() {
+        FragmentManager fm = getFragmentManager();
+        torrentListFragment = (TorrentListFragment) fm.findFragmentByTag(TAG_TORRENT_LIST);
+        if (torrentListFragment == null) {
+            torrentListFragment = new TorrentListFragment();
+            FragmentTransaction ft = fm.beginTransaction();
+            ft.replace(R.id.torrent_list_container, torrentListFragment, TAG_TORRENT_LIST);
+            ft.commit();
         }
     }
 }

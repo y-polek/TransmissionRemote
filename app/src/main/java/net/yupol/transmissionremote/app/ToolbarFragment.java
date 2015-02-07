@@ -25,6 +25,7 @@ import net.yupol.transmissionremote.app.utils.SizeUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Collections;
 import java.util.List;
 
 public class ToolbarFragment extends Fragment {
@@ -100,6 +101,12 @@ public class ToolbarFragment extends Fragment {
 
         downloadRateText.setText(speedText(totalDownloadRate));
         uploadRateText.setText(speedText(totalUploadRate));
+    }
+
+    public void reset() {
+        speedLimitEnabled = false;
+        updateSpeedLimitButton();
+        torrentsUpdated(Collections.<Torrent>emptyList());
     }
 
     private String speedText(long bytes) {

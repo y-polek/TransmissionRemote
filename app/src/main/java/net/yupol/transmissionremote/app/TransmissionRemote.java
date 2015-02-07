@@ -73,6 +73,9 @@ public class TransmissionRemote extends Application {
         } else {
             activeServer = null;
         }
+        if (activeServer == null && !servers.isEmpty()) {
+            activeServer = servers.get(0);
+        }
     }
 
     public static TransmissionRemote getApplication(Context context) {
@@ -94,7 +97,7 @@ public class TransmissionRemote extends Application {
     }
 
     public Server getActiveServer() {
-        return servers.isEmpty() ? null : servers.get(0);
+        return activeServer;
     }
 
     public void setActiveServer(Server server) {
