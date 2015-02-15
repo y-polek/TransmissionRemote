@@ -80,6 +80,10 @@ public class DrawerItem {
         return itemView;
     }
 
+    protected final Context getContext() {
+        return context;
+    }
+
     protected int getLayoutId() {
         return R.layout.drawer_list_item;
     }

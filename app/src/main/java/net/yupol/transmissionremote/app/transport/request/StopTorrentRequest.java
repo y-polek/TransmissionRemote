@@ -7,11 +7,6 @@ import java.util.Collection;
 public class StopTorrentRequest extends TorrentActionRequest {
 
     public StopTorrentRequest(Collection<Torrent> torrents) {
-        super(torrents);
-    }
-
-    @Override
-    protected String getMethod() {
-        return "torrent-stop";
+        super("torrent-stop", torrents);
     }
 }

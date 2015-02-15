@@ -7,11 +7,6 @@ import java.util.Collection;
 public class StartTorrentRequest extends TorrentActionRequest {
 
     public StartTorrentRequest(Collection<Torrent> torrents) {
-        super(torrents);
-    }
-
-    @Override
-    protected String getMethod() {
-        return "torrent-start-now";
+        super("torrent-start-now", torrents);
     }
 }

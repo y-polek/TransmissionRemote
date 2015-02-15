@@ -14,11 +14,18 @@ public abstract class TorrentActionRequest extends Request<Void> {
 
     private static final String TAG = TorrentActionRequest.class.getSimpleName();
 
+    private String method;
     private Collection<Torrent> torrents;
 
-    public TorrentActionRequest(Collection<Torrent> torrents) {
+    public TorrentActionRequest(String method, Collection<Torrent> torrents) {
         super(Void.class);
+        this.method = method;
         this.torrents = torrents;
+    }
+
+    @Override
+    protected String getMethod() {
+        return method;
     }
 
     @Override
