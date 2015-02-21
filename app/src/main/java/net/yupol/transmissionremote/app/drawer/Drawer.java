@@ -18,6 +18,8 @@ import net.yupol.transmissionremote.app.utils.Filters;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.Nonnull;
+
 public class Drawer implements ListView.OnItemClickListener {
 
     private ListView drawerList;
@@ -92,6 +94,16 @@ public class Drawer implements ListView.OnItemClickListener {
             group.addItem(new ServerDrawerItem(server, drawerList.getContext()), group.getItems().size() - 1);
         }
         listAdapter.notifyDataSetChanged();
+    }
+
+    public void setActiveServer(@Nonnull final Server server) {
+        ServerDrawerGroupItem group = (ServerDrawerGroupItem) findGroupById(Groups.SERVERS.id());
+        DrawerItem serverItem = FluentIterable.from(group.getItems()).firstMatch(new Predicate<DrawerItem>() {
+            @Override public boolean apply(DrawerItem item) {
+                return item instanceof ServerDrawerItem && server.equals(((ServerDrawerItem) item).getServer());
+            }
+        }).get();
+        group.activateServerItem(serverItem);
     }
 
     private DrawerGroupItem findGroupById(final int id) {
