@@ -1,1 +1,1 @@
-include ':app', ':FPlib'
+include ':app'
