@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright 2014 Paul Tsouchlos
+  ~
+  ~    Licensed under the Apache License, Version 2.0 (the "License");
+  ~    you may not use this file except in compliance with the License.
+  ~    You may obtain a copy of the License at
+  ~
+  ~        http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~    Unless required by applicable law or agreed to in writing, software
+  ~    distributed under the License is distributed on an "AS IS" BASIS,
+  ~    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~    See the License for the specific language governing permissions and
+  ~    limitations under the License.
+  -->
+
+<FrameLayout
+    android:layout_height="fill_parent"
+    android:layout_width="fill_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <RelativeLayout
+        android:layout_height="fill_parent"
+        android:layout_width="fill_parent">
+
+        <RelativeLayout
+            android:id="@+id/header_container"
+            android:layout_width="fill_parent"
+            android:layout_height="100dip"
+            android:background="@android:color/holo_blue_dark">
+
+            <TextView
+                android:id="@+id/file_directory_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/white"
+                android:textSize="22sp"
+                android:textAllCaps="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentBottom="true"
+                android:layout_marginLeft="20dip"
+                android:layout_marginBottom="40dip"
+                android:text="TEST"
+                />
+
+        </RelativeLayout>
+
+
+        <ListView
+            android:id="@android:id/list"
+            android:dividerHeight="0dip"
+            android:divider="@color/card_detailing"
+            android:layout_below="@id/header_container"
+            android:layout_marginTop="2dip"
+            android:choiceMode="singleChoice"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"/>
+
+        <LinearLayout
+            android:id="@+id/button_container"
+            android:layout_width="fill_parent"
+            android:layout_height="55dip"
+            android:background="@drawable/card"
+            android:layout_alignParentBottom="true"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/open_button"
+                android:layout_weight="1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@android:color/white"
+                android:textColor="@android:color/primary_text_light_nodisable"
+                android:text="Open"/>
+
+            <View
+                android:layout_width="1dip"
+                android:layout_height="35dip"
+                android:layout_gravity="center_vertical"
+                android:background="@android:color/darker_gray"/>
+            <Button
+                android:id="@+id/select_button"
+                android:layout_weight="1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/card_background"
+                android:textColor="@android:color/primary_text_light_nodisable"
+                android:text="Select"/>
+
+
+
+        </LinearLayout>
+
+
+    </RelativeLayout>
+
+
+    <ImageButton
+        android:id="@+id/file_navigation_up_button"
+        android:layout_width="54dp"
+        android:layout_height="54dp"
+        android:src="@drawable/ic_action_navigation_back"
+        android:layout_gravity="top|right"
+        android:background="@drawable/circle"
+        android:layout_marginTop="65dip"
+        android:layout_marginRight="70dip"/>
+
+    <ImageButton
+        android:id="@+id/new_file_button"
+        android:layout_width="54dp"
+        android:layout_height="54dp"
+        android:src="@drawable/ic_action_content_new"
+        android:layout_gravity="top|right"
+        android:layout_marginTop="65dip"
+        android:background="@drawable/circle"
+        android:layout_marginRight="10dip"/>
+
+    </FrameLayout>
+
+
+
