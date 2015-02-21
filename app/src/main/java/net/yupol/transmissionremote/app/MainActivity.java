@@ -134,26 +134,8 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
             startActivityForResult(intent, REQUEST_CODE_SERVER_PARAMS);
         } else {
             startPortChecker();
+            startPreferencesUpdateTimer();
         }
-
-        prefsUpdateTimer = new Timer("Preferences update timer");
-        prefsUpdateTimer.scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                getTransportManager().doRequest(new SessionGetRequest(), new RequestListener<ServerSettings>() {
-                    @Override
-                    public void onRequestFailure(SpiceException spiceException) {
-                        Log.e(TAG, "Failed to obtain server settings");
-                    }
-
-                    @Override
-                    public void onRequestSuccess(ServerSettings serverSettings) {
-                        application.setSpeedLimitEnabled(serverSettings.isAltSpeedEnabled());
-                    }
-                });
-            }
-        }, 0, TimeUnit.SECONDS.toMillis(Math.max(application.getUpdateInterval(), MIN_PREFS_UPDATE_INTERVAL)));
-
     }
 
     @Override
@@ -167,7 +149,7 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
         }
         PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(this);
 
-        prefsUpdateTimer.cancel();
+        stopPreferencesUpdateTimer();
     }
 
     @Override
@@ -177,6 +159,7 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
             if (resultCode == RESULT_OK) {
                 Server server = data.getParcelableExtra(AddServerActivity.EXTRA_SEVER);
                 addNewServer(server);
+                switchServer(server);
             }
         } else if (requestCode == REQUEST_CODE_SERVER_PREFERENCES) {
             if (resultCode == RESULT_OK) {
@@ -281,19 +264,13 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
     private void addNewServer(Server server) {
         application.addServer(server);
         drawer.addServers(server);
-
-        if (application.getServers().size() == 1) {
-            application.setActiveServer(server);
-            torrentUpdater = new TorrentUpdater(getTransportManager(), this, application.getUpdateInterval());
-            // TODO: drawer.setActiveServer(server);
-        }
     }
 
     private void switchServer(Server server) {
-        Log.d(TAG, "server selected: " + server.getName() + " active server: " + application.getActiveServer().getName());
         if (server.equals(application.getActiveServer())) return;
 
         application.setActiveServer(server);
+        drawer.setActiveServer(server);
 
         if (torrentUpdater != null) {
             torrentUpdater.stop();
@@ -301,9 +278,11 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
 
         // stop old server's port checker if any and start for new server
         stopPortChecker();
+        stopPreferencesUpdateTimer();
         showProgressbarFragment();
         toolbarFragment.reset();
         startPortChecker();
+        startPreferencesUpdateTimer();
     }
 
     private void startPortChecker() {
@@ -328,6 +307,32 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
     private void stopPortChecker() {
         if (portChecker != null && portChecker.isRunning()) {
             portChecker.cancel();
+        }
+    }
+
+    private void startPreferencesUpdateTimer() {
+        prefsUpdateTimer = new Timer("Preferences update timer");
+        prefsUpdateTimer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                getTransportManager().doRequest(new SessionGetRequest(), new RequestListener<ServerSettings>() {
+                    @Override
+                    public void onRequestFailure(SpiceException spiceException) {
+                        Log.e(TAG, "Failed to obtain server settings");
+                    }
+
+                    @Override
+                    public void onRequestSuccess(ServerSettings serverSettings) {
+                        application.setSpeedLimitEnabled(serverSettings.isAltSpeedEnabled());
+                    }
+                });
+            }
+        }, 0, TimeUnit.SECONDS.toMillis(Math.max(application.getUpdateInterval(), MIN_PREFS_UPDATE_INTERVAL)));
+    }
+
+    private void stopPreferencesUpdateTimer() {
+        if (prefsUpdateTimer != null) {
+            prefsUpdateTimer.cancel();
         }
     }
 
