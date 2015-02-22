@@ -35,19 +35,21 @@ dependencies {
     compile 'com.android.support:support-v4:21.+'
     compile 'com.google.guava:guava:18.+'
     compile('com.octo.android.robospice:robospice:1.4.14') {
-        exclude (group: 'commons-io', module: 'commons-io')
+        exclude(group: 'commons-io', module: 'commons-io')
     }
     compile('com.octo.android.robospice:robospice-google-http-client:1.4.14') {
-        exclude (group: 'org.apache.httpcomponents', module: 'httpclient')
-        exclude (group: 'commons-io', module: 'commons-io')
+        exclude(group: 'org.apache.httpcomponents', module: 'httpclient')
+        exclude(group: 'commons-io', module: 'commons-io')
     }
     compile('com.google.http-client:google-http-client-gson:1.19.0') {
         exclude module: 'xpp3'
         exclude group: 'stax'
-        exclude (group: 'com.google.android', module: 'android')
-        exclude (group: 'org.apache.httpcomponents', module: 'httpclient')
+        exclude(group: 'com.google.android', module: 'android')
+        exclude(group: 'org.apache.httpcomponents', module: 'httpclient')
     }
     compile('com.google.http-client:google-http-client-jackson2:1.19.0') {
-        exclude (group: 'org.apache.httpcomponents', module: 'httpclient')
+        exclude(group: 'org.apache.httpcomponents', module: 'httpclient')
     }
+
+    compile('com.github.developerpaul123.filepickerlibrary:library:1.0@aar')
 }

@@ -43,7 +43,7 @@ public class Drawer implements ListView.OnItemClickListener {
 
         // Actions
         groups.add(new DrawerGroupItem(Groups.ACTIONS.id(), R.string.drawer_actions, c,
-                new DrawerItem(R.string.drawer_actions_open_torrent, c),
+                new OpenTorrentDrawerItem(c),
                 new StartAllTorrentsDrawerItem(c, tm),
                 new PauseAllTorrentsDrawerItem(c, tm)));
 

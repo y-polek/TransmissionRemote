@@ -15,6 +15,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 
+import com.devpaul.filepickerlibrary.FilePickerActivity;
+import com.devpaul.filepickerlibrary.enums.FileScopeType;
+import com.devpaul.filepickerlibrary.enums.FileType;
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
 import com.google.common.collect.FluentIterable;
@@ -25,6 +28,7 @@ import net.yupol.transmissionremote.app.drawer.Drawer;
 import net.yupol.transmissionremote.app.drawer.DrawerGroupItem;
 import net.yupol.transmissionremote.app.drawer.DrawerItem;
 import net.yupol.transmissionremote.app.drawer.NewServerDrawerItem;
+import net.yupol.transmissionremote.app.drawer.OpenTorrentDrawerItem;
 import net.yupol.transmissionremote.app.drawer.ServerDrawerItem;
 import net.yupol.transmissionremote.app.drawer.ServerPrefsDrawerItem;
 import net.yupol.transmissionremote.app.drawer.SortDrawerGroupItem;
@@ -210,6 +214,13 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
                 startActivityForResult(
                         new Intent(this, ServerPreferencesActivity.class),
                         REQUEST_CODE_SERVER_PREFERENCES);
+            }
+        } else if (group.getId() == Drawer.Groups.ACTIONS.id()) {
+            if (item instanceof OpenTorrentDrawerItem) {
+                Intent filePickerIntent = new Intent(this, FilePickerActivity.class);
+                filePickerIntent.putExtra(FilePickerActivity.REQUEST_CODE, FilePickerActivity.REQUEST_FILE);
+                filePickerIntent.putExtra(FilePickerActivity.SCOPE_TYPE, FileScopeType.ALL);
+                startActivityForResult(filePickerIntent, FilePickerActivity.REQUEST_FILE);
             }
         }
     }
