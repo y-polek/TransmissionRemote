@@ -31,6 +31,7 @@
     <dimen name="torrent_list_name_text_size">18sp</dimen>
     <dimen name="torrent_list_status_text_size">14sp</dimen>
     <dimen name="torrent_list_error_icon_size">21dp</dimen>
+    <dimen name="torrent_list_progressbar_height">3dp</dimen>
 
                 <!-- Preferences -->
     <dimen name="pref_title_size">20sp</dimen>

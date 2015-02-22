@@ -105,6 +105,9 @@ public class TorrentListFragment extends ListFragment {
 
                 ProgressBar progressBar = (ProgressBar) itemView.findViewById(R.id.progress_bar);
                 progressBar.setProgress((int) (torrent.getPercentDone() * progressBar.getMax()));
+                boolean isPaused = isPaused(torrent.getStatus());
+                int progressbarDrawable = isPaused ? R.drawable.torrent_progressbar_disabled : R.drawable.torrent_progressbar;
+                progressBar.setProgressDrawable(getResources().getDrawable(progressbarDrawable));
 
                 TextView downloadRateText = (TextView) itemView.findViewById(R.id.download_rate);
                 downloadRateText.setText(speedText(torrent.getDownloadRate()));
@@ -119,7 +122,6 @@ public class TorrentListFragment extends ListFragment {
                 uploadRateText.setWidth(maxWidth);
 
                 PauseResumeButton pauseResumeBtn = (PauseResumeButton) itemView.findViewById(R.id.pause_resume_button);
-                boolean isPaused = isPaused(torrent.getStatus());
                 pauseResumeBtn.setState(isPaused ? State.RESUME : State.PAUSE);
 
                 pauseResumeBtn.setOnClickListener(new View.OnClickListener() {
