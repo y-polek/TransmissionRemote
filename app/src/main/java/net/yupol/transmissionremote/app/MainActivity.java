@@ -244,6 +244,8 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
 
         toolbarFragment.torrentsUpdated(torrents);
 
+        drawer.updateTorrentsCount(torrents);
+
         String text = Joiner.on("\n").join(FluentIterable.from(torrents).transform(new Function<Torrent, String>() {
             @Override
             public String apply(Torrent torrent) {
@@ -284,6 +286,7 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
         stopPreferencesUpdateTimer();
         showProgressbarFragment();
         toolbarFragment.reset();
+        drawer.updateTorrentsCount(null);
         startPortChecker();
         startPreferencesUpdateTimer();
     }

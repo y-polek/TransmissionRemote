@@ -38,6 +38,10 @@ public class DrawerItem {
         return 0;
     }
 
+    public String getRightText() {
+        return null;
+    }
+
     public void itemSelected() {}
 
     public void setActive(boolean isActive) {
@@ -52,11 +56,14 @@ public class DrawerItem {
         TextView itemTextView = (TextView) itemView.findViewById(R.id.drawer_list_item_text);
         ImageView leftImageView = (ImageView) itemView.findViewById(R.id.item_image_left);
         ImageView rightImageView = (ImageView) itemView.findViewById(R.id.item_image_right);
+        TextView rightTextView = (TextView) itemView.findViewById(R.id.item_text_right);
 
         itemTextView.setText(getText());
         if (isActive) {
             itemTextView.setTypeface(null, Typeface.BOLD);
             itemTextView.setTextColor(context.getResources().getColor(R.color.drawer_list_active_item_text_color));
+            rightTextView.setTypeface(null, Typeface.BOLD);
+            rightTextView.setTextColor(context.getResources().getColor(R.color.drawer_list_active_item_text_color));
         }
 
         int leftImage = getLeftImage();
@@ -65,6 +72,10 @@ public class DrawerItem {
         rightImageView.setImageResource(rightImage);
         leftImageView.setVisibility(leftImage != 0 ? View.VISIBLE : View.GONE);
         rightImageView.setVisibility(rightImage != 0 ? View.VISIBLE : View.GONE);
+
+        String rightText = getRightText();
+        if (rightText != null) rightTextView.setText(rightText);
+        rightTextView.setVisibility(rightText != null ? View.VISIBLE : View.GONE);
 
         return itemView;
     }

@@ -9,6 +9,7 @@ public class FilterDrawerItem extends DrawerItem {
 
     private Filter filter;
     private TransmissionRemote app;
+    private int count = -1;
 
     public FilterDrawerItem(int textResId, Context context, Filter filter) {
         super(textResId, context);
@@ -21,7 +22,16 @@ public class FilterDrawerItem extends DrawerItem {
         app.setFilter(filter);
     }
 
+    @Override
+    public String getRightText() {
+        return count >= 0 ? Integer.toString(count) : null;
+    }
+
     public Filter getFilter() {
         return filter;
+    }
+
+    public void setCount(int count) {
+        this.count = count;
     }
 }
