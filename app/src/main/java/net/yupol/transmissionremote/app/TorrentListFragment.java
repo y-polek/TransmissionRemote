@@ -13,13 +13,13 @@ import android.widget.BaseAdapter;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.google.common.base.Predicate;
 import com.google.common.base.Strings;
 import com.google.common.collect.FluentIterable;
 
 import net.yupol.transmissionremote.app.PauseResumeButton.State;
 import net.yupol.transmissionremote.app.TransmissionRemote.OnFilterSelectedListener;
 import net.yupol.transmissionremote.app.TransmissionRemote.OnTorrentsUpdatedListener;
+import net.yupol.transmissionremote.app.filtering.Filter;
 import net.yupol.transmissionremote.app.model.json.Torrent;
 import net.yupol.transmissionremote.app.transport.BaseSpiceActivity;
 import net.yupol.transmissionremote.app.transport.TransportManager;
@@ -58,7 +58,7 @@ public class TorrentListFragment extends ListFragment {
 
     private OnFilterSelectedListener filterListener = new OnFilterSelectedListener() {
         @Override
-        public void filterSelected(Predicate<Torrent> filter) {
+        public void filterSelected(Filter filter) {
             updateTorrentList();
         }
     };
@@ -91,7 +91,7 @@ public class TorrentListFragment extends ListFragment {
                     itemView = convertView;
                 }
 
-                int bgColorId = position%2 == 0 ? R.color.torrent_list_odd_item_background
+                int bgColorId = position % 2 == 0 ? R.color.torrent_list_odd_item_background
                         : R.color.torrent_list_even_item_background;
                 itemView.setBackgroundColor(getResources().getColor(bgColorId));
 
@@ -197,8 +197,9 @@ public class TorrentListFragment extends ListFragment {
     }
 
     private void updateTorrentList() {
-        torrentsToShow = new ArrayList<>(FluentIterable.from(allTorrents).filter(app.getFilter()).toList());
-        new ArrayList<>();
+        Filter filter = app.getFilter();
+        torrentsToShow = new ArrayList<>(FluentIterable.from(allTorrents).filter(filter).toList());
+        setEmptyText(getResources().getString(filter.getEmptyMessageRes()));
         if (comparator != null)
             Collections.sort(torrentsToShow, comparator);
         ((BaseAdapter) getListAdapter()).notifyDataSetChanged();

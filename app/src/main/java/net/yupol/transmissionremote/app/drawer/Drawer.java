@@ -13,7 +13,7 @@ import net.yupol.transmissionremote.app.TransmissionRemote;
 import net.yupol.transmissionremote.app.server.Server;
 import net.yupol.transmissionremote.app.sorting.TorrentComparators;
 import net.yupol.transmissionremote.app.transport.TransportManager;
-import net.yupol.transmissionremote.app.utils.Filters;
+import net.yupol.transmissionremote.app.filtering.Filters;
 
 import java.util.ArrayList;
 import java.util.List;

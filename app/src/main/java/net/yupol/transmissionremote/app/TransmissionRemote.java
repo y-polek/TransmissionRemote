@@ -6,13 +6,13 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
 import com.google.common.base.Function;
-import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.google.common.collect.FluentIterable;
 
+import net.yupol.transmissionremote.app.filtering.Filter;
+import net.yupol.transmissionremote.app.filtering.Filters;
 import net.yupol.transmissionremote.app.model.json.Torrent;
 import net.yupol.transmissionremote.app.server.Server;
-import net.yupol.transmissionremote.app.utils.Filters;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -41,7 +41,7 @@ public class TransmissionRemote extends Application {
     private Collection<Torrent> torrents = Collections.emptyList();
     private List<OnTorrentsUpdatedListener> torrentsUpdatedListeners = new LinkedList<>();
 
-    private Predicate<Torrent> filter = Filters.ALL;
+    private Filter filter = Filters.ALL;
     private List<OnFilterSelectedListener> filterSelectedListeners = new LinkedList<>();
 
     @Override
@@ -170,14 +170,14 @@ public class TransmissionRemote extends Application {
         torrentsUpdatedListeners.remove(listener);
     }
 
-    public void setFilter(@Nonnull Predicate<Torrent> filter) {
+    public void setFilter(@Nonnull Filter filter) {
         this.filter = filter;
         for (OnFilterSelectedListener listener : filterSelectedListeners) {
             listener.filterSelected(filter);
         }
     }
 
-    public Predicate<Torrent> getFilter() {
+    public Filter getFilter() {
         return filter;
     }
 
@@ -227,6 +227,6 @@ public class TransmissionRemote extends Application {
     }
 
     public static interface OnFilterSelectedListener {
-        public void filterSelected(Predicate<Torrent> filter);
+        public void filterSelected(Filter filter);
     }
 }
