@@ -30,12 +30,12 @@ public class DrawerItem {
         return text;
     }
 
-    public Drawable getLeftImage() {
-        return null;
+    public int getLeftImage() {
+        return 0;
     }
 
-    public Drawable getRightImage() {
-        return null;
+    public int getRightImage() {
+        return 0;
     }
 
     public void itemSelected() {}
@@ -59,14 +59,12 @@ public class DrawerItem {
             itemTextView.setTextColor(context.getResources().getColor(R.color.drawer_list_active_item_text_color));
         }
 
-        Drawable leftImage = getLeftImage();
-        Drawable rightImage = getRightImage();
-        if (leftImage != null)
-            leftImageView.setImageDrawable(leftImage);
-        if (rightImage != null)
-            rightImageView.setImageDrawable(rightImage);
-        leftImageView.setVisibility(leftImage != null ? View.VISIBLE : View.GONE);
-        rightImageView.setVisibility(rightImage != null ? View.VISIBLE : View.GONE);
+        int leftImage = getLeftImage();
+        int rightImage = getRightImage();
+        leftImageView.setImageResource(leftImage);
+        rightImageView.setImageResource(rightImage);
+        leftImageView.setVisibility(leftImage != 0 ? View.VISIBLE : View.GONE);
+        rightImageView.setVisibility(rightImage != 0 ? View.VISIBLE : View.GONE);
 
         return itemView;
     }

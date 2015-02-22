@@ -12,9 +12,6 @@ import java.util.Comparator;
 
 public class SortDrawerItem extends DrawerItem {
 
-    private Drawable ascImage;
-    private Drawable descImage;
-
     private Comparator<Torrent> baseComparator;
     private SortOrder sortOrder = SortOrder.UNSORTED;
 
@@ -22,9 +19,6 @@ public class SortDrawerItem extends DrawerItem {
         super(textResId, c);
 
         baseComparator = comparator;
-
-        ascImage = c.getResources().getDrawable(R.drawable.arrow_up);
-        descImage = c.getResources().getDrawable(R.drawable.arrow_down);
     }
 
     public void setSorting(SortOrder sortOrder) {
@@ -41,11 +35,11 @@ public class SortDrawerItem extends DrawerItem {
     }
 
     @Override
-    public Drawable getRightImage() {
+    public int getRightImage() {
         switch (sortOrder) {
-            case ASCENDING: return ascImage;
-            case DESCENDING: return descImage;
-            default: return null;
+            case ASCENDING: return R.drawable.arrow_up;
+            case DESCENDING: return R.drawable.arrow_down;
+            default: return 0;
         }
     }
 }

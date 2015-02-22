@@ -3,6 +3,7 @@ package net.yupol.transmissionremote.app.drawer;
 import android.content.Context;
 import android.content.Intent;
 
+import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.preferences.RemotePreferencesActivity;
 
 public class RemotePrefsDrawerItem extends DrawerItem {
@@ -19,5 +20,10 @@ public class RemotePrefsDrawerItem extends DrawerItem {
         super.itemSelected();
 
         context.startActivity(new Intent(context, RemotePreferencesActivity.class));
+    }
+
+    @Override
+    public int getLeftImage() {
+        return R.drawable.ic_menu_preferences;
     }
 }
