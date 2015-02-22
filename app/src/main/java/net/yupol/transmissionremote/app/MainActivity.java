@@ -65,6 +65,7 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
     private TorrentUpdater torrentUpdater;
 
     private Drawer drawer;
+    private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle drawerToggle;
     private TorrentListFragment torrentListFragment;
     private ToolbarFragment toolbarFragment;
@@ -78,6 +79,7 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
 
         application = TransmissionRemote.getApplication(this);
 
+        drawerLayout = (DrawerLayout) findViewById(R.id.drawer);
         ListView drawerList = (ListView) findViewById(R.id.drawer_list);
 
         drawer = new Drawer(drawerList, getTransportManager());
@@ -194,6 +196,7 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
 
         item.itemSelected();
         group.childItemSelected(item);
+        drawerLayout.closeDrawers();
 
         if (group.getId() == Drawer.Groups.SERVERS.id()) {
             if (item instanceof NewServerDrawerItem) {
