@@ -8,6 +8,7 @@ import com.octo.android.robospice.request.listener.RequestListener;
 import net.yupol.transmissionremote.app.model.json.Torrent;
 import net.yupol.transmissionremote.app.model.json.Torrents;
 import net.yupol.transmissionremote.app.transport.request.GetTorrentsRequest;
+import net.yupol.transmissionremote.app.transport.request.Request;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -20,7 +21,7 @@ public class TorrentUpdater {
     private TransportManager transportManager;
     private TorrentUpdateListener listener;
     private UpdaterThread updaterThread;
-
+    private Request currentRequest;
 
     public TorrentUpdater(TransportManager transportManager, TorrentUpdateListener listener, int timeout) {
         this.transportManager = transportManager;
@@ -68,14 +69,17 @@ public class TorrentUpdater {
                     break;
                 }
             }
+            if (currentRequest != null) {
+                currentRequest.cancel();
+            }
         }
 
         private void sendRequest() {
-            final GetTorrentsRequest request = new GetTorrentsRequest();
-            transportManager.doRequest(request, new RequestListener<Torrents>() {
+            currentRequest = new GetTorrentsRequest();
+            transportManager.doRequest(currentRequest, new RequestListener<Torrents>() {
                 @Override
                 public void onRequestFailure(SpiceException spiceException) {
-                    Log.d(TAG, "GetTorrentsRequest failed. SC: " + request.getResponseStatusCode());
+                    Log.d(TAG, "GetTorrentsRequest failed. SC: " + currentRequest.getResponseStatusCode());
                     responseReceived = Boolean.TRUE;
                 }
 

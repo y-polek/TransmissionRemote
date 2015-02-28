@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
 import com.google.common.base.Function;
+import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.google.common.collect.FluentIterable;
 
@@ -13,9 +14,6 @@ import net.yupol.transmissionremote.app.filtering.Filter;
 import net.yupol.transmissionremote.app.filtering.Filters;
 import net.yupol.transmissionremote.app.model.json.Torrent;
 import net.yupol.transmissionremote.app.server.Server;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -48,34 +46,7 @@ public class TransmissionRemote extends Application {
     public void onCreate() {
         super.onCreate();
 
-        SharedPreferences sp = getSharedPreferences(SHARED_PREFS_NAME, MODE_PRIVATE);
-
-        Set<String> serversInJson = sp.getStringSet(KEY_SERVERS, Collections.<String>emptySet());
-        servers.addAll(FluentIterable.from(serversInJson).transform(new Function<String, Server>() {
-            @Override
-            public Server apply(String serverInJson) {
-                try {
-                    return Server.fromJson(new JSONObject(serverInJson));
-                } catch (JSONException e) {
-                    return null;
-                }
-            }
-        }).filter(Predicates.notNull()).toList());
-
-        String activeServerInJson = sp.getString(KEY_ACTIVE_SERVER, null);
-        if (activeServerInJson != null) {
-            try {
-                activeServer = Server.fromJson(new JSONObject(activeServerInJson));
-                fireActiveServerChangedEvent();
-            } catch (JSONException e) {
-                activeServer = null;
-            }
-        } else {
-            activeServer = null;
-        }
-        if (activeServer == null && !servers.isEmpty()) {
-            activeServer = servers.get(0);
-        }
+        restoreServers();
     }
 
     public static TransmissionRemote getApplication(Context context) {
@@ -88,12 +59,12 @@ public class TransmissionRemote extends Application {
 
     public void addServer(Server server) {
         servers.add(server);
-        persistServerList();
+        persistServers();
     }
 
     public void removeServer(Server server) {
         servers.remove(server);
-        persistServerList();
+        persistServers();
     }
 
     public Server getActiveServer() {
@@ -191,11 +162,11 @@ public class TransmissionRemote extends Application {
         filterSelectedListeners.remove(listener);
     }
 
-    private void persistServerList() {
+    public void persistServers() {
         Set<String> serversInJson = FluentIterable.from(servers).transform(new Function<Server, String>() {
             @Override
             public String apply(Server server) {
-                return server.toJson().toString();
+                return server.toJson();
             }
         }).toSet();
 
@@ -205,8 +176,36 @@ public class TransmissionRemote extends Application {
         editor.commit();
     }
 
+    private void restoreServers() {
+        SharedPreferences sp = getSharedPreferences(SHARED_PREFS_NAME, MODE_PRIVATE);
+
+        Set<String> serversInJson = sp.getStringSet(KEY_SERVERS, Collections.<String>emptySet());
+        servers.addAll(FluentIterable.from(serversInJson).transform(new Function<String, Server>() {
+            @Override public Server apply(String serverInJson) {
+                return Server.fromJson(serverInJson);
+            }
+        }).filter(Predicates.notNull()).toList());
+
+        String activeServerInJson = sp.getString(KEY_ACTIVE_SERVER, null);
+        if (activeServerInJson != null) {
+            final Server persistedActiveServer = Server.fromJson(activeServerInJson);
+            // active server should point to object in all servers list
+            activeServer = FluentIterable.from(servers).firstMatch(new Predicate<Server>() {
+                @Override public boolean apply(Server server) {
+                    return server.equals(persistedActiveServer);
+                }
+            }).orNull();
+            fireActiveServerChangedEvent();
+        } else {
+            activeServer = null;
+        }
+        if (activeServer == null && !servers.isEmpty()) {
+            activeServer = servers.get(0);
+        }
+    }
+
     private void persistActiveServer() {
-        String serverInJson = activeServer != null ? activeServer.toJson().toString() : null;
+        String serverInJson = activeServer != null ? activeServer.toJson() : null;
 
         SharedPreferences sp = getSharedPreferences(SHARED_PREFS_NAME, MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();

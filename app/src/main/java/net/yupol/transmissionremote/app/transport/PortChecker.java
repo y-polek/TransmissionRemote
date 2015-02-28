@@ -63,14 +63,20 @@ public class PortChecker {
     }
 
     private void checkPort(final CountDownLatch latch) {
+        Log.d(TAG, "checkPort " + System.identityHashCode(Thread.currentThread()));
         tm.doRequest(request, new RequestListener<PortTestResult>() {
             @Override
             public void onRequestFailure(SpiceException spiceException) {
+                Log.d(TAG, "request failure " + spiceException.getMessage());
+                Throwable cause = spiceException.getCause();
+                if (cause != null)
+                    Log.d(TAG, "cause: " + cause.getMessage());
                 latch.countDown();
             }
 
             @Override
             public void onRequestSuccess(PortTestResult portTestResult) {
+                Log.d(TAG, "request success");
                 if (listener != null) {
                     listener.onPortCheckResults(portTestResult.isOpen());
                 }
