@@ -6,12 +6,15 @@ import android.os.Parcelable;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
 
+import java.util.UUID;
+
 import javax.annotation.Nonnull;
 
 public class Server implements Parcelable {
 
     public static final String TAG = Server.class.getSimpleName();
 
+    private UUID id;
     private String name;
     private String host;
     private int port;
@@ -23,6 +26,7 @@ public class Server implements Parcelable {
     public Server(@Nonnull String name, @Nonnull String host, int port) {
         if (port <= 0 || port > 0xFFFF)
             throw new IllegalArgumentException("Port number value must be in range [1, 65535], actual value: " + port);
+        id = UUID.randomUUID();
         this.name = name;
         this.host = host;
         this.port = port;
@@ -85,6 +89,7 @@ public class Server implements Parcelable {
         if (port != server.port) return false;
         if (useAuthentication != server.useAuthentication) return false;
         if (!host.equals(server.host)) return false;
+        if (!id.equals(server.id)) return false;
         if (!name.equals(server.name)) return false;
         if (userName != null ? !userName.equals(server.userName) : server.userName != null)
             return false;
@@ -94,7 +99,8 @@ public class Server implements Parcelable {
 
     @Override
     public int hashCode() {
-        int result = name.hashCode();
+        int result = id.hashCode();
+        result = 31 * result + name.hashCode();
         result = 31 * result + host.hashCode();
         result = 31 * result + port;
         result = 31 * result + (useAuthentication ? 1 : 0);
@@ -105,11 +111,13 @@ public class Server implements Parcelable {
     @Override
     public String toString() {
         return "Server{" +
-                "userName='" + userName + '\'' +
+                "id=" + id +
                 ", name='" + name + '\'' +
                 ", host='" + host + '\'' +
                 ", port=" + port +
                 ", useAuthentication=" + useAuthentication +
+                ", userName='" + userName + '\'' +
+                ", lastSessionId='" + lastSessionId + '\'' +
                 '}';
     }
 
@@ -120,6 +128,7 @@ public class Server implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeSerializable(id);
         dest.writeString(name);
         dest.writeString(host);
         dest.writeInt(port);
@@ -135,6 +144,7 @@ public class Server implements Parcelable {
 
         @Override
         public Server createFromParcel(Parcel parcel) {
+            UUID id = (UUID) parcel.readSerializable();
             String name = parcel.readString();
             String host = parcel.readString();
             int port = parcel.readInt();
@@ -147,6 +157,7 @@ public class Server implements Parcelable {
             } else {
                 server = new Server(name, host, port);
             }
+            server.id = id;
             String sessionId = Strings.emptyToNull(parcel.readString());
             server.setLastSessionId(sessionId);
             return server;
