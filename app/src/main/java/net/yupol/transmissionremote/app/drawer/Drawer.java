@@ -10,15 +10,18 @@ import com.google.common.collect.FluentIterable;
 
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.TransmissionRemote;
+import net.yupol.transmissionremote.app.filtering.Filters;
+import net.yupol.transmissionremote.app.model.json.Torrent;
 import net.yupol.transmissionremote.app.server.Server;
 import net.yupol.transmissionremote.app.sorting.TorrentComparators;
 import net.yupol.transmissionremote.app.transport.TransportManager;
-import net.yupol.transmissionremote.app.utils.Filters;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public class Drawer implements ListView.OnItemClickListener {
 
@@ -84,10 +87,6 @@ public class Drawer implements ListView.OnItemClickListener {
         this.listener = listener;
     }
 
-    public void refresh() {
-        listAdapter.notifyDataSetChanged();
-    }
-
     public void addServers(Server... servers) {
         DrawerGroupItem group = findGroupById(Groups.SERVERS.id());
         for (Server server : servers) {
@@ -106,6 +105,16 @@ public class Drawer implements ListView.OnItemClickListener {
         group.activateServerItem(serverItem);
     }
 
+    /**
+     * Updates torrent count in Filters group.
+     * @param torrents collection of all torrents or {@code null} to clear count info
+     */
+    public void updateTorrentsCount(@Nullable Collection<Torrent> torrents) {
+        FilterDrawerGroupItem filterGroup = (FilterDrawerGroupItem) findGroupById(Groups.FILTERS.id());
+        filterGroup.updateCount(torrents);
+        refresh();
+    }
+
     private DrawerGroupItem findGroupById(final int id) {
         return FluentIterable.from(groups).firstMatch(new Predicate<DrawerGroupItem>() {
             @Override
@@ -113,6 +122,10 @@ public class Drawer implements ListView.OnItemClickListener {
                 return group.getId() == id;
             }
         }).orNull();
+    }
+
+    private void refresh() {
+        listAdapter.notifyDataSetChanged();
     }
 
     public interface OnItemSelectedListener {

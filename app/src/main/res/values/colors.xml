@@ -17,7 +17,10 @@
     <color name="torrent_list_odd_item_background">#ffe6e6e6</color>
     <color name="torrent_list_even_item_background">#fff5f5f5</color>
     <color name="torrent_list_error_text_color">#ff5e5e5e</color>
+    <color name="torrent_list_progressbar_background">#ffb9b9b9</color>
+    <color name="torrent_list_progressbar_progress_color">#ff669900</color>
+    <color name="torrent_list_progressbar_progress_disabled_color">#ff737373</color>
 
                     <!-- Toolbar -->
-    <color name="toolbar_background">#ffcccccc</color>
+    <color name="toolbar_background">#ffcccccc</color>"
 </resources>

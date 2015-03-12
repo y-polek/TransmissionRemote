@@ -20,6 +20,11 @@
     <string name="drawer_filters_downloading">Downloading</string>
     <string name="drawer_filters_seeding">Seeding</string>
     <string name="drawer_filters_paused">Paused</string>
+    <string name="filter_empty_all">No torrents</string>
+    <string name="filter_empty_active">No active torrents</string>
+    <string name="filter_empty_downloading">No downloading torrents</string>
+    <string name="filter_empty_seeding">No seeding torrents</string>
+    <string name="filter_empty_paused">No paused torrents</string>
 
     <!-- Sort by -->
     <string name="drawer_sort_by">Sort by</string>

@@ -69,6 +69,7 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
     private TorrentUpdater torrentUpdater;
 
     private Drawer drawer;
+    private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle drawerToggle;
     private TorrentListFragment torrentListFragment;
     private ToolbarFragment toolbarFragment;
@@ -82,6 +83,7 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
 
         application = TransmissionRemote.getApplication(this);
 
+        drawerLayout = (DrawerLayout) findViewById(R.id.drawer);
         ListView drawerList = (ListView) findViewById(R.id.drawer_list);
 
         drawer = new Drawer(drawerList, getTransportManager());
@@ -128,7 +130,6 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
     @Override
     protected void onResume() {
         super.onResume();
-        Log.d(TAG, "onResume");
         PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
 
         List<Server> servers = application.getServers();
@@ -137,8 +138,7 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
             intent.putExtra(AddServerActivity.PARAM_CANCELABLE, false);
             startActivityForResult(intent, REQUEST_CODE_SERVER_PARAMS);
         } else {
-            startPortChecker();
-            startPreferencesUpdateTimer();
+            switchServer(application.getActiveServer());
         }
     }
 
@@ -151,9 +151,11 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
         if (torrentUpdater != null) {
             torrentUpdater.stop();
         }
-        PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(this);
 
         stopPreferencesUpdateTimer();
+
+        PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(this);
+        application.persistServers();
     }
 
     @Override
@@ -198,13 +200,16 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
 
         item.itemSelected();
         group.childItemSelected(item);
+        drawerLayout.closeDrawers();
 
         if (group.getId() == Drawer.Groups.SERVERS.id()) {
             if (item instanceof NewServerDrawerItem) {
                 startActivityForResult(new Intent(this, AddServerActivity.class), REQUEST_CODE_SERVER_PARAMS);
             } else if (item instanceof ServerDrawerItem) {
                 Server server = ((ServerDrawerItem) item).getServer();
-                switchServer(server);
+                if (!server.equals(application.getActiveServer())) {
+                    switchServer(server);
+                }
             }
         } else if (group.getId() == Drawer.Groups.SORT_BY.id()) {
             if (torrentListFragment != null)
@@ -252,6 +257,8 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
 
         toolbarFragment.torrentsUpdated(torrents);
 
+        drawer.updateTorrentsCount(torrents);
+
         String text = Joiner.on("\n").join(FluentIterable.from(torrents).transform(new Function<Torrent, String>() {
             @Override
             public String apply(Torrent torrent) {
@@ -278,20 +285,20 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
     }
 
     private void switchServer(Server server) {
-        if (server.equals(application.getActiveServer())) return;
-
         application.setActiveServer(server);
         drawer.setActiveServer(server);
 
+        // Stop old server connections
         if (torrentUpdater != null) {
             torrentUpdater.stop();
         }
-
-        // stop old server's port checker if any and start for new server
         stopPortChecker();
         stopPreferencesUpdateTimer();
         showProgressbarFragment();
         toolbarFragment.reset();
+        drawer.updateTorrentsCount(null);
+
+        // Start new server connections
         startPortChecker();
         startPreferencesUpdateTimer();
     }
@@ -301,13 +308,6 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
             @Override
             public void onPortCheckResults(boolean isOpen) {
                 // FIXME: check if port is opened
-                    /*if (result.isOpen()) {
-                        torrentUpdater.start();
-                    } else {
-                        Toast.makeText(MainActivity.this, "Port " + application.getActiveServer().getPort() +
-                                " is closed. Check Transmission settings.", Toast.LENGTH_LONG).show();
-                        Log.d(TAG, "Port " + application.getActiveServer().getPort() + " is closed");
-                    }*/
                 torrentUpdater = new TorrentUpdater(getTransportManager(), MainActivity.this, application.getUpdateInterval());
                 torrentUpdater.start();
             }

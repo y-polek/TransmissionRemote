@@ -2,10 +2,11 @@ package net.yupol.transmissionremote.app.server;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.Log;
 
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.google.common.base.Strings;
+import com.google.gson.Gson;
+
+import java.util.UUID;
 
 import javax.annotation.Nonnull;
 
@@ -13,16 +14,19 @@ public class Server implements Parcelable {
 
     public static final String TAG = Server.class.getSimpleName();
 
+    private UUID id;
     private String name;
     private String host;
     private int port;
     private boolean useAuthentication;
     private String userName;
     private String password;
+    private String lastSessionId;
 
     public Server(@Nonnull String name, @Nonnull String host, int port) {
-        if (port <=0 || port > 0xFFFF)
+        if (port <= 0 || port > 0xFFFF)
             throw new IllegalArgumentException("Port number value must be in range [1, 65535], actual value: " + port);
+        id = UUID.randomUUID();
         this.name = name;
         this.host = host;
         this.port = port;
@@ -30,7 +34,8 @@ public class Server implements Parcelable {
         useAuthentication = false;
     }
 
-    public Server(String name, String host, int port, String userName, String password) {
+    public Server(@Nonnull String name, @Nonnull String host, int port,
+                  @Nonnull String userName, @Nonnull String password) {
         this(name, host, port);
 
         useAuthentication = true;
@@ -58,40 +63,20 @@ public class Server implements Parcelable {
         return password;
     }
 
-    public JSONObject toJson() {
-        JSONObject obj = new JSONObject();
-
-        try {
-            obj.put("name", name);
-            obj.put("host", host);
-            obj.put("port", port);
-            obj.put("useAuthentication", useAuthentication);
-            obj.putOpt("userName", userName);
-            obj.putOpt("password", password);
-        } catch (JSONException e) {
-            Log.e(TAG, "Failed to create JSON object from Server object: " + this, e);
-        }
-
-        return obj;
+    public void setLastSessionId(String sessionId) {
+        lastSessionId = sessionId;
     }
 
-    public static Server fromJson(JSONObject obj) {
-        try {
-            String name = obj.getString("name");
-            String host = obj.getString("host");
-            int port = obj.getInt("port");
-            boolean useAuthentication = obj.getBoolean("useAuthentication");
-            if (useAuthentication) {
-                String userName = obj.optString("userName", null);
-                String password = obj.optString("password", null);
-                return new Server(name, host, port, userName, password);
-            } else {
-                return new Server(name, host, port);
-            }
-        } catch (JSONException e) {
-            Log.e(TAG, "Failed to create Server object from JSON object: " + obj, e);
-            return null;
-        }
+    public String getLastSessionId() {
+        return lastSessionId;
+    }
+
+    public String toJson() {
+        return new Gson().toJson(this);
+    }
+
+    public static Server fromJson(String jsonObj) {
+        return new Gson().fromJson(jsonObj, Server.class);
     }
 
     @Override
@@ -104,9 +89,8 @@ public class Server implements Parcelable {
         if (port != server.port) return false;
         if (useAuthentication != server.useAuthentication) return false;
         if (!host.equals(server.host)) return false;
+        if (!id.equals(server.id)) return false;
         if (!name.equals(server.name)) return false;
-        if (password != null ? !password.equals(server.password) : server.password != null)
-            return false;
         if (userName != null ? !userName.equals(server.userName) : server.userName != null)
             return false;
 
@@ -115,23 +99,25 @@ public class Server implements Parcelable {
 
     @Override
     public int hashCode() {
-        int result = name.hashCode();
+        int result = id.hashCode();
+        result = 31 * result + name.hashCode();
         result = 31 * result + host.hashCode();
         result = 31 * result + port;
         result = 31 * result + (useAuthentication ? 1 : 0);
         result = 31 * result + (userName != null ? userName.hashCode() : 0);
-        result = 31 * result + (password != null ? password.hashCode() : 0);
         return result;
     }
 
     @Override
     public String toString() {
         return "Server{" +
-                "name='" + name + '\'' +
+                "id=" + id +
+                ", name='" + name + '\'' +
                 ", host='" + host + '\'' +
                 ", port=" + port +
                 ", useAuthentication=" + useAuthentication +
                 ", userName='" + userName + '\'' +
+                ", lastSessionId='" + lastSessionId + '\'' +
                 '}';
     }
 
@@ -142,6 +128,7 @@ public class Server implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeSerializable(id);
         dest.writeString(name);
         dest.writeString(host);
         dest.writeInt(port);
@@ -150,23 +137,30 @@ public class Server implements Parcelable {
             dest.writeString(userName);
             dest.writeString(password);
         }
+        dest.writeString(Strings.nullToEmpty(lastSessionId));
     }
 
     public static final Creator<Server> CREATOR = new Creator<Server>() {
 
         @Override
         public Server createFromParcel(Parcel parcel) {
+            UUID id = (UUID) parcel.readSerializable();
             String name = parcel.readString();
             String host = parcel.readString();
             int port = parcel.readInt();
-            boolean useAuthentication = parcel.readByte() == 0 ? false : true;
+            Server server;
+            boolean useAuthentication = parcel.readByte() != 0;
             if (useAuthentication) {
                 String userName = parcel.readString();
                 String password = parcel.readString();
-                return new Server(name, host, port, userName, password);
+                server = new Server(name, host, port, userName, password);
             } else {
-                return new Server(name, host, port);
+                server = new Server(name, host, port);
             }
+            server.id = id;
+            String sessionId = Strings.emptyToNull(parcel.readString());
+            server.setLastSessionId(sessionId);
+            return server;
         }
 
         @Override

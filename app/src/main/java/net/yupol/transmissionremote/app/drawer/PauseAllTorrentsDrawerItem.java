@@ -1,6 +1,7 @@
 package net.yupol.transmissionremote.app.drawer;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.TransmissionRemote;
@@ -24,5 +25,10 @@ public class PauseAllTorrentsDrawerItem extends DrawerItem {
     public void itemSelected() {
 
         transportManager.doRequest(new StopTorrentRequest(app.getTorrents()), null);
+    }
+
+    @Override
+    public int getLeftImage() {
+        return R.drawable.ic_media_pause;
     }
 }

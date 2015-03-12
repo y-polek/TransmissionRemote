@@ -22,4 +22,9 @@ public class StartAllTorrentsDrawerItem extends DrawerItem {
     public void itemSelected() {
         transportManager.doRequest(new StartTorrentRequest(app.getTorrents()), null);
     }
+
+    @Override
+    public int getLeftImage() {
+        return R.drawable.ic_media_play;
+    }
 }

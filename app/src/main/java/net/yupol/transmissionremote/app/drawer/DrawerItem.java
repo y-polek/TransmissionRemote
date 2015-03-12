@@ -30,11 +30,15 @@ public class DrawerItem {
         return text;
     }
 
-    public Drawable getLeftImage() {
-        return null;
+    public int getLeftImage() {
+        return 0;
     }
 
-    public Drawable getRightImage() {
+    public int getRightImage() {
+        return 0;
+    }
+
+    public String getRightText() {
         return null;
     }
 
@@ -52,21 +56,26 @@ public class DrawerItem {
         TextView itemTextView = (TextView) itemView.findViewById(R.id.drawer_list_item_text);
         ImageView leftImageView = (ImageView) itemView.findViewById(R.id.item_image_left);
         ImageView rightImageView = (ImageView) itemView.findViewById(R.id.item_image_right);
+        TextView rightTextView = (TextView) itemView.findViewById(R.id.item_text_right);
 
         itemTextView.setText(getText());
         if (isActive) {
             itemTextView.setTypeface(null, Typeface.BOLD);
             itemTextView.setTextColor(context.getResources().getColor(R.color.drawer_list_active_item_text_color));
+            rightTextView.setTypeface(null, Typeface.BOLD);
+            rightTextView.setTextColor(context.getResources().getColor(R.color.drawer_list_active_item_text_color));
         }
 
-        Drawable leftImage = getLeftImage();
-        Drawable rightImage = getRightImage();
-        if (leftImage != null)
-            leftImageView.setImageDrawable(leftImage);
-        if (rightImage != null)
-            rightImageView.setImageDrawable(rightImage);
-        leftImageView.setVisibility(leftImage != null ? View.VISIBLE : View.GONE);
-        rightImageView.setVisibility(rightImage != null ? View.VISIBLE : View.GONE);
+        int leftImage = getLeftImage();
+        int rightImage = getRightImage();
+        leftImageView.setImageResource(leftImage);
+        rightImageView.setImageResource(rightImage);
+        leftImageView.setVisibility(leftImage != 0 ? View.VISIBLE : View.GONE);
+        rightImageView.setVisibility(rightImage != 0 ? View.VISIBLE : View.GONE);
+
+        String rightText = getRightText();
+        if (rightText != null) rightTextView.setText(rightText);
+        rightTextView.setVisibility(rightText != null ? View.VISIBLE : View.GONE);
 
         return itemView;
     }
