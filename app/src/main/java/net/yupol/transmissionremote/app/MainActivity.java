@@ -3,17 +3,21 @@ package net.yupol.transmissionremote.app;
 import android.app.ActionBar;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
+import android.util.Base64;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
@@ -25,6 +29,7 @@ import net.yupol.transmissionremote.app.drawer.Drawer;
 import net.yupol.transmissionremote.app.drawer.DrawerGroupItem;
 import net.yupol.transmissionremote.app.drawer.DrawerItem;
 import net.yupol.transmissionremote.app.drawer.NewServerDrawerItem;
+import net.yupol.transmissionremote.app.drawer.OpenTorrentDrawerItem;
 import net.yupol.transmissionremote.app.drawer.ServerDrawerItem;
 import net.yupol.transmissionremote.app.drawer.ServerPrefsDrawerItem;
 import net.yupol.transmissionremote.app.drawer.SortDrawerGroupItem;
@@ -39,9 +44,15 @@ import net.yupol.transmissionremote.app.transport.TorrentUpdater;
 import net.yupol.transmissionremote.app.transport.request.SessionGetRequest;
 import net.yupol.transmissionremote.app.transport.request.SessionSetRequest;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -56,9 +67,12 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
 
     public static int REQUEST_CODE_SERVER_PARAMS = 1;
     public static int REQUEST_CODE_SERVER_PREFERENCES = 2;
+    public static int REQUEST_CODE_CHOOSE_TORRENT = 3;
 
     private static String TAG_PROGRESSBAR = "tag_progressbar";
     private static String TAG_TORRENT_LIST = "tag_torrent_list";
+
+    private static final String MIME_TYPE_TORRENT = "application/x-bittorrent";
 
     private TransmissionRemote application;
     private PortChecker portChecker;
@@ -187,6 +201,14 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
                     }
                 });
             }
+        } else if (requestCode == REQUEST_CODE_CHOOSE_TORRENT) {
+            if (resultCode == RESULT_OK) {
+                Uri uri = data.getData();
+                Log.d(TAG, "File URI: " + uri);
+                Log.d(TAG, "Path: " + uri.getPath());
+
+                openTorrent(new File(uri.getPath()));
+            }
         }
     }
 
@@ -215,6 +237,10 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
                 startActivityForResult(
                         new Intent(this, ServerPreferencesActivity.class),
                         REQUEST_CODE_SERVER_PREFERENCES);
+            }
+        } else if (group.getId() == Drawer.Groups.ACTIONS.id()) {
+            if (item instanceof OpenTorrentDrawerItem) {
+                showFileChooser();
             }
         }
     }
@@ -357,5 +383,49 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
             ft.replace(R.id.torrent_list_container, torrentListFragment, TAG_TORRENT_LIST);
             ft.commit();
         }
+    }
+
+    private void showFileChooser() {
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType(MIME_TYPE_TORRENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+
+        try {
+            startActivityForResult(Intent.createChooser(intent, "Select torrent file"), REQUEST_CODE_CHOOSE_TORRENT);
+        } catch (ActivityNotFoundException ex) {
+            Toast.makeText(this, getResources().getString(R.string.error_install_file_manager_msg), Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void openTorrent(File file) {
+        if (!file.exists()) {
+            String name = file.getName();
+            String msg = getResources().getString(R.string.error_file_does_not_exists_msg, name.isEmpty() ? "" : "'" + name + "'");
+            Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String extension = FilenameUtils.getExtension(file.getName());
+        if (!extension.equals("torrent")) {
+            String msg = getResources().getString(R.string.error_wrong_file_msg, extension.isEmpty() ? "" : "'." + extension + "'");
+            Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        byte[] content;
+        try {
+            content = FileUtils.readFileToByteArray(file);
+        } catch (IOException e) {
+            Toast.makeText(this, getResources().getString(R.string.error_cannot_read_file_msg), Toast.LENGTH_SHORT).show();
+            return;
+        }
+        String encodedContent = readAsDataURL(content);
+        int index = encodedContent.indexOf("base64,");
+        Log.d(TAG, "index: " + index);
+        Log.d(TAG, "Content: " + encodedContent);
+    }
+
+    private static String readAsDataURL(byte[] content) {
+        return "data:" + MIME_TYPE_TORRENT + ";base64," + Base64.encodeToString(content, Base64.DEFAULT);
     }
 }
