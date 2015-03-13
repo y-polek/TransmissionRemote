@@ -4,12 +4,13 @@ import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public abstract class PropagateRequestListener<RESULT> implements RequestListener<RESULT> {
 
     private RequestListener<RESULT> listener;
 
-    public PropagateRequestListener(@Nonnull RequestListener<RESULT> listener) {
+    public PropagateRequestListener(@Nullable RequestListener<RESULT> listener) {
         this.listener = listener;
     }
 
@@ -24,7 +25,7 @@ public abstract class PropagateRequestListener<RESULT> implements RequestListene
     @Override
     public final void onRequestSuccess(RESULT result) {
         boolean propagate = onSuccess(result);
-        if (propagate) {
+        if (propagate && listener != null) {
             listener.onRequestSuccess(result);
         }
     }

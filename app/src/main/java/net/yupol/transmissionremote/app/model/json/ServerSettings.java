@@ -11,6 +11,7 @@ public class ServerSettings {
     public static final String ALT_SPEED_LIMIT_DOWN = "alt-speed-down";
     public static final String ALT_SPEED_LIMIT_UP = "alt-speed-up";
     public static final String ALT_SPEED_LIMIT_ENABLED = "alt-speed-enabled";
+    public static final String DOWNLOAD_DIR = "download-dir";
 
     @Key(SPEED_LIMIT_DOWN)
     private int speedLimitDown;
@@ -32,6 +33,9 @@ public class ServerSettings {
 
     @Key(ALT_SPEED_LIMIT_ENABLED)
     private boolean altSpeedEnabled;
+
+    @Key(DOWNLOAD_DIR)
+    private String downloadDir;
 
     public int getSpeedLimitDown() {
         return speedLimitDown;
@@ -61,6 +65,10 @@ public class ServerSettings {
         return altSpeedEnabled;
     }
 
+    public String getDownloadDir() {
+        return downloadDir;
+    }
+
     @Override
     public String toString() {
         return "ServerSettings{" +
@@ -71,6 +79,7 @@ public class ServerSettings {
                 ", altSpeedDown=" + altSpeedDown +
                 ", altSpeedUp=" + altSpeedUp +
                 ", altSpeedEnabled=" + altSpeedEnabled +
+                ", downloadDir=" + downloadDir +
                 '}';
     }
 }

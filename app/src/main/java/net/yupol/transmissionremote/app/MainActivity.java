@@ -41,16 +41,14 @@ import net.yupol.transmissionremote.app.server.Server;
 import net.yupol.transmissionremote.app.transport.BaseSpiceActivity;
 import net.yupol.transmissionremote.app.transport.PortChecker;
 import net.yupol.transmissionremote.app.transport.TorrentUpdater;
+import net.yupol.transmissionremote.app.transport.request.AddTorrentByFileRequest;
 import net.yupol.transmissionremote.app.transport.request.SessionGetRequest;
 import net.yupol.transmissionremote.app.transport.request.SessionSetRequest;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -407,25 +405,15 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
 
         String extension = FilenameUtils.getExtension(file.getName());
         if (!extension.equals("torrent")) {
-            String msg = getResources().getString(R.string.error_wrong_file_msg, extension.isEmpty() ? "" : "'." + extension + "'");
+            String msg = getResources().getString(R.string.error_wrong_file_extension_msg, extension.isEmpty() ? "" : "'." + extension + "'");
             Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
             return;
         }
 
-        byte[] content;
         try {
-            content = FileUtils.readFileToByteArray(file);
+            getTransportManager().doRequest(new AddTorrentByFileRequest(file, "/Users/yury/Downloads", true), null);
         } catch (IOException e) {
             Toast.makeText(this, getResources().getString(R.string.error_cannot_read_file_msg), Toast.LENGTH_SHORT).show();
-            return;
         }
-        String encodedContent = readAsDataURL(content);
-        int index = encodedContent.indexOf("base64,");
-        Log.d(TAG, "index: " + index);
-        Log.d(TAG, "Content: " + encodedContent);
-    }
-
-    private static String readAsDataURL(byte[] content) {
-        return "data:" + MIME_TYPE_TORRENT + ";base64," + Base64.encodeToString(content, Base64.DEFAULT);
     }
 }
