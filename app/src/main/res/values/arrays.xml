@@ -19,4 +19,9 @@
         <item>30</item>
         <item>60</item>
     </string-array>
+
+    <string-array name="open_torrent_by_entries">
+        <item>File</item>
+        <item>Address</item>
+    </string-array>
 </resources>

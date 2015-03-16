@@ -12,7 +12,6 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
-import android.util.Base64;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -35,6 +34,9 @@ import net.yupol.transmissionremote.app.drawer.ServerPrefsDrawerItem;
 import net.yupol.transmissionremote.app.drawer.SortDrawerGroupItem;
 import net.yupol.transmissionremote.app.model.json.ServerSettings;
 import net.yupol.transmissionremote.app.model.json.Torrent;
+import net.yupol.transmissionremote.app.opentorrent.DownloadLocationDialogFragment;
+import net.yupol.transmissionremote.app.opentorrent.OpenAddressDialogFragment;
+import net.yupol.transmissionremote.app.opentorrent.OpenByDialogFragment;
 import net.yupol.transmissionremote.app.preferences.ServerPreferencesActivity;
 import net.yupol.transmissionremote.app.server.AddServerActivity;
 import net.yupol.transmissionremote.app.server.Server;
@@ -42,6 +44,7 @@ import net.yupol.transmissionremote.app.transport.BaseSpiceActivity;
 import net.yupol.transmissionremote.app.transport.PortChecker;
 import net.yupol.transmissionremote.app.transport.TorrentUpdater;
 import net.yupol.transmissionremote.app.transport.request.AddTorrentByFileRequest;
+import net.yupol.transmissionremote.app.transport.request.AddTorrentByUrlRequest;
 import net.yupol.transmissionremote.app.transport.request.SessionGetRequest;
 import net.yupol.transmissionremote.app.transport.request.SessionSetRequest;
 
@@ -69,6 +72,9 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
 
     private static String TAG_PROGRESSBAR = "tag_progressbar";
     private static String TAG_TORRENT_LIST = "tag_torrent_list";
+    private static String TAG_OPEN_TORRENT_DIALOG = "tag_open_torrent_dialog";
+    private static String TAG_OPEN_TORRENT_BY_ADDRESS_DIALOG = "tag_open_torrent_by_address_dialog";
+    private static String TAG_DOWNLOAD_LOCATION_DIALOG = "tag_download_location_dialog";
 
     private static final String MIME_TYPE_TORRENT = "application/x-bittorrent";
 
@@ -238,7 +244,27 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
             }
         } else if (group.getId() == Drawer.Groups.ACTIONS.id()) {
             if (item instanceof OpenTorrentDrawerItem) {
-                showFileChooser();
+                new OpenByDialogFragment().show(getFragmentManager(), TAG_OPEN_TORRENT_DIALOG, new OpenByDialogFragment.OnSelectionListener() {
+                    @Override
+                    public void byFile() {
+                        showFileChooser();
+                    }
+
+                    @Override
+                    public void byAddress() {
+                        new OpenAddressDialogFragment().show(getFragmentManager(), MainActivity.TAG_OPEN_TORRENT_BY_ADDRESS_DIALOG, new OpenAddressDialogFragment.OnResultListener() {
+                            @Override
+                            public void onOpenPressed(final String uri) {
+                                new DownloadLocationDialogFragment().show(getFragmentManager(), TAG_DOWNLOAD_LOCATION_DIALOG, new DownloadLocationDialogFragment.OnResultListener() {
+                                    @Override
+                                    public void onAddPressed(String downloadDir, boolean startWhenAdded) {
+                                        getTransportManager().doRequest(new AddTorrentByUrlRequest(uri, downloadDir, !startWhenAdded), null);
+                                    }
+                                });
+                            }
+                        });
+                    }
+                });
             }
         }
     }
@@ -348,6 +374,7 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
                     @Override
                     public void onRequestSuccess(ServerSettings serverSettings) {
                         application.setSpeedLimitEnabled(serverSettings.isAltSpeedEnabled());
+                        application.setDefaultDownloadDir(serverSettings.getDownloadDir());
                     }
                 });
             }
@@ -389,13 +416,17 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
         intent.addCategory(Intent.CATEGORY_OPENABLE);
 
         try {
-            startActivityForResult(Intent.createChooser(intent, "Select torrent file"), REQUEST_CODE_CHOOSE_TORRENT);
+            startActivityForResult(
+                    Intent.createChooser(intent, getResources().getString(R.string.select_torrent_file)),
+                    MainActivity.REQUEST_CODE_CHOOSE_TORRENT);
         } catch (ActivityNotFoundException ex) {
-            Toast.makeText(this, getResources().getString(R.string.error_install_file_manager_msg), Toast.LENGTH_LONG).show();
+            Toast.makeText(this,
+                    getResources().getString(R.string.error_install_file_manager_msg),
+                    Toast.LENGTH_LONG).show();
         }
     }
 
-    private void openTorrent(File file) {
+    private void openTorrent(final File file) {
         if (!file.exists()) {
             String name = file.getName();
             String msg = getResources().getString(R.string.error_file_does_not_exists_msg, name.isEmpty() ? "" : "'" + name + "'");
@@ -410,10 +441,15 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
             return;
         }
 
-        try {
-            getTransportManager().doRequest(new AddTorrentByFileRequest(file, "/Users/yury/Downloads", true), null);
-        } catch (IOException e) {
-            Toast.makeText(this, getResources().getString(R.string.error_cannot_read_file_msg), Toast.LENGTH_SHORT).show();
-        }
+        new DownloadLocationDialogFragment().show(getFragmentManager(), TAG_DOWNLOAD_LOCATION_DIALOG, new DownloadLocationDialogFragment.OnResultListener() {
+            @Override
+            public void onAddPressed(String downloadDir, boolean startWhenAdded) {
+                try {
+                    getTransportManager().doRequest(new AddTorrentByFileRequest(file, downloadDir, !startWhenAdded), null);
+                } catch (IOException e) {
+                    Toast.makeText(MainActivity.this, getResources().getString(R.string.error_cannot_read_file_msg), Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 }

@@ -42,6 +42,8 @@ public class TransmissionRemote extends Application {
     private Filter filter = Filters.ALL;
     private List<OnFilterSelectedListener> filterSelectedListeners = new LinkedList<>();
 
+    private String defaultDownloadDir;
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -174,6 +176,14 @@ public class TransmissionRemote extends Application {
         SharedPreferences.Editor editor = sp.edit();
         editor.putStringSet(KEY_SERVERS, serversInJson);
         editor.commit();
+    }
+
+    public void setDefaultDownloadDir(String dir) {
+        defaultDownloadDir = dir;
+    }
+
+    public String getDefaultDownloadDir() {
+        return defaultDownloadDir;
     }
 
     private void restoreServers() {

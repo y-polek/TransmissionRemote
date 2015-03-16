@@ -41,4 +41,8 @@
 
                 <!-- Toolbar -->
     <dimen name="toolbar_text_size">20sp</dimen>
+
+                <!-- Open torrent -->
+    <dimen name="free_space_text_size">16sp</dimen>
+    <dimen name="free_space_progress_bar_size">22sp</dimen>
 </resources>
