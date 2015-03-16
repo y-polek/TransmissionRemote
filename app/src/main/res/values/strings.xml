@@ -70,6 +70,8 @@
 
     <!-- Torrent List -->
     <string name="unknown_error_message">Unknown error</string>
+    <string name="downloaded_text">%1$s of %2$s (%3$s)</string>
+    <string name="uploaded_text">%1$s (Ratio: %2$.2f)</string>
 
     <!-- Open torrent -->
     <string name="error_install_file_manager_msg">Please, install a file manager</string>

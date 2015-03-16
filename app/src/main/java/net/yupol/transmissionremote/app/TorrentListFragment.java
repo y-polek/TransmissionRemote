@@ -100,8 +100,24 @@ public class TorrentListFragment extends ListFragment {
                 TextView nameText = (TextView) itemView.findViewById(R.id.name);
                 nameText.setText(torrent.getName());
 
-                TextView donePercentageText = (TextView) itemView.findViewById(R.id.done_percentage);
-                donePercentageText.setText(String.format("%.2f%%", 100 * torrent.getPercentDone()));
+                String totalSize = SizeUtils.displayableSize(torrent.getTotalSize());
+                String downloadedText;
+                if (torrent.getPercentDone() == 1.0) {
+                    downloadedText = totalSize;
+                } else {
+                    String downloadedSize = SizeUtils.displayableSize((long) (torrent.getPercentDone() * torrent.getTotalSize()));
+                    String percentDone = String.format("%.2f%%", 100 * torrent.getPercentDone());
+                    downloadedText = getString(R.string.downloaded_text, downloadedSize, totalSize, percentDone);
+                }
+
+                TextView downloadedTextView = (TextView) itemView.findViewById(R.id.downloaded_text);
+                downloadedTextView.setText(downloadedText);
+
+                double uploadRatio = Math.max(torrent.getUploadRatio(), 0.0);
+                String uploadedText = getString(R.string.uploaded_text,
+                        SizeUtils.displayableSize(torrent.getUploadedSize()), uploadRatio);
+                TextView uploadedTextView = (TextView) itemView.findViewById(R.id.uploaded_text);
+                uploadedTextView.setText(uploadedText);
 
                 ProgressBar progressBar = (ProgressBar) itemView.findViewById(R.id.progress_bar);
                 progressBar.setProgress((int) (torrent.getPercentDone() * progressBar.getMax()));

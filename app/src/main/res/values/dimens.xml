@@ -6,7 +6,8 @@
     <dimen name="default_edit_text_height">48dp</dimen>
     <dimen name="default_edit_text_padding">4dp</dimen>
     <dimen name="default_padding">8dp</dimen>
-    <dimen name="default_big_padding">16dp</dimen>
+    <dimen name="default_padding_big">16dp</dimen>
+    <dimen name="default_padding_small">2dp</dimen>
 
                 <!-- Drawer -->
     <dimen name="drawer_list_group_text_size">18sp</dimen>
@@ -32,6 +33,7 @@
     <dimen name="torrent_list_status_text_size">14sp</dimen>
     <dimen name="torrent_list_error_icon_size">21dp</dimen>
     <dimen name="torrent_list_progressbar_height">3dp</dimen>
+    <dimen name="torrent_list_down_up_icon_size">15dp</dimen>
 
                 <!-- Preferences -->
     <dimen name="pref_title_size">20sp</dimen>

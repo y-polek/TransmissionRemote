@@ -28,7 +28,7 @@ public class TorrentMetadata {
     public static final String TRACKERS = "trackers";
     public static final String DOWNLOAD_DIR = "downloadDir";
     public static final String UPLOADED_EVER = "uploadedEver";
-    public static final String UPLOAD_RATION = "uploadRatio";
+    public static final String UPLOAD_RATIO = "uploadRatio";
     public static final String WEBSEEDS_SENDING_TO_US = "webseedsSendingToUs";
     public static final String ACTIVITY_DATE = "activityDate";
     public static final String CORRUPT_EVER = "corruptEver";

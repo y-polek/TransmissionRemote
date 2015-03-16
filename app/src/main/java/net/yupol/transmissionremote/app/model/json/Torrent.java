@@ -12,6 +12,8 @@ public class Torrent {
     @Key("rateDownload") private int downloadRate;
     @Key("rateUpload") private int uploadRate;
     @Key private int leftUntilDone;
+    @Key("uploadedEver") private long uploadedSize;
+    @Key private double uploadRatio;
     @Key("error") private int errorId;
     private Error error;
     @Key private String errorString;
@@ -52,6 +54,14 @@ public class Torrent {
         return leftUntilDone;
     }
 
+    public long getUploadedSize() {
+        return uploadedSize;
+    }
+
+    public double getUploadRatio() {
+        return uploadRatio;
+    }
+
     public Error getError() {
         if (error == null) error = Error.getById(errorId);
         return error;
@@ -73,6 +83,8 @@ public class Torrent {
                 ", downloadRate=" + downloadRate +
                 ", uploadRate=" + uploadRate +
                 ", leftUntilDone=" + leftUntilDone +
+                ", uploadedSize=" + uploadedSize +
+                ", uploadRatio=" + uploadRatio +
                 '}';
     }
 

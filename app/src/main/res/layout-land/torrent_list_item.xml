@@ -39,13 +39,31 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="@dimen/torrent_list_status_text_size"/>
-            <ImageView android:id="@+id/download_icon"
-                android:layout_width="@dimen/torrent_list_down_up_icon_size"
+            <TextView android:id="@+id/uploaded_text"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingTop="@dimen/default_padding_small"
-                android:paddingBottom="@dimen/default_padding_small"
+                android:visibility="gone"/>
+
+            <ImageView android:id="@+id/upload_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/default_padding_small"
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
+                android:layout_alignTop="@id/downloaded_text"
+                android:layout_alignBottom="@id/downloaded_text"
+                android:src="@drawable/upload_icon"/>
+            <TextView android:id="@+id/upload_rate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toLeftOf="@id/upload_icon"
+                android:gravity="right"
+                android:textSize="@dimen/torrent_list_status_text_size"/>
+            <ImageView android:id="@+id/download_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/default_padding_small"
+                android:layout_toLeftOf="@id/upload_rate"
                 android:layout_alignTop="@id/downloaded_text"
                 android:layout_alignBottom="@id/downloaded_text"
                 android:src="@drawable/download_icon"/>
@@ -53,35 +71,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_toLeftOf="@id/download_icon"
-                android:gravity="end"
-                android:layout_marginRight="@dimen/default_text_margin"
-                android:textSize="@dimen/torrent_list_status_text_size"/>
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <TextView android:id="@+id/uploaded_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="@dimen/torrent_list_status_text_size"/>
-
-            <ImageView android:id="@+id/upload_icon"
-                android:layout_width="@dimen/torrent_list_down_up_icon_size"
-                android:layout_height="wrap_content"
-                android:paddingTop="@dimen/default_padding_small"
-                android:paddingBottom="@dimen/default_padding_small"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
-                android:layout_alignTop="@id/uploaded_text"
-                android:layout_alignBottom="@id/uploaded_text"
-                android:src="@drawable/upload_icon"/>
-            <TextView android:id="@+id/upload_rate"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_toLeftOf="@id/upload_icon"
-                android:gravity="end"
-                android:layout_marginRight="@dimen/default_text_margin"
+                android:gravity="right"
                 android:textSize="@dimen/torrent_list_status_text_size"/>
         </RelativeLayout>
 
