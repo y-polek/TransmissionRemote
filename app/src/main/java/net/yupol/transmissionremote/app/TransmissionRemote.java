@@ -32,6 +32,7 @@ public class TransmissionRemote extends Application {
     private List<Server> servers = new LinkedList<>();
     private Server activeServer;
     private List<OnActiveServerChangedListener> activeServerListeners = new LinkedList<>();
+    private List<OnServerListChangedListener> serverListListeners = new LinkedList<>();
 
     private boolean speedLimitEnabled;
     private List<OnSpeedLimitChangedListener> speedLimitChangedListeners = new LinkedList<>();
@@ -62,11 +63,27 @@ public class TransmissionRemote extends Application {
     public void addServer(Server server) {
         servers.add(server);
         persistServers();
+        for (OnServerListChangedListener l : serverListListeners) {
+            l.serverAdded(server);
+        }
     }
 
     public void removeServer(Server server) {
         servers.remove(server);
+        if (server.equals(getActiveServer())) {
+            setActiveServer(!servers.isEmpty() ? servers.get(0) : null);
+        }
         persistServers();
+        for (OnServerListChangedListener l : serverListListeners) {
+            l.serverRemoved(server);
+        }
+    }
+
+    public void updateServer(Server server) {
+        persistServers();
+        for (OnServerListChangedListener l : serverListListeners) {
+            l.serverUpdated(server);
+        }
     }
 
     public Server getActiveServer() {
@@ -87,6 +104,16 @@ public class TransmissionRemote extends Application {
 
     public void removeOnActiveServerChangedListener(@Nonnull OnActiveServerChangedListener listener) {
         activeServerListeners.remove(listener);
+    }
+
+    public void addOnServerListChangedListener(@Nonnull OnServerListChangedListener listener) {
+        if (!serverListListeners.contains(listener)) {
+            serverListListeners.add(listener);
+        }
+    }
+
+    public void removeOnServerListChangedListener(@Nonnull OnServerListChangedListener listener) {
+        serverListListeners.remove(listener);
     }
 
     private void fireActiveServerChangedEvent() {
@@ -227,14 +254,18 @@ public class TransmissionRemote extends Application {
         public void serverChanged(Server newServer);
     }
 
+    public static interface OnServerListChangedListener {
+        public void serverAdded(Server server);
+        public void serverRemoved(Server server);
+        public void serverUpdated(Server server);
+    }
+
     public static interface OnSpeedLimitChangedListener {
         public void speedLimitEnabledChanged(boolean isEnabled);
     }
-
     public static interface OnTorrentsUpdatedListener {
         public void torrentsUpdated(Collection<Torrent> torrents);
     }
-
     public static interface OnFilterSelectedListener {
         public void filterSelected(Filter filter);
     }

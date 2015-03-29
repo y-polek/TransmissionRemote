@@ -27,7 +27,6 @@ import com.octo.android.robospice.request.listener.RequestListener;
 import net.yupol.transmissionremote.app.drawer.Drawer;
 import net.yupol.transmissionremote.app.drawer.DrawerGroupItem;
 import net.yupol.transmissionremote.app.drawer.DrawerItem;
-import net.yupol.transmissionremote.app.drawer.NewServerDrawerItem;
 import net.yupol.transmissionremote.app.drawer.OpenTorrentDrawerItem;
 import net.yupol.transmissionremote.app.drawer.ServerDrawerItem;
 import net.yupol.transmissionremote.app.drawer.ServerPrefsDrawerItem;
@@ -70,6 +69,7 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
     public static int REQUEST_CODE_SERVER_PREFERENCES = 2;
     public static int REQUEST_CODE_CHOOSE_TORRENT = 3;
 
+    private static String TAG_EMPTY_SERVER = "tag_empty_server";
     private static String TAG_PROGRESSBAR = "tag_progressbar";
     private static String TAG_TORRENT_LIST = "tag_torrent_list";
     private static String TAG_OPEN_TORRENT_DIALOG = "tag_open_torrent_dialog";
@@ -142,15 +142,19 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
     }
 
     @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        drawer.dispose();
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
         PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
 
         List<Server> servers = application.getServers();
         if (servers.isEmpty()) {
-            Intent intent = new Intent(this, AddServerActivity.class);
-            intent.putExtra(AddServerActivity.PARAM_CANCELABLE, false);
-            startActivityForResult(intent, REQUEST_CODE_SERVER_PARAMS);
+            showEmptyServerFragment();
         } else {
             switchServer(application.getActiveServer());
         }
@@ -225,9 +229,7 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
         drawerLayout.closeDrawers();
 
         if (group.getId() == Drawer.Groups.SERVERS.id()) {
-            if (item instanceof NewServerDrawerItem) {
-                startActivityForResult(new Intent(this, AddServerActivity.class), REQUEST_CODE_SERVER_PARAMS);
-            } else if (item instanceof ServerDrawerItem) {
+            if (item instanceof ServerDrawerItem) {
                 Server server = ((ServerDrawerItem) item).getServer();
                 if (!server.equals(application.getActiveServer())) {
                     switchServer(server);
@@ -318,9 +320,13 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
         }
     }
 
+    public void addServerButtonClicked(View view) {
+        Intent intent = new Intent(this, AddServerActivity.class);
+        startActivityForResult(intent, REQUEST_CODE_SERVER_PARAMS);
+    }
+
     private void addNewServer(Server server) {
         application.addServer(server);
-        drawer.addServers(server);
     }
 
     private void switchServer(Server server) {
@@ -387,6 +393,18 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
         }
     }
 
+    private void showEmptyServerFragment() {
+        FragmentManager fm = getFragmentManager();
+        EmptyServerFragment emptyServerFragment = (EmptyServerFragment) fm.findFragmentByTag(TAG_EMPTY_SERVER);
+        if (emptyServerFragment == null) {
+            emptyServerFragment = new EmptyServerFragment();
+            FragmentTransaction ft = fm.beginTransaction();
+            ft.replace(R.id.torrent_list_container, emptyServerFragment, TAG_EMPTY_SERVER);
+            ft.commit();
+        }
+        torrentListFragment = null;
+    }
+
     private void showProgressbarFragment() {
         FragmentManager fm = getFragmentManager();
         ProgressbarFragment progressbarFragment = (ProgressbarFragment) fm.findFragmentByTag(TAG_PROGRESSBAR);
@@ -409,6 +427,8 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
             ft.commit();
         }
     }
+
+
 
     private void showFileChooser() {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);

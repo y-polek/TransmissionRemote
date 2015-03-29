@@ -43,7 +43,7 @@
     <string name="action_settings">Settings</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
-                <!-- Add Server -->
+    <!-- Servers -->
     <string name="add_new_server_title">Add new server</string>
     <string name="server_parameters">Server parameters</string>
     <string name="server_name_hint">Server name</string>
@@ -55,7 +55,19 @@
     <string name="server_name_error_message">Name must be non-empty</string>
     <string name="host_name_error_message">Please, enter IP address or hostname of the computer on which Transmission launched</string>
     <string name="port_number_error_message">Please, enter port number. It must be the same as specified in \'Listening port\' field on \'Remote\' tab of Transmission preferences dialog</string>
-    <string name="add_new_server_drawer_item">Add server</string>
+    <string name="edit_servers_drawer_item">Edit servers</string>
+    <string name="servers">Servers</string>
+    <string name="add_remove_servers">Add or remove servers</string>
+    <string name="remove_server">Remove server</string>
+    <string name="save_server">Save</string>
+    <string name="remove_server_confirmation">Remove server?</string>
+    <string name="remove_server_positive">Remove</string>
+    <string name="saved">Saved</string>
+    <string name="save_changes">Save changes?</string>
+    <string name="save_changes_save">Save</string>
+    <string name="save_changes_discard">Discard</string>
+    <string name="add_server_details">Add server details to start.</string>
+    <string name="add_server">Add server</string>
 
     <!-- Preferences -->
     <string name="update_interval_title">Update interval</string>

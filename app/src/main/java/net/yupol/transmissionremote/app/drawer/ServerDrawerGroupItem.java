@@ -12,20 +12,11 @@ public class ServerDrawerGroupItem extends DrawerGroupItem {
 
     private static final String TAG = ServerDrawerGroupItem.class.getSimpleName();
 
-    private NewServerDrawerItem newServerDrawerItem;
+    private EditServersDrawerItem newServerDrawerItem;
 
-    public ServerDrawerGroupItem(int id, int textResId, Context context, NewServerDrawerItem newServerItem) {
+    public ServerDrawerGroupItem(int id, int textResId, Context context, EditServersDrawerItem newServerItem) {
         super(id, textResId, context, newServerItem);
         this.newServerDrawerItem = newServerItem;
-
-        TransmissionRemote app = (TransmissionRemote) context.getApplicationContext();
-        List<Server> servers = app.getServers();
-        Server activeServer = app.getActiveServer();
-        for (Server server : servers) {
-            ServerDrawerItem item = new ServerDrawerItem(server, context);
-            if (server.equals(activeServer)) activateServerItem(item);
-            addItem(item, getItems().size() - 1);
-        }
     }
 
     @Override

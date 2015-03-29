@@ -9,4 +9,9 @@
         android:entries="@array/pref_update_interval_entries"
         android:entryValues="@array/pref_update_interval_entry_values"
         android:defaultValue="@string/update_interval_default_value" />
+    <PreferenceScreen
+        android:title="@string/servers"
+        android:summary="@string/add_remove_servers">
+        <intent android:action=".preferences.ServersActivity"/>
+    </PreferenceScreen>
 </PreferenceScreen>

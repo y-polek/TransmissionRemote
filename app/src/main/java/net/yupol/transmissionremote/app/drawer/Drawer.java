@@ -18,6 +18,7 @@ import net.yupol.transmissionremote.app.transport.TransportManager;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.annotation.Nonnull;
@@ -28,7 +29,24 @@ public class Drawer implements ListView.OnItemClickListener {
     private ListView drawerList;
     private List<DrawerGroupItem> groups;
     private DrawerListAdapter listAdapter;
-    private OnItemSelectedListener listener;
+    private OnItemSelectedListener itemSelectedListener;
+
+    private TransmissionRemote.OnServerListChangedListener serversListener = new TransmissionRemote.OnServerListChangedListener() {
+        @Override
+        public void serverAdded(Server server) {
+            addServers(server);
+        }
+
+        @Override
+        public void serverRemoved(Server server) {
+            removeServer(server);
+        }
+
+        @Override
+        public void serverUpdated(Server server) {
+            refresh();
+        }
+    };
 
     public Drawer(ListView drawerList, TransportManager tm) {
         this.drawerList = drawerList;
@@ -36,13 +54,20 @@ public class Drawer implements ListView.OnItemClickListener {
         listAdapter = new DrawerListAdapter(groups);
         drawerList.setAdapter(listAdapter);
         drawerList.setOnItemClickListener(this);
+
+        TransmissionRemote app = (TransmissionRemote) drawerList.getContext().getApplicationContext();
+        List<Server> servers = app.getServers();
+        addServers(servers.toArray(new Server[servers.size()]));
+        Server activeServer = app.getActiveServer();
+        if (activeServer != null) setActiveServer(activeServer);
+        app.addOnServerListChangedListener(serversListener);
     }
 
     private void initItemList(Context c, TransportManager tm) {
         groups = new ArrayList<>();
         // Servers
         groups.add(new ServerDrawerGroupItem(Groups.SERVERS.id(), R.string.drawer_servers, c,
-                new NewServerDrawerItem(c)));
+                new EditServersDrawerItem(c)));
 
         // Actions
         groups.add(new DrawerGroupItem(Groups.ACTIONS.id(), R.string.drawer_actions, c,
@@ -75,24 +100,16 @@ public class Drawer implements ListView.OnItemClickListener {
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        if (listener != null) {
+        if (itemSelectedListener != null) {
             DrawerItem item = listAdapter.getItem(position);
-            listener.onDrawerItemSelected(listAdapter.getGroupItem(item), item);
+            itemSelectedListener.onDrawerItemSelected(listAdapter.getGroupItem(item), item);
         }
 
         refresh();
     }
 
     public void setOnItemSelectedListener(OnItemSelectedListener listener) {
-        this.listener = listener;
-    }
-
-    public void addServers(Server... servers) {
-        DrawerGroupItem group = findGroupById(Groups.SERVERS.id());
-        for (Server server : servers) {
-            group.addItem(new ServerDrawerItem(server, drawerList.getContext()), group.getItems().size() - 1);
-        }
-        listAdapter.notifyDataSetChanged();
+        this.itemSelectedListener = listener;
     }
 
     public void setActiveServer(@Nonnull final Server server) {
@@ -101,8 +118,10 @@ public class Drawer implements ListView.OnItemClickListener {
             @Override public boolean apply(DrawerItem item) {
                 return item instanceof ServerDrawerItem && server.equals(((ServerDrawerItem) item).getServer());
             }
-        }).get();
-        group.activateServerItem(serverItem);
+        }).orNull();
+        if (serverItem != null) {
+            group.activateServerItem(serverItem);
+        }
     }
 
     /**
@@ -115,6 +134,11 @@ public class Drawer implements ListView.OnItemClickListener {
         refresh();
     }
 
+    public void dispose() {
+        TransmissionRemote app = (TransmissionRemote) drawerList.getContext().getApplicationContext();
+        app.removeOnServerListChangedListener(serversListener);
+    }
+
     private DrawerGroupItem findGroupById(final int id) {
         return FluentIterable.from(groups).firstMatch(new Predicate<DrawerGroupItem>() {
             @Override
@@ -124,7 +148,31 @@ public class Drawer implements ListView.OnItemClickListener {
         }).orNull();
     }
 
-    private void refresh() {
+    private void addServers(@Nonnull Server... servers) {
+        DrawerGroupItem group = findGroupById(Groups.SERVERS.id());
+        for (Server server : servers) {
+            group.addItem(new ServerDrawerItem(server, drawerList.getContext()), group.getItems().size() - 1);
+        }
+        refresh();
+    }
+
+    private void removeServer(@Nonnull Server server) {
+        DrawerGroupItem group = findGroupById(Groups.SERVERS.id());
+        Iterator<DrawerItem> it = group.getItems().iterator();
+
+        while (it.hasNext()) {
+            DrawerItem item = it.next();
+            if (item instanceof ServerDrawerItem) {
+                ServerDrawerItem serverItem = (ServerDrawerItem) item;
+                if (server.equals(serverItem.getServer())) {
+                    it.remove();
+                }
+            }
+        }
+        refresh();
+    }
+
+    public void refresh() {
         listAdapter.notifyDataSetChanged();
     }
 

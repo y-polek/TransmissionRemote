@@ -33,6 +33,13 @@
             android:configChanges="orientation|screenSize|keyboardHidden">
             <meta-data android:name="android.support.PARENT_ACTIVITY" android:value=".MainActivity"/>
         </activity>
+        <activity android:name=".preferences.ServersActivity"
+            android:label="@string/servers">
+            <intent-filter>
+                <action android:name=".preferences.ServersActivity"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
 
         <service android:name=".transport.NoCacheGoogleHttpClientSpiceService"
             android:exported="false" />

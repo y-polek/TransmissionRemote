@@ -15,7 +15,7 @@ public class AddServerActivity extends Activity {
     public static final String PARAM_CANCELABLE = "param_cancelable";
     public static final String EXTRA_SEVER = "extra_server";
 
-    private AddServerFragment addServerFragment;
+    private ServerDetailsFragment serverDetailsFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,11 +24,11 @@ public class AddServerActivity extends Activity {
         setTitle(getString(R.string.add_new_server_title));
 
         FragmentManager fm = getFragmentManager();
-        addServerFragment = (AddServerFragment) fm.findFragmentById(R.id.add_server_fragment_container);
-        if (addServerFragment == null) {
+        serverDetailsFragment = (ServerDetailsFragment) fm.findFragmentById(R.id.add_server_fragment_container);
+        if (serverDetailsFragment == null) {
             FragmentTransaction ft = fm.beginTransaction();
-            addServerFragment = new AddServerFragment();
-            ft.add(R.id.add_server_fragment_container, addServerFragment);
+            serverDetailsFragment = new ServerDetailsFragment();
+            ft.add(R.id.add_server_fragment_container, serverDetailsFragment);
             ft.commit();
         }
 
@@ -36,7 +36,7 @@ public class AddServerActivity extends Activity {
         okButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Server server = addServerFragment.getServer();
+                Server server = serverDetailsFragment.getNewServer();
                 if (server != null) {
                     setResult(RESULT_OK, new Intent().putExtra(EXTRA_SEVER, server));
                     finish();

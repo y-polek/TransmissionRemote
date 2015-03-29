@@ -22,11 +22,14 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="drawer_list_image_text_margin">12dp</dimen>
 
-                <!-- Add Server -->
+                <!-- Servers -->
     <dimen name="add_server_title_size">20sp</dimen>
     <dimen name="add_server_group_margin">16dp</dimen>
     <dimen name="add_server_buttons_width">128dp</dimen>
     <dimen name="add_server_buttons_margin">16dp</dimen>
+    <dimen name="server_name_text_size">18sp</dimen>
+    <dimen name="server_address_text_size">16sp</dimen>
+    <dimen name="add_server_details_text_size">22sp</dimen>
 
                 <!-- Torrent list -->
     <dimen name="torrent_list_name_text_size">18sp</dimen>

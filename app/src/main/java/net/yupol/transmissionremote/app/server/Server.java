@@ -47,20 +47,48 @@ public class Server implements Parcelable {
         return name;
     }
 
+    public void setName(@Nonnull String name) {
+        this.name = name;
+    }
+
     public String getHost() {
         return host;
+    }
+
+    public void setHost(@Nonnull String host) {
+        this.host = host;
     }
 
     public int getPort() {
         return port;
     }
 
+    public void setPort(int port) {
+        this.port = port;
+    }
+
+    public boolean isAuthenticationEnabled() {
+        return useAuthentication;
+    }
+
+    public void setAuthenticationEnabled(boolean isEnabled) {
+        useAuthentication = isEnabled;
+    }
+
     public String getUserName() {
         return userName;
     }
 
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
     public String getPassword() {
         return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public void setLastSessionId(String sessionId) {
