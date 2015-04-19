@@ -13,6 +13,7 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
@@ -53,13 +54,14 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSelectedListener,
-            TorrentUpdater.TorrentUpdateListener, SharedPreferences.OnSharedPreferenceChangeListener {
+            TorrentUpdater.TorrentUpdateListener, SharedPreferences.OnSharedPreferenceChangeListener, TransmissionRemote.OnSpeedLimitChangedListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
@@ -86,9 +88,12 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle drawerToggle;
     private TorrentListFragment torrentListFragment;
-    private ToolbarFragment toolbarFragment;
 
     private Timer prefsUpdateTimer;
+
+    private MenuItem turtleModeItem;
+    private SpeedTextView downloadSpeedView;
+    private SpeedTextView uploadSpeedView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -131,20 +136,14 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
 
         showProgressbarFragment();
 
-        FragmentManager fm = getFragmentManager();
-        toolbarFragment = (ToolbarFragment) fm.findFragmentById(R.id.toolbar_container);
-        if (toolbarFragment == null) {
-            toolbarFragment = new ToolbarFragment();
-            FragmentTransaction ft = fm.beginTransaction();
-            ft.add(R.id.toolbar_container, toolbarFragment);
-            ft.commit();
-        }
+        application.addOnSpeedLimitEnabledChangedListener(this);
     }
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
+        application.removeOnSpeedLimitEnabledChangedListener(this);
         drawer.dispose();
+        super.onDestroy();
     }
 
     @Override
@@ -174,6 +173,19 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
 
         PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(this);
         application.persistServers();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.torrent_list_menu, menu);
+
+        turtleModeItem = menu.findItem(R.id.action_turtle_mode);
+        updateTurtleModeActionIcon();
+
+        downloadSpeedView = (SpeedTextView) menu.findItem(R.id.action_download_speed).getActionView();
+        uploadSpeedView = (SpeedTextView) menu.findItem(R.id.action_upload_speed).getActionView();
+
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
@@ -287,7 +299,21 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
     public boolean onOptionsItemSelected(MenuItem item) {
         if (drawerToggle.onOptionsItemSelected(item))
             return true;
-        return super.onOptionsItemSelected(item);
+
+        switch (item.getItemId()) {
+            case R.id.action_turtle_mode:
+                application.setSpeedLimitEnabled(!application.isSpeedLimitEnabled());
+                updateTurtleModeActionIcon();
+                updateSpeedLimitServerPrefs();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    public void speedLimitEnabledChanged(boolean isEnabled) {
+        updateTurtleModeActionIcon();
     }
 
     @Override
@@ -296,7 +322,7 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
 
         showTorrentListFragment();
 
-        toolbarFragment.torrentsUpdated(torrents);
+        updateSpeedActions(torrents);
 
         drawer.updateTorrentsCount(torrents);
 
@@ -340,7 +366,6 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
         stopPortChecker();
         stopPreferencesUpdateTimer();
         showProgressbarFragment();
-        toolbarFragment.reset();
         drawer.updateTorrentsCount(null);
 
         // Start new server connections
@@ -428,8 +453,6 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
         }
     }
 
-
-
     private void showFileChooser() {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType(MIME_TYPE_TORRENT);
@@ -471,5 +494,44 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
                 }
             }
         });
+    }
+
+    private void updateTurtleModeActionIcon() {
+        if (turtleModeItem != null) {
+            turtleModeItem.setIcon(application.isSpeedLimitEnabled() ? R.drawable.turtle_blue : R.drawable.turtle_white);
+        }
+    }
+
+    private void updateSpeedLimitServerPrefs() {
+
+        JSONObject sessionArgs = new JSONObject();
+        try {
+            sessionArgs.put(ServerSettings.ALT_SPEED_LIMIT_ENABLED, application.isSpeedLimitEnabled());
+        } catch (JSONException e) {
+            Log.e(TAG, "Failed to create session arguments JSON object", e);
+        }
+
+        getTransportManager().doRequest(new SessionSetRequest(sessionArgs), new RequestListener<Void>() {
+            @Override
+            public void onRequestFailure(SpiceException spiceException) {
+                Log.d(TAG, "Failed to update session settings");
+            }
+
+            @Override
+            public void onRequestSuccess(Void aVoid) {
+                Log.e(TAG, "Session settings updated successfully");
+            }
+        });
+    }
+
+    private void updateSpeedActions(Collection<Torrent> torrents) {
+        int totalDownloadRate = 0;
+        int totalUploadRate = 0;
+        for (Torrent torrent : torrents) {
+            totalDownloadRate += torrent.getDownloadRate();
+            totalUploadRate += torrent.getUploadRate();
+        }
+        downloadSpeedView.setSpeed(totalDownloadRate);
+        uploadSpeedView.setSpeed(totalUploadRate);
     }
 }

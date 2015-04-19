@@ -19,7 +19,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.WeakHashMap;
 
 import javax.annotation.Nonnull;
 
@@ -44,6 +46,8 @@ public class TransmissionRemote extends Application {
     private List<OnFilterSelectedListener> filterSelectedListeners = new LinkedList<>();
 
     private String defaultDownloadDir;
+
+    private Map<Server, Boolean> speedLimitsCache = new WeakHashMap<>();
 
     @Override
     public void onCreate() {
@@ -94,6 +98,7 @@ public class TransmissionRemote extends Application {
         activeServer = server;
         persistActiveServer();
         fireActiveServerChangedEvent();
+        setSpeedLimitEnabled(speedLimitsCache.containsKey(server) ? speedLimitsCache.get(server) : false);
     }
 
     public void addOnActiveServerChangedListener(@Nonnull OnActiveServerChangedListener listener) {
@@ -130,6 +135,7 @@ public class TransmissionRemote extends Application {
 
     public void setSpeedLimitEnabled(boolean isEnabled) {
         speedLimitEnabled = isEnabled;
+        speedLimitsCache.put(activeServer, isEnabled);
         for (OnSpeedLimitChangedListener l : speedLimitChangedListeners) {
             l.speedLimitEnabledChanged(speedLimitEnabled);
         }
