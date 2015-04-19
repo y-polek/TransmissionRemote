@@ -9,7 +9,7 @@
     <application
         android:name=".TransmissionRemote"
         android:allowBackup="true"
-        android:icon="@drawable/ic_launcher"
+        android:icon="@drawable/transmission"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
