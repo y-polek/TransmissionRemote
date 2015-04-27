@@ -10,7 +10,7 @@ import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v4.app.ActionBarDrawerToggle;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.Menu;
@@ -115,8 +115,7 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
 
         DrawerLayout drawerLayout = (DrawerLayout) findViewById(R.id.drawer);
 
-        drawerToggle = new ActionBarDrawerToggle(this, drawerLayout,
-                    R.drawable.ic_drawer, R.string.drawer_open, R.string.drawer_close) {
+        drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.drawer_open, R.string.drawer_close) {
             @Override
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
