@@ -7,5 +7,7 @@ import net.yupol.transmissionremote.app.model.json.Torrent;
 
 public interface Filter extends Predicate<Torrent> {
 
-    public int getEmptyMessageRes();
+    public int getNameResId();
+
+    public int getEmptyMessageResId();
 }

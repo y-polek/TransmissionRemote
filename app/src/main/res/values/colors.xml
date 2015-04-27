@@ -21,6 +21,8 @@
     <color name="torrent_list_progressbar_progress_color">#ff669900</color>
     <color name="torrent_list_progressbar_progress_disabled_color">#ff737373</color>
 
-                    <!-- Toolbar -->
-    <color name="toolbar_background">#ffcccccc</color>"
+                    <!-- Action Bar -->
+    <color name="drop_down_navigation_item_text_color">#fff0f0f0</color>"
+    <color name="drop_down_navigation_active_item_text_color">#ff87ceeb</color>"
+    <color name="drop_down_navigation_header_text_color">#ffbebebe</color>"
 </resources>

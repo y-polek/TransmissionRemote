@@ -14,12 +14,12 @@
     <string name="drawer_actions_pause_all_torrents">Pause all torrents</string>
 
     <!-- Filters -->
-    <string name="drawer_filters">Filters</string>
-    <string name="drawer_filters_all">All</string>
-    <string name="drawer_filters_active">Active</string>
-    <string name="drawer_filters_downloading">Downloading</string>
-    <string name="drawer_filters_seeding">Seeding</string>
-    <string name="drawer_filters_paused">Paused</string>
+    <string name="filters">Filters</string>
+    <string name="filter_all">All</string>
+    <string name="filter_active">Active</string>
+    <string name="filter_downloading">Downloading</string>
+    <string name="filter_seeding">Seeding</string>
+    <string name="filter_paused">Paused</string>
     <string name="filter_empty_all">No torrents</string>
     <string name="filter_empty_active">No active torrents</string>
     <string name="filter_empty_downloading">No downloading torrents</string>
@@ -104,4 +104,9 @@
     <string name="free_space_unknown">Free space unknown</string>
     <string name="no_directory">There is no such directory</string>
     <string name="use_default_directory">Use default directory</string>
+
+    <!-- Action Bar -->
+    <string name="torrent">%d torrent</string>
+    <string name="torrents">%d torrents</string>
+
 </resources>

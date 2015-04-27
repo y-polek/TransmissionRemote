@@ -213,9 +213,9 @@ public class TorrentListFragment extends ListFragment {
     }
 
     private void updateTorrentList() {
-        Filter filter = app.getFilter();
+        Filter filter = app.getActiveFilter();
         torrentsToShow = new ArrayList<>(FluentIterable.from(allTorrents).filter(filter).toList());
-        setEmptyText(getResources().getString(filter.getEmptyMessageRes()));
+        setEmptyText(getResources().getString(filter.getEmptyMessageResId()));
         if (comparator != null)
             Collections.sort(torrentsToShow, comparator);
         ((BaseAdapter) getListAdapter()).notifyDataSetChanged();

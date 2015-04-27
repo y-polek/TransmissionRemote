@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="torrents">
+        <item quantity="one">@string/torrent</item>
+        <item quantity="other">@string/torrents</item>
+    </plurals>
+</resources>

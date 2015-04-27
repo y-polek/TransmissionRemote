@@ -6,10 +6,10 @@
         android:showAsAction="always" />
     <item android:id="@+id/action_download_speed"
         android:title="@string/download_speed"
-        android:actionViewClass="net.yupol.transmissionremote.app.SpeedTextView$DownloadSpeedTextView"
+        android:actionViewClass="net.yupol.transmissionremote.app.actionbar.SpeedTextView$DownloadSpeedTextView"
         android:showAsAction="always" />
     <item android:id="@+id/action_upload_speed"
         android:title="@string/upload_speed"
-        android:actionViewClass="net.yupol.transmissionremote.app.SpeedTextView$UploadSpeedTextView"
+        android:actionViewClass="net.yupol.transmissionremote.app.actionbar.SpeedTextView$UploadSpeedTextView"
         android:showAsAction="always" />
 </menu>

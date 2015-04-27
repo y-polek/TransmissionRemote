@@ -42,7 +42,8 @@ public class TransmissionRemote extends Application {
     private Collection<Torrent> torrents = Collections.emptyList();
     private List<OnTorrentsUpdatedListener> torrentsUpdatedListeners = new LinkedList<>();
 
-    private Filter filter = Filters.ALL;
+    private Filter[] allFilters = { Filters.ALL, Filters.DOWNLOADING, Filters.SEEDING, Filters.ACTIVE, Filters.PAUSED};
+    private Filter activeFilter = Filters.ALL;
     private List<OnFilterSelectedListener> filterSelectedListeners = new LinkedList<>();
 
     private String defaultDownloadDir;
@@ -176,15 +177,19 @@ public class TransmissionRemote extends Application {
         torrentsUpdatedListeners.remove(listener);
     }
 
-    public void setFilter(@Nonnull Filter filter) {
-        this.filter = filter;
+    public void setActiveFilter(@Nonnull Filter activeFilter) {
+        this.activeFilter = activeFilter;
         for (OnFilterSelectedListener listener : filterSelectedListeners) {
-            listener.filterSelected(filter);
+            listener.filterSelected(activeFilter);
         }
     }
 
-    public Filter getFilter() {
-        return filter;
+    public Filter[] getAllFilters() {
+        return allFilters;
+    }
+
+    public Filter getActiveFilter() {
+        return activeFilter;
     }
 
     public void addOnFilterSetListener(@Nonnull OnFilterSelectedListener listener) {

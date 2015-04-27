@@ -50,4 +50,13 @@
                 <!-- Open torrent -->
     <dimen name="free_space_text_size">16sp</dimen>
     <dimen name="free_space_progress_bar_size">22sp</dimen>
+
+                <!-- Action Bar -->
+    <dimen name="spinner_text_margin_horizontal">16dp</dimen>
+    <dimen name="spinner_text_margin_vertical">8dp</dimen>
+    <dimen name="spinner_server_name_text_size">18sp</dimen>
+    <dimen name="spinner_filter_name_text_size">14sp</dimen>
+    <dimen name="spinner_header_text_size">14sp</dimen>
+    <dimen name="spinner_normal_text_size">18sp</dimen>
+
 </resources>

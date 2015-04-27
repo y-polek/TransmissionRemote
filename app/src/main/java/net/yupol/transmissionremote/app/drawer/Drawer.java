@@ -76,14 +76,14 @@ public class Drawer implements ListView.OnItemClickListener {
                 new PauseAllTorrentsDrawerItem(c, tm)));
 
         // Filters
-        FilterDrawerGroupItem filterGroup = new FilterDrawerGroupItem(Groups.FILTERS.id(), R.string.drawer_filters, c,
-                new FilterDrawerItem(R.string.drawer_filters_all, c, Filters.ALL),
-                new FilterDrawerItem(R.string.drawer_filters_active, c, Filters.ACTIVE),
-                new FilterDrawerItem(R.string.drawer_filters_downloading, c, Filters.DOWNLOADING),
-                new FilterDrawerItem(R.string.drawer_filters_seeding, c, Filters.SEEDING),
-                new FilterDrawerItem(R.string.drawer_filters_paused, c, Filters.PAUSED));
+        FilterDrawerGroupItem filterGroup = new FilterDrawerGroupItem(Groups.FILTERS.id(), R.string.filters, c,
+                new FilterDrawerItem(R.string.filter_all, c, Filters.ALL),
+                new FilterDrawerItem(R.string.filter_active, c, Filters.ACTIVE),
+                new FilterDrawerItem(R.string.filter_downloading, c, Filters.DOWNLOADING),
+                new FilterDrawerItem(R.string.filter_seeding, c, Filters.SEEDING),
+                new FilterDrawerItem(R.string.filter_paused, c, Filters.PAUSED));
         TransmissionRemote app = (TransmissionRemote) drawerList.getContext().getApplicationContext();
-        filterGroup.setActiveFilter(app.getFilter());
+        filterGroup.setActiveFilter(app.getActiveFilter());
         groups.add(filterGroup);
 
         // Sort by

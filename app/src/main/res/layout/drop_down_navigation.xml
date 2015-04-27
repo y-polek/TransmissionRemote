@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="@dimen/default_padding"
+    android:paddingRight="@dimen/default_padding"
+    android:orientation="vertical">
+
+    <TextView android:id="@+id/server_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/spinner_server_name_text_size"
+        android:includeFontPadding="false"/>
+
+    <TextView android:id="@+id/filter_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/spinner_filter_name_text_size"
+        android:includeFontPadding="false"/>
+</LinearLayout>

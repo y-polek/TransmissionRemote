@@ -1,4 +1,4 @@
-package net.yupol.transmissionremote.app;
+package net.yupol.transmissionremote.app.actionbar;
 
 import android.content.Context;
 import android.graphics.Typeface;

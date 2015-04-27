@@ -19,7 +19,7 @@ public class FilterDrawerItem extends DrawerItem {
 
     @Override
     public void itemSelected() {
-        app.setFilter(filter);
+        app.setActiveFilter(filter);
     }
 
     @Override

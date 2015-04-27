@@ -25,6 +25,8 @@ import com.google.common.collect.FluentIterable;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
 
+import net.yupol.transmissionremote.app.actionbar.ActionBarNavigationAdapter;
+import net.yupol.transmissionremote.app.actionbar.SpeedTextView;
 import net.yupol.transmissionremote.app.drawer.Drawer;
 import net.yupol.transmissionremote.app.drawer.DrawerGroupItem;
 import net.yupol.transmissionremote.app.drawer.DrawerItem;
@@ -32,6 +34,7 @@ import net.yupol.transmissionremote.app.drawer.OpenTorrentDrawerItem;
 import net.yupol.transmissionremote.app.drawer.ServerDrawerItem;
 import net.yupol.transmissionremote.app.drawer.ServerPrefsDrawerItem;
 import net.yupol.transmissionremote.app.drawer.SortDrawerGroupItem;
+import net.yupol.transmissionremote.app.filtering.Filter;
 import net.yupol.transmissionremote.app.model.json.ServerSettings;
 import net.yupol.transmissionremote.app.model.json.Torrent;
 import net.yupol.transmissionremote.app.opentorrent.DownloadLocationDialogFragment;
@@ -95,6 +98,8 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
     private SpeedTextView downloadSpeedView;
     private SpeedTextView uploadSpeedView;
 
+    private ActionBarNavigationAdapter navigationAdapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -132,6 +137,31 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setHomeButtonEnabled(true);
+            actionBar.setDisplayShowTitleEnabled(false);
+            actionBar.setDisplayUseLogoEnabled(false);
+            actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+
+            navigationAdapter = new ActionBarNavigationAdapter(actionBar.getThemedContext());
+            actionBar.setListNavigationCallbacks(navigationAdapter, new ActionBar.OnNavigationListener() {
+                @Override
+                public boolean onNavigationItemSelected(int position, long id) {
+                    if (id == ActionBarNavigationAdapter.ID_SERVER) {
+                        Server server = (Server) navigationAdapter.getItem(position);
+                        if (!server.equals(application.getActiveServer())) {
+                            switchServer(server);
+                        }
+                    } else if (id == ActionBarNavigationAdapter.ID_FILTER) {
+                        Filter filter = (Filter) navigationAdapter.getItem(position);
+                        if (!filter.equals(application.getActiveFilter())) {
+                            application.setActiveFilter(filter);
+                        }
+                    }
+
+                    navigationAdapter.notifyDataSetChanged();
+
+                    return true;
+                }
+            });
         }
 
         showProgressbarFragment();
@@ -325,6 +355,7 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
         updateSpeedActions(torrents);
 
         drawer.updateTorrentsCount(torrents);
+        navigationAdapter.notifyDataSetChanged();
 
         String text = Joiner.on("\n").join(FluentIterable.from(torrents).transform(new Function<Torrent, String>() {
             @Override
