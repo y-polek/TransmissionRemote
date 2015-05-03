@@ -1,11 +1,14 @@
 package net.yupol.transmissionremote.app.preferences;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
-public class RemotePreferencesActivity extends Activity {
+import net.yupol.transmissionremote.app.R;
+
+public class RemotePreferencesActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -14,7 +17,8 @@ public class RemotePreferencesActivity extends Activity {
         getFragmentManager().beginTransaction()
                 .replace(android.R.id.content, new RemotePreferencesFragment()).commit();
 
-        getActionBar().setDisplayHomeAsUpEnabled(true);
+        setTitle(R.string.remote_preferences);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     @Override

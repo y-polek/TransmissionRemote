@@ -1,6 +1,5 @@
 package net.yupol.transmissionremote.app;
 
-import android.app.ActionBar;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.ActivityNotFoundException;
@@ -10,13 +9,20 @@ import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.google.common.base.Function;
@@ -107,6 +113,48 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
 
         application = TransmissionRemote.getApplication(this);
 
+        setupActionBar();
+        setupDrawer();
+
+        showProgressbarFragment();
+
+        application.addOnSpeedLimitEnabledChangedListener(this);
+    }
+
+    private void setupActionBar() {
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        View spinnerContainer = LayoutInflater.from(this).inflate(R.layout.toolbar_spinner, toolbar, false);
+        ActionBar.LayoutParams lp = new ActionBar.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        toolbar.addView(spinnerContainer, lp);
+        Spinner spinner = (Spinner) spinnerContainer.findViewById(R.id.toolbar_spinner);
+        navigationAdapter = new ActionBarNavigationAdapter(this);
+        spinner.setAdapter(navigationAdapter);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if (id == ActionBarNavigationAdapter.ID_SERVER) {
+                    Server server = (Server) navigationAdapter.getItem(position);
+                    if (!server.equals(application.getActiveServer())) {
+                        switchServer(server);
+                    }
+                } else if (id == ActionBarNavigationAdapter.ID_FILTER) {
+                    Filter filter = (Filter) navigationAdapter.getItem(position);
+                    if (!filter.equals(application.getActiveFilter())) {
+                        application.setActiveFilter(filter);
+                    }
+                }
+                navigationAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
+    }
+
+    private void setupDrawer() {
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer);
         ListView drawerList = (ListView) findViewById(R.id.drawer_list);
 
@@ -132,40 +180,11 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
         };
         drawerLayout.setDrawerListener(drawerToggle);
 
-        ActionBar actionBar = getActionBar();
+        ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
-            actionBar.setDisplayHomeAsUpEnabled(true);
-            actionBar.setHomeButtonEnabled(true);
-            actionBar.setDisplayShowTitleEnabled(false);
-            actionBar.setDisplayUseLogoEnabled(false);
-            actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
-
-            navigationAdapter = new ActionBarNavigationAdapter(actionBar.getThemedContext());
-            actionBar.setListNavigationCallbacks(navigationAdapter, new ActionBar.OnNavigationListener() {
-                @Override
-                public boolean onNavigationItemSelected(int position, long id) {
-                    if (id == ActionBarNavigationAdapter.ID_SERVER) {
-                        Server server = (Server) navigationAdapter.getItem(position);
-                        if (!server.equals(application.getActiveServer())) {
-                            switchServer(server);
-                        }
-                    } else if (id == ActionBarNavigationAdapter.ID_FILTER) {
-                        Filter filter = (Filter) navigationAdapter.getItem(position);
-                        if (!filter.equals(application.getActiveFilter())) {
-                            application.setActiveFilter(filter);
-                        }
-                    }
-
-                    navigationAdapter.notifyDataSetChanged();
-
-                    return true;
-                }
-            });
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setHomeButtonEnabled(true);
         }
-
-        showProgressbarFragment();
-
-        application.addOnSpeedLimitEnabledChangedListener(this);
     }
 
     @Override
@@ -211,8 +230,8 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
         turtleModeItem = menu.findItem(R.id.action_turtle_mode);
         updateTurtleModeActionIcon();
 
-        downloadSpeedView = (SpeedTextView) menu.findItem(R.id.action_download_speed).getActionView();
-        uploadSpeedView = (SpeedTextView) menu.findItem(R.id.action_upload_speed).getActionView();
+        downloadSpeedView = (SpeedTextView) MenuItemCompat.getActionView(menu.findItem(R.id.action_download_speed));
+        uploadSpeedView = (SpeedTextView) MenuItemCompat.getActionView(menu.findItem(R.id.action_upload_speed));
 
         return super.onCreateOptionsMenu(menu);
     }

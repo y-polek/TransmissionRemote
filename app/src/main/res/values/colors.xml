@@ -1,6 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <color name="primary">#9e9e9e</color>
+    <color name="primary_dark">#616161</color>
+    <color name="accent">#b71c1c</color>
+
+    <color name="text_dark">#de000000</color>
+    <color name="text_secondary_dark">#8a000000</color>
+    <color name="text_disabled_dark">#42000000</color>
+    <color name="divider_dark">#1f000000</color>
+
                     <!-- Drawer -->
     <color name="drawer_background_color">#ff4f4f4f</color>
 
@@ -22,7 +31,5 @@
     <color name="torrent_list_progressbar_progress_disabled_color">#ff737373</color>
 
                     <!-- Action Bar -->
-    <color name="drop_down_navigation_item_text_color">#fff0f0f0</color>"
-    <color name="drop_down_navigation_active_item_text_color">#ff87ceeb</color>"
-    <color name="drop_down_navigation_header_text_color">#ffbebebe</color>"
+
 </resources>

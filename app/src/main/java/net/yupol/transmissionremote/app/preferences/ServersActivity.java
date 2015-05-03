@@ -1,6 +1,5 @@
 package net.yupol.transmissionremote.app.preferences;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
@@ -8,6 +7,7 @@ import android.app.FragmentTransaction;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -20,7 +20,7 @@ import net.yupol.transmissionremote.app.server.AddServerActivity;
 import net.yupol.transmissionremote.app.server.Server;
 import net.yupol.transmissionremote.app.server.ServerDetailsFragment;
 
-public class ServersActivity extends Activity {
+public class ServersActivity extends AppCompatActivity {
 
     private static final String TAG = ServersActivity.class.getSimpleName();
 
@@ -34,7 +34,7 @@ public class ServersActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.servers_activity_layout);
 
-        getActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         if (savedInstanceState != null) {
             return;

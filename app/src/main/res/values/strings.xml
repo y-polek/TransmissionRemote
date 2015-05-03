@@ -73,6 +73,7 @@
     <string name="update_interval_title">Update interval</string>
     <string name="update_interval_summary">Torrent list update interval</string>
     <string name="server_preferences">Server Preferences</string>
+    <string name="remote_preferences">Remote Preferences</string>
     <string name="global_bandwidth_limits">Global bandwidth limits</string>
     <string name="download_rate">Download rate:</string>
     <string name="upload_rate">Upload rate:</string>

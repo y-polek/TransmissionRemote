@@ -34,7 +34,7 @@
         android:paddingBottom="@dimen/spinner_text_margin_vertical"
         android:textSize="@dimen/spinner_header_text_size"
         android:textStyle="bold"
-        android:textColor="@color/drop_down_navigation_header_text_color"/>
+        android:textColor="@color/text_secondary_dark"/>
     <include layout="@layout/separator"/>
 
 </LinearLayout>

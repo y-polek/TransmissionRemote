@@ -38,7 +38,7 @@ public class ServerPreferencesActivity extends BaseSpiceActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.server_preferences_activity);
         setTitle(R.string.server_preferences);
-        getActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     @Override

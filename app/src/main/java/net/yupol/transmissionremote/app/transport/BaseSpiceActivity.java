@@ -1,12 +1,12 @@
 package net.yupol.transmissionremote.app.transport;
 
-import android.app.Activity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 
 import net.yupol.transmissionremote.app.TransmissionRemote;
 import net.yupol.transmissionremote.app.server.Server;
 
-public class BaseSpiceActivity extends Activity {
+public class BaseSpiceActivity extends AppCompatActivity {
 
     private final SpiceTransportManager transportManager = new SpiceTransportManager();
     private final TransmissionRemote.OnActiveServerChangedListener activeServerListener = new TransmissionRemote.OnActiveServerChangedListener() {

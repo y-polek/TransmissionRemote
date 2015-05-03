@@ -135,7 +135,7 @@ public class ActionBarNavigationAdapter extends BaseAdapter {
 
     private int textColor(boolean isActive) {
         return context.getResources().getColor(isActive
-                ? R.color.drop_down_navigation_active_item_text_color
-                : R.color.drop_down_navigation_item_text_color);
+                ? R.color.accent
+                : R.color.text_dark);
     }
 }
