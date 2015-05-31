@@ -1,10 +1,12 @@
-package net.yupol.transmissionremote.app;
+package net.yupol.transmissionremote.app.actionbar;
 
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageButton;
+
+import net.yupol.transmissionremote.app.R;
 
 public class TurtleModeButton extends ImageButton implements View.OnClickListener {
 

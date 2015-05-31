@@ -33,6 +33,7 @@ import com.octo.android.robospice.request.listener.RequestListener;
 
 import net.yupol.transmissionremote.app.actionbar.ActionBarNavigationAdapter;
 import net.yupol.transmissionremote.app.actionbar.SpeedTextView;
+import net.yupol.transmissionremote.app.actionbar.TurtleModeButton;
 import net.yupol.transmissionremote.app.drawer.Drawer;
 import net.yupol.transmissionremote.app.drawer.DrawerGroupItem;
 import net.yupol.transmissionremote.app.drawer.DrawerItem;
