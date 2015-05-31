@@ -9,9 +9,9 @@
 
     <!-- Actions -->
     <string name="drawer_actions">Actions</string>
-    <string name="drawer_actions_open_torrent">Open torrent</string>
-    <string name="drawer_actions_start_all_torrents">Start all torrents</string>
-    <string name="drawer_actions_pause_all_torrents">Pause all torrents</string>
+    <string name="action_open_torrent">Open torrent</string>
+    <string name="action_start_all_torrents">Start all torrents</string>
+    <string name="action_pause_all_torrents">Pause all torrents</string>
 
     <!-- Filters -->
     <string name="filters">Filters</string>

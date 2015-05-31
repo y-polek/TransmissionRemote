@@ -2,6 +2,20 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <group>
+        <item android:id="@+id/action_download_speed"
+            android:title="@string/download_speed"
+            app:actionViewClass="net.yupol.transmissionremote.app.actionbar.SpeedTextView$DownloadSpeedTextView"
+            app:showAsAction="always" />
+        <item android:id="@+id/action_upload_speed"
+            android:title="@string/upload_speed"
+            app:actionViewClass="net.yupol.transmissionremote.app.actionbar.SpeedTextView$UploadSpeedTextView"
+            app:showAsAction="always" />
+        <item android:id="@+id/action_turtle_mode"
+            android:icon="@drawable/turtle_white"
+            android:title="@string/speed_limit"
+            app:showAsAction="always" />
+    </group>
+    <group>
         <item android:id="@+id/action_open_torrent"
             android:title="@string/action_open_torrent"
             app:showAsAction="never"/>

@@ -56,6 +56,8 @@ import net.yupol.transmissionremote.app.transport.request.AddTorrentByFileReques
 import net.yupol.transmissionremote.app.transport.request.AddTorrentByUrlRequest;
 import net.yupol.transmissionremote.app.transport.request.SessionGetRequest;
 import net.yupol.transmissionremote.app.transport.request.SessionSetRequest;
+import net.yupol.transmissionremote.app.transport.request.StartTorrentRequest;
+import net.yupol.transmissionremote.app.transport.request.StopTorrentRequest;
 
 import org.apache.commons.io.FilenameUtils;
 import org.json.JSONException;
@@ -101,6 +103,7 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
     private Timer prefsUpdateTimer;
 
     private MenuItem turtleModeItem;
+    private TurtleModeButton turtleModeButton;
     private SpeedTextView downloadSpeedView;
     private SpeedTextView uploadSpeedView;
 
@@ -114,6 +117,7 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
         application = TransmissionRemote.getApplication(this);
 
         setupActionBar();
+        setupBottomToolbar();
         setupDrawer();
 
         showProgressbarFragment();
@@ -122,7 +126,7 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
     }
 
     private void setupActionBar() {
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.actionbar_toolbar);
         setSupportActionBar(toolbar);
 
         View spinnerContainer = LayoutInflater.from(this).inflate(R.layout.toolbar_spinner, toolbar, false);
@@ -152,6 +156,28 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
             public void onNothingSelected(AdapterView<?> parent) {
             }
         });
+    }
+
+    private void setupBottomToolbar() {
+        Toolbar toolbar = (Toolbar) findViewById(R.id.bottom_toolbar);
+        if (toolbar == null) return;
+
+        turtleModeButton = (TurtleModeButton) toolbar.findViewById(R.id.turtle_mode_button);
+        turtleModeButton.setEnableChangedListener(new TurtleModeButton.OnEnableChangedListener() {
+            @Override
+            public void onEnableChanged(boolean isEnabled) {
+                if (isEnabled == application.isSpeedLimitEnabled()) return;
+
+                application.setSpeedLimitEnabled(!application.isSpeedLimitEnabled());
+                updateSpeedLimitServerPrefs();
+            }
+        });
+
+
+        toolbar.inflateMenu(R.menu.speed_status_menu);
+        Menu menu = toolbar.getMenu();
+        downloadSpeedView = (SpeedTextView) MenuItemCompat.getActionView(menu.findItem(R.id.action_download_speed));
+        uploadSpeedView = (SpeedTextView) MenuItemCompat.getActionView(menu.findItem(R.id.action_upload_speed));
     }
 
     private void setupDrawer() {
@@ -191,6 +217,7 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
     protected void onDestroy() {
         application.removeOnSpeedLimitEnabledChangedListener(this);
         drawer.dispose();
+        turtleModeButton = null;
         super.onDestroy();
     }
 
@@ -230,10 +257,41 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
         turtleModeItem = menu.findItem(R.id.action_turtle_mode);
         updateTurtleModeActionIcon();
 
-        downloadSpeedView = (SpeedTextView) MenuItemCompat.getActionView(menu.findItem(R.id.action_download_speed));
-        uploadSpeedView = (SpeedTextView) MenuItemCompat.getActionView(menu.findItem(R.id.action_upload_speed));
+        MenuItem downloadItem = menu.findItem(R.id.action_download_speed);
+        if (downloadItem != null) {
+            downloadSpeedView = (SpeedTextView) MenuItemCompat.getActionView(downloadItem);
+        }
+        MenuItem uploadItem = menu.findItem(R.id.action_upload_speed);
+        if (uploadItem != null) {
+            uploadSpeedView = (SpeedTextView) MenuItemCompat.getActionView(uploadItem);
+        }
 
         return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (drawerToggle.onOptionsItemSelected(item))
+            return true;
+
+        switch (item.getItemId()) {
+            case R.id.action_turtle_mode:
+                application.setSpeedLimitEnabled(!application.isSpeedLimitEnabled());
+                updateTurtleModeActionIcon();
+                updateSpeedLimitServerPrefs();
+                return true;
+            case R.id.action_open_torrent:
+                openTorrent();
+                return true;
+            case R.id.action_start_all_torrents:
+                startAllTorrents();
+                return true;
+            case R.id.action_pause_all_torrents:
+                pauseAllTorrents();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     @Override
@@ -306,27 +364,7 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
             }
         } else if (group.getId() == Drawer.Groups.ACTIONS.id()) {
             if (item instanceof OpenTorrentDrawerItem) {
-                new OpenByDialogFragment().show(getFragmentManager(), TAG_OPEN_TORRENT_DIALOG, new OpenByDialogFragment.OnSelectionListener() {
-                    @Override
-                    public void byFile() {
-                        showFileChooser();
-                    }
-
-                    @Override
-                    public void byAddress() {
-                        new OpenAddressDialogFragment().show(getFragmentManager(), MainActivity.TAG_OPEN_TORRENT_BY_ADDRESS_DIALOG, new OpenAddressDialogFragment.OnResultListener() {
-                            @Override
-                            public void onOpenPressed(final String uri) {
-                                new DownloadLocationDialogFragment().show(getFragmentManager(), TAG_DOWNLOAD_LOCATION_DIALOG, new DownloadLocationDialogFragment.OnResultListener() {
-                                    @Override
-                                    public void onAddPressed(String downloadDir, boolean startWhenAdded) {
-                                        getTransportManager().doRequest(new AddTorrentByUrlRequest(uri, downloadDir, !startWhenAdded), null);
-                                    }
-                                });
-                            }
-                        });
-                    }
-                });
+                openTorrent();
             }
         }
     }
@@ -341,22 +379,6 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         drawerToggle.onConfigurationChanged(newConfig);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (drawerToggle.onOptionsItemSelected(item))
-            return true;
-
-        switch (item.getItemId()) {
-            case R.id.action_turtle_mode:
-                application.setSpeedLimitEnabled(!application.isSpeedLimitEnabled());
-                updateTurtleModeActionIcon();
-                updateSpeedLimitServerPrefs();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
     }
 
     @Override
@@ -549,6 +571,9 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
         if (turtleModeItem != null) {
             turtleModeItem.setIcon(application.isSpeedLimitEnabled() ? R.drawable.turtle_blue : R.drawable.turtle_white);
         }
+        if (turtleModeButton != null) {
+            turtleModeButton.setEnabled(application.isSpeedLimitEnabled());
+        }
     }
 
     private void updateSpeedLimitServerPrefs() {
@@ -582,5 +607,37 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
         }
         downloadSpeedView.setSpeed(totalDownloadRate);
         uploadSpeedView.setSpeed(totalUploadRate);
+    }
+
+    private void openTorrent() {
+        new OpenByDialogFragment().show(getFragmentManager(), TAG_OPEN_TORRENT_DIALOG, new OpenByDialogFragment.OnSelectionListener() {
+            @Override
+            public void byFile() {
+                showFileChooser();
+            }
+
+            @Override
+            public void byAddress() {
+                new OpenAddressDialogFragment().show(getFragmentManager(), MainActivity.TAG_OPEN_TORRENT_BY_ADDRESS_DIALOG, new OpenAddressDialogFragment.OnResultListener() {
+                    @Override
+                    public void onOpenPressed(final String uri) {
+                        new DownloadLocationDialogFragment().show(getFragmentManager(), TAG_DOWNLOAD_LOCATION_DIALOG, new DownloadLocationDialogFragment.OnResultListener() {
+                            @Override
+                            public void onAddPressed(String downloadDir, boolean startWhenAdded) {
+                                getTransportManager().doRequest(new AddTorrentByUrlRequest(uri, downloadDir, !startWhenAdded), null);
+                            }
+                        });
+                    }
+                });
+            }
+        });
+    }
+
+    private void startAllTorrents() {
+        getTransportManager().doRequest(new StartTorrentRequest(application.getTorrents()), null);
+    }
+
+    private void pauseAllTorrents() {
+        getTransportManager().doRequest(new StopTorrentRequest(application.getTorrents()), null);
     }
 }

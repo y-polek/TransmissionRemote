@@ -44,7 +44,7 @@ public class OpenAddressDialogFragment extends DialogFragment {
 
         ClipboardManager clipboard = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
         ClipData clipData = clipboard.getPrimaryClip();
-        if (clipData.getDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN)) {
+        if (clipData != null && clipData.getDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN)) {
             CharSequence text = clipData.getItemAt(0).getText();
             if (text != null) {
                 addressText.setText(text);

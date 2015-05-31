@@ -19,22 +19,6 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"/>
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/bottom_toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:minHeight="?attr/actionBarSize"
-            android:background="?attr/colorPrimary">
-            <net.yupol.transmissionremote.app.TurtleModeButton
-                xmlns:custom="http://schemas.android.com/apk/res-auto"
-                android:id="@+id/turtle_mode_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@null"
-                custom:src_enabled="@drawable/turtle_blue"
-                custom:src_disabled="@drawable/turtle_white"
-                custom:enabled="true"/>
-        </android.support.v7.widget.Toolbar>
     </LinearLayout>
 
     <ListView android:id="@+id/drawer_list"

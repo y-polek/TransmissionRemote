@@ -38,15 +38,15 @@ public abstract class SpeedTextView extends TextView {
         return Strings.padStart(SizeUtils.displayableSize(bytes), 5, ' ') + "/s";
     }
 
-    private static enum Direction {
+    private enum Direction {
         DOWNLOAD("<font color=#009933>\u2b07</font>"),
-        UPLOAD("<font color=#ff0000>\u2b06</font>"),//UPLOAD("<font color=#ff0000 style=bold>\u2191</font>"),
+        UPLOAD("<font color=#ff0000>\u2b06</font>"),
         NONE("");
 
 
         private String symbol;
 
-        private Direction(String symbol) {
+        Direction(String symbol) {
             this.symbol = symbol;
         }
     }

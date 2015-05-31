@@ -13,7 +13,7 @@ public class StartAllTorrentsDrawerItem extends DrawerItem {
     private TransportManager transportManager;
 
     public StartAllTorrentsDrawerItem(Context context, TransportManager transportManager) {
-        super(R.string.drawer_actions_start_all_torrents, context);
+        super(R.string.action_start_all_torrents, context);
         app = (TransmissionRemote) context.getApplicationContext();
         this.transportManager = transportManager;
     }

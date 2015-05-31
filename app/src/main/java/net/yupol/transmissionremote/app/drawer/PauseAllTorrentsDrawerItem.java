@@ -1,7 +1,6 @@
 package net.yupol.transmissionremote.app.drawer;
 
 import android.content.Context;
-import android.graphics.drawable.Drawable;
 
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.TransmissionRemote;
@@ -16,7 +15,7 @@ public class PauseAllTorrentsDrawerItem extends DrawerItem {
     private TransportManager transportManager;
 
     public PauseAllTorrentsDrawerItem(Context context, TransportManager transportManager) {
-        super(R.string.drawer_actions_pause_all_torrents, context);
+        super(R.string.action_pause_all_torrents, context);
         app = (TransmissionRemote) context.getApplicationContext();
         this.transportManager = transportManager;
     }

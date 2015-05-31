@@ -4,4 +4,10 @@
         <attr name="pause_img_src" format="integer" />
         <attr name="resume_img_src" format="integer" />
     </declare-styleable>
+
+    <declare-styleable name="TurtleModeButton">
+        <attr name="src_enabled" format="integer"/>
+        <attr name="src_disabled" format="integer"/>
+        <attr name="enabled" format="boolean"/>
+    </declare-styleable>
 </resources>

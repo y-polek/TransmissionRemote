@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item android:id="@+id/action_download_speed"
+        android:title="@string/download_speed"
+        app:actionViewClass="net.yupol.transmissionremote.app.actionbar.SpeedTextView$DownloadSpeedTextView"
+        app:showAsAction="always" />
+    <item android:id="@+id/action_upload_speed"
+        android:title="@string/upload_speed"
+        app:actionViewClass="net.yupol.transmissionremote.app.actionbar.SpeedTextView$UploadSpeedTextView"
+        app:showAsAction="always" />
+</menu>
