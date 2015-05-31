@@ -10,19 +10,14 @@ import com.google.common.collect.FluentIterable;
 
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.TransmissionRemote;
-import net.yupol.transmissionremote.app.filtering.Filters;
-import net.yupol.transmissionremote.app.model.json.Torrent;
 import net.yupol.transmissionremote.app.server.Server;
 import net.yupol.transmissionremote.app.sorting.TorrentComparators;
-import net.yupol.transmissionremote.app.transport.TransportManager;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 public class Drawer implements ListView.OnItemClickListener {
 
@@ -48,9 +43,9 @@ public class Drawer implements ListView.OnItemClickListener {
         }
     };
 
-    public Drawer(ListView drawerList, TransportManager tm) {
+    public Drawer(ListView drawerList) {
         this.drawerList = drawerList;
-        initItemList(drawerList.getContext(), tm);
+        initItemList(drawerList.getContext());
         listAdapter = new DrawerListAdapter(groups);
         drawerList.setAdapter(listAdapter);
         drawerList.setOnItemClickListener(this);
@@ -63,28 +58,11 @@ public class Drawer implements ListView.OnItemClickListener {
         app.addOnServerListChangedListener(serversListener);
     }
 
-    private void initItemList(Context c, TransportManager tm) {
+    private void initItemList(Context c) {
         groups = new ArrayList<>();
         // Servers
         groups.add(new ServerDrawerGroupItem(Groups.SERVERS.id(), R.string.drawer_servers, c,
                 new EditServersDrawerItem(c)));
-
-        // Actions
-        groups.add(new DrawerGroupItem(Groups.ACTIONS.id(), R.string.drawer_actions, c,
-                new OpenTorrentDrawerItem(c),
-                new StartAllTorrentsDrawerItem(c, tm),
-                new PauseAllTorrentsDrawerItem(c, tm)));
-
-        // Filters
-        FilterDrawerGroupItem filterGroup = new FilterDrawerGroupItem(Groups.FILTERS.id(), R.string.filters, c,
-                new FilterDrawerItem(R.string.filter_all, c, Filters.ALL),
-                new FilterDrawerItem(R.string.filter_active, c, Filters.ACTIVE),
-                new FilterDrawerItem(R.string.filter_downloading, c, Filters.DOWNLOADING),
-                new FilterDrawerItem(R.string.filter_seeding, c, Filters.SEEDING),
-                new FilterDrawerItem(R.string.filter_paused, c, Filters.PAUSED));
-        TransmissionRemote app = (TransmissionRemote) drawerList.getContext().getApplicationContext();
-        filterGroup.setActiveFilter(app.getActiveFilter());
-        groups.add(filterGroup);
 
         // Sort by
         groups.add(new SortDrawerGroupItem(Groups.SORT_BY.id(), R.string.drawer_sort_by, c,
@@ -122,16 +100,6 @@ public class Drawer implements ListView.OnItemClickListener {
         if (serverItem != null) {
             group.activateServerItem(serverItem);
         }
-    }
-
-    /**
-     * Updates torrent count in Filters group.
-     * @param torrents collection of all torrents or {@code null} to clear count info
-     */
-    public void updateTorrentsCount(@Nullable Collection<Torrent> torrents) {
-        FilterDrawerGroupItem filterGroup = (FilterDrawerGroupItem) findGroupById(Groups.FILTERS.id());
-        filterGroup.updateCount(torrents);
-        refresh();
     }
 
     public void dispose() {
@@ -177,13 +145,11 @@ public class Drawer implements ListView.OnItemClickListener {
     }
 
     public interface OnItemSelectedListener {
-        public void onDrawerItemSelected(DrawerGroupItem groupItem, DrawerItem item);
+        void onDrawerItemSelected(DrawerGroupItem groupItem, DrawerItem item);
     }
 
-    public static enum Groups {
+    public enum Groups {
         SERVERS,
-        ACTIONS,
-        FILTERS,
         SORT_BY,
         PREFERENCES;
 

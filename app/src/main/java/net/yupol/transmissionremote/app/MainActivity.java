@@ -36,7 +36,6 @@ import net.yupol.transmissionremote.app.actionbar.SpeedTextView;
 import net.yupol.transmissionremote.app.drawer.Drawer;
 import net.yupol.transmissionremote.app.drawer.DrawerGroupItem;
 import net.yupol.transmissionremote.app.drawer.DrawerItem;
-import net.yupol.transmissionremote.app.drawer.OpenTorrentDrawerItem;
 import net.yupol.transmissionremote.app.drawer.ServerDrawerItem;
 import net.yupol.transmissionremote.app.drawer.ServerPrefsDrawerItem;
 import net.yupol.transmissionremote.app.drawer.SortDrawerGroupItem;
@@ -184,7 +183,7 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer);
         ListView drawerList = (ListView) findViewById(R.id.drawer_list);
 
-        drawer = new Drawer(drawerList, getTransportManager());
+        drawer = new Drawer(drawerList);
         drawer.setOnItemSelectedListener(this);
 
         DrawerLayout drawerLayout = (DrawerLayout) findViewById(R.id.drawer);
@@ -362,10 +361,6 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
                         new Intent(this, ServerPreferencesActivity.class),
                         REQUEST_CODE_SERVER_PREFERENCES);
             }
-        } else if (group.getId() == Drawer.Groups.ACTIONS.id()) {
-            if (item instanceof OpenTorrentDrawerItem) {
-                openTorrent();
-            }
         }
     }
 
@@ -394,7 +389,6 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
 
         updateSpeedActions(torrents);
 
-        drawer.updateTorrentsCount(torrents);
         navigationAdapter.notifyDataSetChanged();
 
         String text = Joiner.on("\n").join(FluentIterable.from(torrents).transform(new Function<Torrent, String>() {
@@ -437,7 +431,6 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
         stopPortChecker();
         stopPreferencesUpdateTimer();
         showProgressbarFragment();
-        drawer.updateTorrentsCount(null);
 
         // Start new server connections
         startPortChecker();
