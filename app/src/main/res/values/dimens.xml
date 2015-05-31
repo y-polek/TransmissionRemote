@@ -58,5 +58,6 @@
     <dimen name="spinner_filter_name_text_size">14sp</dimen>
     <dimen name="spinner_header_text_size">14sp</dimen>
     <dimen name="spinner_normal_text_size">18sp</dimen>
+    <dimen name="speed_text_size">15sp</dimen>
 
 </resources>

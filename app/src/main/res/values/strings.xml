@@ -8,7 +8,6 @@
     <string name="drawer_servers">Servers</string>
 
     <!-- Actions -->
-    <string name="drawer_actions">Actions</string>
     <string name="action_open_torrent">Open torrent</string>
     <string name="action_start_all_torrents">Start all torrents</string>
     <string name="action_pause_all_torrents">Pause all torrents</string>
