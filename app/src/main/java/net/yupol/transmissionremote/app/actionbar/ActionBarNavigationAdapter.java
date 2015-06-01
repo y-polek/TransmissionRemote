@@ -13,6 +13,7 @@ import com.google.common.collect.FluentIterable;
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.TransmissionRemote;
 import net.yupol.transmissionremote.app.filtering.Filter;
+import net.yupol.transmissionremote.app.filtering.Filters;
 import net.yupol.transmissionremote.app.server.Server;
 
 public class ActionBarNavigationAdapter extends BaseAdapter {
@@ -127,8 +128,14 @@ public class ActionBarNavigationAdapter extends BaseAdapter {
         TextView serverName = (TextView) view.findViewById(R.id.server_name);
         serverName.setText(app.getActiveServer().getName());
 
+        Filter activeFilter = app.getActiveFilter();
+
         TextView filterName = (TextView) view.findViewById(R.id.filter_name);
-        filterName.setText(app.getActiveFilter().getNameResId());
+        filterName.setText(activeFilter.getNameResId());
+
+        if (!activeFilter.equals(Filters.ALL)) {
+            filterName.setTextColor(context.getResources().getColor(R.color.accent));
+        }
 
         return view;
     }
