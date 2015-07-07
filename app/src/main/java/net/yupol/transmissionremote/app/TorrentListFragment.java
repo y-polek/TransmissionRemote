@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -29,7 +30,6 @@ import net.yupol.transmissionremote.app.transport.request.StopTorrentRequest;
 import net.yupol.transmissionremote.app.utils.SizeUtils;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -62,6 +62,8 @@ public class TorrentListFragment extends ListFragment {
             updateTorrentList();
         }
     };
+
+    private OnTorrentSelectedListener torrentSelectedListener;
 
     public TorrentListFragment() {
         setListAdapter(new BaseAdapter() {
@@ -151,8 +153,8 @@ public class TorrentListFragment extends ListFragment {
                         if (activity instanceof BaseSpiceActivity) {
                             TransportManager transportManager = ((BaseSpiceActivity) activity).getTransportManager();
                             Request<Void> request = state == State.PAUSE
-                                    ? new StopTorrentRequest(Arrays.asList(torrent))
-                                    : new StartTorrentRequest(Arrays.asList(torrent));
+                                    ? new StopTorrentRequest(Collections.singletonList(torrent))
+                                    : new StartTorrentRequest(Collections.singletonList(torrent));
                             transportManager.doRequest(request, null);
                         } else {
                             Log.e(TAG, "Can't send Start/Stop request. " +
@@ -212,6 +214,18 @@ public class TorrentListFragment extends ListFragment {
         super.onDetach();
     }
 
+    @Override
+    public void onListItemClick(ListView l, View v, int position, long id) {
+        if (torrentSelectedListener != null) {
+            Torrent torrent = (Torrent) getListAdapter().getItem(position);
+            torrentSelectedListener.onTorrentSelected(torrent);
+        }
+    }
+
+    public void setOnTorrentSelectedListener(OnTorrentSelectedListener listener) {
+        torrentSelectedListener = listener;
+    }
+
     private void updateTorrentList() {
         Filter filter = app.getActiveFilter();
         torrentsToShow = new ArrayList<>(FluentIterable.from(allTorrents).filter(filter).toList());
@@ -233,5 +247,9 @@ public class TorrentListFragment extends ListFragment {
 
     private boolean isPaused(Torrent.Status status) {
         return status == Torrent.Status.STOPPED;
+    }
+
+    public interface OnTorrentSelectedListener {
+        void onTorrentSelected(Torrent torrent);
     }
 }

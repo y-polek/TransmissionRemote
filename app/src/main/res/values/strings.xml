@@ -109,4 +109,7 @@
     <string name="torrent">%d torrent</string>
     <string name="torrents">%d torrents</string>
 
+    <!-- Torrent details -->
+    <string name="torrent_details">Torrent details</string>
+
 </resources>

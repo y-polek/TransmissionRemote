@@ -42,6 +42,10 @@
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
+        <activity android:name=".torrentdetails.TorrentDetailsActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data android:name="android.support.PARENT_ACTIVITY" android:value=".MainActivity"/>
+        </activity>
 
         <service android:name=".transport.NoCacheGoogleHttpClientSpiceService"
             android:exported="false" />

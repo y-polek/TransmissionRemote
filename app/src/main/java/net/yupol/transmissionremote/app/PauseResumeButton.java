@@ -36,7 +36,7 @@ public class PauseResumeButton extends ImageButton {
         setState(state == State.PAUSE ? State.RESUME : State.PAUSE);
     }
 
-    public static enum State {
+    public enum State {
         PAUSE, RESUME;
 
         private int resId;

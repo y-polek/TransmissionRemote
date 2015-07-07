@@ -7,7 +7,8 @@
     android:paddingLeft="4dp"
     android:paddingRight="8dp"
     android:paddingTop="4dp"
-    android:paddingBottom="4dp">
+    android:paddingBottom="4dp"
+    android:descendantFocusability="blocksDescendants">
 
     <net.yupol.transmissionremote.app.PauseResumeButton
         xmlns:custom="http://schemas.android.com/apk/res-auto"
@@ -17,7 +18,9 @@
         android:layout_gravity="center_vertical"
         custom:pause_img_src="@drawable/pause"
         custom:resume_img_src="@drawable/resume"
-        android:background="@null"/>
+        android:background="@null"
+        android:focusable="false"
+        android:focusableInTouchMode="false"/>
 
     <LinearLayout
         android:layout_width="match_parent"

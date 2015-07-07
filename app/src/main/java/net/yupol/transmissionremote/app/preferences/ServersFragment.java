@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
@@ -70,30 +71,23 @@ public class ServersFragment extends ListFragment {
     }
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                BaseAdapter adapter = (BaseAdapter) getListAdapter();
-                Server server = (Server) adapter.getItem(position);
-                if (!server.equals(app.getActiveServer())) {
-                    app.setActiveServer(server);
-                }
-                ((BaseAdapter) getListAdapter()).notifyDataSetChanged();
-
-                if (serverSelectedListener != null) {
-                    serverSelectedListener.onServerSelected(server);
-                }
-            }
-        });
-    }
-
-    @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         app = (TransmissionRemote) activity.getApplication();
+    }
+
+    @Override
+    public void onListItemClick(ListView l, View v, int position, long id) {
+        BaseAdapter adapter = (BaseAdapter) getListAdapter();
+        Server server = (Server) adapter.getItem(position);
+        if (!server.equals(app.getActiveServer())) {
+            app.setActiveServer(server);
+        }
+        ((BaseAdapter) getListAdapter()).notifyDataSetChanged();
+
+        if (serverSelectedListener != null) {
+            serverSelectedListener.onServerSelected(server);
+        }
     }
 
     public void setOnServerSelectedListener(OnServerSelectedListener listener) {

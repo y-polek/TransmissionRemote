@@ -49,6 +49,7 @@ import net.yupol.transmissionremote.app.opentorrent.OpenByDialogFragment;
 import net.yupol.transmissionremote.app.preferences.ServerPreferencesActivity;
 import net.yupol.transmissionremote.app.server.AddServerActivity;
 import net.yupol.transmissionremote.app.server.Server;
+import net.yupol.transmissionremote.app.torrentdetails.TorrentDetailsActivity;
 import net.yupol.transmissionremote.app.transport.BaseSpiceActivity;
 import net.yupol.transmissionremote.app.transport.PortChecker;
 import net.yupol.transmissionremote.app.transport.TorrentUpdater;
@@ -72,7 +73,8 @@ import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSelectedListener,
-            TorrentUpdater.TorrentUpdateListener, SharedPreferences.OnSharedPreferenceChangeListener, TransmissionRemote.OnSpeedLimitChangedListener {
+            TorrentUpdater.TorrentUpdateListener, SharedPreferences.OnSharedPreferenceChangeListener,
+            TransmissionRemote.OnSpeedLimitChangedListener, TorrentListFragment.OnTorrentSelectedListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
@@ -88,6 +90,7 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
     private static String TAG_OPEN_TORRENT_DIALOG = "tag_open_torrent_dialog";
     private static String TAG_OPEN_TORRENT_BY_ADDRESS_DIALOG = "tag_open_torrent_by_address_dialog";
     private static String TAG_DOWNLOAD_LOCATION_DIALOG = "tag_download_location_dialog";
+    private static String TAG_TORRENT_DETAILS = "tag_torrent_details";
 
     private static final String MIME_TYPE_TORRENT = "application/x-bittorrent";
 
@@ -98,7 +101,6 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
     private Drawer drawer;
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle drawerToggle;
-    private TorrentListFragment torrentListFragment;
 
     private Timer prefsUpdateTimer;
 
@@ -354,6 +356,8 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
                 }
             }
         } else if (group.getId() == Drawer.Groups.SORT_BY.id()) {
+            TorrentListFragment torrentListFragment =
+                    (TorrentListFragment) getFragmentManager().findFragmentByTag(TAG_TORRENT_LIST);
             if (torrentListFragment != null)
                 torrentListFragment.setSort(((SortDrawerGroupItem) group).getComparator());
         } else if (group.getId() == Drawer.Groups.PREFERENCES.id()) {
@@ -401,6 +405,13 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
         }));
 
         Log.d(TAG, "Torrents:\n" + text);
+    }
+
+    @Override
+    public void onTorrentSelected(Torrent torrent) {
+        Intent intent = new Intent(this, TorrentDetailsActivity.class);
+        intent.putExtra(TorrentDetailsActivity.EXTRA_NAME_TORRENT, torrent);
+        startActivity(intent);
     }
 
     @Override
@@ -492,7 +503,6 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
             ft.replace(R.id.torrent_list_container, emptyServerFragment, TAG_EMPTY_SERVER);
             ft.commit();
         }
-        torrentListFragment = null;
     }
 
     private void showProgressbarFragment() {
@@ -504,14 +514,14 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
             ft.replace(R.id.torrent_list_container, progressbarFragment, TAG_PROGRESSBAR);
             ft.commit();
         }
-        torrentListFragment = null;
     }
 
     private void showTorrentListFragment() {
         FragmentManager fm = getFragmentManager();
-        torrentListFragment = (TorrentListFragment) fm.findFragmentByTag(TAG_TORRENT_LIST);
+        TorrentListFragment torrentListFragment = (TorrentListFragment) fm.findFragmentByTag(TAG_TORRENT_LIST);
         if (torrentListFragment == null) {
             torrentListFragment = new TorrentListFragment();
+            torrentListFragment.setOnTorrentSelectedListener(this);
             FragmentTransaction ft = fm.beginTransaction();
             ft.replace(R.id.torrent_list_container, torrentListFragment, TAG_TORRENT_LIST);
             ft.commit();

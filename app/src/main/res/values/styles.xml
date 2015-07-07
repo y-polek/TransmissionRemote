@@ -10,4 +10,12 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
+    
+    <style name="ActionBarTitleAppearance">
+        <item name="android:textSize">@dimen/actionbar_title_text_size</item>
+    </style>
+
+    <style name="ActionBarSubTitleAppearance">
+        <item name="android:textSize">@dimen/actionbar_subtitle_text_size</item>
+    </style>
 </resources>

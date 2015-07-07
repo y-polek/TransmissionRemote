@@ -1,8 +1,11 @@
 package net.yupol.transmissionremote.app.model.json;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.api.client.util.Key;
 
-public class Torrent {
+public class Torrent implements Parcelable {
     @Key private int id;
     @Key private String name;
     @Key private long addedData;
@@ -17,6 +20,24 @@ public class Torrent {
     @Key("error") private int errorId;
     private Error error;
     @Key private String errorString;
+
+    public Torrent() {}
+
+    private Torrent(Parcel in) {
+        id = in.readInt();
+        name = in.readString();
+        addedData = in.readLong();
+        totalSize = in.readLong();
+        percentDone = in.readDouble();
+        status = in.readInt();
+        downloadRate = in.readInt();
+        uploadRate = in.readInt();
+        leftUntilDone = in.readInt();
+        uploadedSize = in.readLong();
+        uploadRatio = in.readDouble();
+        errorId = in.readInt();
+        errorString = in.readString();
+    }
 
     public int getId() {
         return id;
@@ -72,6 +93,40 @@ public class Torrent {
     }
 
     @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel out, int flags) {
+        out.writeInt(id);
+        out.writeString(name);
+        out.writeLong(addedData);
+        out.writeLong(totalSize);
+        out.writeDouble(percentDone);
+        out.writeInt(status);
+        out.writeInt(downloadRate);
+        out.writeInt(uploadRate);
+        out.writeInt(leftUntilDone);
+        out.writeLong(uploadedSize);
+        out.writeDouble(uploadRatio);
+        out.writeInt(errorId);
+        out.writeString(errorString);
+    }
+
+    public static final Parcelable.Creator<Torrent> CREATOR = new Creator<Torrent>() {
+        @Override
+        public Torrent createFromParcel(Parcel in) {
+            return new Torrent(in);
+        }
+
+        @Override
+        public Torrent[] newArray(int size) {
+            return new Torrent[size];
+        }
+    };
+
+    @Override
     public String toString() {
         return "Torrent{" +
                 "id=" + id +
@@ -88,7 +143,7 @@ public class Torrent {
                 '}';
     }
 
-    public static enum Status {
+    public enum Status {
         UNKNOWN(-1),
         STOPPED(0),
         CHECK_WAIT(1),
@@ -100,7 +155,7 @@ public class Torrent {
 
         private int value;
 
-        private Status(int value) {
+        Status(int value) {
             this.value = value;
         }
 
@@ -113,7 +168,7 @@ public class Torrent {
         }
     }
 
-    public static enum Error {
+    public enum Error {
         UNKNOWN(-1, false),
         NONE(0, false),
         TRACKER_WARNING(1, true),
@@ -123,7 +178,7 @@ public class Torrent {
         private int id;
         private boolean isWarning;
 
-        private Error(int id, boolean isWarning) {
+        Error(int id, boolean isWarning) {
             this.id = id;
             this.isWarning = isWarning;
         }

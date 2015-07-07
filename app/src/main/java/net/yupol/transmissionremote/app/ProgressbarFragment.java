@@ -6,8 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import net.yupol.transmissionremote.app.R;
-
 public class ProgressbarFragment extends Fragment {
 
     @Override
