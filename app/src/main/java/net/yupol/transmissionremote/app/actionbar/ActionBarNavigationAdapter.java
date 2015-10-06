@@ -126,7 +126,8 @@ public class ActionBarNavigationAdapter extends BaseAdapter {
         }
 
         TextView serverName = (TextView) view.findViewById(R.id.server_name);
-        serverName.setText(app.getActiveServer().getName());
+        Server activeServer = app.getActiveServer();
+        serverName.setText(activeServer != null ? activeServer.getName() : "");
 
         Filter activeFilter = app.getActiveFilter();
 

@@ -3,7 +3,6 @@ package net.yupol.transmissionremote.app.transport;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public abstract class PropagateRequestListener<RESULT> implements RequestListener<RESULT> {
