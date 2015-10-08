@@ -90,7 +90,6 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
     private static String TAG_OPEN_TORRENT_DIALOG = "tag_open_torrent_dialog";
     private static String TAG_OPEN_TORRENT_BY_ADDRESS_DIALOG = "tag_open_torrent_by_address_dialog";
     private static String TAG_DOWNLOAD_LOCATION_DIALOG = "tag_download_location_dialog";
-    private static String TAG_TORRENT_DETAILS = "tag_torrent_details";
 
     private static final String MIME_TYPE_TORRENT = "application/x-bittorrent";
 

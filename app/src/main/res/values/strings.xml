@@ -111,5 +111,8 @@
 
     <!-- Torrent details -->
     <string name="torrent_details">Torrent details</string>
+    <string name="files">Files</string>
+    <string name="options">Options</string>
+    <string name="peers">Peers</string>
 
 </resources>

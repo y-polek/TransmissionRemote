@@ -1,5 +1,7 @@
 package net.yupol.transmissionremote.app.torrentdetails;
 
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
@@ -12,6 +14,8 @@ public class TorrentDetailsActivity extends BaseSpiceActivity {
 
     public static final String EXTRA_NAME_TORRENT = "extra_key_torrent";
 
+    private static String TAG_TORRENT_DETAILS = "tag_torrent_details";
+
     private Torrent torrent;
 
     @Override
@@ -22,6 +26,16 @@ public class TorrentDetailsActivity extends BaseSpiceActivity {
         torrent = getIntent().getParcelableExtra(EXTRA_NAME_TORRENT);
 
         setupActionBar();
+
+        FragmentManager fm = getFragmentManager();
+        TorrentDetailsFragment detailsFragment = (TorrentDetailsFragment) fm.findFragmentByTag(TAG_TORRENT_DETAILS);
+        if (detailsFragment == null) {
+            detailsFragment = new TorrentDetailsFragment();
+            FragmentTransaction ft = fm.beginTransaction();
+            ft.replace(R.id.fragment_container, detailsFragment, TAG_TORRENT_DETAILS);
+            ft.commit();
+        }
+        detailsFragment.setTorrent(torrent);
     }
 
     private void setupActionBar() {
