@@ -20,6 +20,8 @@ public class Torrent implements Parcelable {
     @Key("error") private int errorId;
     private Error error;
     @Key private String errorString;
+    @Key("files") private File[] files;
+    @Key("fileStats") private FileStat[] fileStats;
 
     public Torrent() {}
 
@@ -37,6 +39,8 @@ public class Torrent implements Parcelable {
         uploadRatio = in.readDouble();
         errorId = in.readInt();
         errorString = in.readString();
+        files = in.createTypedArray(File.CREATOR);
+        fileStats = in.createTypedArray(FileStat.CREATOR);
     }
 
     public int getId() {
@@ -83,6 +87,14 @@ public class Torrent implements Parcelable {
         return uploadRatio;
     }
 
+    public File[] getFiles() {
+        return files;
+    }
+
+    public FileStat[] getFileStats() {
+        return fileStats;
+    }
+
     public Error getError() {
         if (error == null) error = Error.getById(errorId);
         return error;
@@ -112,9 +124,11 @@ public class Torrent implements Parcelable {
         out.writeDouble(uploadRatio);
         out.writeInt(errorId);
         out.writeString(errorString);
+        out.writeTypedArray(files, flags);
+        out.writeTypedArray(fileStats, flags);
     }
 
-    public static final Parcelable.Creator<Torrent> CREATOR = new Creator<Torrent>() {
+    public static final Creator<Torrent> CREATOR = new Creator<Torrent>() {
         @Override
         public Torrent createFromParcel(Parcel in) {
             return new Torrent(in);
