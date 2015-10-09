@@ -22,6 +22,10 @@ public class FileStat implements Parcelable {
         return wanted;
     }
 
+    public void setWanted(boolean wanted) {
+        this.wanted = wanted;
+    }
+
     public int getPriority() {
         return priority;
     }

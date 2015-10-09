@@ -1,13 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <dimen name="text_size_body_1">13sp</dimen>
+    <dimen name="text_size_body_2">14sp</dimen>
+    
     <dimen name="default_layout_margin">16dp</dimen>
     <dimen name="default_text_margin">8dp</dimen>
+    <dimen name="default_text_margin_small">4dp</dimen>
     <dimen name="default_edit_text_height">48dp</dimen>
     <dimen name="default_edit_text_padding">4dp</dimen>
     <dimen name="default_padding">8dp</dimen>
     <dimen name="default_padding_big">16dp</dimen>
-    <dimen name="default_padding_small">2dp</dimen>
+    <dimen name="default_padding_small">4dp</dimen>
 
                 <!-- Drawer -->
     <dimen name="drawer_list_group_text_size">18sp</dimen>
