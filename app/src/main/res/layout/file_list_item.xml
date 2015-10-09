@@ -19,19 +19,19 @@
             android:layout_marginTop="@dimen/default_text_margin_small"
             android:layout_marginRight="@dimen/default_text_margin_small"
             android:layout_marginBottom="@dimen/default_text_margin_small"
-            android:textSize="@dimen/text_size_body_1"
+            android:textSize="@dimen/abc_text_size_body_1_material"
             android:textStyle="bold"/>
         <TextView android:id="@+id/dir_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingRight="@dimen/default_padding_small"
             android:paddingBottom="@dimen/default_padding_small"
-            android:textSize="@dimen/text_size_body_1"/>
+            android:textSize="@dimen/abc_text_size_body_1_material"/>
         <TextView android:id="@+id/stats_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginRight="@dimen/default_text_margin_small"
             android:layout_marginBottom="@dimen/default_text_margin_small"
-            android:textSize="@dimen/text_size_body_2"/>
+            android:textSize="@dimen/abc_text_size_body_2_material"/>
     </LinearLayout>
 </LinearLayout>
