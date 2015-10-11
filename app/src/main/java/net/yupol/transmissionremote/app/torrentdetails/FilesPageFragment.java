@@ -2,6 +2,7 @@ package net.yupol.transmissionremote.app.torrentdetails;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,16 +15,29 @@ import android.widget.TextView;
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.model.json.File;
 import net.yupol.transmissionremote.app.model.json.FileStat;
+import net.yupol.transmissionremote.app.model.json.Torrent;
+import net.yupol.transmissionremote.app.transport.BaseSpiceActivity;
+import net.yupol.transmissionremote.app.transport.TransportManager;
+import net.yupol.transmissionremote.app.transport.request.TorrentSetRequest;
 import net.yupol.transmissionremote.app.utils.SizeUtils;
 
 public class FilesPageFragment extends BasePageFragment {
 
     private static final String TAG = FilesPageFragment.class.getSimpleName();
 
+    private FileSelectedListener selectionListener;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.torrent_details_file_page_fragment, container, false);
         ListView list = (ListView) view.findViewById(R.id.file_list);
+        if (getActivity() instanceof BaseSpiceActivity) {
+            selectionListener = new FileSelectedListener(getTorrent(),
+                    ((BaseSpiceActivity) getActivity()).getTransportManager());
+        } else {
+            Log.w(TAG, "FilesPageFragment should be used with BaseSpiceActivity. " +
+                    "Otherwise fragment will not support changing file selection.");
+        }
         list.setAdapter(new BaseAdapter() {
             @Override
             public int getCount() {
@@ -73,8 +87,14 @@ public class FilesPageFragment extends BasePageFragment {
 
                 FileStat fileStat = getFileStat(position);
                 holder.checkBox.setTag(fileStat);
-                holder.checkBox.setChecked(fileStat.isWanted());
-                holder.checkBox.setOnCheckedChangeListener(FileSelectedListener.INSTANCE);
+                holder.checkBox.setTag(R.id.TAG_FILE_INDEX, (int) getItemId(position));
+                boolean isCompleted = file.getBytesCompleted() >= file.getLength();
+                if (isCompleted) {
+                    fileStat.setWanted(true);
+                }
+                holder.checkBox.setChecked(fileStat.isWanted() || isCompleted);
+                holder.checkBox.setEnabled(!isCompleted && selectionListener != null);
+                holder.checkBox.setOnCheckedChangeListener(selectionListener);
 
                 holder.fileName.setText(fileName);
 
@@ -111,14 +131,27 @@ public class FilesPageFragment extends BasePageFragment {
 
     private static class FileSelectedListener implements CompoundButton.OnCheckedChangeListener {
 
-        private static final FileSelectedListener INSTANCE = new FileSelectedListener();
+        private Torrent torrent;
+        private TransportManager transportManager;
+
+        public FileSelectedListener(Torrent torrent, TransportManager transportManager) {
+            this.torrent = torrent;
+            this.transportManager = transportManager;
+        }
 
         @Override
         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
             if (!(buttonView.getTag() instanceof FileStat)) return;
 
             FileStat fileStat = (FileStat) buttonView.getTag();
-            fileStat.setWanted(isChecked);
+            if (fileStat.isWanted() != isChecked) {
+                fileStat.setWanted(isChecked);
+
+                int fileIndex = (int) buttonView.getTag(R.id.TAG_FILE_INDEX);
+                TorrentSetRequest request;
+                request = new TorrentSetRequest(torrent.getId(), fileStat.isWanted(), fileIndex);
+                transportManager.doRequest(request, null);
+            }
         }
     }
 }
