@@ -21,6 +21,9 @@ import net.yupol.transmissionremote.app.transport.TransportManager;
 import net.yupol.transmissionremote.app.transport.request.TorrentSetRequest;
 import net.yupol.transmissionremote.app.utils.SizeUtils;
 
+import java.util.Arrays;
+import java.util.Comparator;
+
 public class FilesPageFragment extends BasePageFragment {
 
     private static final String TAG = FilesPageFragment.class.getSimpleName();
@@ -38,20 +41,40 @@ public class FilesPageFragment extends BasePageFragment {
             Log.w(TAG, "FilesPageFragment should be used with BaseSpiceActivity. " +
                     "Otherwise fragment will not support changing file selection.");
         }
+
+        final File[] files = getTorrent().getFiles();
+        final File[] sortedFiles = Arrays.copyOf(files, files.length);
+        Arrays.sort(sortedFiles, new Comparator<File>() {
+            @Override
+            public int compare(File lhs, File rhs) {
+                return lhs.getName().compareToIgnoreCase(rhs.getName());
+            }
+        });
+
         list.setAdapter(new BaseAdapter() {
             @Override
             public int getCount() {
-                return getTorrent().getFiles().length;
+                return sortedFiles.length;
             }
 
             @Override
             public File getItem(int position) {
-                return getTorrent().getFiles()[position];
+                return sortedFiles[position];
             }
 
+            /**
+             * @param position in list view
+             * @return file's index in original model
+             */
             @Override
             public long getItemId(int position) {
-                return position;
+                for (int i=0; i<files.length; i++) {
+                    File file = files[i];
+                    if (file.equals(getItem(position))) {
+                        return i;
+                    }
+                }
+                throw new IllegalStateException("Can't find index of file with position '" + position + "'");
             }
 
             @Override
@@ -111,7 +134,7 @@ public class FilesPageFragment extends BasePageFragment {
             }
 
             private FileStat getFileStat(int position) {
-                return getTorrent().getFileStats()[position];
+                return getTorrent().getFileStats()[(int) getItemId(position)];
             }
         });
         return view;
