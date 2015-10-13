@@ -171,9 +171,13 @@ public class FilesPageFragment extends BasePageFragment {
                 fileStat.setWanted(isChecked);
 
                 int fileIndex = (int) buttonView.getTag(R.id.TAG_FILE_INDEX);
-                TorrentSetRequest request;
-                request = new TorrentSetRequest(torrent.getId(), fileStat.isWanted(), fileIndex);
-                transportManager.doRequest(request, null);
+                TorrentSetRequest.Builder requestBuilder = TorrentSetRequest.builder(torrent.getId());
+                if (fileStat.isWanted()) {
+                    requestBuilder.filesWanted(fileIndex);
+                } else {
+                    requestBuilder.filesUnwanted(fileIndex);
+                }
+                transportManager.doRequest(requestBuilder.build(), null);
             }
         }
     }
