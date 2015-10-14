@@ -48,4 +48,5 @@ public class TorrentMetadata {
     public static final String IS_PRIVATE = "isPrivate";
     public static final String PIECE_COUNT = "pieceCount";
     public static final String PIECE_SIZE = "pieceSize";
+    public static final String BANDWIDTH_PRIORITY = "bandwidthPriority";
 }

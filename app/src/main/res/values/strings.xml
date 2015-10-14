@@ -114,5 +114,17 @@
     <string name="files">Files</string>
     <string name="options">Options</string>
     <string name="peers">Peers</string>
+    <string name="priority">Priority</string>
+    <string name="transfer_priority">Transfer Priority:</string>
+    <string name="transfer_bandwidth">Transfer Bandwidth</string>
+    <string name="limit_download">Limit Download:</string>
+    <string name="limit_upload">Limit Upload:</string>
+    <string name="stay_within_global_bandwidth">Stay within the global bandwidth limits</string>
+    <string name="seeding_limits">Seeding limits</string>
+    <string name="ratio">Ratio:</string>
+    <string name="inactivity">Inactivity:</string>
+    <string name="priority_high">High</string>
+    <string name="priority_normal">Normal</string>
+    <string name="priority_low">Low</string>
 
 </resources>

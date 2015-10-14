@@ -2,11 +2,14 @@ package net.yupol.transmissionremote.app.transport.request;
 
 import android.util.Log;
 
+import net.yupol.transmissionremote.app.model.json.TransferPriority;
+
 import org.apache.commons.lang3.ArrayUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Arrays;
 import java.util.Collections;
 
 public class TorrentSetRequest extends Request<Void> {
@@ -39,6 +42,7 @@ public class TorrentSetRequest extends Request<Void> {
         private int torrentId;
         private int[] filesWantedIndices;
         private int[] filesUnwantedIndices;
+        private TransferPriority transferPriority;
 
         private Builder(int torrentId) {
             this.torrentId = torrentId;
@@ -54,15 +58,23 @@ public class TorrentSetRequest extends Request<Void> {
             return this;
         }
 
+        public Builder transferPriority(TransferPriority priority) {
+            transferPriority = priority;
+            return this;
+        }
+
         public TorrentSetRequest build() {
             JSONObject args = new JSONObject();
             try {
                 args.put("ids", new JSONArray(Collections.singleton(torrentId)));
                 if (filesWantedIndices != null && filesWantedIndices.length > 0) {
-                    args.put("files-wanted", new JSONArray(ArrayUtils.toObject(filesWantedIndices)));
+                    args.put("files-wanted", new JSONArray(Arrays.asList(ArrayUtils.toObject(filesWantedIndices))));
                 }
                 if (filesUnwantedIndices != null && filesUnwantedIndices.length > 0) {
-                    args.put("files-unwanted", new JSONArray(ArrayUtils.toObject(filesUnwantedIndices)));
+                    args.put("files-unwanted", new JSONArray(Arrays.asList(ArrayUtils.toObject(filesUnwantedIndices))));
+                }
+                if (transferPriority != null) {
+                    args.put("bandwidthPriority", transferPriority.getModelValue());
                 }
             } catch (JSONException e) {
                 Log.e(TAG, "Error while creating JSON object");

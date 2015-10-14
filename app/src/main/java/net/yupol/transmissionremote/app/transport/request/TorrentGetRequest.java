@@ -11,9 +11,9 @@ import org.json.JSONObject;
 
 import java.util.Arrays;
 
-public class GetTorrentsRequest extends Request<Torrents> {
+public class TorrentGetRequest extends Request<Torrents> {
 
-    private static final String TAG = GetTorrentsRequest.class.getSimpleName();
+    private static final String TAG = TorrentGetRequest.class.getSimpleName();
 
     private static final String[] TORRENT_METADATA = {
             TorrentMetadata.ID,
@@ -30,10 +30,11 @@ public class GetTorrentsRequest extends Request<Torrents> {
             TorrentMetadata.ERROR,
             TorrentMetadata.ERROR_STRING,
             TorrentMetadata.FILES,
-            TorrentMetadata.FILE_STATS
+            TorrentMetadata.FILE_STATS,
+            TorrentMetadata.BANDWIDTH_PRIORITY
     };
 
-    public GetTorrentsRequest() {
+    public TorrentGetRequest() {
         super(Torrents.class);
     }
 

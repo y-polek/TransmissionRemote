@@ -92,7 +92,7 @@ public abstract class Request<RESULT> extends GoogleHttpClientSpiceRequest<RESUL
                 statusCode = response.getStatusCode();
                 responseSessionId = response.getHeaders().getFirstHeaderStringValue(HEADER_SESSION_ID);
 
-                /*if (this instanceof GetTorrentsRequest) {
+                /*if (this instanceof TorrentGetRequest) {
                     String responseBody = IOUtils.toString(response.getContent());
                     Log.d(TAG, "responseBody: " + responseBody);
                 }*/
