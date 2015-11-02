@@ -43,6 +43,9 @@ public class TorrentSetRequest extends Request<Void> {
         private int[] filesWantedIndices;
         private int[] filesUnwantedIndices;
         private TransferPriority transferPriority;
+        private Boolean honorsSessionLimits;
+        private Boolean downloadLimited;
+        private Boolean uploadLimited;
 
         private Builder(int torrentId) {
             this.torrentId = torrentId;
@@ -63,6 +66,21 @@ public class TorrentSetRequest extends Request<Void> {
             return this;
         }
 
+        public Builder honorsSessionLimits(boolean honorsSessionLimits) {
+            this.honorsSessionLimits = honorsSessionLimits;
+            return this;
+        }
+
+        public Builder downloadLimited(boolean isLimited) {
+            this.downloadLimited = isLimited;
+            return this;
+        }
+
+        public Builder uploadLimited(boolean isLimited) {
+            this.uploadLimited = isLimited;
+            return this;
+        }
+
         public TorrentSetRequest build() {
             JSONObject args = new JSONObject();
             try {
@@ -75,6 +93,15 @@ public class TorrentSetRequest extends Request<Void> {
                 }
                 if (transferPriority != null) {
                     args.put("bandwidthPriority", transferPriority.getModelValue());
+                }
+                if (honorsSessionLimits != null) {
+                    args.put("honorsSessionLimits", honorsSessionLimits);
+                }
+                if (downloadLimited != null) {
+                    args.put("downloadLimited", downloadLimited);
+                }
+                if (uploadLimited != null) {
+                    args.put("uploadLimited", uploadLimited);
                 }
             } catch (JSONException e) {
                 Log.e(TAG, "Error while creating JSON object");

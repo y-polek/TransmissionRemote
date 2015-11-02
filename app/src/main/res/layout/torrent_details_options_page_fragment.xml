@@ -31,52 +31,15 @@
             android:textSize="@dimen/abc_text_size_subhead_material"
             android:textStyle="bold"
             android:text="@string/transfer_bandwidth"/>
-        <CheckBox
+        <CheckBox android:id="@+id/stay_with_global_bandwidth_checkbox"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="@dimen/abc_text_size_body_1_material"
             android:text="@string/stay_within_global_bandwidth"/>
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-            <CheckBox
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="@dimen/abc_text_size_body_1_material"
-                android:text="@string/limit_download"/>
-            <EditText
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="@dimen/abc_text_size_body_1_material"
-                android:inputType="number"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="@dimen/abc_text_size_body_1_material"
-                android:text="@string/kbps"/>
-        </LinearLayout>
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/default_layout_margin">
-            <CheckBox
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="@dimen/abc_text_size_body_1_material"
-                android:text="@string/limit_upload"/>
-            <EditText
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="@dimen/abc_text_size_body_1_material"
-                android:inputType="number"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="@dimen/abc_text_size_body_1_material"
-                android:text="@string/kbps"/>
-        </LinearLayout>
+        <fragment android:name="net.yupol.transmissionremote.app.torrentdetails.BandwidthLimitFragment"
+            android:id="@+id/torrent_bandwidth_limit_fragment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
 
         <TextView
             android:layout_width="wrap_content"

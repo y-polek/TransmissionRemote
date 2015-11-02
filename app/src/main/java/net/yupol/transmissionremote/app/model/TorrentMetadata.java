@@ -49,4 +49,9 @@ public class TorrentMetadata {
     public static final String PIECE_COUNT = "pieceCount";
     public static final String PIECE_SIZE = "pieceSize";
     public static final String BANDWIDTH_PRIORITY = "bandwidthPriority";
+    public static final String HONORS_SESSION_LIMITS = "honorsSessionLimits";
+    public static final String DOWNLOAD_LIMITED = "downloadLimited";
+    public static final String DOWNLOAD_LIMIT = "downloadLimit";
+    public static final String UPLOAD_LIMITED = "uploadLimited";
+    public static final String UPLOAD_LIMIT = "uploadLimit";
 }

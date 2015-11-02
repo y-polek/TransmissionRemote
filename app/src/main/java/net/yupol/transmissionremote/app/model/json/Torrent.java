@@ -24,6 +24,11 @@ public class Torrent implements Parcelable {
     @Key private FileStat[] fileStats;
     @Key("bandwidthPriority") private int transferPriorityValue;
     private TransferPriority transferPriority;
+    @Key private boolean honorsSessionLimits;
+    @Key private boolean downloadLimited;
+    @Key private long downloadLimit;
+    @Key private boolean uploadLimited;
+    @Key private long uploadLimit;
 
     public Torrent() {}
 
@@ -44,6 +49,11 @@ public class Torrent implements Parcelable {
         files = in.createTypedArray(File.CREATOR);
         fileStats = in.createTypedArray(FileStat.CREATOR);
         transferPriorityValue = in.readInt();
+        honorsSessionLimits = in.readInt() != 0;
+        downloadLimited = in.readInt() != 0;
+        downloadLimit = in.readLong();
+        uploadLimited = in.readInt() != 0;
+        uploadLimit = in.readLong();
     }
 
     public int getId() {
@@ -112,6 +122,26 @@ public class Torrent implements Parcelable {
         return transferPriority;
     }
 
+    public boolean isSessionLimitsHonored() {
+        return honorsSessionLimits;
+    }
+
+    public boolean isDownloadLimited() {
+        return downloadLimited;
+    }
+
+    public long getDownloadLimit() {
+        return downloadLimit;
+    }
+
+    public boolean isUploadLimited() {
+        return uploadLimited;
+    }
+
+    public long getUploadLimit() {
+        return uploadLimit;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -135,6 +165,11 @@ public class Torrent implements Parcelable {
         out.writeTypedArray(files, flags);
         out.writeTypedArray(fileStats, flags);
         out.writeInt(transferPriorityValue);
+        out.writeInt(honorsSessionLimits ? 1 : 0);
+        out.writeInt(downloadLimited ? 1 : 0);
+        out.writeLong(downloadLimit);
+        out.writeInt(uploadLimited ? 1 : 0);
+        out.writeLong(uploadLimit);
     }
 
     public static final Creator<Torrent> CREATOR = new Creator<Torrent>() {
@@ -157,12 +192,22 @@ public class Torrent implements Parcelable {
                 ", addedData=" + addedData +
                 ", totalSize=" + totalSize +
                 ", percentDone=" + percentDone +
-                ", status=" + Status.fromValue(status) + "(" + status + ")" +
+                ", status=" + status +
                 ", downloadRate=" + downloadRate +
                 ", uploadRate=" + uploadRate +
                 ", leftUntilDone=" + leftUntilDone +
                 ", uploadedSize=" + uploadedSize +
                 ", uploadRatio=" + uploadRatio +
+                ", errorId=" + errorId +
+                ", error=" + error +
+                ", errorString='" + errorString + '\'' +
+                ", transferPriorityValue=" + transferPriorityValue +
+                ", transferPriority=" + transferPriority +
+                ", honorsSessionLimits=" + honorsSessionLimits +
+                ", downloadLimited=" + downloadLimited +
+                ", downloadLimit=" + downloadLimit +
+                ", uploadLimited=" + uploadLimited +
+                ", uploadLimit=" + uploadLimit +
                 '}';
     }
 

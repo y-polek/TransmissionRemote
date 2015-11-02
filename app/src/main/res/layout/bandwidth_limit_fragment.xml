@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <CheckBox android:id="@+id/download_limit_checkbox"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:paddingRight="@dimen/default_padding"
+            android:textSize="@dimen/abc_text_size_body_1_material"
+            android:text="@string/limit_download"/>
+        <EditText android:id="@+id/download_limit_edittext"
+            android:layout_width="@dimen/server_pref_edittext_width"
+            android:layout_height="wrap_content"
+            android:paddingRight="@dimen/default_padding"
+            android:inputType="number"
+            android:textSize="@dimen/abc_text_size_body_1_material"/>
+        <TextView android:id="@+id/download_limit_units"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/abc_text_size_body_1_material"
+            android:text="@string/kbps"/>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="@dimen/default_padding"
+        android:orientation="horizontal">
+        <CheckBox android:id="@+id/upload_limit_checkbox"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textSize="@dimen/abc_text_size_body_1_material"
+            android:text="@string/limit_upload"/>
+        <EditText android:id="@+id/upload_limit_edittext"
+            android:layout_width="@dimen/server_pref_edittext_width"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:textSize="@dimen/abc_text_size_body_1_material"/>
+        <TextView android:id="@+id/upload_limit_units"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/abc_text_size_body_1_material"
+            android:text="@string/kbps"/>
+    </LinearLayout>
+</LinearLayout>

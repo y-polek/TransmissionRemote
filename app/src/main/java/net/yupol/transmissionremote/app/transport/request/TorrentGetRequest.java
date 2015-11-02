@@ -31,7 +31,12 @@ public class TorrentGetRequest extends Request<Torrents> {
             TorrentMetadata.ERROR_STRING,
             TorrentMetadata.FILES,
             TorrentMetadata.FILE_STATS,
-            TorrentMetadata.BANDWIDTH_PRIORITY
+            TorrentMetadata.BANDWIDTH_PRIORITY,
+            TorrentMetadata.HONORS_SESSION_LIMITS,
+            TorrentMetadata.DOWNLOAD_LIMITED,
+            TorrentMetadata.DOWNLOAD_LIMIT,
+            TorrentMetadata.UPLOAD_LIMITED,
+            TorrentMetadata.UPLOAD_LIMIT
     };
 
     public TorrentGetRequest() {
