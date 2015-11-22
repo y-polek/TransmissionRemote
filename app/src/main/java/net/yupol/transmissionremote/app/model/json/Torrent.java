@@ -29,6 +29,12 @@ public class Torrent implements Parcelable {
     @Key private long downloadLimit;
     @Key private boolean uploadLimited;
     @Key private long uploadLimit;
+    @Key private double seedRatioLimit;
+    @Key("seedRatioMode") private int seedRatioModeValue;
+    private LimitMode seedRatioMode;
+    @Key private int seedIdleLimit;
+    @Key("seedIdleMode") private int seedIdleModeValue;
+    private LimitMode seedIdleMode;
 
     public Torrent() {}
 
@@ -54,6 +60,10 @@ public class Torrent implements Parcelable {
         downloadLimit = in.readLong();
         uploadLimited = in.readInt() != 0;
         uploadLimit = in.readLong();
+        seedRatioLimit = in.readDouble();
+        seedRatioModeValue = in.readInt();
+        seedIdleLimit = in.readInt();
+        seedIdleModeValue = in.readInt();
     }
 
     public int getId() {
@@ -142,6 +152,24 @@ public class Torrent implements Parcelable {
         return uploadLimit;
     }
 
+    public double getSeedRatioLimit() {
+        return seedRatioLimit;
+    }
+
+    public LimitMode getSeedRatioMode() {
+        if (seedRatioMode == null) seedRatioMode = RatioLimitMode.fromValue(seedRatioModeValue);
+        return seedRatioMode;
+    }
+
+    public int getSeedIdleLimit() {
+        return seedIdleLimit;
+    }
+
+    public LimitMode getSeedIdleMode() {
+        if (seedIdleMode == null) seedIdleMode = IdleLimitMode.fromValue(seedIdleModeValue);
+        return seedIdleMode;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -170,6 +198,10 @@ public class Torrent implements Parcelable {
         out.writeLong(downloadLimit);
         out.writeInt(uploadLimited ? 1 : 0);
         out.writeLong(uploadLimit);
+        out.writeDouble(seedRatioLimit);
+        out.writeInt(seedRatioModeValue);
+        out.writeInt(seedIdleLimit);
+        out.writeInt(seedIdleModeValue);
     }
 
     public static final Creator<Torrent> CREATOR = new Creator<Torrent>() {

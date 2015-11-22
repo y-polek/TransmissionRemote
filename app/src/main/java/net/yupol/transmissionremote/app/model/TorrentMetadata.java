@@ -54,4 +54,8 @@ public class TorrentMetadata {
     public static final String DOWNLOAD_LIMIT = "downloadLimit";
     public static final String UPLOAD_LIMITED = "uploadLimited";
     public static final String UPLOAD_LIMIT = "uploadLimit";
+    public static final String SEED_RATIO_LIMIT = "seedRatioLimit";
+    public static final String SEED_RATIO_MODE = "seedRatioMode";
+    public static final String SEED_IDLE_LIMIT = "seedIdleLimit";
+    public static final String SEED_IDLE_MODE = "seedIdleMode";
 }

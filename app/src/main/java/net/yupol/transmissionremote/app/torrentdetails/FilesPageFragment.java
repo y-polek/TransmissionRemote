@@ -32,6 +32,8 @@ public class FilesPageFragment extends BasePageFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        super.onCreateView(inflater, container, savedInstanceState);
+
         View view = inflater.inflate(R.layout.torrent_details_file_page_fragment, container, false);
         ListView list = (ListView) view.findViewById(R.id.file_list);
         if (getActivity() instanceof BaseSpiceActivity) {

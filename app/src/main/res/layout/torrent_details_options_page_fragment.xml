@@ -56,11 +56,9 @@
                 android:layout_height="wrap_content"
                 android:textSize="@dimen/abc_text_size_body_1_material"
                 android:text="@string/ratio"/>
-            <Spinner
+            <Spinner android:id="@+id/ratio_limit_mode_spinner"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
-
-            </Spinner>
+                android:layout_height="wrap_content"/>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -68,17 +66,16 @@
         </LinearLayout>
         <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/default_text_margin">
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="@dimen/abc_text_size_body_1_material"
                 android:text="@string/inactivity"/>
-            <Spinner
+            <Spinner android:id="@+id/idle_limit_mode_spinner"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
-
-            </Spinner>
+                android:layout_height="wrap_content"/>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

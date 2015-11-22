@@ -36,11 +36,22 @@ public class TorrentGetRequest extends Request<Torrents> {
             TorrentMetadata.DOWNLOAD_LIMITED,
             TorrentMetadata.DOWNLOAD_LIMIT,
             TorrentMetadata.UPLOAD_LIMITED,
-            TorrentMetadata.UPLOAD_LIMIT
+            TorrentMetadata.UPLOAD_LIMIT,
+            TorrentMetadata.SEED_RATIO_LIMIT,
+            TorrentMetadata.SEED_RATIO_MODE,
+            TorrentMetadata.SEED_IDLE_LIMIT,
+            TorrentMetadata.SEED_IDLE_MODE
     };
+
+    private int[] ids;
 
     public TorrentGetRequest() {
         super(Torrents.class);
+    }
+
+    public TorrentGetRequest(int... ids) {
+        this();
+        this.ids = ids;
     }
 
     @Override
@@ -51,7 +62,17 @@ public class TorrentGetRequest extends Request<Torrents> {
     @Override
     protected JSONObject getArguments() {
         try {
-            return new JSONObject().put("fields", new JSONArray(Arrays.asList(TORRENT_METADATA)));
+            JSONObject args = new JSONObject().put("fields", new JSONArray(Arrays.asList(TORRENT_METADATA)));
+
+            if (ids != null) {
+                JSONArray idArray = new JSONArray();
+                for (int id : ids) {
+                    idArray.put(id);
+                }
+                args.put("ids", idArray);
+            }
+
+            return args;
         } catch (JSONException e) {
             Log.e(TAG, "Error while creating json object", e);
             return null;
