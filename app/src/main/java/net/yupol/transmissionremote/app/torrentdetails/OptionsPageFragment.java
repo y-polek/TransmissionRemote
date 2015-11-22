@@ -228,6 +228,7 @@ public class OptionsPageFragment extends BasePageFragment implements AdapterView
                 if (torrents.size() == 1) {
                     setTorrent(torrents.get(0));
                     updateUi();
+                    Toast.makeText(getActivity(), getString(R.string.saved), Toast.LENGTH_SHORT).show();
                 } else {
                     Log.e(TAG, "Torrents count does not match. One torrent expected, actual count: " + torrents.size());
                 }
