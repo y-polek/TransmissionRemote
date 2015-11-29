@@ -2,6 +2,7 @@ package net.yupol.transmissionremote.app.torrentdetails;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.text.InputFilter;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -33,6 +34,7 @@ import net.yupol.transmissionremote.app.transport.TransportManager;
 import net.yupol.transmissionremote.app.transport.request.SessionGetRequest;
 import net.yupol.transmissionremote.app.transport.request.TorrentGetRequest;
 import net.yupol.transmissionremote.app.transport.request.TorrentSetRequest;
+import net.yupol.transmissionremote.app.utils.MinMaxTextWatcher;
 
 public class OptionsPageFragment extends BasePageFragment implements AdapterView.OnItemSelectedListener {
 
@@ -100,11 +102,14 @@ public class OptionsPageFragment extends BasePageFragment implements AdapterView
         ratioLimitSpinner = (Spinner) view.findViewById(R.id.ratio_limit_mode_spinner);
         ratioLimitSpinner.setAdapter(new RatioLimitModeAdapter());
         ratioLimitEdit = (EditText) view.findViewById(R.id.ratio_limit_value);
+        ratioLimitEdit.setFilters(new InputFilter[] { new InputFilter.LengthFilter(10)} );
         ratioLimitGlobalText = (TextView) view.findViewById(R.id.ratio_limit_global_value);
 
         idleLimitSpinner = (Spinner) view.findViewById(R.id.idle_limit_mode_spinner);
         idleLimitSpinner.setAdapter(new IdleLimitModeAdapter());
         idleLimitEdit = (EditText) view.findViewById(R.id.idle_limit_value);
+        idleLimitEdit.setFilters(new InputFilter[]{ new InputFilter.LengthFilter(5)} );
+        idleLimitEdit.addTextChangedListener(new MinMaxTextWatcher(1, 0xFFFF));
         idleLimitGlobalText = (TextView) view.findViewById(R.id.idle_limit_global_value);
 
         updateUi(true);
