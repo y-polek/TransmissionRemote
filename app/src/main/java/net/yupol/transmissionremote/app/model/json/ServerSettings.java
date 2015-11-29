@@ -12,6 +12,10 @@ public class ServerSettings {
     public static final String ALT_SPEED_LIMIT_UP = "alt-speed-up";
     public static final String ALT_SPEED_LIMIT_ENABLED = "alt-speed-enabled";
     public static final String DOWNLOAD_DIR = "download-dir";
+    public static final String SEED_RATIO_LIMITED = "seedRatioLimited";
+    public static final String SEED_RATIO_LIMIT = "seedRatioLimit";
+    public static final String SEED_IDLE_LIMITED = "idle-seeding-limit-enabled";
+    public static final String SEED_IDLE_LIMIT = "idle-seeding-limit";
 
     @Key(SPEED_LIMIT_DOWN)
     private int speedLimitDown;
@@ -36,6 +40,18 @@ public class ServerSettings {
 
     @Key(DOWNLOAD_DIR)
     private String downloadDir;
+
+    @Key(SEED_RATIO_LIMITED)
+    private boolean seedRatioLimited;
+
+    @Key(SEED_RATIO_LIMIT)
+    private double seedRatioLimit;
+
+    @Key(SEED_IDLE_LIMITED)
+    private boolean seedIdleLimited;
+
+    @Key(SEED_IDLE_LIMIT)
+    private int seedIdleLimit;
 
     public int getSpeedLimitDown() {
         return speedLimitDown;
@@ -69,6 +85,22 @@ public class ServerSettings {
         return downloadDir;
     }
 
+    public boolean isSeedRatioLimited() {
+        return seedRatioLimited;
+    }
+
+    public double getSeedRatioLimit() {
+        return seedRatioLimit;
+    }
+
+    public boolean isSeedIdleLimited() {
+        return seedIdleLimited;
+    }
+
+    public int getSeedIdleLimit() {
+        return seedIdleLimit;
+    }
+
     @Override
     public String toString() {
         return "ServerSettings{" +
@@ -79,7 +111,11 @@ public class ServerSettings {
                 ", altSpeedDown=" + altSpeedDown +
                 ", altSpeedUp=" + altSpeedUp +
                 ", altSpeedEnabled=" + altSpeedEnabled +
-                ", downloadDir=" + downloadDir +
+                ", downloadDir='" + downloadDir + '\'' +
+                ", seedRatioLimited=" + seedRatioLimited +
+                ", seedRatioLimit=" + seedRatioLimit +
+                ", seedIdleLimited=" + seedIdleLimited +
+                ", seedIdleLimit=" + seedIdleLimit +
                 '}';
     }
 }

@@ -134,5 +134,7 @@
     <string name="stop_when_inactive">Stop When Inactive</string>
     <string name="save_torrent_options">Save</string>
     <string name="options_update_failed">Failed to update torrent options</string>
+    <string name="three_dots">&#8230;</string>
+    <string name="disabled">disabled</string>
 
 </resources>

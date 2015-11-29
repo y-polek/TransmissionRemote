@@ -18,12 +18,11 @@ public class BaseSpiceActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
         TransmissionRemote app = (TransmissionRemote) getApplication();
         app.addOnActiveServerChangedListener(activeServerListener);
-
         transportManager.setServer(app.getActiveServer());
+
+        super.onCreate(savedInstanceState);
     }
 
     @Override

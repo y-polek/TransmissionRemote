@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
     <LinearLayout
@@ -39,7 +40,8 @@
         <fragment android:name="net.yupol.transmissionremote.app.torrentdetails.BandwidthLimitFragment"
             android:id="@+id/torrent_bandwidth_limit_fragment"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            tools:layout="@layout/bandwidth_limit_fragment" />
 
         <TableLayout
             android:layout_width="match_parent"
@@ -64,11 +66,23 @@
             <TableRow
                 android:layout_marginLeft="@dimen/default_text_margin">
                 <TextView android:id="@+id/ratio_value_text"
+                    android:layout_gravity="center_vertical"
                     android:textSize="@dimen/abc_text_size_body_1_material"
                     android:text="@string/value"/>
-                <EditText android:id="@+id/ratio_limit_value"
-                    android:inputType="numberDecimal"
-                    android:textSize="@dimen/abc_text_size_body_1_material"/>
+                <RelativeLayout>
+                    <EditText android:id="@+id/ratio_limit_value"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="numberDecimal"
+                        android:textSize="@dimen/abc_text_size_body_1_material"/>
+                    <TextView android:id="@+id/ratio_limit_global_value"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_alignLeft="@id/ratio_limit_value"
+                        android:layout_alignBaseline="@id/ratio_limit_value"
+                        android:paddingLeft="4dp"
+                        android:textSize="@dimen/abc_text_size_body_1_material"/>
+                </RelativeLayout>
             </TableRow>
             <TableRow>
                 <TextView
@@ -89,11 +103,23 @@
             <TableRow
                 android:layout_marginLeft="@dimen/default_text_margin">
                 <TextView android:id="@+id/idle_value_text"
+                    android:layout_gravity="center_vertical"
                     android:textSize="@dimen/abc_text_size_body_1_material"
                     android:text="@string/value_in_minutes"/>
-                <EditText android:id="@+id/idle_limit_value"
-                    android:inputType="number"
-                    android:textSize="@dimen/abc_text_size_body_1_material"/>
+                <RelativeLayout>
+                    <EditText android:id="@+id/idle_limit_value"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="number"
+                        android:textSize="@dimen/abc_text_size_body_1_material"/>
+                    <TextView android:id="@+id/idle_limit_global_value"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_alignLeft="@id/idle_limit_value"
+                        android:layout_alignBaseline="@id/idle_limit_value"
+                        android:paddingLeft="4dp"
+                        android:textSize="@dimen/abc_text_size_body_1_material"/>
+                </RelativeLayout>
             </TableRow>
         </TableLayout>
     </LinearLayout>

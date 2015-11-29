@@ -54,68 +54,79 @@ public class TorrentSetRequest extends Request<Void> {
         private LimitMode seedIdleMode;
         private Double seedIdleLimit;
 
+        private boolean changed = false;
+
         private Builder(int torrentId) {
             this.torrentId = torrentId;
         }
 
         public Builder filesWanted(int... fileIndices) {
             filesWantedIndices = fileIndices;
-            return this;
+            return changedBuilder();
         }
 
         public Builder filesUnwanted(int... fileIndices) {
             filesUnwantedIndices = fileIndices;
-            return this;
+            return changedBuilder();
         }
 
         public Builder transferPriority(TransferPriority priority) {
             transferPriority = priority;
-            return this;
+            return changedBuilder();
         }
 
         public Builder honorsSessionLimits(boolean honorsSessionLimits) {
             this.honorsSessionLimits = honorsSessionLimits;
-            return this;
+            return changedBuilder();
         }
 
         public Builder downloadLimited(boolean isLimited) {
             this.downloadLimited = isLimited;
-            return this;
+            return changedBuilder();
         }
 
         public Builder downloadLimit(long limit) {
             downloadLimit = limit;
-            return this;
+            return changedBuilder();
         }
 
         public Builder uploadLimited(boolean isLimited) {
             this.uploadLimited = isLimited;
-            return this;
+            return changedBuilder();
         }
 
         public Builder uploadLimit(long limit) {
             uploadLimit = limit;
-            return this;
+            return changedBuilder();
         }
 
         public Builder seedRatioMode(LimitMode mode) {
             seedRatioMode = mode;
-            return this;
+            return changedBuilder();
         }
 
         public Builder seedRatioLimit(double limit) {
             seedRatioLimit = limit;
-            return this;
+            return changedBuilder();
         }
 
         public Builder seedIdleMode(LimitMode mode) {
             seedIdleMode = mode;
-            return this;
+            return changedBuilder();
         }
 
         public Builder seedIdleLimit(double limit) {
             seedIdleLimit = limit;
+            return changedBuilder();
+        }
+
+        private Builder changedBuilder() {
+            changed = true;
             return this;
+        }
+
+        public boolean isChanged() {
+            return changed;
         }
 
         public TorrentSetRequest build() {
