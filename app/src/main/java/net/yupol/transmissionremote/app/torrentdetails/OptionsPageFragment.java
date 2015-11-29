@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -38,6 +39,8 @@ public class OptionsPageFragment extends BasePageFragment implements AdapterView
     private CheckBox stayWithGlobalCheckbox;
     private Spinner ratioLimitSpinner;
     private Spinner idleLimitSpinner;
+    private EditText ratioLimitEdit;
+    private EditText idleLimitEdit;
 
     private Menu menu;
 
@@ -64,9 +67,11 @@ public class OptionsPageFragment extends BasePageFragment implements AdapterView
 
         ratioLimitSpinner = (Spinner) view.findViewById(R.id.ratio_limit_mode_spinner);
         ratioLimitSpinner.setAdapter(new RatioLimitModeAdapter());
+        ratioLimitEdit = (EditText) view.findViewById(R.id.ratio_limit_value);
 
         idleLimitSpinner = (Spinner) view.findViewById(R.id.idle_limit_mode_spinner);
         idleLimitSpinner.setAdapter(new IdleLimitModeAdapter());
+        idleLimitEdit = (EditText) view.findViewById(R.id.idle_limit_value);
 
         updateUi();
 
@@ -96,7 +101,10 @@ public class OptionsPageFragment extends BasePageFragment implements AdapterView
         bandwidthLimitFragment.setUploadLimit(torrent.getUploadLimit());
 
         ratioLimitSpinner.setSelection(torrent.getSeedRatioMode().ordinal());
+        ratioLimitEdit.setText(String.valueOf(torrent.getSeedRatioLimit()));
+
         idleLimitSpinner.setSelection(torrent.getSeedIdleMode().ordinal());
+        idleLimitEdit.setText(String.valueOf(torrent.getSeedIdleLimit()));
     }
 
     @Override
