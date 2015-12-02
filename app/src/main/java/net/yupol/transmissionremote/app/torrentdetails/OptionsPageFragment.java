@@ -17,7 +17,6 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.common.base.Optional;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
 
@@ -149,7 +148,7 @@ public class OptionsPageFragment extends BasePageFragment implements AdapterView
 
         switch (getRatioLimitMode()) {
             case STOP_AT_RATIO:
-                if (syncWithModel) {
+                if (syncWithModel || ratioLimitEdit.getText().length() == 0) {
                     ratioLimitEdit.setText(String.valueOf(torrent.getSeedRatioLimit()));
                 }
                 ratioLimitEdit.setVisibility(View.VISIBLE);
@@ -180,7 +179,7 @@ public class OptionsPageFragment extends BasePageFragment implements AdapterView
 
         switch (getIdleLimitMode()) {
             case STOP_WHEN_INACTIVE:
-                if (syncWithModel) {
+                if (syncWithModel || idleLimitEdit.getText().length() == 0) {
                     idleLimitEdit.setText(String.valueOf(torrent.getSeedIdleLimit()));
                 }
                 idleLimitEdit.setVisibility(View.VISIBLE);
@@ -213,7 +212,11 @@ public class OptionsPageFragment extends BasePageFragment implements AdapterView
     }
 
     private double getRatioLimit() {
-        return Double.parseDouble(ratioLimitEdit.getText().toString());
+        try {
+            return Double.parseDouble(ratioLimitEdit.getText().toString());
+        } catch (NumberFormatException e) {
+            return getTorrent().getSeedRatioLimit();
+        }
     }
 
     private IdleLimitMode getIdleLimitMode() {
@@ -221,7 +224,11 @@ public class OptionsPageFragment extends BasePageFragment implements AdapterView
     }
 
     private int getIdleLimit() {
-        return Integer.parseInt(idleLimitEdit.getText().toString());
+        try {
+            return Integer.parseInt(idleLimitEdit.getText().toString());
+        } catch (NumberFormatException e) {
+            return getTorrent().getSeedIdleLimit();
+        }
     }
 
     @Override
@@ -234,9 +241,9 @@ public class OptionsPageFragment extends BasePageFragment implements AdapterView
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_save:
-                Optional<TorrentSetRequest> request = buildSaveOptionsRequest();
-                if (request.isPresent()) {
-                    sendUpdateOptionsRequest(request.get());
+                TorrentSetRequest.Builder requestBuilder = getSetOptionsRequestBuilder();
+                if (requestBuilder.isChanged()) {
+                    sendUpdateOptionsRequest(requestBuilder.build());
                 }
                 return true;
         }
@@ -260,7 +267,7 @@ public class OptionsPageFragment extends BasePageFragment implements AdapterView
     /**
      * @return optional which contain {@link TorrentSetRequest} or contain nothing if no options changed
      */
-    public Optional<TorrentSetRequest> buildSaveOptionsRequest() {
+    public TorrentSetRequest.Builder getSetOptionsRequestBuilder() {
         Torrent torrent = getTorrent();
         TorrentSetRequest.Builder requestBuilder = TorrentSetRequest.builder(torrent.getId());
 
@@ -314,7 +321,7 @@ public class OptionsPageFragment extends BasePageFragment implements AdapterView
             requestBuilder.seedIdleLimit(idleLimit);
         }
 
-        return requestBuilder.isChanged() ? Optional.of(requestBuilder.build()) : Optional.<TorrentSetRequest>absent();
+        return requestBuilder;
     }
 
     private void sendUpdateOptionsRequest(TorrentSetRequest request) {

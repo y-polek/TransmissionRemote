@@ -8,9 +8,11 @@ import net.yupol.transmissionremote.app.model.json.Torrent;
 
 public class TorrentDetailsPagerAdapter extends FragmentPagerAdapter {
 
+    private OptionsPageFragment optionsPageFragment = new OptionsPageFragment();
+
     private BasePageFragment[] fragments = {
             new FilesPageFragment(),
-            new OptionsPageFragment(),
+            optionsPageFragment,
             new PeersPageFragment()
     };
 
@@ -37,5 +39,9 @@ public class TorrentDetailsPagerAdapter extends FragmentPagerAdapter {
     @Override
     public CharSequence getPageTitle(int position) {
         return context.getString(getItem(position).getPageTitleRes());
+    }
+
+    public OptionsPageFragment getOptionsPageFragment() {
+        return optionsPageFragment;
     }
 }

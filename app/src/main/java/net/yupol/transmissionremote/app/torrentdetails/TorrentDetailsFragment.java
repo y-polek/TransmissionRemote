@@ -11,10 +11,12 @@ import android.view.ViewGroup;
 
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.model.json.Torrent;
+import net.yupol.transmissionremote.app.transport.request.TorrentSetRequest;
 
 public class TorrentDetailsFragment extends Fragment {
 
     private Torrent torrent;
+    private TorrentDetailsPagerAdapter pagerAdapter;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -36,6 +38,14 @@ public class TorrentDetailsFragment extends Fragment {
 
         ViewPager pager = (ViewPager) getView().findViewById(R.id.pager);
         FragmentManager fm = ((FragmentActivity) getActivity()).getSupportFragmentManager();
-        pager.setAdapter(new TorrentDetailsPagerAdapter(getActivity(), fm, torrent));
+        pagerAdapter = new TorrentDetailsPagerAdapter(getActivity(), fm, torrent);
+        pager.setAdapter(pagerAdapter);
+    }
+
+    public TorrentSetRequest.Builder getSetOptionsRequestBuilder() {
+        if (pagerAdapter != null) {
+            return pagerAdapter.getOptionsPageFragment().getSetOptionsRequestBuilder();
+        }
+        return null;
     }
 }

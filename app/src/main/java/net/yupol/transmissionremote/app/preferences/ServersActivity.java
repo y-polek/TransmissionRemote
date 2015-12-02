@@ -162,7 +162,7 @@ public class ServersActivity extends AppCompatActivity {
         final ServerDetailsFragment detailsFragment = (ServerDetailsFragment) getFragmentManager().findFragmentByTag(TAG_SERVER_DETAILS);
         if (detailsFragment.hasChanges()) {
             new AlertDialog.Builder(this)
-                    .setMessage(R.string.save_changes)
+                    .setMessage(R.string.save_changes_question)
                     .setPositiveButton(R.string.save_changes_save, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {

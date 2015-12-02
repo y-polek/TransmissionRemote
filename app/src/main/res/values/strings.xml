@@ -62,7 +62,7 @@
     <string name="remove_server_confirmation">Remove server?</string>
     <string name="remove_server_positive">Remove</string>
     <string name="saved">Saved</string>
-    <string name="save_changes">Save changes?</string>
+    <string name="save_changes_question">Save changes?</string>
     <string name="save_changes_save">Save</string>
     <string name="save_changes_discard">Discard</string>
     <string name="add_server_details">Add server details to start.</string>
