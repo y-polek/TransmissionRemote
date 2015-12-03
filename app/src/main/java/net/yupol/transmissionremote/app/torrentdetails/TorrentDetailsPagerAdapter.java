@@ -1,39 +1,43 @@
 package net.yupol.transmissionremote.app.torrentdetails;
 
 import android.content.Context;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.util.SparseArray;
+import android.view.ViewGroup;
 
 import net.yupol.transmissionremote.app.model.json.Torrent;
 
 public class TorrentDetailsPagerAdapter extends FragmentPagerAdapter {
 
-    private OptionsPageFragment optionsPageFragment = new OptionsPageFragment();
-
-    private BasePageFragment[] fragments = {
-            new FilesPageFragment(),
-            optionsPageFragment,
-            new PeersPageFragment()
+    private Class<?>[] fragmentsClasses = {
+            FilesPageFragment.class,
+            OptionsPageFragment.class,
+            PeersPageFragment.class
     };
 
+    private SparseArray<BasePageFragment> fragments = new SparseArray<>();
+
     private Context context;
+    private Torrent torrent;
 
     public TorrentDetailsPagerAdapter(Context context, FragmentManager fragmentManager, Torrent torrent) {
         super(fragmentManager);
         this.context = context;
-        for (BasePageFragment fragment : fragments) {
-            fragment.setTorrent(torrent);
-        }
+        this.torrent = torrent;
     }
 
     @Override
     public BasePageFragment getItem(int position) {
-        return fragments[position];
+        BasePageFragment fragment = (BasePageFragment) Fragment.instantiate(context, fragmentsClasses[position].getName());
+        fragment.setTorrent(torrent);
+        return fragment;
     }
 
     @Override
     public int getCount() {
-        return fragments.length;
+        return fragmentsClasses.length;
     }
 
     @Override
@@ -41,7 +45,27 @@ public class TorrentDetailsPagerAdapter extends FragmentPagerAdapter {
         return context.getString(getItem(position).getPageTitleRes());
     }
 
-    public OptionsPageFragment getOptionsPageFragment() {
-        return optionsPageFragment;
+    @Override
+    public Object instantiateItem(ViewGroup container, int position) {
+        BasePageFragment fragment = (BasePageFragment) super.instantiateItem(container, position);
+        fragments.put(position, fragment);
+        return fragment;
+    }
+
+    @Override
+    public void destroyItem(ViewGroup container, int position, Object object) {
+        fragments.remove(position);
+        super.destroyItem(container, position, object);
+    }
+
+    public BasePageFragment getFragment(Class<? extends BasePageFragment> c) {
+        for (int i=0; i<fragments.size(); i++) {
+            int key = fragments.keyAt(i);
+            BasePageFragment f = fragments.get(key);
+            if (c.isInstance(f)) {
+                return f;
+            }
+        }
+        return null;
     }
 }

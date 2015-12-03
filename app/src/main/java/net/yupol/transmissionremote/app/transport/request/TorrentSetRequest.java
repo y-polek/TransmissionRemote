@@ -1,5 +1,7 @@
 package net.yupol.transmissionremote.app.transport.request;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.Log;
 
 import net.yupol.transmissionremote.app.model.json.LimitMode;
@@ -13,13 +15,13 @@ import org.json.JSONObject;
 import java.util.Arrays;
 import java.util.Collections;
 
-public class TorrentSetRequest extends Request<Void> {
+public class TorrentSetRequest extends Request<Void> implements Parcelable {
 
     private static final String TAG = TorrentSetRequest.class.getSimpleName();
 
     private JSONObject arguments;
 
-    public TorrentSetRequest(JSONObject arguments) {
+    private TorrentSetRequest(JSONObject arguments) {
         super(Void.class);
         this.arguments = arguments;
     }
@@ -37,6 +39,34 @@ public class TorrentSetRequest extends Request<Void> {
     public static Builder builder(int torrentId) {
         return new Builder(torrentId);
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(arguments.toString());
+    }
+
+    public static final Creator<TorrentSetRequest> CREATOR = new Creator<TorrentSetRequest>() {
+        @Override
+        public TorrentSetRequest createFromParcel(Parcel in) {
+            String argsStr = in.readString();
+            try {
+                return new TorrentSetRequest(new JSONObject(argsStr));
+            } catch (JSONException e) {
+                Log.e(TAG, "Failed to restore from parcel. Args string: " + argsStr, e);
+                return new TorrentSetRequest(new JSONObject());
+            }
+        }
+
+        @Override
+        public TorrentSetRequest[] newArray(int size) {
+            return new TorrentSetRequest[size];
+        }
+    };
 
     public static class Builder {
 

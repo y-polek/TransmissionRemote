@@ -1,25 +1,27 @@
 package net.yupol.transmissionremote.app.torrentdetails;
 
-import android.app.AlertDialog;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
-import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.model.json.Torrent;
 import net.yupol.transmissionremote.app.transport.BaseSpiceActivity;
 import net.yupol.transmissionremote.app.transport.request.TorrentSetRequest;
 
-public class TorrentDetailsActivity extends BaseSpiceActivity {
+public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveChangesDialogFragment.SaveDiscardListener {
 
     public static final String EXTRA_NAME_TORRENT = "extra_key_torrent";
 
-    private static String TAG_TORRENT_DETAILS = "tag_torrent_details";
+    private static String TAG_SAVE_CHANGES_DIALOG = "tag_save_changes_dialog";
+
+    private static String KEY_OPTIONS_CHANGE_REQUEST = "key_options_request";
 
     private Torrent torrent;
+    private TorrentSetRequest saveChangesRequest;
+    private TorrentDetailsPagerAdapter pagerAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,15 +32,21 @@ public class TorrentDetailsActivity extends BaseSpiceActivity {
 
         setupActionBar();
 
-        FragmentManager fm = getFragmentManager();
-        TorrentDetailsFragment detailsFragment = (TorrentDetailsFragment) fm.findFragmentByTag(TAG_TORRENT_DETAILS);
-        if (detailsFragment == null) {
-            detailsFragment = new TorrentDetailsFragment();
-            FragmentTransaction ft = fm.beginTransaction();
-            ft.replace(R.id.fragment_container, detailsFragment, TAG_TORRENT_DETAILS);
-            ft.commit();
-        }
-        detailsFragment.setTorrent(torrent);
+        ViewPager pager = (ViewPager) findViewById(R.id.pager);
+        pagerAdapter = new TorrentDetailsPagerAdapter(this, getSupportFragmentManager(), torrent);
+        pager.setAdapter(pagerAdapter);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putParcelable(KEY_OPTIONS_CHANGE_REQUEST, saveChangesRequest);
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        saveChangesRequest = savedInstanceState.getParcelable(KEY_OPTIONS_CHANGE_REQUEST);
+        super.onRestoreInstanceState(savedInstanceState);
     }
 
     private void setupActionBar() {
@@ -58,31 +66,36 @@ public class TorrentDetailsActivity extends BaseSpiceActivity {
     @Override
     public void onBackPressed() {
 
-        TorrentDetailsFragment torrentDetailsFragment =
-                (TorrentDetailsFragment)getFragmentManager().findFragmentByTag(TAG_TORRENT_DETAILS);
-        final TorrentSetRequest.Builder requestBuilder = torrentDetailsFragment.getSetOptionsRequestBuilder();
+        OptionsPageFragment optionsPage = (OptionsPageFragment) pagerAdapter.getFragment(OptionsPageFragment.class);
+        TorrentSetRequest.Builder saveChangesRequestBuilder = optionsPage.getSaveOptionsRequestBuilder();
 
-        if (requestBuilder == null || !requestBuilder.isChanged()) {
+        if (saveChangesRequestBuilder == null || !saveChangesRequestBuilder.isChanged()) {
             super.onBackPressed();
             return;
         }
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage(R.string.save_changes_question);
-        builder.setPositiveButton(R.string.save_changes_save, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                getTransportManager().doRequest(requestBuilder.build(), null);
-                TorrentDetailsActivity.super.onBackPressed();
-            }
-        });
-        builder.setNegativeButton(R.string.save_changes_discard, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                TorrentDetailsActivity.super.onBackPressed();
-            }
-        });
-        builder.setNeutralButton(android.R.string.cancel, null);
-        builder.create().show();
+        saveChangesRequest = saveChangesRequestBuilder.build();
+        new SaveChangesDialogFragment().show(getFragmentManager(), TAG_SAVE_CHANGES_DIALOG);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onSavePressed() {
+        getTransportManager().doRequest(saveChangesRequest, null);
+        super.onBackPressed();
+    }
+
+    @Override
+    public void onDiscardPressed() {
+        super.onBackPressed();
     }
 }

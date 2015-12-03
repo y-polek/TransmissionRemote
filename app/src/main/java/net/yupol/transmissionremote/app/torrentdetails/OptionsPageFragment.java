@@ -168,7 +168,7 @@ public class OptionsPageFragment extends BasePageFragment implements AdapterView
                 ratioLimitGlobalText.setVisibility(View.VISIBLE);
                 break;
             case UNLIMITED:
-                if (syncWithModel) {
+                if (syncWithModel || ratioLimitEdit.getText().length() == 0) {
                     ratioLimitEdit.setText(String.valueOf(torrent.getSeedRatioLimit()));
                 }
                 ratioLimitEdit.setVisibility(View.VISIBLE);
@@ -197,7 +197,7 @@ public class OptionsPageFragment extends BasePageFragment implements AdapterView
                 idleLimitGlobalText.setVisibility(View.VISIBLE);
                 break;
             case UNLIMITED:
-                if (syncWithModel) {
+                if (syncWithModel || idleLimitEdit.getText().length() == 0) {
                     idleLimitEdit.setText(String.valueOf(torrent.getSeedIdleLimit()));
                 }
                 idleLimitEdit.setVisibility(View.VISIBLE);
@@ -241,7 +241,7 @@ public class OptionsPageFragment extends BasePageFragment implements AdapterView
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_save:
-                TorrentSetRequest.Builder requestBuilder = getSetOptionsRequestBuilder();
+                TorrentSetRequest.Builder requestBuilder = getSaveOptionsRequestBuilder();
                 if (requestBuilder.isChanged()) {
                     sendUpdateOptionsRequest(requestBuilder.build());
                 }
@@ -267,7 +267,7 @@ public class OptionsPageFragment extends BasePageFragment implements AdapterView
     /**
      * @return optional which contain {@link TorrentSetRequest} or contain nothing if no options changed
      */
-    public TorrentSetRequest.Builder getSetOptionsRequestBuilder() {
+    public TorrentSetRequest.Builder getSaveOptionsRequestBuilder() {
         Torrent torrent = getTorrent();
         TorrentSetRequest.Builder requestBuilder = TorrentSetRequest.builder(torrent.getId());
 
