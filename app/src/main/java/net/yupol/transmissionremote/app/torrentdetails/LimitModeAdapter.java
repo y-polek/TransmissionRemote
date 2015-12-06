@@ -1,12 +1,14 @@
 package net.yupol.transmissionremote.app.torrentdetails;
 
 import android.content.Context;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.model.json.LimitMode;
 
 public abstract class LimitModeAdapter extends BaseAdapter {
@@ -38,6 +40,8 @@ public abstract class LimitModeAdapter extends BaseAdapter {
 
         TextView textView = (TextView) view.findViewById(android.R.id.text1);
         textView.setText(getItem(position).getTextRes());
+        textView.setTextSize(TypedValue.COMPLEX_UNIT_PX,
+                parent.getResources().getDimensionPixelSize(R.dimen.abc_text_size_body_1_material));
 
         return view;
     }

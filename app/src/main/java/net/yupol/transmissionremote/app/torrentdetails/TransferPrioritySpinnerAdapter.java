@@ -2,6 +2,7 @@ package net.yupol.transmissionremote.app.torrentdetails;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,6 +46,8 @@ public class TransferPrioritySpinnerAdapter extends BaseAdapter {
             int side = (int) (13 * parent.getResources().getDisplayMetrics().scaledDensity); // 13sp
             img.setBounds(0, 0, side, side);
         }
+        text.setTextSize(TypedValue.COMPLEX_UNIT_PX,
+                parent.getResources().getDimensionPixelSize(R.dimen.abc_text_size_subhead_material));
         text.setCompoundDrawablePadding(parent.getResources()
                 .getDimensionPixelSize(R.dimen.default_text_margin_small));
         text.setCompoundDrawables(img, null, null, null);
@@ -61,6 +64,8 @@ public class TransferPrioritySpinnerAdapter extends BaseAdapter {
         }
         TextView text = (TextView) view.findViewById(android.R.id.text1);
         text.setText(getItem(position).getTextRes());
+        text.setTextSize(TypedValue.COMPLEX_UNIT_PX,
+                parent.getResources().getDimensionPixelSize(R.dimen.abc_text_size_subhead_material));
 
         return view;
     }
