@@ -14,7 +14,6 @@ public class TorrentDetailsPagerAdapter extends FragmentPagerAdapter {
     private Class<?>[] fragmentsClasses = {
             FilesPageFragment.class,
             OptionsPageFragment.class,
-            PeersPageFragment.class
     };
 
     private SparseArray<BasePageFragment> fragments = new SparseArray<>();
