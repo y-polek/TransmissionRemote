@@ -1,7 +1,5 @@
 package net.yupol.transmissionremote.app;
 
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -9,6 +7,8 @@ import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -81,8 +81,7 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
     private static final int MIN_PREFS_UPDATE_INTERVAL = 5; // seconds
 
     public static int REQUEST_CODE_SERVER_PARAMS = 1;
-    public static int REQUEST_CODE_SERVER_PREFERENCES = 2;
-    public static int REQUEST_CODE_CHOOSE_TORRENT = 3;
+    public static int REQUEST_CODE_CHOOSE_TORRENT = 2;
 
     private static String TAG_EMPTY_SERVER = "tag_empty_server";
     private static String TAG_PROGRESSBAR = "tag_progressbar";
@@ -304,30 +303,6 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
                 addNewServer(server);
                 switchServer(server);
             }
-        } else if (requestCode == REQUEST_CODE_SERVER_PREFERENCES) {
-            if (resultCode == RESULT_OK) {
-                String prefsExtra = data.getStringExtra(ServerPreferencesActivity.EXTRA_SERVER_PREFERENCES);
-                JSONObject preferences;
-                try {
-                    preferences = new JSONObject(prefsExtra);
-                } catch (JSONException e) {
-                    Log.e(TAG, "Can't parse session preferences as JSON object: '" + prefsExtra + "'");
-                    return;
-                }
-
-                Log.d(TAG, "preferences: " + preferences);
-                getTransportManager().doRequest(new SessionSetRequest(preferences), new RequestListener<Void>() {
-                    @Override
-                    public void onRequestFailure(SpiceException spiceException) {
-                        Log.e(TAG, "Failed to set server preferences");
-                    }
-
-                    @Override
-                    public void onRequestSuccess(Void aVoid) {
-                        Log.i(TAG, "Server preferences set successfully");
-                    }
-                });
-            }
         } else if (requestCode == REQUEST_CODE_CHOOSE_TORRENT) {
             if (resultCode == RESULT_OK) {
                 Uri uri = data.getData();
@@ -356,14 +331,12 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
             }
         } else if (group.getId() == Drawer.Groups.SORT_BY.id()) {
             TorrentListFragment torrentListFragment =
-                    (TorrentListFragment) getFragmentManager().findFragmentByTag(TAG_TORRENT_LIST);
+                    (TorrentListFragment) getSupportFragmentManager().findFragmentByTag(TAG_TORRENT_LIST);
             if (torrentListFragment != null)
                 torrentListFragment.setSort(((SortDrawerGroupItem) group).getComparator());
         } else if (group.getId() == Drawer.Groups.PREFERENCES.id()) {
             if (item instanceof ServerPrefsDrawerItem) {
-                startActivityForResult(
-                        new Intent(this, ServerPreferencesActivity.class),
-                        REQUEST_CODE_SERVER_PREFERENCES);
+                startActivity(new Intent(this, ServerPreferencesActivity.class));
             }
         }
     }
@@ -479,7 +452,7 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
 
                     @Override
                     public void onRequestSuccess(ServerSettings serverSettings) {
-                        application.setSpeedLimitEnabled(serverSettings.isAltSpeedEnabled());
+                        application.setSpeedLimitEnabled(serverSettings.isAltSpeedLimitEnabled());
                         application.setDefaultDownloadDir(serverSettings.getDownloadDir());
                     }
                 });
@@ -494,7 +467,7 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
     }
 
     private void showEmptyServerFragment() {
-        FragmentManager fm = getFragmentManager();
+        FragmentManager fm = getSupportFragmentManager();
         EmptyServerFragment emptyServerFragment = (EmptyServerFragment) fm.findFragmentByTag(TAG_EMPTY_SERVER);
         if (emptyServerFragment == null) {
             emptyServerFragment = new EmptyServerFragment();
@@ -505,7 +478,7 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
     }
 
     private void showProgressbarFragment() {
-        FragmentManager fm = getFragmentManager();
+        FragmentManager fm = getSupportFragmentManager();
         ProgressbarFragment progressbarFragment = (ProgressbarFragment) fm.findFragmentByTag(TAG_PROGRESSBAR);
         if (progressbarFragment == null) {
             progressbarFragment = new ProgressbarFragment();
@@ -516,7 +489,7 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
     }
 
     private void showTorrentListFragment() {
-        FragmentManager fm = getFragmentManager();
+        FragmentManager fm = getSupportFragmentManager();
         TorrentListFragment torrentListFragment = (TorrentListFragment) fm.findFragmentByTag(TAG_TORRENT_LIST);
         if (torrentListFragment == null) {
             torrentListFragment = new TorrentListFragment();

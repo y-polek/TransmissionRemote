@@ -68,7 +68,7 @@ public class TorrentSetRequest extends Request<Void> implements Parcelable {
         }
     };
 
-    public static class Builder {
+    public static class Builder implements RequestBuilder<TorrentSetRequest> {
 
         private int torrentId;
         private int[] filesWantedIndices;
@@ -159,6 +159,7 @@ public class TorrentSetRequest extends Request<Void> implements Parcelable {
             return changed;
         }
 
+        @Override
         public TorrentSetRequest build() {
             JSONObject args = new JSONObject();
             try {

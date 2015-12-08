@@ -79,6 +79,7 @@
     <string name="kbps">KB/s</string>
     <string name="turtle_speed_limits">Speed Limit mode</string>
     <string name="turtle_speed_limits_description">When enabled Speed Limit overrides the global bandwidth limits</string>
+    <string name="preferences_update_failed">Failed to update server preferences</string>
 
     <!-- Torrent List -->
     <string name="unknown_error_message">Unknown error</string>

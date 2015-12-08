@@ -1,106 +1,65 @@
 package net.yupol.transmissionremote.app.preferences;
 
-import android.app.Fragment;
+import android.app.Activity;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
+import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.octo.android.robospice.persistence.exception.SpiceException;
+import com.octo.android.robospice.request.listener.RequestListener;
 
 import net.yupol.transmissionremote.app.R;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.HashSet;
-import java.util.Set;
-
-import javax.annotation.Nonnull;
-
-import static net.yupol.transmissionremote.app.model.json.ServerSettings.ALT_SPEED_LIMIT_DOWN;
-import static net.yupol.transmissionremote.app.model.json.ServerSettings.ALT_SPEED_LIMIT_ENABLED;
-import static net.yupol.transmissionremote.app.model.json.ServerSettings.ALT_SPEED_LIMIT_UP;
-import static net.yupol.transmissionremote.app.model.json.ServerSettings.SPEED_LIMIT_DOWN;
-import static net.yupol.transmissionremote.app.model.json.ServerSettings.SPEED_LIMIT_DOWN_ENABLED;
-import static net.yupol.transmissionremote.app.model.json.ServerSettings.SPEED_LIMIT_UP;
-import static net.yupol.transmissionremote.app.model.json.ServerSettings.SPEED_LIMIT_UP_ENABLED;
+import net.yupol.transmissionremote.app.model.json.ServerSettings;
+import net.yupol.transmissionremote.app.torrentdetails.BandwidthLimitFragment;
+import net.yupol.transmissionremote.app.transport.BaseSpiceActivity;
+import net.yupol.transmissionremote.app.transport.TransportManager;
+import net.yupol.transmissionremote.app.transport.request.SessionGetRequest;
+import net.yupol.transmissionremote.app.transport.request.SessionSetRequest;
 
 public class ServerPreferencesFragment extends Fragment {
 
     private static final String TAG = ServerPreferencesFragment.class.getSimpleName();
 
-    private Bundle serverPreferences;
-    private Set<String> changedPreferences;
+    public static final String KEY_SERVER_SETTINGS = "extra_server_preferences";
 
-    private EditText downLimitEdit;
-    private CheckBox downLimitCheckbox;
-    private TextView downLimitUnits;
+    private ServerSettings serverSettings;
 
-    private EditText upLimitEdit;
-    private CheckBox upLimitCheckbox;
-    private TextView upLimitUnits;
-
-    private EditText altDownLimitEdit;
-    private EditText altUpLimitEdit;
+    private BandwidthLimitFragment globalBandwidthLimitFragment;
+    private BandwidthLimitFragment altBandwidthLimitFragment;
     private TextView altLimitHeader;
-    private boolean isAltLimitEnabled;
+    private TransportManager transportManager;
+    private Menu menu;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        changedPreferences = new HashSet<>();
+        setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        if (activity instanceof BaseSpiceActivity) {
+            transportManager = ((BaseSpiceActivity) activity).getTransportManager();
+        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.server_preferences_fragment, container, false);
 
-        downLimitEdit = (EditText) view.findViewById(R.id.download_limit_edittext);
-        downLimitEdit.addTextChangedListener(new LimitChangeWatcher(SPEED_LIMIT_DOWN, downLimitEdit));
-        downLimitUnits = (TextView) view.findViewById(R.id.download_limit_units);
-        downLimitCheckbox = (CheckBox) view.findViewById(R.id.download_limit_checkbox);
-        downLimitCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                downLimitEdit.setEnabled(isChecked);
-                downLimitUnits.setEnabled(isChecked);
-
-                if (isChecked != serverPreferences.getBoolean(SPEED_LIMIT_DOWN_ENABLED, false)) {
-                    changedPreferences.add(SPEED_LIMIT_DOWN_ENABLED);
-                } else {
-                    changedPreferences.remove(SPEED_LIMIT_DOWN_ENABLED);
-                }
-            }
-        });
-
-        upLimitEdit = (EditText) view.findViewById(R.id.upload_limit_edittext);
-        upLimitEdit.addTextChangedListener(new LimitChangeWatcher(SPEED_LIMIT_UP, upLimitEdit));
-        upLimitUnits = (TextView) view.findViewById(R.id.upload_limit_units);
-        upLimitCheckbox = (CheckBox) view.findViewById(R.id.upload_limit_checkbox);
-        upLimitCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                upLimitEdit.setEnabled(isChecked);
-                upLimitUnits.setEnabled(isChecked);
-
-                if (isChecked != serverPreferences.getBoolean(SPEED_LIMIT_UP_ENABLED, false)) {
-                    changedPreferences.add(SPEED_LIMIT_UP_ENABLED);
-                } else {
-                    changedPreferences.remove(SPEED_LIMIT_UP_ENABLED);
-                }
-            }
-        });
-
-        altDownLimitEdit = (EditText) view.findViewById(R.id.turtle_download_limit_edittext);
-        altDownLimitEdit.addTextChangedListener(new LimitChangeWatcher(ALT_SPEED_LIMIT_DOWN, altDownLimitEdit));
-        altUpLimitEdit = (EditText) view.findViewById(R.id.turtle_upload_limit_edittext);
-        altUpLimitEdit.addTextChangedListener(new LimitChangeWatcher(ALT_SPEED_LIMIT_UP, altUpLimitEdit));
+        globalBandwidthLimitFragment = (BandwidthLimitFragment)
+                getChildFragmentManager().findFragmentById(R.id.global_bandwidth_limit_fragment);
+        altBandwidthLimitFragment = (BandwidthLimitFragment)
+                getChildFragmentManager().findFragmentById(R.id.alt_bandwidth_limit_fragment);
         altLimitHeader = (TextView) view.findViewById(R.id.turtle_limit_header_text);
 
         return view;
@@ -110,40 +69,81 @@ public class ServerPreferencesFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        serverPreferences = getArguments();
+        Bundle args = getArguments();
+        if (args != null) {
+            serverSettings = args.getParcelable(KEY_SERVER_SETTINGS);
+        }
+        if (savedInstanceState != null) {
+            serverSettings = savedInstanceState.getParcelable(KEY_SERVER_SETTINGS);
+        }
         updateUi();
     }
 
-    public JSONObject getChangedPreferences() {
-        JSONObject obj = new JSONObject();
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable(KEY_SERVER_SETTINGS, serverSettings);
+    }
 
-        try {
-            if (changedPreferences.contains(SPEED_LIMIT_DOWN))
-                obj.put(SPEED_LIMIT_DOWN, Integer.parseInt(downLimitEdit.getText().toString()));
-            if (changedPreferences.contains(SPEED_LIMIT_DOWN_ENABLED))
-                obj.put(SPEED_LIMIT_DOWN_ENABLED, downLimitCheckbox.isChecked());
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        this.menu = menu;
+        inflater.inflate(R.menu.server_preferences_menu, menu);
+    }
 
-            if (changedPreferences.contains(SPEED_LIMIT_UP))
-                obj.put(SPEED_LIMIT_UP, Integer.parseInt(upLimitEdit.getText().toString()));
-            if (changedPreferences.contains(SPEED_LIMIT_UP_ENABLED))
-                obj.put(SPEED_LIMIT_UP_ENABLED, upLimitCheckbox.isChecked());
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_save:
+                SessionSetRequest.Builder builder = getPreferencesRequestBuilder();
+                if (builder.isChanged()) {
+                    sendUpdateOptionsRequest(builder.build());
+                }
+                return true;
+        }
+        return false;
+    }
 
-            if (changedPreferences.contains(ALT_SPEED_LIMIT_DOWN))
-                obj.put(ALT_SPEED_LIMIT_DOWN, Integer.parseInt(altDownLimitEdit.getText().toString()));
-            if (changedPreferences.contains(ALT_SPEED_LIMIT_UP))
-                obj.put(ALT_SPEED_LIMIT_UP, Integer.parseInt(altUpLimitEdit.getText().toString()));
-            if (changedPreferences.contains(ALT_SPEED_LIMIT_ENABLED))
-                obj.put(ALT_SPEED_LIMIT_ENABLED, isAltLimitEnabled);
-        } catch (JSONException e) {
-            Log.e(TAG, "Error creating JSON object with server parameters", e);
+    public SessionSetRequest.Builder getPreferencesRequestBuilder() {
+
+        SessionSetRequest.Builder builder = SessionSetRequest.builder();
+
+        boolean downloadLimited = globalBandwidthLimitFragment.isDownloadLimited();
+        if (serverSettings.isSpeedLimitDownEnabled() != downloadLimited) {
+            builder.setSpeedLimitDownEnabled(downloadLimited);
         }
 
-        return obj;
+        long downloadLimit = globalBandwidthLimitFragment.getDownloadLimit();
+        if (serverSettings.getSpeedLimitDown() != downloadLimit) {
+            builder.setSpeedLimitDown(downloadLimit);
+        }
+
+        boolean uploadLimited = globalBandwidthLimitFragment.isUploadLimited();
+        if (serverSettings.isSpeedLimitUpEnabled() != uploadLimited) {
+            builder.setSpeedLimitUpEnabled(uploadLimited);
+        }
+
+        long uploadLimit = globalBandwidthLimitFragment.getUploadLimit();
+        if (serverSettings.getSpeedLimitUp() != uploadLimit) {
+            builder.setSpeedLimitUp(uploadLimit);
+        }
+
+        long altDownloadLimit = altBandwidthLimitFragment.getDownloadLimit();
+        if (serverSettings.getAltSpeedLimitDown() != altDownloadLimit) {
+            builder.setAltSpeedLimitDown(altDownloadLimit);
+        }
+
+        long altUploadLimit = altBandwidthLimitFragment.getUploadLimit();
+        if (serverSettings.getAltSpeedLimitUp() != altUploadLimit) {
+            builder.setAltSpeedLimitUp(altUploadLimit);
+        }
+
+        return builder;
     }
 
     private void updateUi() {
 
-        if (serverPreferences == null) {
+        if (serverSettings == null) {
             throw new IllegalStateException("No server preferences set." +
                     " Ensure that setArguments(Bundle) called with bundle containing server preferences.");
         }
@@ -154,70 +154,69 @@ public class ServerPreferencesFragment extends Fragment {
             return;
         }
 
-        int globalLimitDown = serverPreferences.getInt(SPEED_LIMIT_DOWN);
-        boolean isGlobalLimitDownEnabled = serverPreferences.getBoolean(SPEED_LIMIT_DOWN_ENABLED);
-        int globalLimitUp = serverPreferences.getInt(SPEED_LIMIT_UP);
-        boolean isGlobalLimitUpEnabled = serverPreferences.getBoolean(SPEED_LIMIT_UP_ENABLED);
-        int altLimitDown = serverPreferences.getInt(ALT_SPEED_LIMIT_DOWN);
-        int altLimitUp = serverPreferences.getInt(ALT_SPEED_LIMIT_UP);
-        isAltLimitEnabled = serverPreferences.getBoolean(ALT_SPEED_LIMIT_ENABLED);
+        int globalLimitDown = serverSettings.getSpeedLimitDown();
+        boolean isGlobalLimitDownEnabled = serverSettings.isSpeedLimitDownEnabled();
+        int globalLimitUp = serverSettings.getSpeedLimitUp();
+        boolean isGlobalLimitUpEnabled = serverSettings.isSpeedLimitUpEnabled();
+        int altLimitDown = serverSettings.getAltSpeedLimitDown();
+        int altLimitUp = serverSettings.getAltSpeedLimitUp();
+        boolean isAltLimitEnabled = serverSettings.isAltSpeedLimitEnabled();
 
-        if (!changedPreferences.contains(SPEED_LIMIT_DOWN_ENABLED)) {
-            downLimitCheckbox.setChecked(isGlobalLimitDownEnabled);
-            downLimitEdit.setEnabled(isGlobalLimitDownEnabled);
-            downLimitUnits.setEnabled(isGlobalLimitDownEnabled);
+        globalBandwidthLimitFragment.setDownloadLimited(isGlobalLimitDownEnabled);
+        globalBandwidthLimitFragment.setDownloadLimit(globalLimitDown);
+        globalBandwidthLimitFragment.setUploadLimited(isGlobalLimitUpEnabled);
+        globalBandwidthLimitFragment.setUploadLimit(globalLimitUp);
 
-        }
-        if (!changedPreferences.contains(SPEED_LIMIT_DOWN)) {
-            downLimitEdit.setText(String.valueOf(globalLimitDown));
-        }
+        altBandwidthLimitFragment.setDownloadLimit(altLimitDown);
+        altBandwidthLimitFragment.setUploadLimit(altLimitUp);
 
-        if (!changedPreferences.contains(SPEED_LIMIT_UP_ENABLED)) {
-            upLimitCheckbox.setChecked(isGlobalLimitUpEnabled);
-            upLimitEdit.setEnabled(isGlobalLimitUpEnabled);
-            upLimitUnits.setEnabled(isGlobalLimitUpEnabled);
-        }
-        if (!changedPreferences.contains(SPEED_LIMIT_UP)) {
-            upLimitEdit.setText(String.valueOf(globalLimitUp));
-        }
-
-        if (!changedPreferences.contains(ALT_SPEED_LIMIT_ENABLED)) {
-            int turtleImage = isAltLimitEnabled ? R.drawable.turtle_blue : R.drawable.turtle;
-            altLimitHeader.setCompoundDrawablesWithIntrinsicBounds(turtleImage, 0, 0, 0);
-        }
-        if (!changedPreferences.contains(ALT_SPEED_LIMIT_DOWN)) {
-            altDownLimitEdit.setText(String.valueOf(altLimitDown));
-        }
-        if (!changedPreferences.contains(ALT_SPEED_LIMIT_UP)) {
-            altUpLimitEdit.setText(String.valueOf(altLimitUp));
-        }
+        int turtleImage = isAltLimitEnabled ? R.drawable.turtle_blue : R.drawable.turtle;
+        altLimitHeader.setCompoundDrawablesWithIntrinsicBounds(turtleImage, 0, 0, 0);
     }
 
-    private class LimitChangeWatcher implements TextWatcher {
+    private void sendUpdateOptionsRequest(SessionSetRequest request) {
+        if (transportManager == null)
+            throw new RuntimeException("ServerPreferencesFragment should be used with BaseSpiceActivity.");
 
-        private String prefKey;
-        private EditText editText;
+        saveStarted();
 
-        public LimitChangeWatcher(String prefKey, EditText editText) {
-            this.prefKey = prefKey;
-            this.editText = editText;
-        }
-
-        @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
-        @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {}
-
-        @Override
-        public void afterTextChanged(Editable s) {
-            int limit = Integer.parseInt(editText.getText().toString());
-
-            if (limit != serverPreferences.getInt(prefKey, -1)) {
-                changedPreferences.add(prefKey);
-            } else {
-                changedPreferences.remove(prefKey);
+        transportManager.doRequest(request, new RequestListener<Void>() {
+            @Override
+            public void onRequestFailure(SpiceException spiceException) {
+                Toast.makeText(getActivity(), getString(R.string.preferences_update_failed), Toast.LENGTH_LONG).show();
+                saveFinished();
             }
-        }
+
+            @Override
+            public void onRequestSuccess(Void aVoid) {
+                sendPreferencesUpdateRequest();
+            }
+        });
+    }
+
+    private void sendPreferencesUpdateRequest() {
+        transportManager.doRequest(new SessionGetRequest(), new RequestListener<ServerSettings>() {
+            @Override
+            public void onRequestFailure(SpiceException spiceException) {
+                Toast.makeText(getActivity(), getString(R.string.preferences_update_failed), Toast.LENGTH_LONG).show();
+                saveFinished();
+            }
+
+            @Override
+            public void onRequestSuccess(ServerSettings settings) {
+                serverSettings = settings;
+                updateUi();
+                Toast.makeText(getActivity(), getString(R.string.saved), Toast.LENGTH_SHORT).show();
+                saveFinished();
+            }
+        });
+    }
+
+    private void saveStarted() {
+        menu.findItem(R.id.action_save).setEnabled(false);
+    }
+
+    private void saveFinished() {
+        menu.findItem(R.id.action_save).setEnabled(true);
     }
 }

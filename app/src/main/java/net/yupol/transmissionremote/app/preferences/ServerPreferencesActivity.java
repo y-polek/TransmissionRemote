@@ -1,9 +1,8 @@
 package net.yupol.transmissionremote.app.preferences;
 
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
-import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.MenuItem;
 
@@ -14,31 +13,27 @@ import net.yupol.transmissionremote.app.ProgressbarFragment;
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.TransmissionRemote;
 import net.yupol.transmissionremote.app.model.json.ServerSettings;
+import net.yupol.transmissionremote.app.torrentdetails.SaveChangesDialogFragment;
 import net.yupol.transmissionremote.app.transport.BaseSpiceActivity;
 import net.yupol.transmissionremote.app.transport.request.SessionGetRequest;
+import net.yupol.transmissionremote.app.transport.request.SessionSetRequest;
 
-import static net.yupol.transmissionremote.app.model.json.ServerSettings.ALT_SPEED_LIMIT_DOWN;
-import static net.yupol.transmissionremote.app.model.json.ServerSettings.ALT_SPEED_LIMIT_ENABLED;
-import static net.yupol.transmissionremote.app.model.json.ServerSettings.ALT_SPEED_LIMIT_UP;
-import static net.yupol.transmissionremote.app.model.json.ServerSettings.SPEED_LIMIT_DOWN;
-import static net.yupol.transmissionremote.app.model.json.ServerSettings.SPEED_LIMIT_DOWN_ENABLED;
-import static net.yupol.transmissionremote.app.model.json.ServerSettings.SPEED_LIMIT_UP;
-import static net.yupol.transmissionremote.app.model.json.ServerSettings.SPEED_LIMIT_UP_ENABLED;
-
-
-public class ServerPreferencesActivity extends BaseSpiceActivity {
+public class ServerPreferencesActivity extends BaseSpiceActivity implements SaveChangesDialogFragment.SaveDiscardListener {
 
     private static final String TAG = ServerPreferencesActivity.class.getSimpleName();
-    private static final String SERVER_PREFERENCES_FRAGMENT_TAG = "server_preferences_fragment_tag";
+    private static final String TAG_SERVER_PREFERENCES_FRAGMENT = "server_preferences_fragment_tag";
+    private static final String TAG_SAVE_CHANGES_DIALOG = "tag_save_changes_dialog";
 
-    public static final String EXTRA_SERVER_PREFERENCES = "extra_server_preferences";
+    private SessionSetRequest saveChangesRequest;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.server_preferences_activity);
         setTitle(R.string.server_preferences);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
     }
 
     @Override
@@ -55,15 +50,10 @@ public class ServerPreferencesActivity extends BaseSpiceActivity {
 
             @Override
             public void onRequestSuccess(ServerSettings serverSettings) {
-                ((TransmissionRemote) getApplication()).setSpeedLimitEnabled(serverSettings.isAltSpeedEnabled());
-                showPreferencesFragment(toFragmentArguments(serverSettings));
+                ((TransmissionRemote) getApplication()).setSpeedLimitEnabled(serverSettings.isAltSpeedLimitEnabled());
+                showPreferencesFragment(serverSettings);
             }
         });
-    }
-
-    @Override
-    public void onBackPressed() {
-        doFinish();
     }
 
     @Override
@@ -72,7 +62,7 @@ public class ServerPreferencesActivity extends BaseSpiceActivity {
     }
 
     private void showProgressbarFragment() {
-        FragmentManager fm = getFragmentManager();
+        FragmentManager fm = getSupportFragmentManager();
 
         ServerPreferencesFragment preferencesFragment = (ServerPreferencesFragment)
                 fm.findFragmentById(R.id.server_preferences_fragment_container);
@@ -85,31 +75,48 @@ public class ServerPreferencesActivity extends BaseSpiceActivity {
     }
 
     @Override
+    public void onBackPressed() {
+        ServerPreferencesFragment fragment = (ServerPreferencesFragment)
+                getSupportFragmentManager().findFragmentByTag(TAG_SERVER_PREFERENCES_FRAGMENT);
+        if (fragment == null) {
+            super.onBackPressed();
+            return;
+        }
+
+        SessionSetRequest.Builder requestBuilder = fragment.getPreferencesRequestBuilder();
+        if (requestBuilder.isChanged()) {
+            saveChangesRequest = requestBuilder.build();
+            new SaveChangesDialogFragment().show(getFragmentManager(), TAG_SAVE_CHANGES_DIALOG);
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                doFinish();
+                onBackPressed();
                 return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
-    private void doFinish() {
-        ServerPreferencesFragment fragment = (ServerPreferencesFragment)
-                getFragmentManager().findFragmentByTag(SERVER_PREFERENCES_FRAGMENT_TAG);
-        if (fragment != null) {
-            Intent result = new Intent();
-            result.putExtra(EXTRA_SERVER_PREFERENCES, fragment.getChangedPreferences().toString());
-            setResult(RESULT_OK, result);
-        } else {
-            setResult(RESULT_CANCELED);
-        }
 
-        finish();
+
+    @Override
+    public void onSavePressed() {
+        getTransportManager().doRequest(saveChangesRequest, null);
+        super.onBackPressed();
     }
 
-    private void showPreferencesFragment(Bundle arguments) {
-        FragmentManager fm = getFragmentManager();
+    @Override
+    public void onDiscardPressed() {
+        super.onBackPressed();
+    }
+
+    private void showPreferencesFragment(ServerSettings settings) {
+        FragmentManager fm = getSupportFragmentManager();
 
         ProgressbarFragment progressbarFragment = (ProgressbarFragment)
                 fm.findFragmentById(R.id.progress_bar_fragment_container);
@@ -118,20 +125,10 @@ public class ServerPreferencesActivity extends BaseSpiceActivity {
         ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
         if (progressbarFragment != null) ft.remove(progressbarFragment);
         ServerPreferencesFragment fragment = new ServerPreferencesFragment();
-        fragment.setArguments(arguments);
-        ft.add(R.id.server_preferences_fragment_container, fragment, SERVER_PREFERENCES_FRAGMENT_TAG);
+        Bundle args = new Bundle();
+        args.putParcelable(ServerPreferencesFragment.KEY_SERVER_SETTINGS, settings);
+        fragment.setArguments(args);
+        ft.add(R.id.server_preferences_fragment_container, fragment, TAG_SERVER_PREFERENCES_FRAGMENT);
         ft.commit();
-    }
-
-    private Bundle toFragmentArguments(ServerSettings settings) {
-        Bundle b = new Bundle();
-        b.putInt(SPEED_LIMIT_DOWN, settings.getSpeedLimitDown());
-        b.putBoolean(SPEED_LIMIT_DOWN_ENABLED, settings.isSpeedLimitDownEnabled());
-        b.putInt(SPEED_LIMIT_UP, settings.getSpeedLimitUp());
-        b.putBoolean(SPEED_LIMIT_UP_ENABLED, settings.isSpeedLimitUpEnabled());
-        b.putInt(ALT_SPEED_LIMIT_DOWN, settings.getAltSpeedDown());
-        b.putInt(ALT_SPEED_LIMIT_UP, settings.getAltSpeedUp());
-        b.putBoolean(ALT_SPEED_LIMIT_ENABLED, settings.isAltSpeedEnabled());
-        return b;
     }
 }

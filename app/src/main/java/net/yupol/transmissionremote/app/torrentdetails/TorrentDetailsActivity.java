@@ -15,9 +15,9 @@ public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveCha
 
     public static final String EXTRA_NAME_TORRENT = "extra_key_torrent";
 
-    private static String TAG_SAVE_CHANGES_DIALOG = "tag_save_changes_dialog";
+    private static final String TAG_SAVE_CHANGES_DIALOG = "tag_save_changes_dialog";
 
-    private static String KEY_OPTIONS_CHANGE_REQUEST = "key_options_request";
+    private static final String KEY_OPTIONS_CHANGE_REQUEST = "key_options_request";
 
     private Torrent torrent;
     private TorrentSetRequest saveChangesRequest;

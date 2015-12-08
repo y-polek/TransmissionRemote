@@ -1,119 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_margin="@dimen/default_layout_margin">
+    android:layout_height="match_parent">
+    <LinearLayout android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/default_layout_margin">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingBottom="@dimen/default_padding"
-        android:textSize="@dimen/pref_title_size"
-        android:textStyle="bold"
-        android:text="@string/global_bandwidth_limits"/>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingBottom="@dimen/default_padding"
-        android:orientation="horizontal">
-        <CheckBox android:id="@+id/download_limit_checkbox"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:paddingRight="@dimen/default_padding"
-            android:textSize="@dimen/pref_text_size"
-            android:text="@string/download_rate"/>
-        <EditText android:id="@+id/download_limit_edittext"
-            android:layout_width="@dimen/server_pref_edittext_width"
-            android:layout_height="wrap_content"
-            android:paddingRight="@dimen/default_padding"
-            android:inputType="number"/>
-        <TextView android:id="@+id/download_limit_units"
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="@dimen/pref_text_size"
-            android:text="@string/kbps"/>
-    </LinearLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingBottom="@dimen/default_padding"
-        android:orientation="horizontal">
-        <CheckBox android:id="@+id/upload_limit_checkbox"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:textSize="@dimen/pref_text_size"
-            android:text="@string/upload_rate"/>
-        <EditText android:id="@+id/upload_limit_edittext"
-            android:layout_width="@dimen/server_pref_edittext_width"
-            android:layout_height="wrap_content"
-            android:inputType="number"/>
-        <TextView android:id="@+id/upload_limit_units"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="@dimen/pref_text_size"
-            android:text="@string/kbps"/>
-    </LinearLayout>
+            android:paddingBottom="@dimen/default_padding"
+            android:textSize="@dimen/abc_text_size_title_material"
+            android:textStyle="bold"
+            android:text="@string/global_bandwidth_limits"/>
+        <fragment android:name="net.yupol.transmissionremote.app.torrentdetails.BandwidthLimitFragment"
+            android:id="@+id/global_bandwidth_limit_fragment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
 
-    <TextView android:id="@+id/turtle_limit_header_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:drawableLeft="@drawable/turtle"
-        android:drawablePadding="@dimen/default_padding"
-        android:textSize="@dimen/pref_title_size"
-        android:textStyle="bold"
-        android:text="@string/turtle_speed_limits"/>
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingBottom="@dimen/default_padding"
-        android:textSize="@dimen/pref_description_text_size"
-        android:text="@string/turtle_speed_limits_description"/>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingBottom="@dimen/default_padding"
-        android:orientation="horizontal">
-        <TextView
-            android:layout_width="0dp"
+        <TextView android:id="@+id/turtle_limit_header_text"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:paddingLeft="@dimen/default_padding"
-            android:textSize="@dimen/pref_text_size"
-            android:text="@string/download_rate"/>
-        <EditText android:id="@+id/turtle_download_limit_edittext"
-            android:layout_width="@dimen/server_pref_edittext_width"
-            android:layout_height="wrap_content"
-            android:paddingRight="@dimen/default_padding"
-            android:inputType="number"/>
+            android:drawableLeft="@drawable/turtle"
+            android:drawablePadding="@dimen/default_padding"
+            android:textSize="@dimen/abc_text_size_title_material"
+            android:textStyle="bold"
+            android:text="@string/turtle_speed_limits"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="@dimen/pref_text_size"
-            android:text="@string/kbps"/>
+            android:paddingBottom="@dimen/default_padding"
+            android:textSize="@dimen/pref_description_text_size"
+            android:text="@string/turtle_speed_limits_description"/>
+        <fragment
+            xmlns:custom="http://schemas.android.com/apk/res-auto"
+            android:name="net.yupol.transmissionremote.app.torrentdetails.BandwidthLimitFragment"
+            android:id="@+id/alt_bandwidth_limit_fragment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            custom:disableable_limits="false"
+            tools:ignore="missingPrefix"/>
     </LinearLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:paddingLeft="@dimen/default_padding"
-            android:textSize="@dimen/pref_text_size"
-            android:text="@string/upload_rate"/>
-        <EditText android:id="@+id/turtle_upload_limit_edittext"
-            android:layout_width="@dimen/server_pref_edittext_width"
-            android:layout_height="wrap_content"
-            android:inputType="number"/>
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="@dimen/pref_text_size"
-            android:text="@string/kbps"/>
-    </LinearLayout>
-</LinearLayout>
+</ScrollView>

@@ -1,10 +1,10 @@
 package net.yupol.transmissionremote.app;
 
 import android.app.Activity;
-import android.app.ListFragment;
 import android.content.Context;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.support.v4.app.ListFragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;

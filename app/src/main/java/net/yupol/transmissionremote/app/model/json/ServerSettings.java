@@ -1,8 +1,11 @@
 package net.yupol.transmissionremote.app.model.json;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.api.client.util.Key;
 
-public class ServerSettings {
+public class ServerSettings implements Parcelable {
 
     public static final String SPEED_LIMIT_DOWN = "speed-limit-down";
     public static final String SPEED_LIMIT_DOWN_ENABLED = "speed-limit-down-enabled";
@@ -30,13 +33,13 @@ public class ServerSettings {
     private boolean speedLimitUpEnabled;
 
     @Key(ALT_SPEED_LIMIT_DOWN)
-    private int altSpeedDown;
+    private int altSpeedLimitDown;
 
     @Key(ALT_SPEED_LIMIT_UP)
-    private int altSpeedUp;
+    private int altSpeedLimitUp;
 
     @Key(ALT_SPEED_LIMIT_ENABLED)
-    private boolean altSpeedEnabled;
+    private boolean altSpeedLimitEnabled;
 
     @Key(DOWNLOAD_DIR)
     private String downloadDir;
@@ -52,6 +55,37 @@ public class ServerSettings {
 
     @Key(SEED_IDLE_LIMIT)
     private int seedIdleLimit;
+
+    public ServerSettings() {
+        // accessible default constructor required for JSON parser
+    }
+
+    protected ServerSettings(Parcel in) {
+        speedLimitDown = in.readInt();
+        speedLimitDownEnabled = in.readByte() != 0;
+        speedLimitUp = in.readInt();
+        speedLimitUpEnabled = in.readByte() != 0;
+        altSpeedLimitDown = in.readInt();
+        altSpeedLimitUp = in.readInt();
+        altSpeedLimitEnabled = in.readByte() != 0;
+        downloadDir = in.readString();
+        seedRatioLimited = in.readByte() != 0;
+        seedRatioLimit = in.readDouble();
+        seedIdleLimited = in.readByte() != 0;
+        seedIdleLimit = in.readInt();
+    }
+
+    public static final Creator<ServerSettings> CREATOR = new Creator<ServerSettings>() {
+        @Override
+        public ServerSettings createFromParcel(Parcel in) {
+            return new ServerSettings(in);
+        }
+
+        @Override
+        public ServerSettings[] newArray(int size) {
+            return new ServerSettings[size];
+        }
+    };
 
     public int getSpeedLimitDown() {
         return speedLimitDown;
@@ -69,16 +103,16 @@ public class ServerSettings {
         return speedLimitUpEnabled;
     }
 
-    public int getAltSpeedDown() {
-        return altSpeedDown;
+    public int getAltSpeedLimitDown() {
+        return altSpeedLimitDown;
     }
 
-    public int getAltSpeedUp() {
-        return altSpeedUp;
+    public int getAltSpeedLimitUp() {
+        return altSpeedLimitUp;
     }
 
-    public boolean isAltSpeedEnabled() {
-        return altSpeedEnabled;
+    public boolean isAltSpeedLimitEnabled() {
+        return altSpeedLimitEnabled;
     }
 
     public String getDownloadDir() {
@@ -108,14 +142,35 @@ public class ServerSettings {
                 ", speedLimitDownEnabled=" + speedLimitDownEnabled +
                 ", speedLimitUp=" + speedLimitUp +
                 ", speedLimitUpEnabled=" + speedLimitUpEnabled +
-                ", altSpeedDown=" + altSpeedDown +
-                ", altSpeedUp=" + altSpeedUp +
-                ", altSpeedEnabled=" + altSpeedEnabled +
+                ", altSpeedLimitDown=" + altSpeedLimitDown +
+                ", altSpeedLimitUp=" + altSpeedLimitUp +
+                ", altSpeedLimitEnabled=" + altSpeedLimitEnabled +
                 ", downloadDir='" + downloadDir + '\'' +
                 ", seedRatioLimited=" + seedRatioLimited +
                 ", seedRatioLimit=" + seedRatioLimit +
                 ", seedIdleLimited=" + seedIdleLimited +
                 ", seedIdleLimit=" + seedIdleLimit +
                 '}';
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(speedLimitDown);
+        dest.writeByte((byte) (speedLimitDownEnabled ? 1 : 0));
+        dest.writeInt(speedLimitUp);
+        dest.writeByte((byte) (speedLimitUpEnabled ? 1 : 0));
+        dest.writeInt(altSpeedLimitDown);
+        dest.writeInt(altSpeedLimitUp);
+        dest.writeByte((byte) (altSpeedLimitEnabled ? 1 : 0));
+        dest.writeString(downloadDir);
+        dest.writeByte((byte) (seedRatioLimited ? 1 : 0));
+        dest.writeDouble(seedRatioLimit);
+        dest.writeByte((byte) (seedIdleLimited ? 1 : 0));
+        dest.writeInt(seedIdleLimit);
     }
 }

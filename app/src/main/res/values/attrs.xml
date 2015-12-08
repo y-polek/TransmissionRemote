@@ -10,4 +10,8 @@
         <attr name="src_disabled" format="integer"/>
         <attr name="enabled" format="boolean"/>
     </declare-styleable>
+
+    <declare-styleable name="BandwidthLimitFragment">
+        <attr name="disableable_limits" format="boolean"/>
+    </declare-styleable>
 </resources>
