@@ -1,11 +1,13 @@
 package net.yupol.transmissionremote.app.transport.request;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.Log;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class SessionSetRequest extends Request<Void> {
+public class SessionSetRequest extends Request<Void> implements Parcelable {
 
     private static final String TAG = SessionSetRequest.class.getSimpleName();
 
@@ -29,6 +31,34 @@ public class SessionSetRequest extends Request<Void> {
     public static Builder builder() {
         return new Builder();
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(arguments.toString());
+    }
+
+    public static final Creator<SessionSetRequest> CREATOR = new Creator<SessionSetRequest>() {
+        @Override
+        public SessionSetRequest createFromParcel(Parcel in) {
+            String argsStr = in.readString();
+            try {
+                return new SessionSetRequest(new JSONObject(argsStr));
+            } catch (JSONException e) {
+                Log.e(TAG, "Failed to restore from parcel. Args string: " + argsStr, e);
+                return new SessionSetRequest(new JSONObject());
+            }
+        }
+
+        @Override
+        public SessionSetRequest[] newArray(int size) {
+            return new SessionSetRequest[size];
+        }
+    };
 
     public static class Builder implements RequestBuilder<SessionSetRequest> {
 

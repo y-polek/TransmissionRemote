@@ -31,8 +31,7 @@
         <activity android:name=".preferences.RemotePreferencesActivity">
             <meta-data android:name="android.support.PARENT_ACTIVITY" android:value=".MainActivity"/>
         </activity>
-        <activity android:name=".preferences.ServerPreferencesActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden">
+        <activity android:name=".preferences.ServerPreferencesActivity">
             <meta-data android:name="android.support.PARENT_ACTIVITY" android:value=".MainActivity"/>
         </activity>
         <activity android:name=".preferences.ServersActivity"

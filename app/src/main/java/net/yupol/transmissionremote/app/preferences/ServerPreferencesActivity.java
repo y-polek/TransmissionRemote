@@ -21,8 +21,10 @@ import net.yupol.transmissionremote.app.transport.request.SessionSetRequest;
 public class ServerPreferencesActivity extends BaseSpiceActivity implements SaveChangesDialogFragment.SaveDiscardListener {
 
     private static final String TAG = ServerPreferencesActivity.class.getSimpleName();
-    private static final String TAG_SERVER_PREFERENCES_FRAGMENT = "server_preferences_fragment_tag";
+    private static final String TAG_SERVER_PREFERENCES_FRAGMENT = "tag_server_preferences_fragment";
     private static final String TAG_SAVE_CHANGES_DIALOG = "tag_save_changes_dialog";
+
+    private static final String KEY_SAVE_CHANGES_REQUEST = "key_save_changes_request";
 
     private SessionSetRequest saveChangesRequest;
 
@@ -34,31 +36,35 @@ public class ServerPreferencesActivity extends BaseSpiceActivity implements Save
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
+
+        if (savedInstanceState == null) {
+            showProgressbarFragment();
+
+            getTransportManager().doRequest(new SessionGetRequest(), new RequestListener<ServerSettings>() {
+                @Override
+                public void onRequestFailure(SpiceException spiceException) {
+                    Log.e(TAG, "Failed to obtain server settings");
+                }
+
+                @Override
+                public void onRequestSuccess(ServerSettings serverSettings) {
+                    ((TransmissionRemote) getApplication()).setSpeedLimitEnabled(serverSettings.isAltSpeedLimitEnabled());
+                    showPreferencesFragment(serverSettings);
+                }
+            });
+        }
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-
-        showProgressbarFragment();
-
-        getTransportManager().doRequest(new SessionGetRequest(), new RequestListener<ServerSettings>() {
-            @Override
-            public void onRequestFailure(SpiceException spiceException) {
-                Log.e(TAG, "Failed to obtain server settings");
-            }
-
-            @Override
-            public void onRequestSuccess(ServerSettings serverSettings) {
-                ((TransmissionRemote) getApplication()).setSpeedLimitEnabled(serverSettings.isAltSpeedLimitEnabled());
-                showPreferencesFragment(serverSettings);
-            }
-        });
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable(KEY_SAVE_CHANGES_REQUEST, saveChangesRequest);
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        saveChangesRequest = savedInstanceState.getParcelable(KEY_SAVE_CHANGES_REQUEST);
     }
 
     private void showProgressbarFragment() {
