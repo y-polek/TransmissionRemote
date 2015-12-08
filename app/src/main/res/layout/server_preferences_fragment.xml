@@ -7,7 +7,7 @@
     <LinearLayout android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/default_layout_margin">
+        android:padding="@dimen/default_padding_big">
 
         <TextView
             android:layout_width="wrap_content"
@@ -19,7 +19,8 @@
         <fragment android:name="net.yupol.transmissionremote.app.torrentdetails.BandwidthLimitFragment"
             android:id="@+id/global_bandwidth_limit_fragment"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/default_layout_margin"/>
 
         <TextView android:id="@+id/turtle_limit_header_text"
             android:layout_width="wrap_content"
