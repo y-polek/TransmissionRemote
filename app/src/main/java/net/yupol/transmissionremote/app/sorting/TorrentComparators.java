@@ -27,7 +27,9 @@ public class TorrentComparators {
     public static final Comparator<Torrent> TIME_REMAINING = new Comparator<Torrent>() {
         @Override
         public int compare(Torrent t1, Torrent t2) {
-            return t1.getLeftUntilDone() - t2.getLeftUntilDone();
+            long l1 = t1.getLeftUntilDone();
+            long l2 = t2.getLeftUntilDone();
+            return l1 < l2 ? -1 : (l1 == l2 ? 0 : 1);
         }
     };
 }
