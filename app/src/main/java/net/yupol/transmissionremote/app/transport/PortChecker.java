@@ -85,7 +85,7 @@ public class PortChecker {
         });
     }
 
-    public static interface PortCheckResultListener {
-        public void onPortCheckResults(boolean isOpen);
+    public interface PortCheckResultListener {
+        void onPortCheckResults(boolean isOpen);
     }
 }

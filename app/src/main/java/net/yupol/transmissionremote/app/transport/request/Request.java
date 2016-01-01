@@ -78,6 +78,9 @@ public abstract class Request<RESULT> extends GoogleHttpClientSpiceRequest<RESUL
         HttpHeaders headers = new HttpHeaders()
                 .setContentType("json")
                 .set(HEADER_SESSION_ID, sessionId);
+        if (server.isAuthenticationEnabled()) {
+            headers.setBasicAuthentication(server.getUserName(), server.getPassword());
+        }
         request.setHeaders(headers);
 
         JsonObjectParser jsonParser = new JsonObjectParser.Builder(new JacksonFactory())
