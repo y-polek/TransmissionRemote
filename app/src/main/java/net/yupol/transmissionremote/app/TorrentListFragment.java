@@ -2,15 +2,17 @@ package net.yupol.transmissionremote.app;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
-import android.support.v4.app.ListFragment;
-import android.util.Log;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
-import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -35,7 +37,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-public class TorrentListFragment extends ListFragment {
+public class TorrentListFragment extends Fragment {
 
     private static final String TAG = TorrentListFragment.class.getSimpleName();
 
@@ -44,7 +46,6 @@ public class TorrentListFragment extends ListFragment {
     private TransmissionRemote app;
 
     private Collection<Torrent> allTorrents = Collections.emptyList();
-    private List<Torrent> torrentsToShow = Collections.emptyList();
 
     private Comparator<Torrent> comparator;
 
@@ -64,134 +65,27 @@ public class TorrentListFragment extends ListFragment {
     };
 
     private OnTorrentSelectedListener torrentSelectedListener;
-
-    public TorrentListFragment() {
-        setListAdapter(new BaseAdapter() {
-            @Override
-            public int getCount() {
-                return torrentsToShow.size();
-            }
-
-            @Override
-            public Torrent getItem(int position) {
-                return torrentsToShow.get(position);
-            }
-
-            @Override
-            public long getItemId(int position) {
-                return position;
-            }
-
-            @Override
-            public View getView(int position, View convertView, ViewGroup parent) {
-                View itemView;
-
-                if (convertView == null) {
-                    LayoutInflater li = (LayoutInflater) parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                    itemView = li.inflate(R.layout.torrent_list_item, parent, false);
-                } else {
-                    itemView = convertView;
-                }
-
-                int bgColorId = position % 2 == 0 ? R.color.torrent_list_odd_item_background
-                        : R.color.torrent_list_even_item_background;
-                itemView.setBackgroundColor(getResources().getColor(bgColorId));
-
-                final Torrent torrent = getItem(position);
-
-                TextView nameText = (TextView) itemView.findViewById(R.id.name);
-                nameText.setText(torrent.getName());
-
-                String totalSize = SizeUtils.displayableSize(torrent.getTotalSize());
-                String downloadedText;
-                if (torrent.getPercentDone() == 1.0) {
-                    downloadedText = totalSize;
-                } else {
-                    String downloadedSize = SizeUtils.displayableSize((long) (torrent.getPercentDone() * torrent.getTotalSize()));
-                    String percentDone = String.format("%.2f%%", 100 * torrent.getPercentDone());
-                    downloadedText = getString(R.string.downloaded_text, downloadedSize, totalSize, percentDone);
-                }
-
-                TextView downloadedTextView = (TextView) itemView.findViewById(R.id.downloaded_text);
-                downloadedTextView.setText(downloadedText);
-
-                double uploadRatio = Math.max(torrent.getUploadRatio(), 0.0);
-                String uploadedText = getString(R.string.uploaded_text,
-                        SizeUtils.displayableSize(torrent.getUploadedSize()), uploadRatio);
-                TextView uploadedTextView = (TextView) itemView.findViewById(R.id.uploaded_text);
-                uploadedTextView.setText(uploadedText);
-
-                ProgressBar progressBar = (ProgressBar) itemView.findViewById(R.id.progress_bar);
-                progressBar.setProgress((int) (torrent.getPercentDone() * progressBar.getMax()));
-                boolean isPaused = isPaused(torrent.getStatus());
-                int progressbarDrawable = isPaused ? R.drawable.torrent_progressbar_disabled : R.drawable.torrent_progressbar;
-                progressBar.setProgressDrawable(getResources().getDrawable(progressbarDrawable));
-
-                TextView downloadRateText = (TextView) itemView.findViewById(R.id.download_rate);
-                downloadRateText.setText(speedText(torrent.getDownloadRate()));
-
-                TextView uploadRateText = (TextView) itemView.findViewById(R.id.upload_rate);
-                uploadRateText.setText(speedText(torrent.getUploadRate()));
-
-                Rect bounds = new Rect();
-                downloadRateText.getPaint().getTextBounds(MAX_STRING, 0, MAX_STRING.length(), bounds);
-                int maxWidth = bounds.width();
-                downloadRateText.setWidth(maxWidth);
-                uploadRateText.setWidth(maxWidth);
-
-                PauseResumeButton pauseResumeBtn = (PauseResumeButton) itemView.findViewById(R.id.pause_resume_button);
-                pauseResumeBtn.setState(isPaused ? State.RESUME : State.PAUSE);
-
-                pauseResumeBtn.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        PauseResumeButton btn = (PauseResumeButton) v;
-                        State state = btn.getState();
-                        btn.toggleState();
-
-                        Activity activity = getActivity();
-                        if (activity instanceof BaseSpiceActivity) {
-                            TransportManager transportManager = ((BaseSpiceActivity) activity).getTransportManager();
-                            Request<Void> request = state == State.PAUSE
-                                    ? new StopTorrentRequest(Collections.singletonList(torrent))
-                                    : new StartTorrentRequest(Collections.singletonList(torrent));
-                            transportManager.doRequest(request, null);
-                        } else {
-                            Log.e(TAG, "Can't send Start/Stop request. " +
-                                    "Fragment should be used inside BaseSpiceActivity to be able to obtain TransportManager");
-                        }
-                    }
-                });
-
-                TextView errorMsgView = (TextView) itemView.findViewById(R.id.error_message);
-                Torrent.Error error = torrent.getError();
-                if (error == Torrent.Error.NONE) {
-                    errorMsgView.setVisibility(View.GONE);
-                } else {
-                    String errorMsg = torrent.getErrorMessage();
-                    if (errorMsg != null && !errorMsg.trim().isEmpty()) {
-                        errorMsgView.setVisibility(View.VISIBLE);
-                        errorMsgView.setText(errorMsg);
-                        int msgIconResId = error.isWarning() ? R.drawable.ic_action_warning : R.drawable.ic_action_error;
-                        Drawable msgIcon = getResources().getDrawable(msgIconResId);
-                        int size = getResources().getDimensionPixelSize(R.dimen.torrent_list_error_icon_size);
-                        msgIcon.setBounds(0, 0, size, size);
-                        errorMsgView.setCompoundDrawables(msgIcon, null, null, null);
-                    } else {
-                        errorMsgView.setVisibility(View.GONE);
-                    }
-                }
-
-                return itemView;
-            }
-        });
-    }
+    private TorrentsAdapter adapter;
 
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         app = (TransmissionRemote) activity.getApplication();
         app.addOnFilterSetListener(filterListener);
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.torrent_list_layout, container, false);
+
+        RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.torrent_list_recycler_view);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerView.addItemDecoration(new DividerItemDecoration(container.getContext()));
+        adapter = new TorrentsAdapter(container.getContext());
+        recyclerView.setAdapter(adapter);
+
+        return view;
     }
 
     @Override
@@ -214,25 +108,19 @@ public class TorrentListFragment extends ListFragment {
         super.onDetach();
     }
 
-    @Override
-    public void onListItemClick(ListView l, View v, int position, long id) {
-        if (torrentSelectedListener != null) {
-            Torrent torrent = (Torrent) getListAdapter().getItem(position);
-            torrentSelectedListener.onTorrentSelected(torrent);
-        }
-    }
-
     public void setOnTorrentSelectedListener(OnTorrentSelectedListener listener) {
         torrentSelectedListener = listener;
     }
 
     private void updateTorrentList() {
         Filter filter = app.getActiveFilter();
-        torrentsToShow = new ArrayList<>(FluentIterable.from(allTorrents).filter(filter).toList());
-        setEmptyText(getResources().getString(filter.getEmptyMessageResId()));
+        List<Torrent> torrentsToShow = new ArrayList<>(FluentIterable.from(allTorrents).filter(filter).toList());
+        // TODO: set empty text
+        //setEmptyText(getResources().getString(filter.getEmptyMessageResId()));
         if (comparator != null)
             Collections.sort(torrentsToShow, comparator);
-        ((BaseAdapter) getListAdapter()).notifyDataSetChanged();
+        adapter.setTorrents(torrentsToShow);
+        adapter.notifyDataSetChanged();
     }
 
     public void setSort(Comparator<Torrent> comparator) {
@@ -241,15 +129,179 @@ public class TorrentListFragment extends ListFragment {
             updateTorrentList();
     }
 
-    private String speedText(long bytes) {
-        return Strings.padStart(SizeUtils.displayableSize(bytes), 5, ' ') + "/s";
-    }
-
-    private boolean isPaused(Torrent.Status status) {
-        return status == Torrent.Status.STOPPED;
-    }
-
     public interface OnTorrentSelectedListener {
         void onTorrentSelected(Torrent torrent);
+    }
+
+    private class TorrentsAdapter extends RecyclerView.Adapter<ViewHolder> {
+
+        private Context context;
+        private List<Torrent> torrents;
+
+        public TorrentsAdapter(Context context) {
+            this.context = context;
+        }
+
+        public void setTorrents(List<Torrent> torrents) {
+            this.torrents = torrents;
+        }
+
+        @Override
+        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.torrent_list_item, parent, false);
+            final ViewHolder viewHolder = new ViewHolder(itemView, ((BaseSpiceActivity) getActivity()).getTransportManager());
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (torrentSelectedListener != null) {
+                        torrentSelectedListener.onTorrentSelected(viewHolder.torrent);
+                    }
+                }
+            });
+            return viewHolder;
+        }
+
+        @Override
+        public void onBindViewHolder(ViewHolder holder, int position) {
+            Torrent torrent = getItemAtPosition(position);
+            holder.setTorrent(torrent);
+
+            holder.nameText.setText(torrent.getName());
+
+            String totalSize = SizeUtils.displayableSize(torrent.getTotalSize());
+            String downloadedText;
+            if (torrent.getPercentDone() == 1.0) {
+                downloadedText = totalSize;
+            } else {
+                String downloadedSize = SizeUtils.displayableSize((long) (torrent.getPercentDone() * torrent.getTotalSize()));
+                String percentDone = String.format("%.2f%%", 100 * torrent.getPercentDone());
+                downloadedText = context.getString(R.string.downloaded_text, downloadedSize, totalSize, percentDone);
+            }
+            holder.downloadedTextView.setText(downloadedText);
+
+            double uploadRatio = Math.max(torrent.getUploadRatio(), 0.0);
+            String uploadedText = context.getString(R.string.uploaded_text,
+                    SizeUtils.displayableSize(torrent.getUploadedSize()), uploadRatio);
+            holder.uploadedTextView.setText(uploadedText);
+
+            holder.progressBar.setProgress((int) (torrent.getPercentDone() * holder.progressBar.getMax()));
+            boolean isPaused = torrent.getStatus() == Torrent.Status.STOPPED;
+            int progressbarDrawable = isPaused ? R.drawable.torrent_progressbar_disabled : R.drawable.torrent_progressbar;
+            holder.progressBar.setProgressDrawable(context.getResources().getDrawable(progressbarDrawable));
+
+            holder.downloadRateText.setText(speedText(torrent.getDownloadRate()));
+            holder.uploadRateText.setText(speedText(torrent.getUploadRate()));
+
+            holder.pauseResumeBtn.setState(isPaused ? State.RESUME : State.PAUSE);
+
+            Torrent.Error error = torrent.getError();
+            if (error == Torrent.Error.NONE) {
+                holder.errorMsgView.setVisibility(View.GONE);
+            } else {
+                String errorMsg = torrent.getErrorMessage();
+                if (errorMsg != null && !errorMsg.trim().isEmpty()) {
+                    holder.errorMsgView.setVisibility(View.VISIBLE);
+                    holder.errorMsgView.setText(errorMsg);
+                    int msgIconResId = error.isWarning() ? R.drawable.ic_action_warning : R.drawable.ic_action_error;
+                    Drawable msgIcon = context.getResources().getDrawable(msgIconResId);
+                    int size = context.getResources().getDimensionPixelSize(R.dimen.torrent_list_error_icon_size);
+                    msgIcon.setBounds(0, 0, size, size);
+                    holder.errorMsgView.setCompoundDrawables(msgIcon, null, null, null);
+                } else {
+                    holder.errorMsgView.setVisibility(View.GONE);
+                }
+            }
+        }
+
+        @Override
+        public int getItemCount() {
+            return torrents.size();
+        }
+
+        public Torrent getItemAtPosition(int position) {
+            return torrents.get(position);
+        }
+
+        private String speedText(long bytes) {
+            return Strings.padStart(SizeUtils.displayableSize(bytes), 5, ' ') + "/s";
+        }
+    }
+
+    private static class ViewHolder extends RecyclerView.ViewHolder {
+
+        public Torrent torrent;
+
+        public final TextView nameText;
+        public final TextView downloadedTextView;
+        public final TextView uploadedTextView;
+        public final ProgressBar progressBar;
+        public final TextView downloadRateText;
+        public final TextView uploadRateText;
+        public final PauseResumeButton pauseResumeBtn;
+        public final TextView errorMsgView;
+
+        public ViewHolder(View itemView, final TransportManager transportManager) {
+            super(itemView);
+            nameText = (TextView) itemView.findViewById(R.id.name);
+            downloadedTextView = (TextView) itemView.findViewById(R.id.downloaded_text);
+            uploadedTextView = (TextView) itemView.findViewById(R.id.uploaded_text);
+            progressBar = (ProgressBar) itemView.findViewById(R.id.progress_bar);
+
+            downloadRateText = (TextView) itemView.findViewById(R.id.download_rate);
+            uploadRateText = (TextView) itemView.findViewById(R.id.upload_rate);
+            Rect bounds = new Rect();
+            downloadRateText.getPaint().getTextBounds(MAX_STRING, 0, MAX_STRING.length(), bounds);
+            int maxWidth = bounds.width();
+            downloadRateText.setWidth(maxWidth);
+            uploadRateText.setWidth(maxWidth);
+
+            pauseResumeBtn = (PauseResumeButton) itemView.findViewById(R.id.pause_resume_button);
+            pauseResumeBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    PauseResumeButton btn = (PauseResumeButton) v;
+                    State state = btn.getState();
+                    btn.toggleState();
+
+                    Request<Void> request = state == State.PAUSE
+                            ? new StopTorrentRequest(Collections.singletonList(torrent))
+                            : new StartTorrentRequest(Collections.singletonList(torrent));
+                    transportManager.doRequest(request, null);
+                }
+            });
+
+            errorMsgView = (TextView) itemView.findViewById(R.id.error_message);
+        }
+
+        public void setTorrent(Torrent torrent) {
+            this.torrent = torrent;
+        }
+    }
+
+    private static class DividerItemDecoration extends RecyclerView.ItemDecoration {
+        private Drawable mDivider;
+
+        public DividerItemDecoration(Context context) {
+            mDivider = context.getResources().getDrawable(R.drawable.line_divider);
+        }
+
+        @Override
+        public void onDraw(Canvas c, RecyclerView parent, RecyclerView.State state) {
+
+            int childCount = parent.getChildCount();
+            for (int i=0; i<childCount-1; i++) {
+                View child = parent.getChildAt(i);
+                int left = parent.getPaddingLeft() + child.getPaddingLeft();
+                int right = parent.getWidth() - parent.getPaddingRight() - child.getPaddingRight();
+
+                RecyclerView.LayoutParams params = (RecyclerView.LayoutParams) child.getLayoutParams();
+
+                int top = child.getBottom() + params.bottomMargin;
+                int bottom = top + mDivider.getIntrinsicHeight();
+
+                mDivider.setBounds(left, top, right, bottom);
+                mDivider.draw(c);
+            }
+        }
     }
 }

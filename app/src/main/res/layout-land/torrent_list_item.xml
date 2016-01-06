@@ -4,11 +4,12 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:paddingLeft="4dp"
-    android:paddingRight="8dp"
-    android:paddingTop="4dp"
-    android:paddingBottom="4dp"
-    android:descendantFocusability="blocksDescendants">
+    android:paddingLeft="@dimen/abc_list_item_padding_horizontal_material"
+    android:paddingRight="@dimen/abc_list_item_padding_horizontal_material"
+    android:paddingTop="@dimen/torrent_list_vertical_padding"
+    android:paddingBottom="@dimen/torrent_list_vertical_padding"
+    android:descendantFocusability="blocksDescendants"
+    android:background="?android:attr/selectableItemBackground">
 
     <net.yupol.transmissionremote.app.PauseResumeButton
         xmlns:custom="http://schemas.android.com/apk/res-auto"
