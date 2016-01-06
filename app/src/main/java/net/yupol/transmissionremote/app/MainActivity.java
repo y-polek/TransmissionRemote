@@ -51,7 +51,6 @@ import net.yupol.transmissionremote.app.server.AddServerActivity;
 import net.yupol.transmissionremote.app.server.Server;
 import net.yupol.transmissionremote.app.torrentdetails.TorrentDetailsActivity;
 import net.yupol.transmissionremote.app.transport.BaseSpiceActivity;
-import net.yupol.transmissionremote.app.transport.PortChecker;
 import net.yupol.transmissionremote.app.transport.TorrentUpdater;
 import net.yupol.transmissionremote.app.transport.request.AddTorrentByFileRequest;
 import net.yupol.transmissionremote.app.transport.request.AddTorrentByUrlRequest;
@@ -93,7 +92,6 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
     private static final String MIME_TYPE_TORRENT = "application/x-bittorrent";
 
     private TransmissionRemote application;
-    private PortChecker portChecker;
     private TorrentUpdater torrentUpdater;
 
     private Drawer drawer;
@@ -237,8 +235,6 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
     @Override
     protected void onPause() {
         super.onPause();
-
-        stopPortChecker();
 
         if (torrentUpdater != null) {
             torrentUpdater.stop();
@@ -412,31 +408,14 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
         if (torrentUpdater != null) {
             torrentUpdater.stop();
         }
-        stopPortChecker();
         stopPreferencesUpdateTimer();
         showProgressbarFragment();
 
         // Start new server connections
-        startPortChecker();
+        torrentUpdater = new TorrentUpdater(getTransportManager(), MainActivity.this, application.getUpdateInterval());
+        torrentUpdater.start();
+
         startPreferencesUpdateTimer();
-    }
-
-    private void startPortChecker() {
-        portChecker = new PortChecker(getTransportManager(), new PortChecker.PortCheckResultListener() {
-            @Override
-            public void onPortCheckResults(boolean isOpen) {
-                // FIXME: check if port is opened
-                torrentUpdater = new TorrentUpdater(getTransportManager(), MainActivity.this, application.getUpdateInterval());
-                torrentUpdater.start();
-            }
-        });
-        portChecker.startCheck();
-    }
-
-    private void stopPortChecker() {
-        if (portChecker != null && portChecker.isRunning()) {
-            portChecker.cancel();
-        }
     }
 
     private void startPreferencesUpdateTimer() {
