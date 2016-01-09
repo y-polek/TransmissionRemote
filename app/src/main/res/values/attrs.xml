@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <declare-styleable name="PauseResumeButton">
-        <attr name="pause_img_src" format="integer" />
-        <attr name="resume_img_src" format="integer" />
+    <declare-styleable name="PlayPauseButton">
+        <attr name="background_color" format="color" />
+        <attr name="foreground_color" format="color" />
+        <attr name="border_color" format="color" />
     </declare-styleable>
 
     <declare-styleable name="TurtleModeButton">

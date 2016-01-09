@@ -19,7 +19,6 @@ import android.widget.TextView;
 import com.google.common.base.Strings;
 import com.google.common.collect.FluentIterable;
 
-import net.yupol.transmissionremote.app.torrentlist.PauseResumeButton.State;
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.TransmissionRemote;
 import net.yupol.transmissionremote.app.TransmissionRemote.OnFilterSelectedListener;
@@ -194,7 +193,7 @@ public class TorrentListFragment extends Fragment {
             holder.downloadRateText.setText(speedText(torrent.getDownloadRate()));
             holder.uploadRateText.setText(speedText(torrent.getUploadRate()));
 
-            holder.pauseResumeBtn.setState(isPaused ? State.RESUME : State.PAUSE);
+            holder.pauseResumeBtn.setPaused(isPaused);
 
             Torrent.Error error = torrent.getError();
             if (error == Torrent.Error.NONE) {
@@ -239,7 +238,7 @@ public class TorrentListFragment extends Fragment {
         public final ProgressBar progressBar;
         public final TextView downloadRateText;
         public final TextView uploadRateText;
-        public final PauseResumeButton pauseResumeBtn;
+        public final PlayPauseButton pauseResumeBtn;
         public final TextView errorMsgView;
 
         public ViewHolder(View itemView, final TransportManager transportManager) {
@@ -257,17 +256,17 @@ public class TorrentListFragment extends Fragment {
             downloadRateText.setWidth(maxWidth);
             uploadRateText.setWidth(maxWidth);
 
-            pauseResumeBtn = (PauseResumeButton) itemView.findViewById(R.id.pause_resume_button);
+            pauseResumeBtn = (PlayPauseButton) itemView.findViewById(R.id.pause_resume_button);
             pauseResumeBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    PauseResumeButton btn = (PauseResumeButton) v;
-                    State state = btn.getState();
-                    btn.toggleState();
+                    PlayPauseButton btn = (PlayPauseButton) v;
+                    boolean wasPaused = btn.isPaused();
+                    btn.toggle();
 
-                    Request<Void> request = state == State.PAUSE
-                            ? new StopTorrentRequest(Collections.singletonList(torrent))
-                            : new StartTorrentRequest(Collections.singletonList(torrent));
+                    Request<Void> request = wasPaused
+                            ? new StartTorrentRequest(Collections.singletonList(torrent))
+                            : new StopTorrentRequest(Collections.singletonList(torrent));
                     transportManager.doRequest(request, null);
                 }
             });

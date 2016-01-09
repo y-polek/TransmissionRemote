@@ -11,15 +11,11 @@
     android:descendantFocusability="blocksDescendants"
     android:background="?android:attr/selectableItemBackground">
 
-    <net.yupol.transmissionremote.app.torrentlist.PauseResumeButton
-        xmlns:custom="http://schemas.android.com/apk/res-auto"
+    <net.yupol.transmissionremote.app.torrentlist.PlayPauseButton
         android:id="@+id/pause_resume_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
         android:layout_gravity="center_vertical"
-        custom:pause_img_src="@drawable/pause"
-        custom:resume_img_src="@drawable/resume"
-        android:background="@null"
         android:focusable="false"
         android:focusableInTouchMode="false"/>
 

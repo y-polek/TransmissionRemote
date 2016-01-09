@@ -3,7 +3,6 @@ package net.yupol.transmissionremote.app.torrentlist;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
-import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.ColorFilter;
@@ -22,6 +21,7 @@ public class PlayPauseDrawable extends Drawable {
 
     private static final float SHADOW_PADDING_RATIO = 0.1f;
 
+    private int borderColor;
     private Paint paint = new Paint();
     private Paint backgroundPaint = new Paint();
     private Paint borderPaint = new Paint();
@@ -64,23 +64,24 @@ public class PlayPauseDrawable extends Drawable {
         }
     };
 
-    public PlayPauseDrawable(Context context) {
+    public PlayPauseDrawable(int backgroundColor, int foregroundColor, int borderColor) {
+        this.borderColor = borderColor;
+
         paint.setAntiAlias(true);
         paint.setStyle(Paint.Style.FILL);
-        paint.setColor(Color.GRAY);
+        paint.setColor(foregroundColor);
 
         backgroundPaint.setAntiAlias(true);
         backgroundPaint.setStyle(Paint.Style.FILL);
-        backgroundPaint.setColor(Color.WHITE);
+        backgroundPaint.setColor(backgroundColor);
 
         borderPaint.setAntiAlias(true);
         borderPaint.setStyle(Paint.Style.STROKE);
-        borderPaint.setColor(Color.DKGRAY);
+        borderPaint.setColor(borderColor);
         borderPaint.setStrokeWidth(2);
 
         shadowPaint.setAntiAlias(true);
         shadowPaint.setStyle(Paint.Style.FILL);
-        shadowPaint.setColor(Color.RED);
     }
 
     @Override
@@ -179,7 +180,7 @@ public class PlayPauseDrawable extends Drawable {
         rightBarBottomLeftEnd.offset(offsetX, 0);
 
         shadowPaint.setShader(new RadialGradient(centerX, centerY, radius,
-                new int[]{ Color.DKGRAY, Color.TRANSPARENT },
+                new int[]{ borderColor, Color.TRANSPARENT },
                 new float[]{ 1f - 2 * SHADOW_PADDING_RATIO, 1f },
                 Shader.TileMode.MIRROR));
     }
@@ -203,7 +204,7 @@ public class PlayPauseDrawable extends Drawable {
 
     public void setPaused(boolean paused) {
         this.isPaused = paused;
-        progress = paused ? 0f : 1f;
+        progress = paused ? 1f : 0f;
         invalidateSelf();
     }
 
@@ -213,7 +214,7 @@ public class PlayPauseDrawable extends Drawable {
     }
 
     public Animator getAnimator() {
-        Animator animator = ObjectAnimator.ofFloat(this, PROGRESS_PROPERTY, isPaused ? 0 : 1, isPaused ? 1 : 0);
+        Animator animator = ObjectAnimator.ofFloat(this, PROGRESS_PROPERTY, isPaused ? 1 : 0, isPaused ? 0 : 1);
         animator.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
