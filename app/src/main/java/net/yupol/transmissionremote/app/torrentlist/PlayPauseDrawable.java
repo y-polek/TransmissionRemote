@@ -11,22 +11,25 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PixelFormat;
 import android.graphics.PointF;
+import android.graphics.RadialGradient;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.graphics.Shader;
 import android.graphics.drawable.Drawable;
-import android.util.Log;
 import android.util.Property;
 
 public class PlayPauseDrawable extends Drawable {
 
-    private static final String TAG = PlayPauseDrawable.class.getSimpleName();
+    private static final float SHADOW_PADDING_RATIO = 0.1f;
 
     private Paint paint = new Paint();
+    private Paint backgroundPaint = new Paint();
     private Paint borderPaint = new Paint();
+    private Paint shadowPaint = new Paint();
     private Path leftPauseBar = new Path();
     private Path rightPauseBar = new Path();
+    private Path playPath = new Path();
     private RectF bounds = new RectF();
-    private RectF circleBounds = new RectF();
     private PointF leftBarTopLeftStart = new PointF();
     private PointF leftBarTopLeftEnd = new PointF();
     private PointF leftBarTopRightStart = new PointF();
@@ -45,7 +48,8 @@ public class PlayPauseDrawable extends Drawable {
     private PointF rightBarBottomLeftEnd = new PointF();
 
     private float progress = 0f;
-    private boolean paused = false;
+    private boolean isPaused = false;
+    private boolean isArmed = false;
 
     private static final Property<PlayPauseDrawable, Float> PROGRESS_PROPERTY = new Property<PlayPauseDrawable, Float>(Float.class, "progress") {
         @Override
@@ -57,7 +61,6 @@ public class PlayPauseDrawable extends Drawable {
         public void set(PlayPauseDrawable d, Float value) {
             d.progress = value;
             d.invalidateSelf();
-            Log.d(TAG, "progress: " + d.progress);
         }
     };
 
@@ -66,17 +69,31 @@ public class PlayPauseDrawable extends Drawable {
         paint.setStyle(Paint.Style.FILL);
         paint.setColor(Color.GRAY);
 
+        backgroundPaint.setAntiAlias(true);
+        backgroundPaint.setStyle(Paint.Style.FILL);
+        backgroundPaint.setColor(Color.WHITE);
+
         borderPaint.setAntiAlias(true);
         borderPaint.setStyle(Paint.Style.STROKE);
         borderPaint.setColor(Color.DKGRAY);
         borderPaint.setStrokeWidth(2);
+
+        shadowPaint.setAntiAlias(true);
+        shadowPaint.setStyle(Paint.Style.FILL);
+        shadowPaint.setColor(Color.RED);
     }
 
     @Override
     public void draw(Canvas canvas) {
-        float w = bounds.width();
-        float h = bounds.height();
-        circleBounds.set(3, 3, w - 6, h - 6);
+        float centerX = bounds.centerX();
+        float centerY = bounds.centerY();
+        float radius = bounds.width() / 2;
+        if (isArmed) {
+            canvas.drawCircle(centerX, centerY, radius, shadowPaint);
+        }
+        float borderRadius = (1f - SHADOW_PADDING_RATIO) * radius;
+        canvas.drawCircle(centerX, centerY, borderRadius, backgroundPaint);
+        canvas.drawCircle(centerX, centerY, borderRadius, borderPaint);
 
         float leftBarTopLeftX = interpolate(leftBarTopLeftStart.x, leftBarTopLeftEnd.x, progress);
         float leftBarTopLeftY = interpolate(leftBarTopLeftStart.y, leftBarTopLeftEnd.y, progress);
@@ -93,7 +110,6 @@ public class PlayPauseDrawable extends Drawable {
         leftPauseBar.lineTo(leftBarBottomRightX, leftBarBottomRightY);
         leftPauseBar.lineTo(leftBarBottomLeftX, leftBarBottomLeftY);
         leftPauseBar.close();
-        canvas.drawPath(leftPauseBar, paint);
 
         float rightBarTopLeftX = interpolate(rightBarTopLeftStart.x, rightBarTopLeftEnd.x, progress);
         float rightBarTopLeftY = interpolate(rightBarTopLeftStart.y, rightBarTopLeftEnd.y, progress);
@@ -110,39 +126,49 @@ public class PlayPauseDrawable extends Drawable {
         rightPauseBar.lineTo(rightBarBottomRightX, rightBarBottomRightY);
         rightPauseBar.lineTo(rightBarBottomLeftX, rightBarBottomLeftY);
         rightPauseBar.close();
-        canvas.drawPath(rightPauseBar, paint);
 
-        canvas.drawOval(circleBounds, borderPaint);
+        if (progress < 1.0f) {
+            canvas.drawPath(leftPauseBar, paint);
+            canvas.drawPath(rightPauseBar, paint);
+        } else {
+            playPath.rewind();
+            playPath.moveTo(leftBarTopLeftX, leftBarTopLeftY);
+            playPath.lineTo(rightBarTopRightX, rightBarTopRightY);
+            playPath.lineTo(leftBarBottomLeftX, leftBarBottomLeftY);
+            playPath.close();
+            canvas.drawPath(playPath, paint);
+        }
     }
 
     @Override
-    protected void onBoundsChange(Rect bounds) {
-        super.onBoundsChange(bounds);
-        this.bounds.set(bounds);
+    protected void onBoundsChange(Rect canvasBounds) {
+        super.onBoundsChange(canvasBounds);
+        float diameter = Math.min(canvasBounds.width(), canvasBounds.height());
+        float radius = diameter/2;
+        float centerX = canvasBounds.exactCenterX();
+        float centerY = canvasBounds.exactCenterY();
+        this.bounds.set(centerX - radius, centerY - radius, centerX + radius, centerY + radius);
 
-        float w = bounds.width();
-        float h = bounds.height();
-
-        leftBarTopLeftStart.set(0.3f * w, 0.3f * h);
+        leftBarTopLeftStart.set(bounds.left + 0.3f * diameter, bounds.top + 0.3f * diameter);
         leftBarTopLeftEnd.set(leftBarTopLeftStart);
         leftBarTopRightStart.set(leftBarTopLeftStart);
-        leftBarTopRightStart.offset(0.15f * w, 0);
-        leftBarTopRightEnd.set(0.5f * w, 0.4f * h);
-        leftBarBottomLeftStart.set(leftBarTopLeftStart.x, leftBarTopLeftStart.y + 0.4f * h);
+        leftBarTopRightStart.offset(0.15f * diameter, 0);
+        leftBarTopRightEnd.set(bounds.left + 0.5f * diameter, bounds.top + 0.4f * diameter);
+        leftBarBottomLeftStart.set(leftBarTopLeftStart.x, leftBarTopLeftStart.y + 0.4f * diameter);
         leftBarBottomLeftEnd.set(leftBarBottomLeftStart);
-        leftBarBottomRightStart.set(leftBarBottomLeftStart.x + 0.15f * w, leftBarBottomLeftStart.y);
-        leftBarBottomRightEnd.set(0.5f * w, 0.6f * h);
+        leftBarBottomRightStart.set(leftBarBottomLeftStart.x + 0.15f * diameter, leftBarBottomLeftStart.y);
+        leftBarBottomRightEnd.set(bounds.left + 0.5f * diameter, bounds.top + 0.6f * diameter);
 
-        rightBarTopLeftStart.set(0.55f * w, 0.3f * h);
+        rightBarTopLeftStart.set(bounds.left + 0.55f * diameter, bounds.top + 0.3f * diameter);
         rightBarTopLeftEnd.set(leftBarTopRightEnd);
-        rightBarTopRightStart.set(rightBarTopLeftStart.x + 0.15f * w, rightBarTopLeftStart.y);
-        rightBarTopRightEnd.set(rightBarTopRightStart.x, 0.5f * h);
-        rightBarBottomRightStart.set(rightBarTopRightStart.x, rightBarTopRightStart.y + 0.4f * h);
+        rightBarTopRightStart.set(rightBarTopLeftStart.x + 0.15f * diameter, rightBarTopLeftStart.y);
+        rightBarTopRightEnd.set(rightBarTopRightStart.x, bounds.top + 0.5f * diameter);
+        rightBarBottomRightStart.set(rightBarTopRightStart.x, rightBarTopRightStart.y + 0.4f * diameter);
         rightBarBottomRightEnd.set(rightBarTopRightEnd);
         rightBarBottomLeftStart.set(rightBarTopLeftStart.x, rightBarBottomRightStart.y);
         rightBarBottomLeftEnd.set(leftBarBottomRightEnd);
 
-        float offsetX = 0.05f * w;
+        float offsetX = 0.05f * diameter;
         leftBarTopLeftEnd.offset(offsetX, 0);
         leftBarTopRightEnd.offset(offsetX, 0);
         leftBarBottomRightEnd.offset(offsetX, 0);
@@ -151,6 +177,11 @@ public class PlayPauseDrawable extends Drawable {
         rightBarTopRightEnd.offset(offsetX, 0);
         rightBarBottomRightEnd.offset(offsetX, 0);
         rightBarBottomLeftEnd.offset(offsetX, 0);
+
+        shadowPaint.setShader(new RadialGradient(centerX, centerY, radius,
+                new int[]{ Color.DKGRAY, Color.TRANSPARENT },
+                new float[]{ 1f - 2 * SHADOW_PADDING_RATIO, 1f },
+                Shader.TileMode.MIRROR));
     }
 
     @Override
@@ -171,17 +202,22 @@ public class PlayPauseDrawable extends Drawable {
     }
 
     public void setPaused(boolean paused) {
-        this.paused = paused;
+        this.isPaused = paused;
         progress = paused ? 0f : 1f;
         invalidateSelf();
     }
 
+    public void setArmed(boolean isArmed) {
+        this.isArmed = isArmed;
+        invalidateSelf();
+    }
+
     public Animator getAnimator() {
-        Animator animator = ObjectAnimator.ofFloat(this, PROGRESS_PROPERTY, paused ? 0 : 1, paused ? 1 : 0);
+        Animator animator = ObjectAnimator.ofFloat(this, PROGRESS_PROPERTY, isPaused ? 0 : 1, isPaused ? 1 : 0);
         animator.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
-                paused = !paused;
+                isPaused = !isPaused;
             }
         });
         return animator;

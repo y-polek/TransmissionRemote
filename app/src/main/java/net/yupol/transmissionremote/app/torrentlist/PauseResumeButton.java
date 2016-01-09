@@ -4,6 +4,8 @@ import android.animation.Animator;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
+import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageButton;
 
@@ -13,6 +15,7 @@ public class PauseResumeButton extends ImageButton {
 
     private State state;
     private PlayPauseDrawable drawable;
+    private Animator animator;
 
     public PauseResumeButton(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -31,6 +34,22 @@ public class PauseResumeButton extends ImageButton {
         }
 
         setState(State.PAUSE);
+
+        setOnTouchListener(new OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        drawable.setArmed(true);
+                        break;
+                    case MotionEvent.ACTION_UP:
+                    case MotionEvent.ACTION_CANCEL:
+                        drawable.setArmed(false);
+                        break;
+                }
+                return false;
+            }
+        });
     }
 
     public void setState(State state) {
@@ -45,7 +64,10 @@ public class PauseResumeButton extends ImageButton {
     public void toggleState() {
         state = state == State.PAUSE ? State.RESUME : State.PAUSE;
 
-        Animator animator = drawable.getAnimator();
+        if (animator != null && animator.isRunning()) {
+            animator.cancel();
+        }
+        animator = drawable.getAnimator();
         animator.setInterpolator(new DecelerateInterpolator());
         animator.start();
     }
