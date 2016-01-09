@@ -1,16 +1,26 @@
-package net.yupol.transmissionremote.app;
+package net.yupol.transmissionremote.app.torrentlist;
 
+import android.animation.Animator;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageButton;
+
+import net.yupol.transmissionremote.app.R;
 
 public class PauseResumeButton extends ImageButton {
 
     private State state;
+    private PlayPauseDrawable drawable;
 
     public PauseResumeButton(Context context, AttributeSet attrs) {
         super(context, attrs);
+        setWillNotDraw(false);
+
+        drawable = new PlayPauseDrawable(context);
+        drawable.setCallback(this);
+        setImageDrawable(drawable);
 
         TypedArray a = context.getTheme().obtainStyledAttributes(attrs, R.styleable.PauseResumeButton, 0, 0);
         try {
@@ -25,7 +35,7 @@ public class PauseResumeButton extends ImageButton {
 
     public void setState(State state) {
         this.state = state;
-        setImageDrawable(getResources().getDrawable(state.resId));
+        drawable.setPaused(state == State.PAUSE);
     }
 
     public State getState() {
@@ -33,12 +43,22 @@ public class PauseResumeButton extends ImageButton {
     }
 
     public void toggleState() {
-        setState(state == State.PAUSE ? State.RESUME : State.PAUSE);
+        state = state == State.PAUSE ? State.RESUME : State.PAUSE;
+
+        Animator animator = drawable.getAnimator();
+        animator.setInterpolator(new DecelerateInterpolator());
+        animator.start();
     }
 
     public enum State {
         PAUSE, RESUME;
 
         private int resId;
+    }
+
+    @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
+        drawable.setBounds(0, 0, w, h);
     }
 }

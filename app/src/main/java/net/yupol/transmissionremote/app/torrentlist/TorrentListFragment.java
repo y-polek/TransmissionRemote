@@ -1,4 +1,4 @@
-package net.yupol.transmissionremote.app;
+package net.yupol.transmissionremote.app.torrentlist;
 
 import android.app.Activity;
 import android.content.Context;
@@ -19,7 +19,9 @@ import android.widget.TextView;
 import com.google.common.base.Strings;
 import com.google.common.collect.FluentIterable;
 
-import net.yupol.transmissionremote.app.PauseResumeButton.State;
+import net.yupol.transmissionremote.app.torrentlist.PauseResumeButton.State;
+import net.yupol.transmissionremote.app.R;
+import net.yupol.transmissionremote.app.TransmissionRemote;
 import net.yupol.transmissionremote.app.TransmissionRemote.OnFilterSelectedListener;
 import net.yupol.transmissionremote.app.TransmissionRemote.OnTorrentsUpdatedListener;
 import net.yupol.transmissionremote.app.filtering.Filter;

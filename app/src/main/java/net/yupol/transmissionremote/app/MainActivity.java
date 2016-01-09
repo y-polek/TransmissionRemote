@@ -50,6 +50,8 @@ import net.yupol.transmissionremote.app.preferences.ServerPreferencesActivity;
 import net.yupol.transmissionremote.app.server.AddServerActivity;
 import net.yupol.transmissionremote.app.server.Server;
 import net.yupol.transmissionremote.app.torrentdetails.TorrentDetailsActivity;
+import net.yupol.transmissionremote.app.torrentlist.EmptyServerFragment;
+import net.yupol.transmissionremote.app.torrentlist.TorrentListFragment;
 import net.yupol.transmissionremote.app.transport.BaseSpiceActivity;
 import net.yupol.transmissionremote.app.transport.TorrentUpdater;
 import net.yupol.transmissionremote.app.transport.request.AddTorrentByFileRequest;

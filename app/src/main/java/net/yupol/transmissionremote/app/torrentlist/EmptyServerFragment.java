@@ -1,10 +1,12 @@
-package net.yupol.transmissionremote.app;
+package net.yupol.transmissionremote.app.torrentlist;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import net.yupol.transmissionremote.app.R;
 
 public class EmptyServerFragment extends Fragment {
     @Override
