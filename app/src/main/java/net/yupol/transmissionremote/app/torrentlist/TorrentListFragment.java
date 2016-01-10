@@ -67,6 +67,7 @@ public class TorrentListFragment extends Fragment {
 
     private OnTorrentSelectedListener torrentSelectedListener;
     private TorrentsAdapter adapter;
+    private TextView emptyText;
 
     @Override
     public void onAttach(Activity activity) {
@@ -84,7 +85,15 @@ public class TorrentListFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.addItemDecoration(new DividerItemDecoration(container.getContext()));
         adapter = new TorrentsAdapter(container.getContext());
+        adapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
+            @Override
+            public void onChanged() {
+                super.onChanged();
+            }
+        });
         recyclerView.setAdapter(adapter);
+
+        emptyText = (TextView) view.findViewById(R.id.torrent_list_empty_text);
 
         return view;
     }
@@ -116,12 +125,21 @@ public class TorrentListFragment extends Fragment {
     private void updateTorrentList() {
         Filter filter = app.getActiveFilter();
         List<Torrent> torrentsToShow = new ArrayList<>(FluentIterable.from(allTorrents).filter(filter).toList());
-        // TODO: set empty text
-        //setEmptyText(getResources().getString(filter.getEmptyMessageResId()));
         if (comparator != null)
             Collections.sort(torrentsToShow, comparator);
         adapter.setTorrents(torrentsToShow);
         adapter.notifyDataSetChanged();
+
+        setEmptyText(getResources().getString(filter.getEmptyMessageResId()));
+        updateEmptyTextVisibility();
+    }
+
+    private void setEmptyText(String text) {
+        emptyText.setText(text);
+    }
+
+    private void updateEmptyTextVisibility() {
+        emptyText.setVisibility(adapter.getItemCount() > 0 ? View.GONE : View.VISIBLE);
     }
 
     public void setSort(Comparator<Torrent> comparator) {
