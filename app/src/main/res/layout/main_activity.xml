@@ -14,7 +14,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:minHeight="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"/>
+            android:background="?attr/colorPrimary"
+            android:theme="@style/ActionBarTheme"/>
         <FrameLayout android:id="@+id/torrent_list_container"
             android:layout_width="match_parent"
             android:layout_height="0dp"
@@ -24,7 +25,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:minHeight="?attr/actionBarSize"
-            android:background="?attr/colorPrimary">
+            android:background="?attr/colorPrimary"
+            android:theme="@style/ActionBarTheme">
             <net.yupol.transmissionremote.app.actionbar.TurtleModeButton
                 xmlns:custom="http://schemas.android.com/apk/res-auto"
                 android:id="@+id/turtle_mode_button"

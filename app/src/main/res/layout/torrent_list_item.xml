@@ -29,9 +29,9 @@
         <TextView android:id="@+id/name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="@dimen/torrent_list_name_text_size"
-            android:textStyle="bold"
-            android:maxLines="2"/>
+            android:textSize="@dimen/abc_text_size_subhead_material"
+            android:maxLines="2"
+            android:textColor="?android:textColorPrimary"/>
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -39,7 +39,8 @@
             <TextView android:id="@+id/downloaded_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="@dimen/torrent_list_status_text_size"/>
+                android:textSize="@dimen/abc_text_size_body_1_material"
+                android:textColor="?android:textColorSecondary"/>
             <ImageView android:id="@+id/download_icon"
                 android:layout_width="@dimen/torrent_list_down_up_icon_size"
                 android:layout_height="wrap_content"
@@ -56,7 +57,8 @@
                 android:layout_toLeftOf="@id/download_icon"
                 android:gravity="end"
                 android:layout_marginRight="@dimen/default_text_margin"
-                android:textSize="@dimen/torrent_list_status_text_size"/>
+                android:textSize="@dimen/abc_text_size_body_1_material"
+                android:textColor="?android:textColorSecondary"/>
         </RelativeLayout>
 
         <RelativeLayout
@@ -65,7 +67,8 @@
             <TextView android:id="@+id/uploaded_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="@dimen/torrent_list_status_text_size"/>
+                android:textSize="@dimen/abc_text_size_body_1_material"
+                android:textColor="?android:textColorSecondary"/>
 
             <ImageView android:id="@+id/upload_icon"
                 android:layout_width="@dimen/torrent_list_down_up_icon_size"
@@ -83,7 +86,8 @@
                 android:layout_toLeftOf="@id/upload_icon"
                 android:gravity="end"
                 android:layout_marginRight="@dimen/default_text_margin"
-                android:textSize="@dimen/torrent_list_status_text_size"/>
+                android:textSize="@dimen/abc_text_size_body_1_material"
+                android:textColor="?android:textColorSecondary"/>
         </RelativeLayout>
 
         <ProgressBar android:id="@+id/progress_bar"
@@ -95,8 +99,8 @@
         <TextView android:id="@+id/error_message"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="@color/torrent_list_error_text_color"
-            android:textSize="@dimen/torrent_list_status_text_size"/>
+            android:textSize="@dimen/abc_text_size_caption_material"
+            android:textColor="?android:textColorSecondary"/>
 
     </LinearLayout>
 </LinearLayout>

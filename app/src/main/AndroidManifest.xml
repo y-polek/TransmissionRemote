@@ -26,12 +26,14 @@
 
         <activity
             android:name=".server.AddServerActivity"
-            android:label="@string/title_activity_add_server" >
+            android:label="@string/add_new_server_title" >
         </activity>
-        <activity android:name=".preferences.RemotePreferencesActivity">
+        <activity android:name=".preferences.RemotePreferencesActivity"
+            android:label="@string/remote_preferences">
             <meta-data android:name="android.support.PARENT_ACTIVITY" android:value=".MainActivity"/>
         </activity>
-        <activity android:name=".preferences.ServerPreferencesActivity">
+        <activity android:name=".preferences.ServerPreferencesActivity"
+            android:label="@string/server_preferences">
             <meta-data android:name="android.support.PARENT_ACTIVITY" android:value=".MainActivity"/>
         </activity>
         <activity android:name=".preferences.ServersActivity"

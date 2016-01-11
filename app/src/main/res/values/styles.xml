@@ -4,6 +4,12 @@
     <style name="AppTheme" parent="Theme.AppCompat.Light">
         <item name="colorPrimary">@color/primary</item>
         <item name="colorPrimaryDark">@color/primary_dark</item>
+        <item name="colorAccent">@color/accent</item>
+        <item name="android:textColorPrimary">@color/text_primary</item>
+        <item name="android:textColorSecondary">@color/text_secondary</item>
+        <item name="android:textColorPrimaryInverse">@color/text_primary_inverse</item>
+
+        <item name="actionBarTheme">@style/ActionBarTheme</item>
     </style>
 
     <style name="AppTheme.NoActionBar" parent="AppTheme">
@@ -17,5 +23,10 @@
 
     <style name="ActionBarSubTitleAppearance">
         <item name="android:textSize">@dimen/actionbar_subtitle_text_size</item>
+    </style>
+    
+    <style name="ActionBarTheme" parent="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+        <item name="popupTheme">@style/ThemeOverlay.AppCompat.Light</item>
+        <item name="android:windowContentOverlay">@null</item>
     </style>
 </resources>

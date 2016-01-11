@@ -2,6 +2,7 @@ package net.yupol.transmissionremote.app.actionbar;
 
 import android.content.Context;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,10 +28,27 @@ public class ActionBarNavigationAdapter extends BaseAdapter {
 
     private Context context;
     private TransmissionRemote app;
+    private int textColorPrimary;
+    private int accentColor;
+    private int textColorPrimaryInverse;
 
     public ActionBarNavigationAdapter(Context context) {
         this.context = context;
         app = (TransmissionRemote) context.getApplicationContext();
+
+        textColorPrimary = resolveColor(context, android.R.attr.textColorPrimary, R.color.text_primary);
+        accentColor = resolveColor(context, R.attr.colorAccent, R.color.accent);
+        textColorPrimaryInverse = resolveColor(context, android.R.attr.textColorPrimaryInverse, R.color.text_primary_inverse);
+    }
+
+    private int resolveColor(Context context, int colorAttr, int defaultResId) {
+        TypedValue typedValue = new TypedValue();
+        boolean resolved = context.getTheme().resolveAttribute(colorAttr, typedValue, true);
+        if (resolved) {
+            return typedValue.data;
+        } else {
+            return context.getResources().getColor(defaultResId);
+        }
     }
 
     @Override
@@ -128,22 +146,19 @@ public class ActionBarNavigationAdapter extends BaseAdapter {
         TextView serverName = (TextView) view.findViewById(R.id.server_name);
         Server activeServer = app.getActiveServer();
         serverName.setText(activeServer != null ? activeServer.getName() : "");
+        serverName.setTextColor(textColorPrimaryInverse);
 
         Filter activeFilter = app.getActiveFilter();
 
         TextView filterName = (TextView) view.findViewById(R.id.filter_name);
         filterName.setText(activeFilter.getNameResId());
 
-        if (!activeFilter.equals(Filters.ALL)) {
-            filterName.setTextColor(context.getResources().getColor(R.color.accent));
-        }
+        filterName.setTextColor(activeFilter.equals(Filters.ALL) ? textColorPrimaryInverse : accentColor);
 
         return view;
     }
 
     private int textColor(boolean isActive) {
-        return context.getResources().getColor(isActive
-                ? R.color.accent
-                : R.color.text_dark);
+        return isActive ? accentColor : textColorPrimary;
     }
 }

@@ -6,8 +6,6 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
-import net.yupol.transmissionremote.app.R;
-
 public class RemotePreferencesActivity extends AppCompatActivity {
 
     @Override
@@ -17,8 +15,11 @@ public class RemotePreferencesActivity extends AppCompatActivity {
         getFragmentManager().beginTransaction()
                 .replace(android.R.id.content, new RemotePreferencesFragment()).commit();
 
-        setTitle(R.string.remote_preferences);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setElevation(0);
+        }
     }
 
     @Override

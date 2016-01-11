@@ -1,16 +1,18 @@
 package net.yupol.transmissionremote.app.server;
 
-import android.app.Activity;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 
 import net.yupol.transmissionremote.app.R;
 
-public class AddServerActivity extends Activity {
+public class AddServerActivity extends AppCompatActivity {
 
     public static final String PARAM_CANCELABLE = "param_cancelable";
     public static final String EXTRA_SEVER = "extra_server";
@@ -21,7 +23,12 @@ public class AddServerActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.add_server_activity);
-        setTitle(getString(R.string.add_new_server_title));
+
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setElevation(0);
+        }
 
         FragmentManager fm = getFragmentManager();
         serverDetailsFragment = (ServerDetailsFragment) fm.findFragmentById(R.id.add_server_fragment_container);
@@ -51,10 +58,24 @@ public class AddServerActivity extends Activity {
             cancelButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    setResult(RESULT_CANCELED);
-                    finish();
+                    cancel();
                 }
             });
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                cancel();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void cancel() {
+        setResult(RESULT_CANCELED);
+        finish();
     }
 }

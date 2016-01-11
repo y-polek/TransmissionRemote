@@ -3,6 +3,7 @@ package net.yupol.transmissionremote.app.preferences;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.ActionBar;
 import android.util.Log;
 import android.view.MenuItem;
 
@@ -32,9 +33,12 @@ public class ServerPreferencesActivity extends BaseSpiceActivity implements Save
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.server_preferences_activity);
-        setTitle(R.string.server_preferences);
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setElevation(0);
         }
 
         if (savedInstanceState == null) {
