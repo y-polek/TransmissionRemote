@@ -16,17 +16,18 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
-    
-    <style name="ActionBarTitleAppearance">
-        <item name="android:textSize">@dimen/actionbar_title_text_size</item>
-    </style>
 
-    <style name="ActionBarSubTitleAppearance">
-        <item name="android:textSize">@dimen/actionbar_subtitle_text_size</item>
-    </style>
-    
     <style name="ActionBarTheme" parent="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
         <item name="popupTheme">@style/ThemeOverlay.AppCompat.Light</item>
         <item name="android:windowContentOverlay">@null</item>
+    </style>
+
+    <style name="ActionBarTitleAppearance">
+        <item name="android:textSize">@dimen/actionbar_title_text_size</item>
+        <item name="android:textColor">@color/text_primary_inverse</item>
+    </style>
+
+    <style name="ActionBarSubTitleAppearance" parent="ActionBarTitleAppearance">
+        <item name="android:textSize">@dimen/actionbar_subtitle_text_size</item>
     </style>
 </resources>

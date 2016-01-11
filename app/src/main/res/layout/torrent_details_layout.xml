@@ -4,10 +4,14 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
     <android.support.v7.widget.Toolbar android:id="@+id/actionbar_toolbar"
+        xmlns:custom="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:minHeight="?attr/actionBarSize"
-        android:background="?attr/colorPrimary"/>
+        android:background="?attr/colorPrimary"
+        custom:titleTextAppearance="@style/ActionBarTitleAppearance"
+        custom:subtitleTextAppearance="@style/ActionBarSubTitleAppearance"
+        android:theme="@style/ActionBarTheme"/>
     <android.support.v4.view.ViewPager android:id="@+id/pager"
         android:layout_width="match_parent"
         android:layout_height="match_parent">

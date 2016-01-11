@@ -51,16 +51,13 @@ public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveCha
 
     private void setupActionBar() {
         Toolbar toolbar = (Toolbar) findViewById(R.id.actionbar_toolbar);
-        toolbar.setTitleTextAppearance(this, R.style.ActionBarTitleAppearance);
-        toolbar.setSubtitleTextAppearance(this, R.style.ActionBarSubTitleAppearance);
-
-        toolbar.setTitle(R.string.torrent_details);
         toolbar.setSubtitle(torrent.getName());
-
         setSupportActionBar(toolbar);
 
         ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        if (actionBar != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
     }
 
     @Override
