@@ -8,7 +8,6 @@ import com.octo.android.robospice.request.listener.RequestListener;
 import net.yupol.transmissionremote.app.model.json.Torrent;
 import net.yupol.transmissionremote.app.model.json.Torrents;
 import net.yupol.transmissionremote.app.transport.request.TorrentGetRequest;
-import net.yupol.transmissionremote.app.transport.request.Request;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -21,7 +20,7 @@ public class TorrentUpdater {
     private TransportManager transportManager;
     private TorrentUpdateListener listener;
     private UpdaterThread updaterThread;
-    private Request currentRequest;
+    private TorrentGetRequest currentRequest;
 
     public TorrentUpdater(TransportManager transportManager, TorrentUpdateListener listener, int timeout) {
         this.transportManager = transportManager;
@@ -47,26 +46,48 @@ public class TorrentUpdater {
 
     public void stop() {
         if (updaterThread != null) {
-            updaterThread.interrupt();
+            updaterThread.cancel();
             updaterThread = null;
         }
     }
 
+    public void scheduleUpdate(long delay) {
+        if (updaterThread == null) throw new IllegalStateException("TorrentUpdater is not started");
+        updaterThread.scheduleUpdate(delay);
+    }
+
     private class UpdaterThread extends Thread {
 
-        private Boolean responseReceived;
+        private volatile Boolean responseReceived;
+        private volatile boolean canceled;
+        private volatile boolean scheduledUpdate;
+        private volatile long scheduledUpdateDelay;
 
         @Override
         public void run() {
-            while (!isInterrupted()) {
+            while (!canceled) {
+
+                if (scheduledUpdate) {
+                    try {
+                        TimeUnit.MILLISECONDS.sleep(scheduledUpdateDelay);
+                    } catch (InterruptedException e) {
+                        if (canceled) break;
+                        else continue;
+                    }
+                }
+
                 if (responseReceived == null || responseReceived) {
-                    responseReceived = false;
+                    responseReceived = Boolean.FALSE;
+                    scheduledUpdate = false;
                     sendRequest();
                 }
+
+                if (scheduledUpdate) continue;
+
                 try {
                     TimeUnit.SECONDS.sleep(timeout);
                 } catch (InterruptedException e) {
-                    break;
+                    if (canceled) break;
                 }
             }
             if (currentRequest != null) {
@@ -86,15 +107,26 @@ public class TorrentUpdater {
                 @Override
                 public void onRequestSuccess(Torrents torrents) {
                     responseReceived = Boolean.TRUE;
-                    if (!isInterrupted()) {
+                    if (!canceled) {
                         listener.onTorrentUpdate(torrents);
                     }
                 }
             });
         }
+
+        public void cancel() {
+            canceled = true;
+            interrupt();
+        }
+
+        public void scheduleUpdate(long delay) {
+            scheduledUpdate = true;
+            scheduledUpdateDelay = delay;
+            interrupt();
+        }
     }
 
-    public static interface TorrentUpdateListener {
-        public void onTorrentUpdate(List<Torrent> torrents);
+    public interface TorrentUpdateListener {
+        void onTorrentUpdate(List<Torrent> torrents);
     }
 }

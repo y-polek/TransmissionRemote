@@ -93,6 +93,8 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
 
     private static final String MIME_TYPE_TORRENT = "application/x-bittorrent";
 
+    private static final long UPDATE_REQUEST_DELAY = 500;
+
     private TransmissionRemote application;
     private TorrentUpdater torrentUpdater;
 
@@ -592,9 +594,11 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
 
     private void startAllTorrents() {
         getTransportManager().doRequest(new StartTorrentRequest(application.getTorrents()), null);
+        torrentUpdater.scheduleUpdate(UPDATE_REQUEST_DELAY);
     }
 
     private void pauseAllTorrents() {
         getTransportManager().doRequest(new StopTorrentRequest(application.getTorrents()), null);
+        torrentUpdater.scheduleUpdate(UPDATE_REQUEST_DELAY);
     }
 }
