@@ -10,6 +10,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +19,8 @@ import android.widget.TextView;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.FluentIterable;
+import com.octo.android.robospice.persistence.exception.SpiceException;
+import com.octo.android.robospice.request.listener.RequestListener;
 
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.TransmissionRemote;
@@ -25,28 +28,39 @@ import net.yupol.transmissionremote.app.TransmissionRemote.OnFilterSelectedListe
 import net.yupol.transmissionremote.app.TransmissionRemote.OnTorrentsUpdatedListener;
 import net.yupol.transmissionremote.app.filtering.Filter;
 import net.yupol.transmissionremote.app.model.json.Torrent;
+import net.yupol.transmissionremote.app.model.json.Torrents;
 import net.yupol.transmissionremote.app.transport.BaseSpiceActivity;
 import net.yupol.transmissionremote.app.transport.TransportManager;
 import net.yupol.transmissionremote.app.transport.request.Request;
 import net.yupol.transmissionremote.app.transport.request.StartTorrentRequest;
 import net.yupol.transmissionremote.app.transport.request.StopTorrentRequest;
+import net.yupol.transmissionremote.app.transport.request.TorrentGetRequest;
 import net.yupol.transmissionremote.app.utils.SizeUtils;
+import net.yupol.transmissionremote.app.utils.diff.Equals;
+import net.yupol.transmissionremote.app.utils.diff.ListDiff;
+import net.yupol.transmissionremote.app.utils.diff.Range;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class TorrentListFragment extends Fragment {
 
     private static final String TAG = TorrentListFragment.class.getSimpleName();
 
     private static final String MAX_STRING = "999.9 MB/s";
+    private static Equals<Torrent> DISPLAYED_FIELDS_EQUALS_IMPL = new DisplayedFieldsEquals();
+    private static final long UPDATE_REQUEST_DELAY = 500;
 
     private TransmissionRemote app;
+    private TransportManager transportManager;
 
     private Collection<Torrent> allTorrents = Collections.emptyList();
+    private Set<Integer/*torrent ID*/> updateRequests = new HashSet<>();
 
     private Comparator<Torrent> comparator;
 
@@ -70,10 +84,18 @@ public class TorrentListFragment extends Fragment {
     private TextView emptyText;
 
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        app = (TransmissionRemote) activity.getApplication();
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        Activity activity = getActivity();
+        if (activity == null) throw new IllegalStateException("Fragment must be attached to activity");
+
+        app = (TransmissionRemote) getActivity().getApplication();
         app.addOnFilterSetListener(filterListener);
+
+        if (!(activity instanceof BaseSpiceActivity))
+            throw new IllegalStateException("Fragment must be used with BaseSpiceActivity");
+        transportManager = ((BaseSpiceActivity) activity).getTransportManager();
     }
 
     @Nullable
@@ -84,6 +106,7 @@ public class TorrentListFragment extends Fragment {
         RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.torrent_list_recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.addItemDecoration(new DividerItemDecoration(container.getContext()));
+        recyclerView.setItemAnimator(null);
         adapter = new TorrentsAdapter(container.getContext());
         adapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
             @Override
@@ -127,8 +150,23 @@ public class TorrentListFragment extends Fragment {
         List<Torrent> torrentsToShow = new ArrayList<>(FluentIterable.from(allTorrents).filter(filter).toList());
         if (comparator != null)
             Collections.sort(torrentsToShow, comparator);
+
+        ListDiff<Torrent> diff = new ListDiff<>(adapter.getTorrents(), torrentsToShow, DISPLAYED_FIELDS_EQUALS_IMPL);
         adapter.setTorrents(torrentsToShow);
-        adapter.notifyDataSetChanged();
+
+        if (diff.containStructuralChanges()) {
+            adapter.notifyDataSetChanged();
+        } else {
+            List<Range> changes = diff.getChangedItems();
+            for (Range change : changes) {
+                for (int position = change.start; position < change.start + change.count; position++) {
+                    Torrent torrent = torrentsToShow.get(position);
+                    if (!updateRequests.contains(torrent.getId())) {
+                        adapter.notifyItemChanged(position);
+                    }
+                }
+            }
+        }
 
         setEmptyText(getResources().getString(filter.getEmptyMessageResId()));
         updateEmptyTextVisibility();
@@ -155,7 +193,7 @@ public class TorrentListFragment extends Fragment {
     private class TorrentsAdapter extends RecyclerView.Adapter<ViewHolder> {
 
         private Context context;
-        private List<Torrent> torrents;
+        private List<Torrent> torrents = Collections.emptyList();
 
         public TorrentsAdapter(Context context) {
             this.context = context;
@@ -165,10 +203,24 @@ public class TorrentListFragment extends Fragment {
             this.torrents = torrents;
         }
 
+        public List<Torrent> getTorrents() {
+            return torrents;
+        }
+
+        @Override
+        public int getItemCount() {
+            return torrents.size();
+        }
+
+        public Torrent getItemAtPosition(int position) {
+            return torrents.get(position);
+        }
+
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.torrent_list_item, parent, false);
-            final ViewHolder viewHolder = new ViewHolder(itemView, ((BaseSpiceActivity) getActivity()).getTransportManager());
+            final ViewHolder viewHolder = new ViewHolder(itemView);
+
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -182,8 +234,32 @@ public class TorrentListFragment extends Fragment {
 
         @Override
         public void onBindViewHolder(ViewHolder holder, int position) {
-            Torrent torrent = getItemAtPosition(position);
+            final Torrent torrent = getItemAtPosition(position);
             holder.setTorrent(torrent);
+            holder.pauseResumeBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    PlayPauseButton btn = (PlayPauseButton) v;
+                    boolean wasPaused = btn.isPaused();
+                    btn.toggle();
+
+                    Request<Void> request = wasPaused
+                            ? new StartTorrentRequest(Collections.singletonList(torrent))
+                            : new StopTorrentRequest(Collections.singletonList(torrent));
+                    transportManager.doRequest(request, new RequestListener<Void>() {
+                        @Override
+                        public void onRequestFailure(SpiceException spiceException) {
+                            Log.e(TAG, "Failed to start/stop torrent", spiceException);
+                            sendTorrentGetRequest(torrent);
+                        }
+
+                        @Override
+                        public void onRequestSuccess(Void aVoid) {
+                            sendTorrentGetRequest(torrent);
+                        }
+                    });
+                }
+            });
 
             holder.nameText.setText(torrent.getName());
 
@@ -224,7 +300,7 @@ public class TorrentListFragment extends Fragment {
                     int msgIconResId = error.isWarning() ? R.drawable.ic_action_warning : R.drawable.ic_action_error;
                     Drawable msgIcon = context.getResources().getDrawable(msgIconResId);
                     int size = context.getResources().getDimensionPixelSize(R.dimen.torrent_list_error_icon_size);
-                    msgIcon.setBounds(0, 0, size, size);
+                    if (msgIcon != null) msgIcon.setBounds(0, 0, size, size);
                     holder.errorMsgView.setCompoundDrawables(msgIcon, null, null, null);
                 } else {
                     holder.errorMsgView.setVisibility(View.GONE);
@@ -232,17 +308,45 @@ public class TorrentListFragment extends Fragment {
             }
         }
 
-        @Override
-        public int getItemCount() {
-            return torrents.size();
-        }
+        private void sendTorrentGetRequest(final Torrent torrent) {
+            updateRequests.add(torrent.getId());
+            transportManager.doRequest(new TorrentGetRequest(torrent.getId()), new RequestListener<Torrents>() {
+                @Override
+                public void onRequestFailure(SpiceException spiceException) {
+                    updateRequests.remove(torrent.getId());
+                    Log.e(TAG, "Failed to update torrent", spiceException);
+                }
 
-        public Torrent getItemAtPosition(int position) {
-            return torrents.get(position);
+                @Override
+                public void onRequestSuccess(Torrents torrents) {
+                    updateRequests.remove(torrent.getId());
+                    if (torrents.size() != 1) {
+                        Log.e(TAG, "Response must contain one torrent");
+                        return;
+                    }
+                    updateTorrent(torrents.get(0));
+                }
+            }, UPDATE_REQUEST_DELAY);
         }
 
         private String speedText(long bytes) {
             return Strings.padStart(SizeUtils.displayableSize(bytes), 5, ' ') + "/s";
+        }
+
+        private void updateTorrent(Torrent torrent) {
+            int position = getPositionByTorrentId(torrent.getId());
+            if (position >= 0) {
+                torrents.set(position, torrent);
+                notifyItemChanged(position);
+            }
+        }
+
+        private int getPositionByTorrentId(int torrentId) {
+            for (int i=0; i<torrents.size(); i++) {
+                if (torrents.get(i).getId() == torrentId)
+                    return i;
+            }
+            return -1;
         }
     }
 
@@ -259,7 +363,7 @@ public class TorrentListFragment extends Fragment {
         public final PlayPauseButton pauseResumeBtn;
         public final TextView errorMsgView;
 
-        public ViewHolder(View itemView, final TransportManager transportManager) {
+        public ViewHolder(View itemView) {
             super(itemView);
             nameText = (TextView) itemView.findViewById(R.id.name);
             downloadedTextView = (TextView) itemView.findViewById(R.id.downloaded_text);
@@ -275,19 +379,6 @@ public class TorrentListFragment extends Fragment {
             uploadRateText.setWidth(maxWidth);
 
             pauseResumeBtn = (PlayPauseButton) itemView.findViewById(R.id.pause_resume_button);
-            pauseResumeBtn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    PlayPauseButton btn = (PlayPauseButton) v;
-                    boolean wasPaused = btn.isPaused();
-                    btn.toggle();
-
-                    Request<Void> request = wasPaused
-                            ? new StartTorrentRequest(Collections.singletonList(torrent))
-                            : new StopTorrentRequest(Collections.singletonList(torrent));
-                    transportManager.doRequest(request, null);
-                }
-            });
 
             errorMsgView = (TextView) itemView.findViewById(R.id.error_message);
         }
@@ -321,6 +412,26 @@ public class TorrentListFragment extends Fragment {
                 mDivider.setBounds(left, top, right, bottom);
                 mDivider.draw(c);
             }
+        }
+    }
+
+    private static class DisplayedFieldsEquals implements Equals<Torrent> {
+        @Override
+        public boolean equals(Torrent t1, Torrent t2) {
+            if (t1 == null) return t2 == null;
+
+            if (t1.getId() != t2.getId()) return false;
+            if (t1.getTotalSize() != t2.getTotalSize()) return false;
+            if (Double.compare(t1.getPercentDone(), t2.getPercentDone()) != 0) return false;
+            if (t1.getStatus() != t2.getStatus()) return false;
+            if (t1.getDownloadRate() != t2.getDownloadRate()) return false;
+            if (t1.getUploadRate() != t2.getUploadRate()) return false;
+            if (t1.getUploadedSize() != t2.getUploadedSize()) return false;
+            if (Double.compare(t1.getUploadRatio(), t2.getUploadRatio()) != 0) return false;
+            if (t1.getErrorId() != t2.getErrorId()) return false;
+            String t1Name = t1.getName();
+            String t2Name = t2.getName();
+            return t1Name != null ? t1Name.equals(t2Name) : t2Name != null;
         }
     }
 }

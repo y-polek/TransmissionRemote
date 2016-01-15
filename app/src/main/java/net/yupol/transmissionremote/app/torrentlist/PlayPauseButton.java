@@ -13,7 +13,8 @@ import net.yupol.transmissionremote.app.R;
 
 public class PlayPauseButton extends ImageButton {
 
-    private static final long ANIMATION_DURATION = 200;
+
+    private static final long ANIMATION_DURATION = 150;
 
     private boolean isPaused;
     private PlayPauseDrawable drawable;
@@ -70,6 +71,12 @@ public class PlayPauseButton extends ImageButton {
     }
 
     public void setPaused(boolean isPaused) {
+        if (this.isPaused == isPaused) return;
+
+        if (animator != null && animator.isRunning()) {
+            animator.cancel();
+        }
+
         this.isPaused = isPaused;
         drawable.setPaused(isPaused);
     }
@@ -84,7 +91,7 @@ public class PlayPauseButton extends ImageButton {
         if (animator != null && animator.isRunning()) {
             animator.cancel();
         }
-        animator = drawable.getAnimator();
+        animator = drawable.getAnimator(isPaused);
         animator.setDuration(ANIMATION_DURATION);
         animator.start();
     }

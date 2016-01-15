@@ -5,7 +5,12 @@ import android.os.Parcelable;
 
 import com.google.api.client.util.Key;
 
-public class Torrent implements Parcelable {
+import net.yupol.transmissionremote.app.model.ID;
+import net.yupol.transmissionremote.app.model.limitmode.IdleLimitMode;
+import net.yupol.transmissionremote.app.model.limitmode.LimitMode;
+import net.yupol.transmissionremote.app.model.limitmode.RatioLimitMode;
+
+public class Torrent implements ID, Parcelable {
     @Key private int id;
     @Key private String name;
     @Key private long addedData;
@@ -116,6 +121,10 @@ public class Torrent implements Parcelable {
 
     public FileStat[] getFileStats() {
         return fileStats;
+    }
+
+    public int getErrorId() {
+        return errorId;
     }
 
     public Error getError() {

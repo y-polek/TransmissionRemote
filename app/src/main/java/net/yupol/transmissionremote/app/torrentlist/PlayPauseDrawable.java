@@ -213,12 +213,12 @@ public class PlayPauseDrawable extends Drawable {
         invalidateSelf();
     }
 
-    public Animator getAnimator() {
-        Animator animator = ObjectAnimator.ofFloat(this, PROGRESS_PROPERTY, isPaused ? 1 : 0, isPaused ? 0 : 1);
+    public Animator getAnimator(final boolean toPaused) {
+        Animator animator = ObjectAnimator.ofFloat(this, PROGRESS_PROPERTY, toPaused ? 0 : 1, toPaused ? 1 : 0);
         animator.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
-                isPaused = !isPaused;
+                isPaused = toPaused;
             }
         });
         return animator;

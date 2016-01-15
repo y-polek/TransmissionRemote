@@ -4,7 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
 
-import net.yupol.transmissionremote.app.model.json.LimitMode;
+import net.yupol.transmissionremote.app.model.limitmode.LimitMode;
 import net.yupol.transmissionremote.app.model.json.TransferPriority;
 
 import org.apache.commons.lang3.ArrayUtils;

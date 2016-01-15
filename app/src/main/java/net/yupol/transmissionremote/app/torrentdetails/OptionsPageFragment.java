@@ -21,9 +21,9 @@ import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
 
 import net.yupol.transmissionremote.app.R;
-import net.yupol.transmissionremote.app.model.json.IdleLimitMode;
-import net.yupol.transmissionremote.app.model.json.LimitMode;
-import net.yupol.transmissionremote.app.model.json.RatioLimitMode;
+import net.yupol.transmissionremote.app.model.limitmode.IdleLimitMode;
+import net.yupol.transmissionremote.app.model.limitmode.LimitMode;
+import net.yupol.transmissionremote.app.model.limitmode.RatioLimitMode;
 import net.yupol.transmissionremote.app.model.json.ServerSettings;
 import net.yupol.transmissionremote.app.model.json.Torrent;
 import net.yupol.transmissionremote.app.model.json.Torrents;

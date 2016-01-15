@@ -1,5 +1,6 @@
 package net.yupol.transmissionremote.app.transport;
 
+import android.content.Context;
 import android.util.Log;
 
 import com.google.common.base.Strings;
@@ -12,10 +13,14 @@ import net.yupol.transmissionremote.app.transport.request.Request;
 
 import org.apache.http.HttpStatus;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 public class SpiceTransportManager extends SpiceManager implements TransportManager {
 
     private static final String TAG = SpiceTransportManager.class.getSimpleName();
 
+    private Timer timer;
     private String sessionId;
     private Server server;
 
@@ -23,11 +28,15 @@ public class SpiceTransportManager extends SpiceManager implements TransportMana
         super(NoCacheGoogleHttpClientSpiceService.class);
     }
 
-    public void setServer(Server server) {
+    public synchronized void setServer(Server server) {
         this.server = server;
         if (server != null) {
             this.sessionId = server.getLastSessionId();
         }
+    }
+
+    private synchronized void setSessionId(String sessionId) {
+        this.sessionId = sessionId;
     }
 
     public <T> void doRequest(final Request<T> request, final RequestListener<T> listener) {
@@ -38,7 +47,7 @@ public class SpiceTransportManager extends SpiceManager implements TransportMana
             @Override
             protected boolean onFailure(SpiceException spiceException) {
                 if (request.getResponseStatusCode() == HttpStatus.SC_CONFLICT) {
-                    sessionId = request.getResponseSessionId();
+                    setSessionId(request.getResponseSessionId());
                     server.setLastSessionId(sessionId);
                     Log.d(TAG, "new sessionId: " + sessionId);
                     doRequest(request, listener);
@@ -54,7 +63,37 @@ public class SpiceTransportManager extends SpiceManager implements TransportMana
         });
     }
 
-    private void setupRequest(Request<?> request) {
+    @Override
+    public <T> void doRequest(final Request<T> request, final RequestListener<T> listener, long delay) {
+        if (timer == null) throw new IllegalStateException("doRequest called while SpiceTransportManager is stopped");
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                synchronized (SpiceTransportManager.this) {
+                    if (timer != null) {
+                        doRequest(request, listener);
+                    }
+                }
+            }
+        }, delay);
+    }
+
+    @Override
+    public synchronized void start(Context context) {
+        super.start(context);
+        timer = new Timer("SpiceTransportManger timer");
+    }
+
+    @Override
+    public synchronized void shouldStop() {
+        synchronized (this) {
+            timer.cancel();
+            timer = null;
+            super.shouldStop();
+        }
+    }
+
+    private synchronized void setupRequest(Request<?> request) {
         if (server == null)
             throw new IllegalStateException("Trying to send request while there is no active server");
         request.setServer(server);

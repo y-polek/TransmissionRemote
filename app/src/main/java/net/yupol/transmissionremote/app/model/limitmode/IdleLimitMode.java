@@ -1,16 +1,16 @@
-package net.yupol.transmissionremote.app.model.json;
+package net.yupol.transmissionremote.app.model.limitmode;
 
 import net.yupol.transmissionremote.app.R;
 
-public enum RatioLimitMode implements LimitMode {
+public enum IdleLimitMode implements LimitMode {
     GLOBAL_SETTINGS(0, R.string.global_settings),
-    STOP_AT_RATIO(1, R.string.stop_at_ratio),
+    STOP_WHEN_INACTIVE(1, R.string.stop_when_inactive),
     UNLIMITED(2, R.string.unlimited);
 
     private int value;
     private int textRes;
 
-    RatioLimitMode(int value, int textRes) {
+    IdleLimitMode(int value, int textRes) {
         this.value = value;
         this.textRes = textRes;
     }
@@ -25,8 +25,8 @@ public enum RatioLimitMode implements LimitMode {
         return textRes;
     }
 
-    public static RatioLimitMode fromValue(int value) {
-        for (RatioLimitMode mode : values()) {
+    public static IdleLimitMode fromValue(int value) {
+        for (IdleLimitMode mode : values()) {
             if (mode.value == value)
                 return mode;
         }

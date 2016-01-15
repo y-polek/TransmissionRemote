@@ -9,7 +9,7 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import net.yupol.transmissionremote.app.R;
-import net.yupol.transmissionremote.app.model.json.LimitMode;
+import net.yupol.transmissionremote.app.model.limitmode.LimitMode;
 
 public abstract class LimitModeAdapter extends BaseAdapter {
 
