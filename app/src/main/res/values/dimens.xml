@@ -22,6 +22,11 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="drawer_list_image_text_margin">12dp</dimen>
+    <dimen name="header_settings_size">25dp</dimen>
+    <dimen name="header_settings_padding">5dp</dimen>
+    <dimen name="header_server_current_size">64dp</dimen>
+    <dimen name="header_server_secondary_size">40dp</dimen>
+    <dimen name="material_drawer_item_primary_description">12sp</dimen>
 
                 <!-- Servers -->
     <dimen name="add_server_title_size">20sp</dimen>

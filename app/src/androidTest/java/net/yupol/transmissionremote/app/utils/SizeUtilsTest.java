@@ -1,8 +1,6 @@
-package net.yupol.transmissionremote.app.tests;
+package net.yupol.transmissionremote.app.utils;
 
 import junit.framework.TestCase;
-
-import net.yupol.transmissionremote.app.utils.SizeUtils;
 
 public class SizeUtilsTest extends TestCase {
 

@@ -1,7 +1,6 @@
 package net.yupol.transmissionremote.app.torrentlist;
 
 import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -48,7 +47,6 @@ public class PlayPauseDrawable extends Drawable {
     private PointF rightBarBottomLeftEnd = new PointF();
 
     private float progress = 0f;
-    private boolean isPaused = false;
     private boolean isArmed = false;
 
     private static final Property<PlayPauseDrawable, Float> PROGRESS_PROPERTY = new Property<PlayPauseDrawable, Float>(Float.class, "progress") {
@@ -203,7 +201,6 @@ public class PlayPauseDrawable extends Drawable {
     }
 
     public void setPaused(boolean paused) {
-        this.isPaused = paused;
         progress = paused ? 1f : 0f;
         invalidateSelf();
     }
@@ -214,14 +211,7 @@ public class PlayPauseDrawable extends Drawable {
     }
 
     public Animator getAnimator(final boolean toPaused) {
-        Animator animator = ObjectAnimator.ofFloat(this, PROGRESS_PROPERTY, toPaused ? 0 : 1, toPaused ? 1 : 0);
-        animator.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                isPaused = toPaused;
-            }
-        });
-        return animator;
+        return ObjectAnimator.ofFloat(this, PROGRESS_PROPERTY, toPaused ? 0 : 1, toPaused ? 1 : 0);
     }
 
     private static float interpolate(float a, float b, float progress) {

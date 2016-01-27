@@ -3,16 +3,13 @@ package net.yupol.transmissionremote.app;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.MenuItemCompat;
-import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -21,32 +18,34 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
 import com.google.common.collect.FluentIterable;
+import com.mikepenz.google_material_typeface_library.GoogleMaterial;
+import com.mikepenz.materialdrawer.Drawer;
+import com.mikepenz.materialdrawer.DrawerBuilder;
+import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
+import com.mikepenz.materialdrawer.model.SectionDrawerItem;
+import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
 
 import net.yupol.transmissionremote.app.actionbar.ActionBarNavigationAdapter;
 import net.yupol.transmissionremote.app.actionbar.SpeedTextView;
 import net.yupol.transmissionremote.app.actionbar.TurtleModeButton;
-import net.yupol.transmissionremote.app.drawer.Drawer;
-import net.yupol.transmissionremote.app.drawer.DrawerGroupItem;
-import net.yupol.transmissionremote.app.drawer.DrawerItem;
-import net.yupol.transmissionremote.app.drawer.ServerDrawerItem;
-import net.yupol.transmissionremote.app.drawer.ServerPrefsDrawerItem;
-import net.yupol.transmissionremote.app.drawer.SortDrawerGroupItem;
+import net.yupol.transmissionremote.app.drawer.HeaderView;
 import net.yupol.transmissionremote.app.filtering.Filter;
 import net.yupol.transmissionremote.app.model.json.ServerSettings;
 import net.yupol.transmissionremote.app.model.json.Torrent;
 import net.yupol.transmissionremote.app.opentorrent.DownloadLocationDialogFragment;
 import net.yupol.transmissionremote.app.opentorrent.OpenAddressDialogFragment;
 import net.yupol.transmissionremote.app.opentorrent.OpenByDialogFragment;
+import net.yupol.transmissionremote.app.preferences.RemotePreferencesActivity;
 import net.yupol.transmissionremote.app.preferences.ServerPreferencesActivity;
+import net.yupol.transmissionremote.app.preferences.ServersActivity;
 import net.yupol.transmissionremote.app.server.AddServerActivity;
 import net.yupol.transmissionremote.app.server.Server;
 import net.yupol.transmissionremote.app.torrentdetails.TorrentDetailsActivity;
@@ -73,9 +72,9 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
-public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSelectedListener,
-            TorrentUpdater.TorrentUpdateListener, SharedPreferences.OnSharedPreferenceChangeListener,
-            TransmissionRemote.OnSpeedLimitChangedListener, TorrentListFragment.OnTorrentSelectedListener {
+public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.TorrentUpdateListener,
+        SharedPreferences.OnSharedPreferenceChangeListener, TransmissionRemote.OnSpeedLimitChangedListener,
+        TorrentListFragment.OnTorrentSelectedListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
@@ -84,23 +83,21 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
     public static int REQUEST_CODE_SERVER_PARAMS = 1;
     public static int REQUEST_CODE_CHOOSE_TORRENT = 2;
 
-    private static String TAG_EMPTY_SERVER = "tag_empty_server";
-    private static String TAG_PROGRESSBAR = "tag_progressbar";
-    private static String TAG_TORRENT_LIST = "tag_torrent_list";
-    private static String TAG_OPEN_TORRENT_DIALOG = "tag_open_torrent_dialog";
-    private static String TAG_OPEN_TORRENT_BY_ADDRESS_DIALOG = "tag_open_torrent_by_address_dialog";
-    private static String TAG_DOWNLOAD_LOCATION_DIALOG = "tag_download_location_dialog";
+    private static final String TAG_EMPTY_SERVER = "tag_empty_server";
+    private static final String TAG_PROGRESSBAR = "tag_progressbar";
+    private static final String TAG_TORRENT_LIST = "tag_torrent_list";
+    private static final String TAG_OPEN_TORRENT_DIALOG = "tag_open_torrent_dialog";
+    private static final String TAG_OPEN_TORRENT_BY_ADDRESS_DIALOG = "tag_open_torrent_by_address_dialog";
+    private static final String TAG_DOWNLOAD_LOCATION_DIALOG = "tag_download_location_dialog";
 
     private static final String MIME_TYPE_TORRENT = "application/x-bittorrent";
 
     private static final long UPDATE_REQUEST_DELAY = 500;
 
+    private static final int DRAWER_ITEM_ID_SETTINGS = 0;
+
     private TransmissionRemote application;
     private TorrentUpdater torrentUpdater;
-
-    private Drawer drawer;
-    private DrawerLayout drawerLayout;
-    private ActionBarDrawerToggle drawerToggle;
 
     private Timer prefsUpdateTimer;
 
@@ -110,6 +107,8 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
     private SpeedTextView uploadSpeedView;
 
     private ActionBarNavigationAdapter navigationAdapter;
+    private Toolbar toolbar;
+    private Drawer drawer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -128,7 +127,7 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
     }
 
     private void setupActionBar() {
-        Toolbar toolbar = (Toolbar) findViewById(R.id.actionbar_toolbar);
+        toolbar = (Toolbar) findViewById(R.id.actionbar_toolbar);
         setSupportActionBar(toolbar);
 
         View spinnerContainer = LayoutInflater.from(this).inflate(R.layout.toolbar_spinner, toolbar, false);
@@ -183,42 +182,69 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
     }
 
     private void setupDrawer() {
-        drawerLayout = (DrawerLayout) findViewById(R.id.drawer);
-        ListView drawerList = (ListView) findViewById(R.id.drawer_list);
+        PrimaryDrawerItem sortByNameItem = new PrimaryDrawerItem().withName(R.string.drawer_sort_by_name);
+        PrimaryDrawerItem sortBySizeItem = new PrimaryDrawerItem().withName(R.string.drawer_sort_by_size);
+        PrimaryDrawerItem sortByTimeItem = new PrimaryDrawerItem().withName(R.string.drawer_sort_by_time_remaining);
 
-        drawer = new Drawer(drawerList);
-        drawer.setOnItemSelectedListener(this);
+        PrimaryDrawerItem settingsItem = new PrimaryDrawerItem().withName(R.string.action_settings)
+                .withIcon(GoogleMaterial.Icon.gmd_settings)
+                .withSelectable(false)
+                .withIdentifier(DRAWER_ITEM_ID_SETTINGS);
 
-        DrawerLayout drawerLayout = (DrawerLayout) findViewById(R.id.drawer);
-
-        drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.drawer_open, R.string.drawer_close) {
+        HeaderView headerView = new HeaderView(this);
+        headerView.setHeaderListener(new HeaderView.HeaderListener() {
             @Override
-            public void onDrawerOpened(View drawerView) {
-                super.onDrawerOpened(drawerView);
-                if (getActionBar() != null) getActionBar().setTitle(getTitle());
-                invalidateOptionsMenu();
+            public void onSettingsPressed() {
+                startActivity(new Intent(MainActivity.this, ServerPreferencesActivity.class));
             }
 
             @Override
-            public void onDrawerClosed(View drawerView) {
-                super.onDrawerClosed(drawerView);
-                if (getActionBar() != null) getActionBar().setTitle(getTitle());
-                invalidateOptionsMenu();
-            }
-        };
-        drawerLayout.setDrawerListener(drawerToggle);
+            public void onServerPressed(Server server) {
 
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setHomeButtonEnabled(true);
-        }
+            }
+
+            @Override
+            public void onAddServerPressed() {
+                openAddServerActivity(null);
+            }
+
+            @Override
+            public void onManageServersPressed() {
+                startActivity(new Intent(MainActivity.this, ServersActivity.class));
+            }
+        });
+        List<Server> servers = application.getServers();
+        headerView.setServers(servers, servers.indexOf(application.getActiveServer()));
+
+        drawer = new DrawerBuilder()
+                .withActivity(this)
+                .withToolbar(toolbar)
+                .withHeader(headerView)
+                .addDrawerItems(
+                        new SectionDrawerItem().withName(R.string.drawer_sort_by),
+                        sortByNameItem,
+                        sortBySizeItem,
+                        sortByTimeItem
+                ).addStickyDrawerItems(
+                        settingsItem
+                ).withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+                    @Override
+                    public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
+                        switch (drawerItem.getIdentifier()) {
+                            case DRAWER_ITEM_ID_SETTINGS:
+                                startActivity(new Intent(MainActivity.this, RemotePreferencesActivity.class));
+                                break;
+                        }
+                        return false;
+                    }
+                }).build();
+
+        headerView.setDrawer(drawer);
     }
 
     @Override
     protected void onDestroy() {
         application.removeOnSpeedLimitEnabledChangedListener(this);
-        drawer.dispose();
         turtleModeButton = null;
         super.onDestroy();
     }
@@ -271,9 +297,6 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (drawerToggle.onOptionsItemSelected(item))
-            return true;
-
         switch (item.getItemId()) {
             case R.id.action_turtle_mode:
                 application.setSpeedLimitEnabled(!application.isSpeedLimitEnabled());
@@ -315,42 +338,9 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
     }
 
     @Override
-    public void onDrawerItemSelected(DrawerGroupItem group, DrawerItem item) {
-        Log.d(TAG, "item '" + item.getText() + "' in group '" + group.getText() + "' selected");
-
-        item.itemSelected();
-        group.childItemSelected(item);
-        drawerLayout.closeDrawers();
-
-        if (group.getId() == Drawer.Groups.SERVERS.id()) {
-            if (item instanceof ServerDrawerItem) {
-                Server server = ((ServerDrawerItem) item).getServer();
-                if (!server.equals(application.getActiveServer())) {
-                    switchServer(server);
-                }
-            }
-        } else if (group.getId() == Drawer.Groups.SORT_BY.id()) {
-            TorrentListFragment torrentListFragment =
-                    (TorrentListFragment) getSupportFragmentManager().findFragmentByTag(TAG_TORRENT_LIST);
-            if (torrentListFragment != null)
-                torrentListFragment.setSort(((SortDrawerGroupItem) group).getComparator());
-        } else if (group.getId() == Drawer.Groups.PREFERENCES.id()) {
-            if (item instanceof ServerPrefsDrawerItem) {
-                startActivity(new Intent(this, ServerPreferencesActivity.class));
-            }
-        }
-    }
-
-    @Override
-    protected void onPostCreate(Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
-        drawerToggle.syncState();
-    }
-
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        drawerToggle.onConfigurationChanged(newConfig);
+    public void onBackPressed() {
+        if (drawer.isDrawerOpen()) drawer.closeDrawer();
+        else super.onBackPressed();
     }
 
     @Override
@@ -375,7 +365,6 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
                 return torrent.getStatus() + " " + percents + "% " + torrent.getName();
             }
         }));
-
         Log.d(TAG, "Torrents:\n" + text);
     }
 
@@ -395,7 +384,7 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
         }
     }
 
-    public void addServerButtonClicked(View view) {
+    public void openAddServerActivity(View view) {
         Intent intent = new Intent(this, AddServerActivity.class);
         startActivityForResult(intent, REQUEST_CODE_SERVER_PARAMS);
     }
@@ -406,7 +395,6 @@ public class MainActivity extends BaseSpiceActivity implements Drawer.OnItemSele
 
     private void switchServer(Server server) {
         application.setActiveServer(server);
-        drawer.setActiveServer(server);
 
         // Stop old server connections
         if (torrentUpdater != null) {

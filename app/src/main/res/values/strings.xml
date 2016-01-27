@@ -3,10 +3,6 @@
 
     <string name="app_name">Transmission Remote</string>
 
-                <!-- Drawer -->
-    <!-- Servers -->
-    <string name="drawer_servers">Servers</string>
-
     <!-- Actions -->
     <string name="action_open_torrent">Open torrent</string>
     <string name="action_start_all_torrents">Start all torrents</string>
@@ -65,7 +61,8 @@
     <string name="save_changes_save">Save</string>
     <string name="save_changes_discard">Discard</string>
     <string name="add_server_details">Add server details to start.</string>
-    <string name="add_server">Add server</string>
+    <string name="add_server">Add Server</string>
+    <string name="manage_servers">Manage Servers</string>
 
     <!-- Preferences -->
     <string name="update_interval_title">Update interval</string>
