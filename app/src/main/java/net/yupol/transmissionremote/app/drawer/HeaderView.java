@@ -4,12 +4,13 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.util.AttributeSet;
-import android.util.TypedValue;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.google.common.collect.Iterables;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.iconics.IconicsDrawable;
 import com.mikepenz.materialdrawer.Drawer;
@@ -22,16 +23,16 @@ import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.server.Server;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
 public class HeaderView extends RelativeLayout implements View.OnClickListener {
 
-    private static final float CIRCLE_TEXT_PADDING_DP = 5f;
-    private static final float SMALL_CIRCLE_TEXT_PADDING_DP = 5f;
+    private static final float CIRCLE_TEXT_PADDING_RATIO = 0.15f;
 
-    private static final int DRAWER_ITEM_ID_ADD_SERVER = 0;
-    private static final int DRAWER_ITEM_ID_MANAGE_SERVERS = 1;
+    private static final int DRAWER_ITEM_ID_ADD_SERVER = -1;
+    private static final int DRAWER_ITEM_ID_MANAGE_SERVERS = -2;
 
     private Drawer drawer;
     private List<Server> servers;
@@ -40,14 +41,11 @@ public class HeaderView extends RelativeLayout implements View.OnClickListener {
     private BezelImageView serverCircleCurrent;
     private BezelImageView serverCircleSmallFirst;
     private BezelImageView serverCircleSmallSecond;
-    private final float circleTextPaddingPx;
-    private final float smallCircleTextPaddingPx;
 
     private boolean serverListExpanded = false;
     private IconicsDrawable expandIcon;
 
-    private Server currentServer;
-    private Server[] nextServers;
+    private Server[] serversInCircles = new Server[3];
 
     private HeaderListener listener;
 
@@ -59,14 +57,23 @@ public class HeaderView extends RelativeLayout implements View.OnClickListener {
     private Drawer.OnDrawerItemClickListener drawerItemClickListener = new Drawer.OnDrawerItemClickListener() {
         @Override
         public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
-            switch (drawerItem.getIdentifier()) {
+            if (listener == null) return false;
+
+            int id = drawerItem.getIdentifier();
+            switch (id) {
                 case DRAWER_ITEM_ID_ADD_SERVER:
-                    if (listener != null) listener.onAddServerPressed();
+                    listener.onAddServerPressed();
                     return true;
                 case DRAWER_ITEM_ID_MANAGE_SERVERS:
-                    if (listener != null) listener.onManageServersPressed();
+                    listener.onManageServersPressed();
                     return true;
             }
+
+            if (id >=0 && id < servers.size()) {
+                listener.onServerSelected(servers.get(id));
+                return true;
+            }
+
             return false;
         }
     };
@@ -77,12 +84,6 @@ public class HeaderView extends RelativeLayout implements View.OnClickListener {
 
     public HeaderView(Context context, AttributeSet attrs) {
         super(context, attrs);
-
-        circleTextPaddingPx = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
-                CIRCLE_TEXT_PADDING_DP, getResources().getDisplayMetrics());
-        smallCircleTextPaddingPx = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
-                SMALL_CIRCLE_TEXT_PADDING_DP, getResources().getDisplayMetrics());
-
         inflate(context, R.layout.drawer_header, this);
 
         TypedArray arr = context.obtainStyledAttributes(new int[] { android.R.attr.textColorPrimaryInverse, android.R.attr.textColorSecondary });
@@ -92,24 +93,21 @@ public class HeaderView extends RelativeLayout implements View.OnClickListener {
 
         nameText = (TextView) findViewById(R.id.name_text);
 
-        final ImageButton serverListButton = (ImageButton) findViewById(R.id.server_list_button);
+        final ImageView serverListButton = (ImageView) findViewById(R.id.server_list_button);
         expandIcon = new IconicsDrawable(context)
                 .icon(serverListExpanded ? MaterialDrawerFont.Icon.mdf_arrow_drop_up : MaterialDrawerFont.Icon.mdf_arrow_drop_down)
                 .color(primaryTextColor)
                 .sizeRes(R.dimen.material_drawer_account_header_dropdown)
                 .paddingRes(R.dimen.material_drawer_account_header_dropdown_padding);
         serverListButton.setImageDrawable(expandIcon);
-        serverListButton.setOnClickListener(new OnClickListener() {
+        View serverTextSection = findViewById(R.id.header_text_section);
+        serverTextSection.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                serverListExpanded = !serverListExpanded;
-                expandIcon.icon(serverListExpanded ? MaterialDrawerFont.Icon.mdf_arrow_drop_up : MaterialDrawerFont.Icon.mdf_arrow_drop_down);
-
                 if (serverListExpanded) {
-                    drawer.switchDrawerContent(drawerItemClickListener, null, serverSelectionItems,
-                            servers.indexOf(currentServer) + drawer.getAdapter().getHeaderOffset());
+                    hideServersList();
                 } else {
-                    drawer.resetDrawerContent();
+                    showServersList();
                 }
             }
         });
@@ -136,49 +134,48 @@ public class HeaderView extends RelativeLayout implements View.OnClickListener {
 
     }
 
-    public void setDrawer(Drawer drawer) {
-        this.drawer = drawer;
-    }
-
     public void setServers(List<Server> servers, int currentServerPosition) {
         this.servers = servers;
-        if (currentServerPosition >= 0) {
-            currentServer = servers.get(currentServerPosition);
-            nameText.setText(currentServer.getName());
+        if (currentServerPosition < 0) {
+            Arrays.fill(serversInCircles, null);
+            return;
         }
 
-        int nextServersCount = servers.size() > 0 ? Math.min(2, servers.size() - 1) : 0;
-        nextServers = new Server[nextServersCount];
-        int i = 0;
-        Iterator<Server> it = servers.iterator();
-        while (i < nextServers.length && it.hasNext()) {
-            if (i != currentServerPosition) {
-                nextServers[i] = it.next();
-                i++;
-            }
-        }
+        serversInCircles[0] = servers.get(currentServerPosition);
+        nameText.setText(serversInCircles[0].getName());
+
+        Iterator<Server> nonCurrentServers = Iterables.concat(
+                servers.subList(0, currentServerPosition),
+                servers.subList(currentServerPosition + 1, servers.size()))
+                .iterator();
+        serversInCircles[1] = nonCurrentServers.hasNext() ? nonCurrentServers.next() : null;
+        serversInCircles[2] = nonCurrentServers.hasNext() ? nonCurrentServers.next() : null;
+
         updateServerCircles();
 
         buildServerSelectionDrawerItems();
+        if (drawer.switchedDrawerContent()) {
+            showServersList(); // show updated server list
+        }
     }
 
     private void updateServerCircles() {
-        if (currentServer != null) {
-            serverCircleCurrent.setImageDrawable(new ServerDrawable(currentServer.getName(), Color.WHITE, secondaryTextColor, circleTextPaddingPx));
+        if (serversInCircles[0] != null) {
+            serverCircleCurrent.setImageDrawable(new ServerDrawable(serversInCircles[0].getName(), Color.WHITE, secondaryTextColor, CIRCLE_TEXT_PADDING_RATIO));
             serverCircleCurrent.setVisibility(VISIBLE);
         } else {
             serverCircleCurrent.setVisibility(GONE);
         }
 
-        if (nextServers.length > 0) {
-            serverCircleSmallFirst.setImageDrawable(new ServerDrawable(nextServers[0].getName(), Color.WHITE, secondaryTextColor, smallCircleTextPaddingPx));
+        if (serversInCircles[1] != null) {
+            serverCircleSmallFirst.setImageDrawable(new ServerDrawable(serversInCircles[1].getName(), Color.WHITE, secondaryTextColor, CIRCLE_TEXT_PADDING_RATIO));
             serverCircleSmallFirst.setVisibility(VISIBLE);
         } else {
             serverCircleSmallFirst.setVisibility(GONE);
         }
 
-        if (nextServers.length > 1) {
-            serverCircleSmallSecond.setImageDrawable(new ServerDrawable(nextServers[1].getName(), Color.WHITE, secondaryTextColor, smallCircleTextPaddingPx));
+        if (serversInCircles[2] != null) {
+            serverCircleSmallSecond.setImageDrawable(new ServerDrawable(serversInCircles[2].getName(), Color.WHITE, secondaryTextColor, CIRCLE_TEXT_PADDING_RATIO));
             serverCircleSmallSecond.setVisibility(VISIBLE);
         } else {
             serverCircleSmallSecond.setVisibility(GONE);
@@ -187,13 +184,13 @@ public class HeaderView extends RelativeLayout implements View.OnClickListener {
 
     private void buildServerSelectionDrawerItems() {
         serverSelectionItems = new ArrayList<>(servers.size() + 2);
-        for (Server server : servers) {
+        for (int i=0; i<servers.size(); i++) {
+            Server server = servers.get(i);
             PrimaryDrawerItem serverItem = new PrimaryDrawerItem()
                     .withName(server.getName())
+                    .withIdentifier(i)
                     .withDescription(server.getHost() + ":" + server.getPort())
-                    .withDescriptionTextColor(secondaryTextColor)
-                    .withIcon(new ServerDrawable(server.getName(), Color.RED, Color.BLACK, smallCircleTextPaddingPx));
-
+                    .withDescriptionTextColor(secondaryTextColor);
             serverSelectionItems.add(serverItem);
         }
 
@@ -222,19 +219,36 @@ public class HeaderView extends RelativeLayout implements View.OnClickListener {
 
         Server server;
         if (v == serverCircleCurrent) {
-            server = currentServer;
+            server = serversInCircles[0];
         } else if (v == serverCircleSmallFirst) {
-            server = nextServers[0];
+            server = serversInCircles[1];
         } else {
-            server = nextServers[1];
+            server = serversInCircles[2];
         }
 
-        listener.onServerPressed(server);
+        listener.onServerSelected(server);
+    }
+
+    public void showServersList() {
+        serverListExpanded = true;
+        expandIcon.icon(MaterialDrawerFont.Icon.mdf_arrow_drop_up);
+        drawer.switchDrawerContent(drawerItemClickListener, null, serverSelectionItems,
+                servers.indexOf(serversInCircles[0]) + drawer.getAdapter().getHeaderOffset());
+    }
+
+    private void hideServersList() {
+        serverListExpanded = false;
+        expandIcon.icon(MaterialDrawerFont.Icon.mdf_arrow_drop_down);
+        drawer.resetDrawerContent();
+    }
+
+    public void setDrawer(Drawer drawer) {
+        this.drawer = drawer;
     }
 
     public interface HeaderListener {
         void onSettingsPressed();
-        void onServerPressed(Server server);
+        void onServerSelected(Server server);
         void onAddServerPressed();
         void onManageServersPressed();
     }

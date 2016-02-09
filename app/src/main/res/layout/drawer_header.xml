@@ -1,69 +1,78 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="#99000000"
-    android:orientation="vertical" >
-    <RelativeLayout
-        android:layout_width="match_parent"
+    android:background="#99000000">
+    <com.mikepenz.materialdrawer.view.BezelImageView
+        android:id="@+id/circle_current"
+        android:layout_width="@dimen/header_server_current_size"
+        android:layout_height="@dimen/header_server_current_size"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="@dimen/header_server_margin_left"
+        android:layout_marginTop="@dimen/header_server_margin_top"
+        android:clickable="true"
+        app:elevation="2dp"/>
+    <LinearLayout
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="16dp"
+        android:orientation="horizontal"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
         android:layout_marginTop="40dp"
-        android:layout_marginRight="16dp"
-        android:layout_marginBottom="16dp">
-        <com.mikepenz.materialdrawer.view.BezelImageView
-            android:id="@+id/circle_current"
-            android:layout_width="@dimen/header_server_current_size"
-            android:layout_height="@dimen/header_server_current_size"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentTop="true"
-            android:clickable="true"
-            app:elevation="2dp"/>
-        <com.mikepenz.materialdrawer.view.BezelImageView
-            android:id="@+id/circle_2"
-            android:layout_width="@dimen/header_server_secondary_size"
-            android:layout_height="@dimen/header_server_secondary_size"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentTop="true"
-            android:clickable="true"
-            app:elevation="2dp" />
+        android:layout_marginRight="16dp">
         <com.mikepenz.materialdrawer.view.BezelImageView
             android:id="@+id/circle_1"
             android:layout_width="@dimen/header_server_secondary_size"
             android:layout_height="@dimen/header_server_secondary_size"
-            android:layout_toLeftOf="@id/circle_2"
-            android:layout_alignParentTop="true"
-            android:layout_marginRight="16dp"
             android:clickable="true"
             app:elevation="2dp" />
+        <com.mikepenz.materialdrawer.view.BezelImageView
+            android:id="@+id/circle_2"
+            android:layout_width="@dimen/header_server_secondary_size"
+            android:layout_height="@dimen/header_server_secondary_size"
+            android:layout_marginLeft="@dimen/header_server_margin_left"
+            android:clickable="true"
+            app:elevation="2dp" />
+    </LinearLayout>
 
-        <TextView android:id="@+id/name_text"
-            android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@id/circle_current"
+        android:orientation="horizontal" >
+        <LinearLayout android:id="@+id/header_text_section"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:layout_alignParentLeft="true"
-            android:layout_below="@id/circle_current"
-            android:lines="1"
-            android:singleLine="true"
-            android:textColor="?android:textColorPrimaryInverse"
-            android:textSize="@dimen/material_drawer_account_header_text"
-            android:textStyle="bold"/>
-
+            android:layout_weight="1"
+            android:layout_gravity="center_vertical"
+            android:paddingLeft="@dimen/header_text_padding_left"
+            android:paddingTop="@dimen/header_text_padding_top"
+            android:paddingBottom="@dimen/header_text_padding_bottom"
+            android:clickable="true"
+            android:orientation="horizontal"
+            android:background="?android:selectableItemBackground">
+            <TextView android:id="@+id/name_text"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_gravity="center_vertical"
+                android:lines="1"
+                android:singleLine="true"
+                android:textColor="?android:textColorPrimaryInverse"
+                android:textSize="@dimen/material_drawer_account_header_text"
+                android:textStyle="bold"/>
+            <ImageView android:id="@+id/server_list_button"
+                android:layout_width="@dimen/material_drawer_account_header_dropdown"
+                android:layout_height="@dimen/material_drawer_account_header_dropdown"
+                android:layout_gravity="center" />
+        </LinearLayout>
         <ImageButton android:id="@+id/settings_button"
             android:layout_width="@dimen/header_settings_size"
             android:layout_height="@dimen/header_settings_size"
-            android:foregroundGravity="center"
-            android:layout_alignParentRight="true"
-            android:layout_alignBottom="@id/name_text"
+            android:layout_gravity="center"
             android:background="?android:selectableItemBackground"/>
-
-        <ImageButton android:id="@+id/server_list_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_toLeftOf="@id/settings_button"
-            android:layout_alignBottom="@id/name_text"
-            android:layout_marginRight="16dp"
-            android:background="?android:selectableItemBackground" />
-    </RelativeLayout>
-</LinearLayout>
+    </LinearLayout>
+</RelativeLayout>

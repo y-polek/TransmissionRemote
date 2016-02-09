@@ -9,6 +9,7 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -68,6 +69,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
@@ -96,6 +98,8 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
 
     private static final int DRAWER_ITEM_ID_SETTINGS = 0;
 
+    private static final String KEY_DRAWER_SERVER_LIST_EXPANDED = "KEY_DRAWER_SERVER_LIST_EXPANDED";
+
     private TransmissionRemote application;
     private TorrentUpdater torrentUpdater;
 
@@ -108,7 +112,9 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
 
     private ActionBarNavigationAdapter navigationAdapter;
     private Toolbar toolbar;
+    private Toolbar bottomToolbar;
     private Drawer drawer;
+    private HeaderView headerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -160,10 +166,10 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
     }
 
     private void setupBottomToolbar() {
-        Toolbar toolbar = (Toolbar) findViewById(R.id.bottom_toolbar);
-        if (toolbar == null) return;
+        bottomToolbar = (Toolbar) findViewById(R.id.bottom_toolbar);
+        if (bottomToolbar == null) return;
 
-        turtleModeButton = (TurtleModeButton) toolbar.findViewById(R.id.turtle_mode_button);
+        turtleModeButton = (TurtleModeButton) bottomToolbar.findViewById(R.id.turtle_mode_button);
         turtleModeButton.setEnableChangedListener(new TurtleModeButton.OnEnableChangedListener() {
             @Override
             public void onEnableChanged(boolean isEnabled) {
@@ -174,9 +180,8 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
             }
         });
 
-
-        toolbar.inflateMenu(R.menu.speed_status_menu);
-        Menu menu = toolbar.getMenu();
+        bottomToolbar.inflateMenu(R.menu.speed_status_menu);
+        Menu menu = bottomToolbar.getMenu();
         downloadSpeedView = (SpeedTextView) MenuItemCompat.getActionView(menu.findItem(R.id.action_download_speed));
         uploadSpeedView = (SpeedTextView) MenuItemCompat.getActionView(menu.findItem(R.id.action_upload_speed));
     }
@@ -191,7 +196,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
                 .withSelectable(false)
                 .withIdentifier(DRAWER_ITEM_ID_SETTINGS);
 
-        HeaderView headerView = new HeaderView(this);
+        headerView = new HeaderView(this);
         headerView.setHeaderListener(new HeaderView.HeaderListener() {
             @Override
             public void onSettingsPressed() {
@@ -199,8 +204,8 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
             }
 
             @Override
-            public void onServerPressed(Server server) {
-
+            public void onServerSelected(Server server) {
+                switchServer(server);
             }
 
             @Override
@@ -213,8 +218,6 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
                 startActivity(new Intent(MainActivity.this, ServersActivity.class));
             }
         });
-        List<Server> servers = application.getServers();
-        headerView.setServers(servers, servers.indexOf(application.getActiveServer()));
 
         drawer = new DrawerBuilder()
                 .withActivity(this)
@@ -240,6 +243,8 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
                 }).build();
 
         headerView.setDrawer(drawer);
+        List<Server> servers = application.getServers();
+        headerView.setServers(servers, servers.indexOf(application.getActiveServer()));
     }
 
     @Override
@@ -257,8 +262,14 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
         List<Server> servers = application.getServers();
         if (servers.isEmpty()) {
             showEmptyServerFragment();
+            drawer.getDrawerLayout().setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+            toolbar.setVisibility(View.GONE);
+            if (bottomToolbar != null) bottomToolbar.setVisibility(View.GONE);
         } else {
             switchServer(application.getActiveServer());
+            drawer.getDrawerLayout().setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+            toolbar.setVisibility(View.VISIBLE);
+            if (bottomToolbar != null) bottomToolbar.setVisibility(View.VISIBLE);
         }
     }
 
@@ -274,6 +285,20 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
 
         PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(this);
         application.persistServers();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(KEY_DRAWER_SERVER_LIST_EXPANDED, drawer.switchedDrawerContent());
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        if (savedInstanceState.getBoolean(KEY_DRAWER_SERVER_LIST_EXPANDED, false)) {
+            headerView.showServersList();
+        }
     }
 
     @Override
@@ -361,7 +386,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
         String text = Joiner.on("\n").join(FluentIterable.from(torrents).transform(new Function<Torrent, String>() {
             @Override
             public String apply(Torrent torrent) {
-                String percents = String.format("%.2f", torrent.getPercentDone() * 100);
+                String percents = String.format(Locale.getDefault(), "%.2f", torrent.getPercentDone() * 100);
                 return torrent.getStatus() + " " + percents + "% " + torrent.getName();
             }
         }));
@@ -404,6 +429,9 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
         showProgressbarFragment();
 
         // Start new server connections
+        List<Server> servers = application.getServers();
+        headerView.setServers(servers, servers.indexOf(server));
+
         torrentUpdater = new TorrentUpdater(getTransportManager(), MainActivity.this, application.getUpdateInterval());
         torrentUpdater.start();
 
@@ -455,7 +483,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
             progressbarFragment = new ProgressbarFragment();
             FragmentTransaction ft = fm.beginTransaction();
             ft.replace(R.id.torrent_list_container, progressbarFragment, TAG_PROGRESSBAR);
-            ft.commit();
+            ft.commitAllowingStateLoss();
         }
     }
 

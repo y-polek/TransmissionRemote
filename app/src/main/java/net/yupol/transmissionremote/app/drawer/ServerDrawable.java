@@ -12,16 +12,18 @@ import net.yupol.transmissionremote.app.utils.TextUtils;
 public class ServerDrawable extends Drawable {
 
     private String text;
-    private float textPadding;
+    private float textPaddingRatio;
 
     private Paint paint = new Paint();
     private Paint backgroundPaint = new Paint();
     private Rect bounds;
     private float textWidth, textHeight;
 
-    public ServerDrawable(String name, int backgroundColor, int foregroundColor, float textPaddingPx) {
+    public ServerDrawable(String name, int backgroundColor, int foregroundColor, float textPaddingRatio) {
+        if (textPaddingRatio < 0f || textPaddingRatio >= 1f)
+            throw new IllegalArgumentException("textPaddingRatio should be in range [0, 1]");
         text = TextUtils.abbreviate(name);
-        textPadding = textPaddingPx;
+        this.textPaddingRatio = textPaddingRatio;
 
         paint.setAntiAlias(true);
         paint.setStyle(Paint.Style.FILL);
@@ -50,8 +52,8 @@ public class ServerDrawable extends Drawable {
         Rect textBounds = new Rect();
         paint.getTextBounds(text, 0, text.length(), textBounds);
         float desiredTextSize = Math.min(
-                tmpTextSize * (bounds.width() - 2 * textPadding) / textBounds.width(),
-                tmpTextSize * (bounds.height() - 2 * textPadding) / textBounds.height());
+                tmpTextSize * bounds.width() * (1 - 2 * textPaddingRatio) / textBounds.width(),
+                tmpTextSize * bounds.height() * (1 - 2 * textPaddingRatio) / textBounds.height());
         paint.setTextSize(desiredTextSize);
 
         paint.getTextBounds(text, 0, text.length(), textBounds);
