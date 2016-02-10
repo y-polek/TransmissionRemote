@@ -71,6 +71,7 @@ public class HeaderView extends RelativeLayout implements View.OnClickListener {
 
             if (id >=0 && id < servers.size()) {
                 listener.onServerSelected(servers.get(id));
+                drawer.closeDrawer();
                 return true;
             }
 
@@ -227,6 +228,7 @@ public class HeaderView extends RelativeLayout implements View.OnClickListener {
         }
 
         listener.onServerSelected(server);
+        drawer.closeDrawer();
     }
 
     public void showServersList() {
