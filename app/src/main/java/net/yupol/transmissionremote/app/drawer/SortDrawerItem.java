@@ -1,45 +1,38 @@
 package net.yupol.transmissionremote.app.drawer;
 
-import android.content.Context;
-import android.graphics.drawable.Drawable;
+import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 
-import net.yupol.transmissionremote.app.R;
-import net.yupol.transmissionremote.app.model.json.Torrent;
+import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
+
 import net.yupol.transmissionremote.app.sorting.SortOrder;
+import net.yupol.transmissionremote.app.sorting.SortedBy;
 
-import java.util.Collections;
-import java.util.Comparator;
+public class SortDrawerItem extends PrimaryDrawerItem {
 
-public class SortDrawerItem extends DrawerItem {
+    private SortedBy sortedBy;
+    private SortOrder sortOrder = null;
 
-    private Comparator<Torrent> baseComparator;
-    private SortOrder sortOrder = SortOrder.UNSORTED;
-
-    public SortDrawerItem(int textResId, Context c, Comparator<Torrent> comparator) {
-        super(textResId, c);
-
-        baseComparator = comparator;
-    }
-
-    public void setSorting(SortOrder sortOrder) {
-        this.sortOrder = sortOrder;
-    }
-
-    public SortOrder getSorting() {
-        return sortOrder;
-    }
-
-    public Comparator<Torrent> getComparator() {
-        if (sortOrder == SortOrder.UNSORTED) return null;
-        return sortOrder == SortOrder.ASCENDING ? baseComparator : Collections.reverseOrder(baseComparator);
+    public SortDrawerItem(SortedBy sortedBy) {
+        this.sortedBy = sortedBy;
     }
 
     @Override
-    public int getRightImage() {
-        switch (sortOrder) {
-            case ASCENDING: return R.drawable.arrow_up;
-            case DESCENDING: return R.drawable.arrow_down;
-            default: return 0;
-        }
+    public SortDrawerItem withName(@StringRes int nameRes) {
+        super.withName(nameRes);
+        return this;
+    }
+
+    public SortedBy getSortedBy() {
+        return sortedBy;
+    }
+
+    public void setSortOrder(@Nullable SortOrder sortOrder) {
+        this.sortOrder = sortOrder;
+        withBadge(sortOrder != null ? sortOrder.getSymbol() : "");
+    }
+
+    public SortOrder getSortOrder() {
+        return sortOrder;
     }
 }

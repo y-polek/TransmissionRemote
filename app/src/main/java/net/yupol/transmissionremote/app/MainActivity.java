@@ -38,6 +38,7 @@ import net.yupol.transmissionremote.app.actionbar.ActionBarNavigationAdapter;
 import net.yupol.transmissionremote.app.actionbar.SpeedTextView;
 import net.yupol.transmissionremote.app.actionbar.TurtleModeButton;
 import net.yupol.transmissionremote.app.drawer.HeaderView;
+import net.yupol.transmissionremote.app.drawer.SortDrawerItem;
 import net.yupol.transmissionremote.app.filtering.Filter;
 import net.yupol.transmissionremote.app.model.json.ServerSettings;
 import net.yupol.transmissionremote.app.model.json.Torrent;
@@ -49,6 +50,8 @@ import net.yupol.transmissionremote.app.preferences.ServerPreferencesActivity;
 import net.yupol.transmissionremote.app.preferences.ServersActivity;
 import net.yupol.transmissionremote.app.server.AddServerActivity;
 import net.yupol.transmissionremote.app.server.Server;
+import net.yupol.transmissionremote.app.sorting.SortOrder;
+import net.yupol.transmissionremote.app.sorting.SortedBy;
 import net.yupol.transmissionremote.app.torrentdetails.TorrentDetailsActivity;
 import net.yupol.transmissionremote.app.torrentlist.EmptyServerFragment;
 import net.yupol.transmissionremote.app.torrentlist.TorrentListFragment;
@@ -187,10 +190,6 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
     }
 
     private void setupDrawer() {
-        PrimaryDrawerItem sortByNameItem = new PrimaryDrawerItem().withName(R.string.drawer_sort_by_name);
-        PrimaryDrawerItem sortBySizeItem = new PrimaryDrawerItem().withName(R.string.drawer_sort_by_size);
-        PrimaryDrawerItem sortByTimeItem = new PrimaryDrawerItem().withName(R.string.drawer_sort_by_time_remaining);
-
         PrimaryDrawerItem settingsItem = new PrimaryDrawerItem().withName(R.string.action_settings)
                 .withIcon(GoogleMaterial.Icon.gmd_settings)
                 .withSelectable(false)
@@ -219,16 +218,19 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
             }
         });
 
+        final SortDrawerItem[] sortItems = new SortDrawerItem[] {
+                new SortDrawerItem(SortedBy.NAME).withName(R.string.drawer_sort_by_name),
+                new SortDrawerItem(SortedBy.SIZE).withName(R.string.drawer_sort_by_size),
+                new SortDrawerItem(SortedBy.TIME_REMAINING).withName(R.string.drawer_sort_by_time_remaining)
+        };
+
         drawer = new DrawerBuilder()
                 .withActivity(this)
                 .withToolbar(toolbar)
                 .withHeader(headerView)
-                .addDrawerItems(
-                        new SectionDrawerItem().withName(R.string.drawer_sort_by),
-                        sortByNameItem,
-                        sortBySizeItem,
-                        sortByTimeItem
-                ).addStickyDrawerItems(
+                .addDrawerItems(new SectionDrawerItem().withName(R.string.drawer_sort_by).withDivider(false))
+                .addDrawerItems(sortItems)
+                .addStickyDrawerItems(
                         settingsItem
                 ).withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                     @Override
@@ -236,15 +238,47 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
                         switch (drawerItem.getIdentifier()) {
                             case DRAWER_ITEM_ID_SETTINGS:
                                 startActivity(new Intent(MainActivity.this, RemotePreferencesActivity.class));
-                                break;
+                                return true;
                         }
+
+                        if (drawerItem instanceof SortDrawerItem) {
+                            handleSortItemClick((SortDrawerItem) drawerItem);
+                            return true;
+                        }
+
                         return false;
+                    }
+
+                    private void handleSortItemClick(SortDrawerItem selectedItem) {
+                        SortOrder prevSortOrder = selectedItem.getSortOrder();
+                        SortOrder sortOrder;
+                        if (prevSortOrder == null) sortOrder = SortOrder.ASCENDING;
+                        else sortOrder = prevSortOrder == SortOrder.ASCENDING ? SortOrder.DESCENDING : SortOrder.ASCENDING;
+                        for (SortDrawerItem item : sortItems) {
+                            if (item != selectedItem) {
+                                item.setSortOrder(null);
+                                item.withSetSelected(false);
+                                drawer.updateItem(item);
+                            }
+                        }
+                        selectedItem.setSortOrder(sortOrder);
+                        application.setSorting(selectedItem.getSortedBy(), sortOrder);
                     }
                 }).build();
 
         headerView.setDrawer(drawer);
         List<Server> servers = application.getServers();
         headerView.setServers(servers, servers.indexOf(application.getActiveServer()));
+
+        SortedBy persistedSortedBy = application.getSortedBy();
+        SortOrder persistedSortOrder = application.getSortOrder();
+        for (SortDrawerItem item : sortItems) {
+            if (item.getSortedBy() == persistedSortedBy) {
+                item.setSortOrder(persistedSortOrder);
+                item.withSetSelected(true);
+                break;
+            }
+        }
     }
 
     @Override
@@ -284,7 +318,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
         stopPreferencesUpdateTimer();
 
         PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(this);
-        application.persistServers();
+        application.persist();
     }
 
     @Override

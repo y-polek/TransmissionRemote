@@ -26,6 +26,7 @@ import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.TransmissionRemote;
 import net.yupol.transmissionremote.app.TransmissionRemote.OnFilterSelectedListener;
 import net.yupol.transmissionremote.app.TransmissionRemote.OnTorrentsUpdatedListener;
+import net.yupol.transmissionremote.app.TransmissionRemote.OnSortingChangedListener;
 import net.yupol.transmissionremote.app.filtering.Filter;
 import net.yupol.transmissionremote.app.model.json.Torrent;
 import net.yupol.transmissionremote.app.model.json.Torrents;
@@ -46,6 +47,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 public class TorrentListFragment extends Fragment {
@@ -62,8 +64,6 @@ public class TorrentListFragment extends Fragment {
     private Collection<Torrent> allTorrents = Collections.emptyList();
     private Set<Integer/*torrent ID*/> updateRequests = new HashSet<>();
 
-    private Comparator<Torrent> comparator;
-
     private OnTorrentsUpdatedListener torrentsListener = new OnTorrentsUpdatedListener() {
         @Override
         public void torrentsUpdated(Collection<Torrent> torrents) {
@@ -75,6 +75,13 @@ public class TorrentListFragment extends Fragment {
     private OnFilterSelectedListener filterListener = new OnFilterSelectedListener() {
         @Override
         public void filterSelected(Filter filter) {
+            updateTorrentList();
+        }
+    };
+
+    private OnSortingChangedListener sortingListener = new OnSortingChangedListener() {
+        @Override
+        public void onSortingChanged(Comparator<Torrent> comparator) {
             updateTorrentList();
         }
     };
@@ -92,6 +99,7 @@ public class TorrentListFragment extends Fragment {
 
         app = (TransmissionRemote) getActivity().getApplication();
         app.addOnFilterSetListener(filterListener);
+        app.addOnSortingChangedListeners(sortingListener);
 
         if (!(activity instanceof BaseSpiceActivity))
             throw new IllegalStateException("Fragment must be used with BaseSpiceActivity");
@@ -138,6 +146,7 @@ public class TorrentListFragment extends Fragment {
     @Override
     public void onDetach() {
         app.removeOnFilterSelectedListener(filterListener);
+        app.removeOnSortingChangedListener(sortingListener);
         super.onDetach();
     }
 
@@ -148,6 +157,8 @@ public class TorrentListFragment extends Fragment {
     private void updateTorrentList() {
         Filter filter = app.getActiveFilter();
         List<Torrent> torrentsToShow = new ArrayList<>(FluentIterable.from(allTorrents).filter(filter).toList());
+
+        Comparator<Torrent> comparator = app.getSortComparator();
         if (comparator != null)
             Collections.sort(torrentsToShow, comparator);
 
@@ -178,12 +189,6 @@ public class TorrentListFragment extends Fragment {
 
     private void updateEmptyTextVisibility() {
         emptyText.setVisibility(adapter.getItemCount() > 0 ? View.GONE : View.VISIBLE);
-    }
-
-    public void setSort(Comparator<Torrent> comparator) {
-        this.comparator = comparator;
-        if (allTorrents != null && !allTorrents.isEmpty())
-            updateTorrentList();
     }
 
     public interface OnTorrentSelectedListener {
@@ -269,7 +274,7 @@ public class TorrentListFragment extends Fragment {
                 downloadedText = totalSize;
             } else {
                 String downloadedSize = SizeUtils.displayableSize((long) (torrent.getPercentDone() * torrent.getTotalSize()));
-                String percentDone = String.format("%.2f%%", 100 * torrent.getPercentDone());
+                String percentDone = String.format(Locale.getDefault(), "%.2f%%", 100 * torrent.getPercentDone());
                 downloadedText = context.getString(R.string.downloaded_text, downloadedSize, totalSize, percentDone);
             }
             holder.downloadedTextView.setText(downloadedText);

@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
@@ -14,9 +15,13 @@ import net.yupol.transmissionremote.app.filtering.Filter;
 import net.yupol.transmissionremote.app.filtering.Filters;
 import net.yupol.transmissionremote.app.model.json.Torrent;
 import net.yupol.transmissionremote.app.server.Server;
+import net.yupol.transmissionremote.app.sorting.SortOrder;
+import net.yupol.transmissionremote.app.sorting.SortedBy;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -30,21 +35,29 @@ public class TransmissionRemote extends Application {
     private static final String SHARED_PREFS_NAME = "transmission_remote_shared_prefs";
     private static final String KEY_SERVERS = "key_servers";
     private static final String KEY_ACTIVE_SERVER = "key_active_server";
+    private static final String KEY_FILTER = "key_filter";
+    private static final String KEY_SORTED_BY = "key_sorted_by";
+    private static final String KEY_SORT_ORDER = "key_sort_order";
+
+    private static final Filter[] ALL_FILTERS = { Filters.ALL, Filters.DOWNLOADING, Filters.SEEDING, Filters.ACTIVE, Filters.PAUSED };
 
     private List<Server> servers = new LinkedList<>();
     private Server activeServer;
     private List<OnActiveServerChangedListener> activeServerListeners = new LinkedList<>();
+
     private List<OnServerListChangedListener> serverListListeners = new LinkedList<>();
-
     private boolean speedLimitEnabled;
+
     private List<OnSpeedLimitChangedListener> speedLimitChangedListeners = new LinkedList<>();
-
     private Collection<Torrent> torrents = Collections.emptyList();
-    private List<OnTorrentsUpdatedListener> torrentsUpdatedListeners = new LinkedList<>();
 
-    private Filter[] allFilters = { Filters.ALL, Filters.DOWNLOADING, Filters.SEEDING, Filters.ACTIVE, Filters.PAUSED};
+    private List<OnTorrentsUpdatedListener> torrentsUpdatedListeners = new LinkedList<>();
     private Filter activeFilter = Filters.ALL;
     private List<OnFilterSelectedListener> filterSelectedListeners = new LinkedList<>();
+
+    private SortedBy sortedBy = SortedBy.NAME;
+    private SortOrder sortOrder = SortOrder.ASCENDING;
+    private List<OnSortingChangedListener> sortingChangedListeners = new LinkedList<>();
 
     private String defaultDownloadDir;
 
@@ -53,8 +66,7 @@ public class TransmissionRemote extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-
-        restoreServers();
+        restore();
     }
 
     public static TransmissionRemote getApplication(Context context) {
@@ -185,7 +197,7 @@ public class TransmissionRemote extends Application {
     }
 
     public Filter[] getAllFilters() {
-        return allFilters;
+        return ALL_FILTERS;
     }
 
     public Filter getActiveFilter() {
@@ -202,7 +214,59 @@ public class TransmissionRemote extends Application {
         filterSelectedListeners.remove(listener);
     }
 
-    public void persistServers() {
+    public void setSorting(@NonNull SortedBy sortedBy, @NonNull SortOrder sortOrder) {
+        this.sortedBy = sortedBy;
+        this.sortOrder = sortOrder;
+
+        Comparator<Torrent> comparator = getSortComparator();
+        for (OnSortingChangedListener listener : sortingChangedListeners) {
+            listener.onSortingChanged(comparator);
+        }
+    }
+
+    public SortedBy getSortedBy() {
+        return sortedBy;
+    }
+
+    public SortOrder getSortOrder() {
+        return sortOrder;
+    }
+
+    public Comparator<Torrent> getSortComparator() {
+        return sortOrder.comparator(sortedBy.getComparator());
+    }
+
+    public void addOnSortingChangedListeners(@NonNull OnSortingChangedListener listener) {
+        if (!sortingChangedListeners.contains(listener)) {
+            sortingChangedListeners.add(listener);
+        }
+    }
+
+    public void removeOnSortingChangedListener(@NonNull OnSortingChangedListener listener) {
+        sortingChangedListeners.remove(listener);
+    }
+
+    public void setDefaultDownloadDir(String dir) {
+        defaultDownloadDir = dir;
+    }
+
+    public String getDefaultDownloadDir() {
+        return defaultDownloadDir;
+    }
+
+    public void persist() {
+        persistServers();
+        persistFilter();
+        persistSorting();
+    }
+
+    private void restore() {
+        restoreServers();
+        restoreFilter();
+        restoreSorting();
+    }
+
+    private void persistServers() {
         Set<String> serversInJson = FluentIterable.from(servers).transform(new Function<Server, String>() {
             @Override
             public String apply(Server server) {
@@ -213,15 +277,7 @@ public class TransmissionRemote extends Application {
         SharedPreferences sp = getSharedPreferences(SHARED_PREFS_NAME, MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();
         editor.putStringSet(KEY_SERVERS, serversInJson);
-        editor.commit();
-    }
-
-    public void setDefaultDownloadDir(String dir) {
-        defaultDownloadDir = dir;
-    }
-
-    public String getDefaultDownloadDir() {
-        return defaultDownloadDir;
+        editor.apply();
     }
 
     private void restoreServers() {
@@ -258,26 +314,57 @@ public class TransmissionRemote extends Application {
         SharedPreferences sp = getSharedPreferences(SHARED_PREFS_NAME, MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();
         editor.putString(KEY_ACTIVE_SERVER, serverInJson);
-        editor.commit();
+        editor.apply();
     }
 
-    public static interface OnActiveServerChangedListener {
-        public void serverChanged(Server newServer);
+    private void persistFilter() {
+        SharedPreferences sp = getSharedPreferences(SHARED_PREFS_NAME, MODE_PRIVATE);
+        SharedPreferences.Editor editor = sp.edit();
+        editor.putInt(KEY_FILTER, Arrays.asList(ALL_FILTERS).indexOf(activeFilter));
+        editor.apply();
     }
 
-    public static interface OnServerListChangedListener {
-        public void serverAdded(Server server);
-        public void serverRemoved(Server server);
-        public void serverUpdated(Server server);
+    private void restoreFilter() {
+        SharedPreferences sp = getSharedPreferences(SHARED_PREFS_NAME, MODE_PRIVATE);
+        int filterIdx = sp.getInt(KEY_FILTER, 0);
+        activeFilter = ALL_FILTERS[filterIdx];
     }
 
-    public static interface OnSpeedLimitChangedListener {
-        public void speedLimitEnabledChanged(boolean isEnabled);
+    private void persistSorting() {
+        SharedPreferences sp = getSharedPreferences(SHARED_PREFS_NAME, MODE_PRIVATE);
+        SharedPreferences.Editor editor = sp.edit();
+        editor.putInt(KEY_SORTED_BY, sortedBy.ordinal());
+        editor.putInt(KEY_SORT_ORDER, sortOrder.ordinal());
+        editor.apply();
     }
-    public static interface OnTorrentsUpdatedListener {
-        public void torrentsUpdated(Collection<Torrent> torrents);
+
+    private void restoreSorting() {
+        SharedPreferences sp = getSharedPreferences(SHARED_PREFS_NAME, MODE_PRIVATE);
+        sortedBy = SortedBy.values()[sp.getInt(KEY_SORTED_BY, 0)];
+        sortOrder = SortOrder.values()[sp.getInt(KEY_SORT_ORDER, 0)];
     }
-    public static interface OnFilterSelectedListener {
-        public void filterSelected(Filter filter);
+
+    public interface OnActiveServerChangedListener {
+        void serverChanged(Server newServer);
+    }
+
+    public interface OnServerListChangedListener {
+        void serverAdded(Server server);
+        void serverRemoved(Server server);
+        void serverUpdated(Server server);
+    }
+
+    public interface OnSpeedLimitChangedListener {
+        void speedLimitEnabledChanged(boolean isEnabled);
+    }
+    public interface OnTorrentsUpdatedListener {
+        void torrentsUpdated(Collection<Torrent> torrents);
+    }
+    public interface OnFilterSelectedListener {
+        void filterSelected(Filter filter);
+    }
+
+    public interface OnSortingChangedListener {
+        void onSortingChanged(Comparator<Torrent> comparator);
     }
 }
