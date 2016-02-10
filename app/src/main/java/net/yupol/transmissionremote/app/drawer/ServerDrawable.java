@@ -51,9 +51,7 @@ public class ServerDrawable extends Drawable {
 
         Rect textBounds = new Rect();
         paint.getTextBounds(text, 0, text.length(), textBounds);
-        float desiredTextSize = Math.min(
-                tmpTextSize * bounds.width() * (1 - 2 * textPaddingRatio) / textBounds.width(),
-                tmpTextSize * bounds.height() * (1 - 2 * textPaddingRatio) / textBounds.height());
+        float desiredTextSize = tmpTextSize * bounds.height() * (1 - 2 * textPaddingRatio) / textBounds.height();
         paint.setTextSize(desiredTextSize);
 
         paint.getTextBounds(text, 0, text.length(), textBounds);

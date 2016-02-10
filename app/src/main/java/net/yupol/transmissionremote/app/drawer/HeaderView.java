@@ -29,7 +29,7 @@ import java.util.List;
 
 public class HeaderView extends RelativeLayout implements View.OnClickListener {
 
-    private static final float CIRCLE_TEXT_PADDING_RATIO = 0.15f;
+    private static final float CIRCLE_TEXT_PADDING_RATIO = 0.35f;
 
     private static final int DRAWER_ITEM_ID_ADD_SERVER = -1;
     private static final int DRAWER_ITEM_ID_MANAGE_SERVERS = -2;
