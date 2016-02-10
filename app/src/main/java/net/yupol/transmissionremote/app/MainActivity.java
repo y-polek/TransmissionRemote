@@ -113,7 +113,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
     private SpeedTextView downloadSpeedView;
     private SpeedTextView uploadSpeedView;
 
-    private ActionBarNavigationAdapter navigationAdapter;
+    private ActionBarNavigationAdapter toolbarSpinnerAdapter;
     private Toolbar toolbar;
     private Toolbar bottomToolbar;
     private Drawer drawer;
@@ -143,23 +143,23 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
         ActionBar.LayoutParams lp = new ActionBar.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         toolbar.addView(spinnerContainer, lp);
         Spinner spinner = (Spinner) spinnerContainer.findViewById(R.id.toolbar_spinner);
-        navigationAdapter = new ActionBarNavigationAdapter(this);
-        spinner.setAdapter(navigationAdapter);
+        toolbarSpinnerAdapter = new ActionBarNavigationAdapter(this);
+        spinner.setAdapter(toolbarSpinnerAdapter);
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if (id == ActionBarNavigationAdapter.ID_SERVER) {
-                    Server server = (Server) navigationAdapter.getItem(position);
+                    Server server = (Server) toolbarSpinnerAdapter.getItem(position);
                     if (!server.equals(application.getActiveServer())) {
                         switchServer(server);
                     }
                 } else if (id == ActionBarNavigationAdapter.ID_FILTER) {
-                    Filter filter = (Filter) navigationAdapter.getItem(position);
+                    Filter filter = (Filter) toolbarSpinnerAdapter.getItem(position);
                     if (!filter.equals(application.getActiveFilter())) {
                         application.setActiveFilter(filter);
                     }
                 }
-                navigationAdapter.notifyDataSetChanged();
+                toolbarSpinnerAdapter.notifyDataSetChanged();
             }
 
             @Override
@@ -415,7 +415,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
 
         updateSpeedActions(torrents);
 
-        navigationAdapter.notifyDataSetChanged();
+        toolbarSpinnerAdapter.notifyDataSetChanged();
 
         String text = Joiner.on("\n").join(FluentIterable.from(torrents).transform(new Function<Torrent, String>() {
             @Override
@@ -470,6 +470,8 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
         torrentUpdater.start();
 
         startPreferencesUpdateTimer();
+
+        toolbarSpinnerAdapter.notifyDataSetChanged();
     }
 
     private void startPreferencesUpdateTimer() {
