@@ -1,6 +1,7 @@
 package net.yupol.transmissionremote.app.transport;
 
 import android.app.Application;
+import android.app.Notification;
 
 import com.octo.android.robospice.GoogleHttpClientSpiceService;
 import com.octo.android.robospice.persistence.CacheManager;
@@ -16,5 +17,10 @@ public class NoCacheGoogleHttpClientSpiceService extends GoogleHttpClientSpiceSe
                 return data;
             }
         };
+    }
+
+    @Override
+    public Notification createDefaultNotification() {
+        return null;
     }
 }

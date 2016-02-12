@@ -34,6 +34,7 @@ public class BaseSpiceActivity extends AppCompatActivity {
 
     @Override
     protected void onStop() {
+        transportManager.cancelAllRequests();
         transportManager.shouldStop();
 
         super.onStop();
