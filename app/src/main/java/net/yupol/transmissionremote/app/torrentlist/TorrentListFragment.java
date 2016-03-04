@@ -7,6 +7,7 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -19,14 +20,16 @@ import android.widget.TextView;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.FluentIterable;
+import com.mikepenz.google_material_typeface_library.GoogleMaterial;
+import com.mikepenz.iconics.IconicsDrawable;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
 
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.TransmissionRemote;
 import net.yupol.transmissionremote.app.TransmissionRemote.OnFilterSelectedListener;
-import net.yupol.transmissionremote.app.TransmissionRemote.OnTorrentsUpdatedListener;
 import net.yupol.transmissionremote.app.TransmissionRemote.OnSortingChangedListener;
+import net.yupol.transmissionremote.app.TransmissionRemote.OnTorrentsUpdatedListener;
 import net.yupol.transmissionremote.app.filtering.Filter;
 import net.yupol.transmissionremote.app.model.json.Torrent;
 import net.yupol.transmissionremote.app.model.json.Torrents;
@@ -37,6 +40,7 @@ import net.yupol.transmissionremote.app.transport.request.StartTorrentRequest;
 import net.yupol.transmissionremote.app.transport.request.StopTorrentRequest;
 import net.yupol.transmissionremote.app.transport.request.TorrentGetRequest;
 import net.yupol.transmissionremote.app.utils.SizeUtils;
+import net.yupol.transmissionremote.app.utils.ThemeUtils;
 import net.yupol.transmissionremote.app.utils.diff.Equals;
 import net.yupol.transmissionremote.app.utils.diff.ListDiff;
 import net.yupol.transmissionremote.app.utils.diff.Range;
@@ -90,6 +94,8 @@ public class TorrentListFragment extends Fragment {
     private TorrentsAdapter adapter;
     private TextView emptyText;
 
+    private boolean actionButtonExpanded = false;
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -125,6 +131,39 @@ public class TorrentListFragment extends Fragment {
         recyclerView.setAdapter(adapter);
 
         emptyText = (TextView) view.findViewById(R.id.torrent_list_empty_text);
+
+        int iconColor = ThemeUtils.resolveColor(getContext(), android.R.attr.textColorPrimaryInverse, android.R.color.white);
+
+        /*final FloatingActionButton openFileButton = (FloatingActionButton) view.findViewById(R.id.fab_open_file);
+        openFileButton.hide();
+        final FloatingActionButton openMagnetButton = (FloatingActionButton) view.findViewById(R.id.fab_open_magnet);
+        openMagnetButton.hide();*/
+
+        final FloatingActionButton actionButton =  (FloatingActionButton) view.findViewById(R.id.floating_action_button);
+        final RotateAnimationDrawable drawable = new RotateAnimationDrawable(
+                new IconicsDrawable(getContext(), GoogleMaterial.Icon.gmd_add).color(iconColor).paddingRes(R.dimen.fab_icon_padding));
+        actionButton.setImageDrawable(drawable);
+        actionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                actionButtonExpanded = !actionButtonExpanded;
+                if (actionButtonExpanded) {
+                    drawable.animate(0, 135);
+                    /*openFileButton.show();
+                    openMagnetButton.show();*/
+                } else {
+                    drawable.animate(135, 0);
+                    /*openFileButton.hide();
+                    openMagnetButton.hide();*/
+                }
+            }
+        });
+
+        /*if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            LinearLayout.LayoutParams p = (LinearLayout.LayoutParams) actionButton.getLayoutParams();
+            p.setMargins(0, 0, 0, 0);
+            actionButton.setLayoutParams(p);
+        }*/
 
         return view;
     }
