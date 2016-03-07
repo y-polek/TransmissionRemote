@@ -150,7 +150,7 @@ public class DownloadLocationDialogFragment extends DialogFragment {
             });
     }
 
-    public static interface OnResultListener {
+    public interface OnResultListener {
         void onAddPressed(String downloadDir, boolean startWhenAdded);
     }
 

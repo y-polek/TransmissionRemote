@@ -68,8 +68,9 @@ import org.apache.commons.io.FilenameUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
@@ -388,10 +389,19 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
         } else if (requestCode == REQUEST_CODE_CHOOSE_TORRENT) {
             if (resultCode == RESULT_OK) {
                 Uri uri = data.getData();
-                Log.d(TAG, "File URI: " + uri);
-                Log.d(TAG, "Path: " + uri.getPath());
-
-                openTorrent(new File(uri.getPath()));
+                String fileName = FilenameUtils.getName(uri.getPath());
+                String extension = FilenameUtils.getExtension(fileName);
+                if (!"torrent".equals(extension)) {
+                    String msg = getResources().getString(R.string.error_wrong_file_extension_msg,  extension);
+                    Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
+                    return;
+                }
+                try {
+                    openTorrent(getContentResolver().openInputStream(uri));
+                } catch (FileNotFoundException e) {
+                    String msg = getResources().getString(R.string.error_file_does_not_exists_msg, fileName);
+                    Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
+                }
             }
         }
     }
@@ -551,26 +561,12 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
         }
     }
 
-    private void openTorrent(final File file) {
-        if (!file.exists()) {
-            String name = file.getName();
-            String msg = getResources().getString(R.string.error_file_does_not_exists_msg, name.isEmpty() ? "" : "'" + name + "'");
-            Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        String extension = FilenameUtils.getExtension(file.getName());
-        if (!extension.equals("torrent")) {
-            String msg = getResources().getString(R.string.error_wrong_file_extension_msg, extension.isEmpty() ? "" : "'." + extension + "'");
-            Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
-            return;
-        }
-
+    private void openTorrent(final InputStream fileStream) {
         new DownloadLocationDialogFragment().show(getFragmentManager(), TAG_DOWNLOAD_LOCATION_DIALOG, new DownloadLocationDialogFragment.OnResultListener() {
             @Override
             public void onAddPressed(String downloadDir, boolean startWhenAdded) {
                 try {
-                    getTransportManager().doRequest(new AddTorrentByFileRequest(file, downloadDir, !startWhenAdded), null);
+                    getTransportManager().doRequest(new AddTorrentByFileRequest(fileStream, downloadDir, !startWhenAdded), null);
                 } catch (IOException e) {
                     Toast.makeText(MainActivity.this, getResources().getString(R.string.error_cannot_read_file_msg), Toast.LENGTH_SHORT).show();
                 }
