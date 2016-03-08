@@ -3,12 +3,8 @@ package net.yupol.transmissionremote.app.transport.request;
 import android.util.Base64;
 import android.util.Log;
 
-import org.apache.commons.io.IOUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.io.IOException;
-import java.io.InputStream;
 
 public class AddTorrentByFileRequest extends AddTorrentRequest {
 
@@ -16,10 +12,9 @@ public class AddTorrentByFileRequest extends AddTorrentRequest {
 
     private String metaInfo;
 
-    public AddTorrentByFileRequest(InputStream fileStream, String destination, boolean paused) throws IOException {
+    public AddTorrentByFileRequest(byte[] torrentFileContent, String destination, boolean paused) {
         super(destination, paused);
-        byte[] content = IOUtils.toByteArray(fileStream);
-        metaInfo = Base64.encodeToString(content, Base64.DEFAULT);
+        metaInfo = Base64.encodeToString(torrentFileContent, Base64.DEFAULT);
     }
 
     @Override
