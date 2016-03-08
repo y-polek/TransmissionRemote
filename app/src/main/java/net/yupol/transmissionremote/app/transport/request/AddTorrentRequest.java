@@ -2,10 +2,12 @@ package net.yupol.transmissionremote.app.transport.request;
 
 import android.util.Log;
 
+import net.yupol.transmissionremote.app.model.json.AddTorrentResult;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public abstract class AddTorrentRequest extends Request<Void> {
+public abstract class AddTorrentRequest extends Request<AddTorrentResult> {
 
     private static final String TAG = AddTorrentRequest.class.getSimpleName();
 
@@ -13,7 +15,7 @@ public abstract class AddTorrentRequest extends Request<Void> {
     private boolean paused;
 
     public AddTorrentRequest(String destination, boolean paused) {
-        super(Void.class);
+        super(AddTorrentResult.class);
         this.destination = destination;
         this.paused = paused;
     }

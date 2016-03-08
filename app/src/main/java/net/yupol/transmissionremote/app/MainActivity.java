@@ -40,6 +40,7 @@ import net.yupol.transmissionremote.app.actionbar.TurtleModeButton;
 import net.yupol.transmissionremote.app.drawer.HeaderView;
 import net.yupol.transmissionremote.app.drawer.SortDrawerItem;
 import net.yupol.transmissionremote.app.filtering.Filter;
+import net.yupol.transmissionremote.app.model.json.AddTorrentResult;
 import net.yupol.transmissionremote.app.model.json.ServerSettings;
 import net.yupol.transmissionremote.app.model.json.Torrent;
 import net.yupol.transmissionremote.app.opentorrent.DownloadLocationDialogFragment;
@@ -119,6 +120,19 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
     private Toolbar bottomToolbar;
     private Drawer drawer;
     private HeaderView headerView;
+    private RequestListener<AddTorrentResult> addTorrentResultListener = new RequestListener<AddTorrentResult>() {
+        @Override
+        public void onRequestFailure(SpiceException spiceException) {
+            Toast.makeText(MainActivity.this, getString(R.string.error_failed_to_open_torrent), Toast.LENGTH_LONG).show();
+        }
+
+        @Override
+        public void onRequestSuccess(AddTorrentResult addTorrentResult) {
+            if (addTorrentResult.torrentDuplicate != null) {
+                Toast.makeText(MainActivity.this, getString(R.string.error_duplicate_torrent), Toast.LENGTH_LONG).show();
+            }
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -566,9 +580,9 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
             @Override
             public void onAddPressed(String downloadDir, boolean startWhenAdded) {
                 try {
-                    getTransportManager().doRequest(new AddTorrentByFileRequest(fileStream, downloadDir, !startWhenAdded), null);
+                    getTransportManager().doRequest(new AddTorrentByFileRequest(fileStream, downloadDir, !startWhenAdded), addTorrentResultListener);
                 } catch (IOException e) {
-                    Toast.makeText(MainActivity.this, getResources().getString(R.string.error_cannot_read_file_msg), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, getString(R.string.error_cannot_read_file_msg), Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -631,7 +645,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
                         new DownloadLocationDialogFragment().show(getFragmentManager(), TAG_DOWNLOAD_LOCATION_DIALOG, new DownloadLocationDialogFragment.OnResultListener() {
                             @Override
                             public void onAddPressed(String downloadDir, boolean startWhenAdded) {
-                                getTransportManager().doRequest(new AddTorrentByUrlRequest(uri, downloadDir, !startWhenAdded), null);
+                                getTransportManager().doRequest(new AddTorrentByUrlRequest(uri, downloadDir, !startWhenAdded), addTorrentResultListener);
                             }
                         });
                     }
