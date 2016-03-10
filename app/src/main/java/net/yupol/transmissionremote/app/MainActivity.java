@@ -328,6 +328,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
     private void openTorrentFromIntent() {
         Uri data = getIntent().getData();
         if (data != null) {
+            getIntent().setData(null);
             String scheme = data.getScheme();
             if (SCHEME_MAGNET.equals(scheme)) {
                 openTorrent(data.toString());
