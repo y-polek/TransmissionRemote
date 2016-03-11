@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.provider.MediaStore;
 import android.provider.OpenableColumns;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -70,11 +71,13 @@ import net.yupol.transmissionremote.app.transport.request.SessionSetRequest;
 import net.yupol.transmissionremote.app.transport.request.StartTorrentRequest;
 import net.yupol.transmissionremote.app.transport.request.StopTorrentRequest;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -336,8 +339,23 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
                 try {
                     openTorrent(getContentResolver().openInputStream(data));
                 } catch (FileNotFoundException e) {
-                    Toast.makeText(MainActivity.this, getString(R.string.error_cannot_read_file_msg), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, getString(R.string.error_cannot_read_file_msg), Toast.LENGTH_LONG).show();
                     Log.e(TAG, "Can't open stream for '" + data + "'", e);
+                }
+            } else if (ContentResolver.SCHEME_CONTENT.equals(scheme)) {
+                Cursor cursor = getContentResolver().query(data, null, null, null, null);
+                if (cursor != null && cursor.moveToFirst()) {
+                    int dataColumn = cursor.getColumnIndex(MediaStore.MediaColumns.DATA);
+                    String path = cursor.getString(dataColumn);
+                    cursor.close();
+
+                    File file = new File(path);
+                    try {
+                        openTorrent(FileUtils.openInputStream(file));
+                    } catch (IOException e) {
+                        Toast.makeText(MainActivity.this, getString(R.string.error_cannot_read_file_msg), Toast.LENGTH_LONG).show();
+                        Log.e(TAG, "Can't open stream for '" + path + "'", e);
+                    }
                 }
             } else if (SCHEME_HTTP.equals(scheme) || SCHEME_HTTPS.equals(scheme)) {
                 openTorrent(data);
