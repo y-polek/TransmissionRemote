@@ -83,15 +83,13 @@ public class DownloadLocationDialogFragment extends DialogFragment {
             }
         });
 
-        AlertDialog dialog = builder.create();
-        dialog.setOnShowListener(new DialogInterface.OnShowListener() {
-            @Override
-            public void onShow(DialogInterface dialog) {
-                updateFreeSpaceInfo();
-            }
-        });
+        return builder.create();
+    }
 
-        return dialog;
+    @Override
+    public void onResume() {
+        super.onResume();
+        updateFreeSpaceInfo();
     }
 
     @Override
@@ -119,11 +117,12 @@ public class DownloadLocationDialogFragment extends DialogFragment {
             new RequestListener<FreeSpace>() {
                 @Override
                 public void onRequestFailure(SpiceException spiceException) {
-                    Log.e(TAG, "Can't fetch free space for '" + path + "'");
+                    Log.e(TAG, "Can't fetch free space for '" + path + "'. " + spiceException.getMessage());
                     freeSpaceProgressbar.setVisibility(View.INVISIBLE);
                     freeSpaceText.setVisibility(View.VISIBLE);
                     freeSpaceText.setText(R.string.free_space_unknown);
                     ((AlertDialog) getDialog()).getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(false);
+                    currentRequest = null;
                 }
 
                 @Override
@@ -146,6 +145,7 @@ public class DownloadLocationDialogFragment extends DialogFragment {
                     }
                     freeSpaceProgressbar.setVisibility(View.INVISIBLE);
                     freeSpaceText.setVisibility(View.VISIBLE);
+                    currentRequest = null;
                 }
             });
     }
