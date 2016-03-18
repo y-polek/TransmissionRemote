@@ -16,7 +16,7 @@ public class AddTorrentByUrlRequest extends AddTorrentRequest {
     public AddTorrentByUrlRequest(@Nonnull final String url, String destination, boolean paused) {
         super(destination, paused);
 
-        if (url.matches("/^[0-9a-f]{40}$/i"))
+        if (url.matches("^[0-9a-fA-F]{40}$"))
             this.url = "magnet:?xt=urn:btih:"+url;
         else {
             this.url = url;
