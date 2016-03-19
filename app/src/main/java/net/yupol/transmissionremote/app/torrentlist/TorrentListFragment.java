@@ -245,6 +245,10 @@ public class TorrentListFragment extends Fragment {
             }
         }
 
+        if (actionMode != null) {
+            adapter.updateSelection();
+        }
+
         setEmptyText(getResources().getString(filter.getEmptyMessageResId()));
         updateEmptyTextVisibility();
     }
@@ -261,7 +265,7 @@ public class TorrentListFragment extends Fragment {
 
         private Context context;
         private List<Torrent> torrents = Collections.emptyList();
-        private SparseBooleanArray selectedItems = new SparseBooleanArray();
+        private SparseBooleanArray selectedItemsIds = new SparseBooleanArray();
 
         public TorrentsAdapter(Context context) {
             this.context = context;
@@ -398,26 +402,27 @@ public class TorrentListFragment extends Fragment {
         }
 
         public int getSelectedItemsCount() {
-            return selectedItems.size();
+            return selectedItemsIds.size();
         }
 
-        public int[] getSelectedItems() {
-            int[] items = new int[selectedItems.size()];
-            for (int i=0; i<selectedItems.size(); i++) {
-                items[i] = selectedItems.keyAt(i);
+        public int[] getSelectedItemsPositions() {
+            int[] positions = new int[selectedItemsIds.size()];
+            for (int i = 0; i< selectedItemsIds.size(); i++) {
+                positions[i] = getPositionByTorrentId(selectedItemsIds.keyAt(i));
             }
-            return items;
+            return positions;
         }
 
         public boolean isSelected(int position) {
-            return selectedItems.get(position, false);
+            return selectedItemsIds.get(getItemAtPosition(position).getId(), false);
         }
 
         public void toggleSelection(int position) {
-            if (selectedItems.get(position, false)) {
-                selectedItems.delete(position);
+            int id = getItemAtPosition(position).getId();
+            if (selectedItemsIds.get(id, false)) {
+                selectedItemsIds.delete(id);
             } else {
-                selectedItems.put(position, true);
+                selectedItemsIds.put(id, true);
             }
             notifyItemChanged(position);
             updateCABTitle();
@@ -425,18 +430,37 @@ public class TorrentListFragment extends Fragment {
 
         public void selectAll() {
             for (int i=0; i<getItemCount(); i++) {
-                selectedItems.put(i, true);
+                selectedItemsIds.put(getItemAtPosition(i).getId(), true);
                 notifyItemChanged(i);
             }
             updateCABTitle();
         }
 
         public void clearSelection() {
-            int[] items = getSelectedItems();
-            selectedItems.clear();
-            for (int item : items) {
-                notifyItemChanged(item);
+            int[] positions = getSelectedItemsPositions();
+            selectedItemsIds.clear();
+            for (int position : positions) {
+                notifyItemChanged(position);
             }
+            updateCABTitle();
+        }
+
+        public void updateSelection() {
+            int[] idsToRemove = new int[selectedItemsIds.size()];
+            int removeCount = 0;
+
+            for (int i=0; i<selectedItemsIds.size(); i++) {
+                int id = selectedItemsIds.keyAt(i);
+                if (getPositionByTorrentId(id) < 0) {
+                    idsToRemove[removeCount++] = id;
+                }
+            }
+
+            for (int i=0; i<removeCount; i++) {
+                int id = idsToRemove[i];
+                selectedItemsIds.delete(id);
+            }
+
             updateCABTitle();
         }
 
