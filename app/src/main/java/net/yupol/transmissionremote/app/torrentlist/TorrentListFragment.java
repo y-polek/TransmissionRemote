@@ -3,15 +3,22 @@ package net.yupol.transmissionremote.app.torrentlist;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.util.SparseBooleanArray;
+import android.view.ActionMode;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
@@ -25,8 +32,8 @@ import com.octo.android.robospice.request.listener.RequestListener;
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.TransmissionRemote;
 import net.yupol.transmissionremote.app.TransmissionRemote.OnFilterSelectedListener;
-import net.yupol.transmissionremote.app.TransmissionRemote.OnTorrentsUpdatedListener;
 import net.yupol.transmissionremote.app.TransmissionRemote.OnSortingChangedListener;
+import net.yupol.transmissionremote.app.TransmissionRemote.OnTorrentsUpdatedListener;
 import net.yupol.transmissionremote.app.filtering.Filter;
 import net.yupol.transmissionremote.app.model.json.Torrent;
 import net.yupol.transmissionremote.app.model.json.Torrents;
@@ -36,6 +43,7 @@ import net.yupol.transmissionremote.app.transport.request.Request;
 import net.yupol.transmissionremote.app.transport.request.StartTorrentRequest;
 import net.yupol.transmissionremote.app.transport.request.StopTorrentRequest;
 import net.yupol.transmissionremote.app.transport.request.TorrentGetRequest;
+import net.yupol.transmissionremote.app.utils.ColorUtils;
 import net.yupol.transmissionremote.app.utils.SizeUtils;
 import net.yupol.transmissionremote.app.utils.diff.Equals;
 import net.yupol.transmissionremote.app.utils.diff.ListDiff;
@@ -90,6 +98,57 @@ public class TorrentListFragment extends Fragment {
     private TorrentsAdapter adapter;
     private TextView emptyText;
 
+    private ContextualActionBarListener cabListener;
+
+    private ActionMode.Callback actionModeCallback = new ActionMode.Callback() {
+        @Override
+        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+            MenuInflater inflater = mode.getMenuInflater();
+            inflater.inflate(R.menu.context_torrent_list_menu, menu);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                getActivity().getWindow().setStatusBarColor(ColorUtils.resolveColor(getContext(), R.attr.colorPrimaryDark, R.color.primary_dark));
+            }
+
+            if (cabListener != null) cabListener.onCABOpen();
+
+            return true;
+        }
+
+        @Override
+        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+            return false;
+        }
+
+        @Override
+        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+            switch (item.getItemId()) {
+                case R.id.action_remove_torrents:
+                    mode.finish();
+                    return true;
+                case R.id.action_select_all:
+                    if (adapter.getSelectedItemsCount() < adapter.getItemCount()) {
+                        adapter.selectAll();
+                    } else {
+                        adapter.clearSelection();
+                    }
+                    return true;
+            }
+            return false;
+        }
+
+        @Override
+        public void onDestroyActionMode(ActionMode mode) {
+            adapter.clearSelection();
+            actionMode = null;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                getActivity().getWindow().setStatusBarColor(Color.TRANSPARENT);
+            }
+
+            if (cabListener != null) cabListener.onCABClose();
+        }
+    };
+    private ActionMode actionMode;
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -140,6 +199,9 @@ public class TorrentListFragment extends Fragment {
     @Override
     public void onStop() {
         app.removeTorrentsUpdatedListener(torrentsListener);
+        if (actionMode != null) {
+            actionMode.finish();
+        }
         super.onStop();
     }
 
@@ -152,6 +214,10 @@ public class TorrentListFragment extends Fragment {
 
     public void setOnTorrentSelectedListener(OnTorrentSelectedListener listener) {
         torrentSelectedListener = listener;
+    }
+
+    public void setContextualActionBarListener(ContextualActionBarListener listener) {
+        cabListener = listener;
     }
 
     private void updateTorrentList() {
@@ -191,14 +257,11 @@ public class TorrentListFragment extends Fragment {
         emptyText.setVisibility(adapter.getItemCount() > 0 ? View.GONE : View.VISIBLE);
     }
 
-    public interface OnTorrentSelectedListener {
-        void onTorrentSelected(Torrent torrent);
-    }
-
     private class TorrentsAdapter extends RecyclerView.Adapter<ViewHolder> {
 
         private Context context;
         private List<Torrent> torrents = Collections.emptyList();
+        private SparseBooleanArray selectedItems = new SparseBooleanArray();
 
         public TorrentsAdapter(Context context) {
             this.context = context;
@@ -229,11 +292,30 @@ public class TorrentListFragment extends Fragment {
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (torrentSelectedListener != null) {
-                        torrentSelectedListener.onTorrentSelected(viewHolder.torrent);
+                    if (actionMode == null) {
+                        if (torrentSelectedListener != null) {
+                            torrentSelectedListener.onTorrentSelected(viewHolder.torrent);
+                        }
+                    } else {
+                        v.setSelected(true);
+                        toggleSelection(viewHolder.getAdapterPosition());
                     }
                 }
             });
+
+            itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    if (actionMode != null) {
+                        return false;
+                    }
+
+                    actionMode = getActivity().startActionMode(actionModeCallback);
+                    toggleSelection(viewHolder.getAdapterPosition());
+                    return true;
+                }
+            });
+
             return viewHolder;
         }
 
@@ -311,6 +393,56 @@ public class TorrentListFragment extends Fragment {
                     holder.errorMsgView.setVisibility(View.GONE);
                 }
             }
+
+            holder.selectedOverlay.setVisibility(isSelected(position) ? View.VISIBLE : View.INVISIBLE);
+        }
+
+        public int getSelectedItemsCount() {
+            return selectedItems.size();
+        }
+
+        public int[] getSelectedItems() {
+            int[] items = new int[selectedItems.size()];
+            for (int i=0; i<selectedItems.size(); i++) {
+                items[i] = selectedItems.keyAt(i);
+            }
+            return items;
+        }
+
+        public boolean isSelected(int position) {
+            return selectedItems.get(position, false);
+        }
+
+        public void toggleSelection(int position) {
+            if (selectedItems.get(position, false)) {
+                selectedItems.delete(position);
+            } else {
+                selectedItems.put(position, true);
+            }
+            notifyItemChanged(position);
+            updateCABTitle();
+        }
+
+        public void selectAll() {
+            for (int i=0; i<getItemCount(); i++) {
+                selectedItems.put(i, true);
+                notifyItemChanged(i);
+            }
+            updateCABTitle();
+        }
+
+        public void clearSelection() {
+            int[] items = getSelectedItems();
+            selectedItems.clear();
+            for (int item : items) {
+                notifyItemChanged(item);
+            }
+            updateCABTitle();
+        }
+
+        private void updateCABTitle() {
+            actionMode.setTitle(adapter.getSelectedItemsCount() + " torrents");
+            // TODO: implement
         }
 
         private void sendTorrentGetRequest(final Torrent torrent) {
@@ -367,6 +499,7 @@ public class TorrentListFragment extends Fragment {
         public final TextView uploadRateText;
         public final PlayPauseButton pauseResumeBtn;
         public final TextView errorMsgView;
+        public final View selectedOverlay;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -386,6 +519,8 @@ public class TorrentListFragment extends Fragment {
             pauseResumeBtn = (PlayPauseButton) itemView.findViewById(R.id.pause_resume_button);
 
             errorMsgView = (TextView) itemView.findViewById(R.id.error_message);
+
+            selectedOverlay = itemView.findViewById(R.id.selected_overlay);
         }
 
         public void setTorrent(Torrent torrent) {
@@ -438,5 +573,14 @@ public class TorrentListFragment extends Fragment {
             String t2Name = t2.getName();
             return t1Name != null ? t1Name.equals(t2Name) : t2Name != null;
         }
+    }
+
+    public interface OnTorrentSelectedListener {
+        void onTorrentSelected(Torrent torrent);
+    }
+
+    public interface ContextualActionBarListener {
+        void onCABOpen();
+        void onCABClose();
     }
 }

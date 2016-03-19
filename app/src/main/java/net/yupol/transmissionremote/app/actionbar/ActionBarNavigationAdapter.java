@@ -2,7 +2,6 @@ package net.yupol.transmissionremote.app.actionbar;
 
 import android.content.Context;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +15,7 @@ import net.yupol.transmissionremote.app.TransmissionRemote;
 import net.yupol.transmissionremote.app.filtering.Filter;
 import net.yupol.transmissionremote.app.filtering.Filters;
 import net.yupol.transmissionremote.app.server.Server;
+import net.yupol.transmissionremote.app.utils.ColorUtils;
 
 public class ActionBarNavigationAdapter extends BaseAdapter {
 
@@ -36,19 +36,9 @@ public class ActionBarNavigationAdapter extends BaseAdapter {
         this.context = context;
         app = (TransmissionRemote) context.getApplicationContext();
 
-        textColorPrimary = resolveColor(context, android.R.attr.textColorPrimary, R.color.text_primary);
-        accentColor = resolveColor(context, R.attr.colorAccent, R.color.accent);
-        textColorPrimaryInverse = resolveColor(context, android.R.attr.textColorPrimaryInverse, R.color.text_primary_inverse);
-    }
-
-    private int resolveColor(Context context, int colorAttr, int defaultResId) {
-        TypedValue typedValue = new TypedValue();
-        boolean resolved = context.getTheme().resolveAttribute(colorAttr, typedValue, true);
-        if (resolved) {
-            return typedValue.data;
-        } else {
-            return context.getResources().getColor(defaultResId);
-        }
+        textColorPrimary = ColorUtils.resolveColor(context, android.R.attr.textColorPrimary, R.color.text_primary);
+        accentColor = ColorUtils.resolveColor(context, R.attr.colorAccent, R.color.accent);
+        textColorPrimaryInverse = ColorUtils.resolveColor(context, android.R.attr.textColorPrimaryInverse, R.color.text_primary_inverse);
     }
 
     @Override

@@ -91,7 +91,7 @@ import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.TorrentUpdateListener,
         SharedPreferences.OnSharedPreferenceChangeListener, TransmissionRemote.OnSpeedLimitChangedListener,
-        TorrentListFragment.OnTorrentSelectedListener {
+        TorrentListFragment.OnTorrentSelectedListener, TorrentListFragment.ContextualActionBarListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
@@ -536,6 +536,16 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
         }
     }
 
+    @Override
+    public void onCABOpen() {
+        drawer.getDrawerLayout().setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+    }
+
+    @Override
+    public void onCABClose() {
+        drawer.getDrawerLayout().setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+    }
+
     public void openAddServerActivity(View view) {
         Intent intent = new Intent(this, AddServerActivity.class);
         startActivityForResult(intent, REQUEST_CODE_SERVER_PARAMS);
@@ -626,6 +636,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
             ft.replace(R.id.torrent_list_container, torrentListFragment, TAG_TORRENT_LIST);
             ft.commit();
         }
+        torrentListFragment.setContextualActionBarListener(this);
     }
 
     private void updateTurtleModeActionIcon() {
