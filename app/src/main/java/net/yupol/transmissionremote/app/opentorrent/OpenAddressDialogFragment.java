@@ -1,9 +1,9 @@
 package net.yupol.transmissionremote.app.opentorrent;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
-import android.app.FragmentManager;
 import android.content.ClipData;
 import android.content.ClipDescription;
 import android.content.ClipboardManager;
@@ -20,7 +20,7 @@ import net.yupol.transmissionremote.app.R;
 
 public class OpenAddressDialogFragment extends DialogFragment {
 
-    private OnResultListener listener;
+    private OnOpenMagnetListener listener;
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -34,10 +34,7 @@ public class OpenAddressDialogFragment extends DialogFragment {
                .setPositiveButton(R.string.open, new DialogInterface.OnClickListener() {
                    @Override
                    public void onClick(DialogInterface dialog, int which) {
-                       if (listener == null) {
-                           throw new IllegalStateException("There is no Open listener");
-                       }
-                       listener.onOpenPressed(addressText.getText().toString());
+                       listener.onOpenMagnet(addressText.getText().toString());
                    }
                })
                .setNegativeButton(android.R.string.cancel, null);
@@ -79,12 +76,17 @@ public class OpenAddressDialogFragment extends DialogFragment {
         return dialog;
     }
 
-    public void show(FragmentManager fm, String tag, OnResultListener listener) {
-        this.listener = listener;
-        show(fm, tag);
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        try {
+            listener = (OnOpenMagnetListener) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString() + " must implement " + OnOpenMagnetListener.class.getSimpleName());
+        }
     }
 
-    public static interface OnResultListener {
-        void onOpenPressed(String uri);
+    public interface OnOpenMagnetListener {
+        void onOpenMagnet(String uri);
     }
 }

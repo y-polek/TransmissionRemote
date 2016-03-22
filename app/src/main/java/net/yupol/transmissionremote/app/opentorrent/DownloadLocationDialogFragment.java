@@ -1,9 +1,9 @@
 package net.yupol.transmissionremote.app.opentorrent;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
-import android.app.FragmentManager;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.Editable;
@@ -36,7 +36,15 @@ public class DownloadLocationDialogFragment extends DialogFragment {
 
     private static final String TAG = DownloadLocationDialogFragment.class.getSimpleName();
 
-    private OnResultListener listener;
+    public static final String KEY_REQUEST_CODE = "key_request_code";
+    public static final int REQUEST_CODE_BY_LOCAL_FILE = 0;
+    public static final int REQUEST_CODE_BY_REMOTE_FILE = 1;
+    public static final int REQUEST_CODE_BY_MAGNET = 2;
+    public static final String KEY_FILE_BYTES = "key_file_bytes";
+    public static final String KEY_FILE_URI = "key_file_uri";
+    public static final String KEY_MAGNET_URI = "key_magnet_uri";
+
+    private OnDownloadLocationSelectedListener listener;
     private EditText downloadLocationText;
     private TextView freeSpaceText;
     private ProgressBar freeSpaceProgressbar;
@@ -62,10 +70,7 @@ public class DownloadLocationDialogFragment extends DialogFragment {
                .setPositiveButton(R.string.add, new DialogInterface.OnClickListener() {
                    @Override
                    public void onClick(DialogInterface dialog, int which) {
-                       if (listener == null) {
-                           throw new IllegalStateException("There is no Add listener");
-                       }
-                       listener.onAddPressed(downloadLocationText.getText().toString(), startWhenAddedCheckbox.isChecked());
+                       listener.onDownloadLocationSelected(getArguments(), downloadLocationText.getText().toString(), startWhenAddedCheckbox.isChecked());
                    }
                })
                .setNegativeButton(android.R.string.cancel, null);
@@ -98,9 +103,14 @@ public class DownloadLocationDialogFragment extends DialogFragment {
         super.onDismiss(dialog);
     }
 
-    public void show(FragmentManager fm, String tag, OnResultListener listener) {
-        this.listener = listener;
-        show(fm, tag);
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        try {
+            listener = (OnDownloadLocationSelectedListener) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString() + " must implement " + OnDownloadLocationSelectedListener.class.getSimpleName());
+        }
     }
 
     private void updateFreeSpaceInfo() {
@@ -150,8 +160,8 @@ public class DownloadLocationDialogFragment extends DialogFragment {
             });
     }
 
-    public interface OnResultListener {
-        void onAddPressed(String downloadDir, boolean startWhenAdded);
+    public interface OnDownloadLocationSelectedListener {
+        void onDownloadLocationSelected(Bundle args, String downloadDir, boolean startWhenAdded);
     }
 
     private static void clickify(TextView view, String clickableText,
