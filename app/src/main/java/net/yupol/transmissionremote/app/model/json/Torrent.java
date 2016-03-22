@@ -13,7 +13,7 @@ import net.yupol.transmissionremote.app.model.limitmode.RatioLimitMode;
 public class Torrent implements ID, Parcelable {
     @Key private int id;
     @Key private String name;
-    @Key private long addedData;
+    @Key private long addedDate;
     @Key private long totalSize;
     @Key private double percentDone;
     @Key private int status;
@@ -46,7 +46,7 @@ public class Torrent implements ID, Parcelable {
     private Torrent(Parcel in) {
         id = in.readInt();
         name = in.readString();
-        addedData = in.readLong();
+        addedDate = in.readLong();
         totalSize = in.readLong();
         percentDone = in.readDouble();
         status = in.readInt();
@@ -79,8 +79,8 @@ public class Torrent implements ID, Parcelable {
         return name;
     }
 
-    public long getAddedData() {
-        return addedData;
+    public long getAddedDate() {
+        return addedDate;
     }
 
     public long getTotalSize() {
@@ -188,7 +188,7 @@ public class Torrent implements ID, Parcelable {
     public void writeToParcel(Parcel out, int flags) {
         out.writeInt(id);
         out.writeString(name);
-        out.writeLong(addedData);
+        out.writeLong(addedDate);
         out.writeLong(totalSize);
         out.writeDouble(percentDone);
         out.writeInt(status);
@@ -230,7 +230,7 @@ public class Torrent implements ID, Parcelable {
         return "Torrent{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
-                ", addedData=" + addedData +
+                ", addedDate=" + addedDate +
                 ", totalSize=" + totalSize +
                 ", percentDone=" + percentDone +
                 ", status=" + status +

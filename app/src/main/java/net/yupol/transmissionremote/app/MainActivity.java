@@ -254,6 +254,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
 
         final SortDrawerItem[] sortItems = new SortDrawerItem[] {
                 new SortDrawerItem(SortedBy.NAME).withName(R.string.drawer_sort_by_name),
+                new SortDrawerItem(SortedBy.DATE_ADDED).withName(R.string.drawer_sort_by_date_added),
                 new SortDrawerItem(SortedBy.SIZE).withName(R.string.drawer_sort_by_size),
                 new SortDrawerItem(SortedBy.TIME_REMAINING).withName(R.string.drawer_sort_by_time_remaining)
         };

@@ -20,16 +20,21 @@ public enum SortedBy {
     SIZE(new Comparator<Torrent>() {
         @Override
         public int compare(Torrent t1, Torrent t2) {
-            return Long.signum(t1.getTotalSize() - t2.getTotalSize());
+            return Long.signum(t2.getTotalSize() - t1.getTotalSize());
         }
     }),
 
     TIME_REMAINING(new Comparator<Torrent>() {
         @Override
         public int compare(Torrent t1, Torrent t2) {
-            long l1 = t1.getLeftUntilDone();
-            long l2 = t2.getLeftUntilDone();
-            return l1 < l2 ? -1 : (l1 == l2 ? 0 : 1);
+            return Long.signum(t1.getLeftUntilDone() - t2.getLeftUntilDone());
+        }
+    }),
+
+    DATE_ADDED(new Comparator<Torrent>() {
+        @Override
+        public int compare(Torrent t1, Torrent t2) {
+            return Long.signum(t2.getAddedDate() - t1.getAddedDate());
         }
     });
 
