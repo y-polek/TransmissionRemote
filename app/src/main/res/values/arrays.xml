@@ -24,4 +24,8 @@
         <item>File</item>
         <item>Address</item>
     </string-array>
+    <string-array name="remove_torrents_entries">
+        <item>Remove from list…</item>
+        <item>Trash data and remove from list…</item>
+    </string-array>
 </resources>

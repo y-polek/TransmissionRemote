@@ -1,96 +1,105 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:paddingLeft="@dimen/abc_list_item_padding_horizontal_material"
-    android:paddingRight="@dimen/abc_list_item_padding_horizontal_material"
-    android:paddingTop="@dimen/torrent_list_vertical_padding"
-    android:paddingBottom="@dimen/torrent_list_vertical_padding"
-    android:descendantFocusability="blocksDescendants"
-    android:background="?android:attr/selectableItemBackground">
-
-    <net.yupol.transmissionremote.app.torrentlist.PlayPauseButton
-        android:id="@+id/pause_resume_button"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_gravity="center_vertical"
-        android:focusable="false"
-        android:focusableInTouchMode="false"/>
-
+    android:layout_height="match_parent">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingLeft="8dp"
-        android:orientation="vertical">
+        android:orientation="horizontal"
+        android:paddingLeft="@dimen/abc_list_item_padding_horizontal_material"
+        android:paddingRight="@dimen/abc_list_item_padding_horizontal_material"
+        android:paddingTop="@dimen/torrent_list_vertical_padding"
+        android:paddingBottom="@dimen/torrent_list_vertical_padding"
+        android:descendantFocusability="blocksDescendants"
+        android:background="?android:attr/selectableItemBackground">
 
-        <TextView android:id="@+id/name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="@dimen/abc_text_size_subhead_material"
-            android:maxLines="2"
-            android:textColor="?android:textColorPrimary"/>
+        <net.yupol.transmissionremote.app.torrentlist.PlayPauseButton
+            android:id="@+id/pause_resume_button"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_gravity="center_vertical"
+            android:focusable="false"
+            android:focusableInTouchMode="false"/>
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <TextView android:id="@+id/downloaded_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="@dimen/abc_text_size_body_1_material"
-                android:textColor="?android:textColorSecondary"/>
-            <TextView android:id="@+id/uploaded_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:visibility="gone"
-                android:textSize="@dimen/abc_text_size_body_1_material"
-                android:textColor="?android:textColorSecondary"/>
-
-            <ImageView android:id="@+id/upload_icon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="@dimen/default_padding_small"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
-                android:layout_alignTop="@id/downloaded_text"
-                android:layout_alignBottom="@id/downloaded_text"
-                android:src="@drawable/upload_icon"/>
-            <TextView android:id="@+id/upload_rate"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_toLeftOf="@id/upload_icon"
-                android:gravity="right"
-                android:textSize="@dimen/abc_text_size_body_1_material"
-                android:textColor="?android:textColorSecondary"/>
-            <ImageView android:id="@+id/download_icon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="@dimen/default_padding_small"
-                android:layout_toLeftOf="@id/upload_rate"
-                android:layout_alignTop="@id/downloaded_text"
-                android:layout_alignBottom="@id/downloaded_text"
-                android:src="@drawable/download_icon"/>
-            <TextView android:id="@+id/download_rate"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_toLeftOf="@id/download_icon"
-                android:gravity="right"
-                android:textSize="@dimen/abc_text_size_body_1_material"
-                android:textColor="?android:textColorSecondary"/>
-        </RelativeLayout>
-
-        <ProgressBar android:id="@+id/progress_bar"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/torrent_list_progressbar_height"
-            android:progress="15"
-            style="@android:style/Widget.Holo.ProgressBar.Horizontal"/>
-
-        <TextView android:id="@+id/error_message"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="@dimen/abc_text_size_caption_material"
-            android:textColor="?android:textColorSecondary"/>
+            android:paddingLeft="8dp"
+            android:orientation="vertical">
 
+            <TextView android:id="@+id/name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/abc_text_size_subhead_material"
+                android:maxLines="2"
+                android:textColor="?android:textColorPrimary"/>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView android:id="@+id/downloaded_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/abc_text_size_body_1_material"
+                    android:textColor="?android:textColorSecondary"/>
+                <TextView android:id="@+id/uploaded_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    android:textSize="@dimen/abc_text_size_body_1_material"
+                    android:textColor="?android:textColorSecondary"/>
+
+                <ImageView android:id="@+id/upload_icon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/default_padding_small"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignTop="@id/downloaded_text"
+                    android:layout_alignBottom="@id/downloaded_text"
+                    android:src="@drawable/upload_icon"/>
+                <TextView android:id="@+id/upload_rate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toLeftOf="@id/upload_icon"
+                    android:gravity="right"
+                    android:textSize="@dimen/abc_text_size_body_1_material"
+                    android:textColor="?android:textColorSecondary"/>
+                <ImageView android:id="@+id/download_icon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/default_padding_small"
+                    android:layout_toLeftOf="@id/upload_rate"
+                    android:layout_alignTop="@id/downloaded_text"
+                    android:layout_alignBottom="@id/downloaded_text"
+                    android:src="@drawable/download_icon"/>
+                <TextView android:id="@+id/download_rate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toLeftOf="@id/download_icon"
+                    android:gravity="right"
+                    android:textSize="@dimen/abc_text_size_body_1_material"
+                    android:textColor="?android:textColorSecondary"/>
+            </RelativeLayout>
+
+            <ProgressBar android:id="@+id/progress_bar"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/torrent_list_progressbar_height"
+                android:progress="15"
+                style="@android:style/Widget.Holo.ProgressBar.Horizontal"/>
+
+            <TextView android:id="@+id/error_message"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/abc_text_size_caption_material"
+                android:textColor="?android:textColorSecondary"/>
+
+        </LinearLayout>
     </LinearLayout>
-</LinearLayout>
+    <View android:id="@+id/selected_overlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/torrent_list_selected_overlay"
+        android:visibility="invisible"/>
+</FrameLayout>

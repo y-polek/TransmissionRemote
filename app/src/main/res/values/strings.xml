@@ -86,6 +86,9 @@
     <string name="speed_limit">Speed limit</string>
     <string name="download_speed">Download speed</string>
     <string name="upload_speed">Upload speed</string>
+    <string name="remove_selected_torrents">Remove selected torrents…</string>
+    <string name="remove_from_list">Remove from list</string>
+    <string name="remove_data">Remove data</string>
 
     <!-- Open torrent -->
     <string name="error_install_file_manager_msg">Please, install a file manager</string>

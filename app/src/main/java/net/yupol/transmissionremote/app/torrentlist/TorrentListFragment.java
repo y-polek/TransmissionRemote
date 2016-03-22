@@ -66,6 +66,8 @@ public class TorrentListFragment extends Fragment {
     private static Equals<Torrent> DISPLAYED_FIELDS_EQUALS_IMPL = new DisplayedFieldsEquals();
     private static final long UPDATE_REQUEST_DELAY = 500;
 
+    private static final String TAG_REMOVE_TORRENTS_DIALOG = "tag_remove_torrents_dialog";
+
     private TransmissionRemote app;
     private TransportManager transportManager;
 
@@ -123,6 +125,8 @@ public class TorrentListFragment extends Fragment {
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.action_remove_torrents:
+                    int[] torrentsToRemove = adapter.getSelectedItemsIds();
+                    RemoveTorrentsDialogFragment.newInstance(torrentsToRemove).show(getFragmentManager(), TAG_REMOVE_TORRENTS_DIALOG);
                     mode.finish();
                     return true;
                 case R.id.action_select_all:
@@ -407,10 +411,18 @@ public class TorrentListFragment extends Fragment {
 
         public int[] getSelectedItemsPositions() {
             int[] positions = new int[selectedItemsIds.size()];
-            for (int i = 0; i< selectedItemsIds.size(); i++) {
+            for (int i = 0; i<selectedItemsIds.size(); i++) {
                 positions[i] = getPositionByTorrentId(selectedItemsIds.keyAt(i));
             }
             return positions;
+        }
+
+        public int[] getSelectedItemsIds() {
+            int[] ids = new int[selectedItemsIds.size()];
+            for (int i=0; i<selectedItemsIds.size(); i++) {
+                ids[i] = selectedItemsIds.keyAt(i);
+            }
+            return ids;
         }
 
         public boolean isSelected(int position) {

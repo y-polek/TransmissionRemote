@@ -61,6 +61,7 @@ import net.yupol.transmissionremote.app.sorting.SortOrder;
 import net.yupol.transmissionremote.app.sorting.SortedBy;
 import net.yupol.transmissionremote.app.torrentdetails.TorrentDetailsActivity;
 import net.yupol.transmissionremote.app.torrentlist.EmptyServerFragment;
+import net.yupol.transmissionremote.app.torrentlist.RemoveTorrentsDialogFragment;
 import net.yupol.transmissionremote.app.torrentlist.TorrentListFragment;
 import net.yupol.transmissionremote.app.transport.BaseSpiceActivity;
 import net.yupol.transmissionremote.app.transport.TorrentUpdater;
@@ -71,6 +72,7 @@ import net.yupol.transmissionremote.app.transport.request.SessionGetRequest;
 import net.yupol.transmissionremote.app.transport.request.SessionSetRequest;
 import net.yupol.transmissionremote.app.transport.request.StartTorrentRequest;
 import net.yupol.transmissionremote.app.transport.request.StopTorrentRequest;
+import net.yupol.transmissionremote.app.transport.request.TorrentRemoveRequest;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -94,7 +96,8 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
         SharedPreferences.OnSharedPreferenceChangeListener, TransmissionRemote.OnSpeedLimitChangedListener,
         TorrentListFragment.OnTorrentSelectedListener, TorrentListFragment.ContextualActionBarListener,
         OpenByDialogFragment.OnOpenTorrentSelectedListener, OpenAddressDialogFragment.OnOpenMagnetListener,
-        DownloadLocationDialogFragment.OnDownloadLocationSelectedListener {
+        DownloadLocationDialogFragment.OnDownloadLocationSelectedListener,
+        RemoveTorrentsDialogFragment.OnRemoveTorrentSelectionListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
@@ -601,6 +604,12 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
         }
     }
 
+    @Override
+    public void onRemoveTorrentsSelected(int[] torrentsToRemove, boolean removeData) {
+        getTransportManager().doRequest(new TorrentRemoveRequest(torrentsToRemove, removeData), null);
+        torrentUpdater.scheduleUpdate(UPDATE_REQUEST_DELAY);
+    }
+
     public void openAddServerActivity(View view) {
         Intent intent = new Intent(this, AddServerActivity.class);
         startActivityForResult(intent, REQUEST_CODE_SERVER_PARAMS);
@@ -761,6 +770,12 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
         } catch (IOException e) {
             Toast.makeText(MainActivity.this, getString(R.string.error_cannot_read_file_msg), Toast.LENGTH_SHORT).show();
             return;
+        } finally {
+            try {
+                fileStream.close();
+            } catch (IOException e) {
+                Log.e(TAG, "Failed to close input stream", e);
+            }
         }
         dialog.setArguments(args);
         dialog.show(getFragmentManager(), TAG_DOWNLOAD_LOCATION_DIALOG);
@@ -799,10 +814,18 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
         @Override
         protected byte[] doInBackground(Uri... torrentFileUris) {
             String uri = torrentFileUris[0].toString();
+            InputStream inputStream = null;
             try {
-                return IOUtils.toByteArray(new URL(uri).openConnection().getInputStream());
+                inputStream = new URL(uri).openConnection().getInputStream();
+                return IOUtils.toByteArray(inputStream);
             } catch (IOException e) {
                 Log.e(TAG, "Failed to retrieve Uri '" + uri + "'", e);
+            } finally {
+                if (inputStream != null) try {
+                    inputStream.close();
+                } catch (IOException e) {
+                    Log.e(TAG, "Failed to close InputStream", e);
+                }
             }
             return null;
         }
