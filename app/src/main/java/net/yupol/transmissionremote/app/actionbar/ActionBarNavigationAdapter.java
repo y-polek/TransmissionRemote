@@ -30,6 +30,7 @@ public class ActionBarNavigationAdapter extends BaseAdapter {
     private TransmissionRemote app;
     private int textColorPrimary;
     private int accentColor;
+    private int alternativeAccentColor;
     private int textColorPrimaryInverse;
 
     public ActionBarNavigationAdapter(Context context) {
@@ -37,8 +38,9 @@ public class ActionBarNavigationAdapter extends BaseAdapter {
         app = (TransmissionRemote) context.getApplicationContext();
 
         textColorPrimary = ColorUtils.resolveColor(context, android.R.attr.textColorPrimary, R.color.text_primary);
-        accentColor = ColorUtils.resolveColor(context, R.attr.colorAccent, R.color.accent);
         textColorPrimaryInverse = ColorUtils.resolveColor(context, android.R.attr.textColorPrimaryInverse, R.color.text_primary_inverse);
+        accentColor = ColorUtils.resolveColor(context, R.attr.colorAccent, R.color.accent);
+        alternativeAccentColor = context.getResources().getColor(R.color.alternative_accent);
     }
 
     @Override
@@ -109,20 +111,24 @@ public class ActionBarNavigationAdapter extends BaseAdapter {
                 countText.setVisibility(View.GONE);
                 Server server = (Server) getItem(position);
                 text.setText(server.getName());
-                text.setTextColor(textColor(server.equals(app.getActiveServer())));
+                text.setTextColor(dropDownTextColor(server.equals(app.getActiveServer())));
             } else if (id == ID_FILTER) {
                 countText.setVisibility(View.VISIBLE);
                 Filter filter = (Filter) getItem(position);
                 text.setText(filter.getNameResId());
                 countText.setText(String.valueOf(FluentIterable.from(app.getTorrents()).filter(filter).size()));
 
-                int textColor = textColor(filter.equals(app.getActiveFilter()));
+                int textColor = dropDownTextColor(filter.equals(app.getActiveFilter()));
                 text.setTextColor(textColor);
                 countText.setTextColor(textColor);
             }
         }
 
         return itemView;
+    }
+
+    private int dropDownTextColor(boolean isActive) {
+        return isActive ? accentColor : textColorPrimary;
     }
 
     @Override
@@ -143,12 +149,8 @@ public class ActionBarNavigationAdapter extends BaseAdapter {
         TextView filterName = (TextView) view.findViewById(R.id.filter_name);
         filterName.setText(activeFilter.getNameResId());
 
-        filterName.setTextColor(activeFilter.equals(Filters.ALL) ? textColorPrimaryInverse : accentColor);
+        filterName.setTextColor(activeFilter.equals(Filters.ALL) ? textColorPrimaryInverse : alternativeAccentColor);
 
         return view;
-    }
-
-    private int textColor(boolean isActive) {
-        return isActive ? accentColor : textColorPrimary;
     }
 }
