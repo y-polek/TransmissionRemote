@@ -110,10 +110,6 @@
     <string name="no_directory">There is no such directory</string>
     <string name="use_default_directory">Use default directory</string>
 
-    <!-- Action Bar -->
-    <string name="torrent">%d torrent</string>
-    <string name="torrents">%d torrents</string>
-
     <!-- Torrent details -->
     <string name="torrent_details">Torrent details</string>
     <string name="files">Files</string>
@@ -140,5 +136,11 @@
     <string name="options_update_failed">Failed to update torrent options</string>
     <string name="three_dots">&#8230;</string>
     <string name="disabled">disabled</string>
+
+    <plurals name="selected_torrents">
+        <item quantity="zero">%d torrents</item>
+        <item quantity="one">%d torrent</item>
+        <item quantity="other">%d torrents</item>
+    </plurals>
 
 </resources>

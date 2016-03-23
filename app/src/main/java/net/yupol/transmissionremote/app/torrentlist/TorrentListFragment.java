@@ -477,8 +477,9 @@ public class TorrentListFragment extends Fragment {
         }
 
         private void updateCABTitle() {
-            actionMode.setTitle(adapter.getSelectedItemsCount() + " torrents");
-            // TODO: implement
+            int count = adapter.getSelectedItemsCount();
+            String text = getResources().getQuantityString(R.plurals.selected_torrents, count, count);
+            actionMode.setTitle(text);
         }
 
         private void sendTorrentGetRequest(final Torrent torrent) {
