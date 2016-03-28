@@ -2,6 +2,7 @@
 <resources>
 
     <string name="app_name">Transmission Remote</string>
+    <string name="search_hing">Search torrent</string>
 
     <!-- Actions -->
     <string name="action_open_torrent">Open torrent</string>
@@ -17,11 +18,13 @@
     <string name="filter_downloading">Downloading</string>
     <string name="filter_seeding">Seeding</string>
     <string name="filter_paused">Paused</string>
+    <string name="filter_name">Name</string>
     <string name="filter_empty_all">No torrents</string>
     <string name="filter_empty_active">No active torrents</string>
     <string name="filter_empty_downloading">No downloading torrents</string>
     <string name="filter_empty_seeding">No seeding torrents</string>
     <string name="filter_empty_paused">No paused torrents</string>
+    <string name="filter_empty_name">No matching torrents</string>
 
     <!-- Sort by -->
     <string name="drawer_sort_by">Sort by</string>
@@ -90,6 +93,7 @@
     <string name="remove_selected_torrents">Remove selected torrents…</string>
     <string name="remove_from_list">Remove from list</string>
     <string name="remove_data">Remove data</string>
+    <string name="search">Search</string>
 
     <!-- Open torrent -->
     <string name="error_install_file_manager_msg">Please, install a file manager</string>

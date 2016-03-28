@@ -4,6 +4,7 @@
     android:layout_height="match_parent"
     android:paddingLeft="@dimen/default_padding"
     android:paddingRight="@dimen/default_padding"
+    android:gravity="center_vertical"
     android:orientation="vertical">
 
     <TextView android:id="@+id/server_name"

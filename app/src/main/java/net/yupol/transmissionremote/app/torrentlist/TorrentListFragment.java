@@ -12,6 +12,10 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.ActionMode;
@@ -35,6 +39,7 @@ import net.yupol.transmissionremote.app.TransmissionRemote.OnFilterSelectedListe
 import net.yupol.transmissionremote.app.TransmissionRemote.OnSortingChangedListener;
 import net.yupol.transmissionremote.app.TransmissionRemote.OnTorrentsUpdatedListener;
 import net.yupol.transmissionremote.app.filtering.Filter;
+import net.yupol.transmissionremote.app.filtering.NameFilter;
 import net.yupol.transmissionremote.app.model.json.Torrent;
 import net.yupol.transmissionremote.app.model.json.Torrents;
 import net.yupol.transmissionremote.app.transport.BaseSpiceActivity;
@@ -63,10 +68,14 @@ public class TorrentListFragment extends Fragment {
     private static final String TAG = TorrentListFragment.class.getSimpleName();
 
     private static final String MAX_STRING = "999.9 MB/s";
-    private static Equals<Torrent> DISPLAYED_FIELDS_EQUALS_IMPL = new DisplayedFieldsEquals();
+    private static final Equals<Torrent> DISPLAYED_FIELDS_EQUALS_IMPL = new DisplayedFieldsEquals();
     private static final long UPDATE_REQUEST_DELAY = 500;
 
     private static final String TAG_REMOVE_TORRENTS_DIALOG = "tag_remove_torrents_dialog";
+
+    public static final String KEY_SEARCH_QUERY = "key_search_query";
+
+    private static final NameFilter NAME_FILTER = new NameFilter();
 
     private TransmissionRemote app;
     private TransportManager transportManager;
@@ -101,6 +110,9 @@ public class TorrentListFragment extends Fragment {
     private TextView emptyText;
 
     private ContextualActionBarListener cabListener;
+
+    private boolean inSearchMode = false;
+    private String searchQuery;
 
     private ActionMode.Callback actionModeCallback = new ActionMode.Callback() {
         @Override
@@ -197,6 +209,13 @@ public class TorrentListFragment extends Fragment {
         super.onStart();
         app.addTorrentsUpdatedListener(torrentsListener);
         allTorrents = app.getTorrents();
+
+        Bundle args = getArguments();
+        if (args != null && args.containsKey(KEY_SEARCH_QUERY)) {
+            searchQuery = args.getString(KEY_SEARCH_QUERY);
+            inSearchMode = searchQuery != null && !searchQuery.isEmpty();
+        }
+
         updateTorrentList();
     }
 
@@ -224,8 +243,19 @@ public class TorrentListFragment extends Fragment {
         cabListener = listener;
     }
 
+    public void search(String query) {
+        searchQuery = query;
+        inSearchMode = !query.isEmpty();
+        updateTorrentList();
+    }
+
+    public void closeSearch() {
+        inSearchMode = false;
+        updateTorrentList();
+    }
+
     private void updateTorrentList() {
-        Filter filter = app.getActiveFilter();
+        Filter filter = inSearchMode ? NAME_FILTER.withQuery(searchQuery) : app.getActiveFilter();
         List<Torrent> torrentsToShow = new ArrayList<>(FluentIterable.from(allTorrents).filter(filter).toList());
 
         Comparator<Torrent> comparator = app.getSortComparator();
@@ -237,6 +267,10 @@ public class TorrentListFragment extends Fragment {
 
         if (diff.containStructuralChanges()) {
             adapter.notifyDataSetChanged();
+        } else if (inSearchMode) {
+            for (int i=0; i<adapter.getItemCount(); i++) {
+                adapter.notifyItemChanged(i);
+            }
         } else {
             List<Range> changes = diff.getChangedItems();
             for (Range change : changes) {
@@ -270,9 +304,11 @@ public class TorrentListFragment extends Fragment {
         private Context context;
         private List<Torrent> torrents = Collections.emptyList();
         private SparseBooleanArray selectedItemsIds = new SparseBooleanArray();
+        private int accentColor;
 
         public TorrentsAdapter(Context context) {
             this.context = context;
+            accentColor = ColorUtils.resolveColor(context, R.attr.colorAccent, R.color.accent);
         }
 
         public void setTorrents(List<Torrent> torrents) {
@@ -356,7 +392,20 @@ public class TorrentListFragment extends Fragment {
                 }
             });
 
-            holder.nameText.setText(torrent.getName());
+            if (inSearchMode) {
+                Spannable text = new SpannableString(torrent.getName());
+                String torrentNameLowerCase = torrent.getName().toLowerCase();
+                String searchQueryLowerCase = searchQuery.toLowerCase();
+                int start = torrentNameLowerCase.indexOf(searchQueryLowerCase);
+                while (start >= 0) {
+                    int end = start + searchQuery.length();
+                    text.setSpan(new ForegroundColorSpan(accentColor), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    start = torrentNameLowerCase.indexOf(searchQueryLowerCase, end);
+                }
+                holder.nameText.setText(text);
+            } else {
+                holder.nameText.setText(torrent.getName());
+            }
 
             String totalSize = SizeUtils.displayableSize(torrent.getTotalSize());
             String downloadedText;

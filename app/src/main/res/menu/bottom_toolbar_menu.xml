@@ -9,4 +9,9 @@
         android:title="@string/upload_speed"
         app:actionViewClass="net.yupol.transmissionremote.app.actionbar.SpeedTextView$UploadSpeedTextView"
         app:showAsAction="always" />
+    <item android:id="@+id/action_search"
+        android:title="@string/search"
+        android:icon="@drawable/ic_search"
+        app:actionViewClass="android.widget.SearchView"
+        app:showAsAction="always|collapseActionView" />
 </menu>

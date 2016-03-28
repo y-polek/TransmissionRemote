@@ -1,8 +1,10 @@
 package net.yupol.transmissionremote.app;
 
 import android.app.DialogFragment;
+import android.app.SearchManager;
 import android.content.ActivityNotFoundException;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -12,11 +14,11 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.provider.OpenableColumns;
+import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -24,7 +26,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
+import android.widget.SearchView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -37,6 +41,7 @@ import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.SectionDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
+import com.mikepenz.materialdrawer.util.KeyboardUtil;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
 
@@ -122,7 +127,9 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
 
     private static final int DRAWER_ITEM_ID_SETTINGS = 0;
 
-    private static final String KEY_DRAWER_SERVER_LIST_EXPANDED = "KEY_DRAWER_SERVER_LIST_EXPANDED";
+    private static final String KEY_DRAWER_SERVER_LIST_EXPANDED = "key_drawer_server_list_expanded";
+    private static final String KEY_SEARCH_ACTION_EXPANDED = "key_search_action_expanded";
+    private static final String KEY_SEARCH_QUERY = "key_search_query";
 
     private TransmissionRemote application;
     private TorrentUpdater torrentUpdater;
@@ -153,6 +160,17 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
         }
     };
 
+    private KeyboardUtil keyboardUtil;
+
+    private MenuItem bottomBarDownSpeedMenuItem;
+    private MenuItem bottomBarUpSpeedMenuItem;
+
+    private SearchView searchView;
+    private MenuItem searchMenuItem;
+    private boolean restoredSearchMenuItemExpanded = false;
+    private CharSequence restoredSearchQuery = "";
+    private String currentSearchQuery;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -167,6 +185,10 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
         showProgressbarFragment();
 
         application.addOnSpeedLimitEnabledChangedListener(this);
+
+        // Workaround for bug https://code.google.com/p/android/issues/detail?id=63777
+        keyboardUtil = new KeyboardUtil(this, findViewById(android.R.id.content));
+        keyboardUtil.enable();
     }
 
     private void setupActionBar() {
@@ -174,7 +196,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
         setSupportActionBar(toolbar);
 
         View spinnerContainer = LayoutInflater.from(this).inflate(R.layout.toolbar_spinner, toolbar, false);
-        ActionBar.LayoutParams lp = new ActionBar.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        Toolbar.LayoutParams lp = new Toolbar.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         toolbar.addView(spinnerContainer, lp);
         Spinner spinner = (Spinner) spinnerContainer.findViewById(R.id.toolbar_spinner);
         toolbarSpinnerAdapter = new ActionBarNavigationAdapter(this);
@@ -217,10 +239,12 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
             }
         });
 
-        bottomToolbar.inflateMenu(R.menu.speed_status_menu);
+        bottomToolbar.inflateMenu(R.menu.bottom_toolbar_menu);
         Menu menu = bottomToolbar.getMenu();
-        downloadSpeedView = (SpeedTextView) MenuItemCompat.getActionView(menu.findItem(R.id.action_download_speed));
-        uploadSpeedView = (SpeedTextView) MenuItemCompat.getActionView(menu.findItem(R.id.action_upload_speed));
+        bottomBarDownSpeedMenuItem = menu.findItem(R.id.action_download_speed);
+        bottomBarUpSpeedMenuItem = menu.findItem(R.id.action_upload_speed);
+        downloadSpeedView = (SpeedTextView) MenuItemCompat.getActionView(bottomBarDownSpeedMenuItem);
+        uploadSpeedView = (SpeedTextView) MenuItemCompat.getActionView(bottomBarUpSpeedMenuItem);
     }
 
     private void setupDrawer() {
@@ -320,6 +344,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
     protected void onDestroy() {
         application.removeOnSpeedLimitEnabledChangedListener(this);
         turtleModeButton = null;
+        keyboardUtil.disable();
         super.onDestroy();
     }
 
@@ -407,14 +432,20 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putBoolean(KEY_DRAWER_SERVER_LIST_EXPANDED, drawer.switchedDrawerContent());
+        outState.putBoolean(KEY_SEARCH_ACTION_EXPANDED, searchMenuItem.isActionViewExpanded());
+        outState.putCharSequence(KEY_SEARCH_QUERY, searchView.getQuery());
     }
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
+
         if (savedInstanceState.getBoolean(KEY_DRAWER_SERVER_LIST_EXPANDED, false)) {
             headerView.showServersList();
         }
+
+        restoredSearchMenuItemExpanded = savedInstanceState.getBoolean(KEY_SEARCH_ACTION_EXPANDED, false);
+        restoredSearchQuery = savedInstanceState.getCharSequence(KEY_SEARCH_QUERY, "");
     }
 
     @Override
@@ -424,16 +455,93 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
         turtleModeItem = menu.findItem(R.id.action_turtle_mode);
         updateTurtleModeActionIcon();
 
-        MenuItem downloadItem = menu.findItem(R.id.action_download_speed);
+        final MenuItem downloadItem = menu.findItem(R.id.action_download_speed);
         if (downloadItem != null) {
             downloadSpeedView = (SpeedTextView) MenuItemCompat.getActionView(downloadItem);
         }
-        MenuItem uploadItem = menu.findItem(R.id.action_upload_speed);
+        final MenuItem uploadItem = menu.findItem(R.id.action_upload_speed);
         if (uploadItem != null) {
             uploadSpeedView = (SpeedTextView) MenuItemCompat.getActionView(uploadItem);
         }
 
+        searchMenuItem = menu.findItem(R.id.action_search);
+        if (searchMenuItem == null) {
+            searchMenuItem = bottomToolbar.getMenu().findItem(R.id.action_search);
+        }
+
+        searchView = (SearchView) MenuItemCompat.getActionView(searchMenuItem);
+        // iconifiedByDefault must be false to avoid closing SearchView by close button (close button only clears text)
+        searchView.setIconifiedByDefault(false);
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+
+        MenuItemCompat.setOnActionExpandListener(searchMenuItem, new MenuItemCompat.OnActionExpandListener() {
+            @Override
+            public boolean onMenuItemActionExpand(MenuItem item) {
+                if (bottomBarDownSpeedMenuItem != null) bottomBarDownSpeedMenuItem.setVisible(false);
+                if (bottomBarUpSpeedMenuItem != null) bottomBarUpSpeedMenuItem.setVisible(false);
+
+                searchView.requestFocus();
+                InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+                imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
+
+                return true;
+            }
+
+            @Override
+            public boolean onMenuItemActionCollapse(MenuItem item) {
+                searchView.setQuery("", false);
+                currentSearchQuery = null;
+                TorrentListFragment torrentListFragment = getTorrentListFragment();
+                if (torrentListFragment != null) {
+                    torrentListFragment.closeSearch();
+                }
+
+                if (bottomBarDownSpeedMenuItem != null) bottomBarDownSpeedMenuItem.setVisible(true);
+                if (bottomBarUpSpeedMenuItem != null) bottomBarUpSpeedMenuItem.setVisible(true);
+
+                searchView.clearFocus();
+
+                return true;
+            }
+        });
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                handleSearch(query);
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                handleSearch(newText);
+                return false;
+            }
+        });
+
+        if (restoredSearchMenuItemExpanded) {
+            searchMenuItem.expandActionView();
+            searchView.setQuery(restoredSearchQuery, true);
+        }
+
         return super.onCreateOptionsMenu(menu);
+    }
+
+    private void handleSearch(String query) {
+        Log.d(TAG, "handleSearch: " + query);
+        if (!query.equals(currentSearchQuery)) {
+            currentSearchQuery = query;
+            TorrentListFragment torrentListFragment = getTorrentListFragment();
+            if (torrentListFragment != null) {
+                torrentListFragment.search(query);
+            }
+        }
+    }
+
+    @Nullable
+    private TorrentListFragment getTorrentListFragment() {
+        return (TorrentListFragment) getSupportFragmentManager().findFragmentByTag(TAG_TORRENT_LIST);
     }
 
     @Override
@@ -499,6 +607,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
     @Override
     public void onBackPressed() {
         if (drawer.isDrawerOpen()) drawer.closeDrawer();
+        else if (searchMenuItem.isActionViewExpanded()) searchMenuItem.collapseActionView();
         else super.onBackPressed();
     }
 
@@ -511,7 +620,9 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
     public void onTorrentUpdate(List<Torrent> torrents) {
         application.setTorrents(torrents);
 
-        showTorrentListFragment();
+        if (getTorrentListFragment() == null) {
+            showTorrentListFragment();
+        }
 
         updateSpeedActions(torrents);
 
@@ -702,6 +813,11 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
             ft.commit();
         }
         torrentListFragment.setContextualActionBarListener(this);
+        if (currentSearchQuery != null) {
+            Bundle args = new Bundle();
+            args.putString(TorrentListFragment.KEY_SEARCH_QUERY, currentSearchQuery);
+            torrentListFragment.setArguments(args);
+        }
     }
 
     private void updateTurtleModeActionIcon() {
