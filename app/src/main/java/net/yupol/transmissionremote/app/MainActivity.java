@@ -156,6 +156,8 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
         public void onRequestSuccess(AddTorrentResult addTorrentResult) {
             if (addTorrentResult.torrentDuplicate != null) {
                 Toast.makeText(MainActivity.this, getString(R.string.error_duplicate_torrent), Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(MainActivity.this, getString(R.string.torrent_added_successfully), Toast.LENGTH_LONG).show();
             }
         }
     };

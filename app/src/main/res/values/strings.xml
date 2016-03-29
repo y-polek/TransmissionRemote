@@ -102,6 +102,7 @@
     <string name="error_cannot_read_file_msg">Can\'t read file content</string>
     <string name="error_failed_to_open_torrent">Failed to open torrent. Please try again.</string>
     <string name="error_duplicate_torrent">Duplicate torrent already exists.</string>
+    <string name="torrent_added_successfully">Torrent added successfully.</string>
     <string name="select_torrent_file">Select torrent file</string>
     <string name="open_torrent">Open torrent…</string>
     <string name="address_of_torrent_file">Internet address of torrent file</string>
