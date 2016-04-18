@@ -6,14 +6,14 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
-public class RemotePreferencesActivity extends AppCompatActivity {
+public class PreferencesActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         getFragmentManager().beginTransaction()
-                .replace(android.R.id.content, new RemotePreferencesFragment()).commit();
+                .replace(android.R.id.content, new PreferencesFragment()).commit();
 
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {

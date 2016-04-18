@@ -2,4 +2,16 @@
 <resources>
     <string name="update_interval_key">update_interval</string>
     <string name="update_interval_default_value">2</string>
+
+    <string name="torrent_finished_notification_enabled_key">torrent_finished_notification_enabled_key</string>
+    <string name="torrent_finished_notification_enabled_default_value">true</string>
+
+    <string name="background_update_interval_key">notification_update_interval</string>
+    <string name="background_update_interval_default_value">180</string>
+
+    <string name="torrent_finished_notification_sound_key">torrent_finished_notification_sound_key</string>
+
+    <string name="torrent_finished_notification_vibrate_key">torrent_finished_notification_vibrate_key</string>
+    <string name="torrent_finished_notification_vibrate_default_value">false</string>
+
 </resources>

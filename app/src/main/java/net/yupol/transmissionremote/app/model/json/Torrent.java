@@ -25,6 +25,7 @@ public class Torrent implements ID, Parcelable {
     @Key("error") private int errorId;
     private Error error;
     @Key private String errorString;
+    @Key private boolean isFinished;
     @Key private File[] files;
     @Key private FileStat[] fileStats;
     @Key("bandwidthPriority") private int transferPriorityValue;
@@ -57,6 +58,7 @@ public class Torrent implements ID, Parcelable {
         uploadRatio = in.readDouble();
         errorId = in.readInt();
         errorString = in.readString();
+        isFinished = in.readInt() != 0;
         files = in.createTypedArray(File.CREATOR);
         fileStats = in.createTypedArray(FileStat.CREATOR);
         transferPriorityValue = in.readInt();
@@ -136,6 +138,13 @@ public class Torrent implements ID, Parcelable {
         return errorString;
     }
 
+    public boolean isFinished() {
+        // FIXME: isFinished JSON field always contain false value.
+        // For now finished state is determined by percentDone value.
+        //return isFinished;
+        return percentDone == 1.0;
+    }
+
     public TransferPriority getTransferPriority() {
         if (transferPriority == null) transferPriority = TransferPriority.fromModelValue(transferPriorityValue);
         return transferPriority;
@@ -199,6 +208,7 @@ public class Torrent implements ID, Parcelable {
         out.writeDouble(uploadRatio);
         out.writeInt(errorId);
         out.writeString(errorString);
+        out.writeInt(isFinished ? 1 : 0);
         out.writeTypedArray(files, flags);
         out.writeTypedArray(fileStats, flags);
         out.writeInt(transferPriorityValue);
@@ -242,6 +252,7 @@ public class Torrent implements ID, Parcelable {
                 ", errorId=" + errorId +
                 ", error=" + error +
                 ", errorString='" + errorString + '\'' +
+                ", isFinished=" + isFinished +
                 ", transferPriorityValue=" + transferPriorityValue +
                 ", transferPriority=" + transferPriority +
                 ", honorsSessionLimits=" + honorsSessionLimits +

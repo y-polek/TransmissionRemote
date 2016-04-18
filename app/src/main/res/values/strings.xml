@@ -34,14 +34,8 @@
     <string name="drawer_sort_by_date_added">Date added</string>
 
     <!-- Preferences -->
-    <string name="drawer_preferences">Preferences</string>
-    <string name="drawer_preferences_server">Server</string>
-    <string name="drawer_preferences_remote">Remote</string>
-    <string name="drawer_open">Open drawer</string>
-    <string name="drawer_close">Close drawer</string>
-    <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="notifications_pref_title">Notifications</string>
 
     <!-- Servers -->
     <string name="add_new_server_title">Add new server</string>
@@ -73,8 +67,14 @@
     <!-- Preferences -->
     <string name="update_interval_title">Update interval</string>
     <string name="update_interval_summary">Torrent list update interval</string>
+    <string name="background_update_interval_title">Background update interval</string>
+    <string name="background_update_interval_summary">How often to check torrents in background</string>
+    <string name="torrent_finished_notification_title">Enable torrent finished notification</string>
+    <string name="torrent_finished_notification_summary">Checks torrents in background</string>
+    <string name="torrent_finished_notification_vibrate_title">Vibrate</string>
+    <string name="torrent_finished_notification_sound_title">Sound</string>
     <string name="server_preferences">Server Preferences</string>
-    <string name="remote_preferences">Remote Preferences</string>
+    <string name="remote_preferences">Preferences</string>
     <string name="global_bandwidth_limits">Global bandwidth limits</string>
     <string name="download_rate">Download rate:</string>
     <string name="upload_rate">Upload rate:</string>
@@ -82,6 +82,8 @@
     <string name="turtle_speed_limits">Speed Limit mode</string>
     <string name="turtle_speed_limits_description">When enabled Speed Limit overrides the global bandwidth limits</string>
     <string name="preferences_update_failed">Failed to update server preferences</string>
+    <string name="preferences_notifications_title">Notifications</string>
+    <string name="preferences_notifications_summary">Torrent finished notifications</string>
 
     <!-- Torrent List -->
     <string name="unknown_error_message">Unknown error</string>
@@ -142,10 +144,15 @@
     <string name="three_dots">&#8230;</string>
     <string name="disabled">disabled</string>
 
-    <plurals name="selected_torrents">
+    <plurals name="torrents">
         <item quantity="zero">%d torrents</item>
         <item quantity="one">%d torrent</item>
         <item quantity="other">%d torrents</item>
+    </plurals>
+
+    <plurals name="torrents_finished">
+        <item quantity="one">Torrent is finished</item>
+        <item quantity="other">%d torrents are finished</item>
     </plurals>
 
 </resources>

@@ -12,6 +12,7 @@ import com.google.api.client.http.HttpResponse;
 import com.google.api.client.json.JsonObjectParser;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.common.base.Optional;
+import com.google.common.base.Strings;
 import com.octo.android.robospice.request.googlehttpclient.GoogleHttpClientSpiceRequest;
 
 import net.yupol.transmissionremote.app.server.Server;
@@ -19,7 +20,7 @@ import net.yupol.transmissionremote.app.server.Server;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.Arrays;
+import java.util.Collections;
 
 import javax.annotation.Nonnull;
 
@@ -31,7 +32,6 @@ public abstract class Request<RESULT> extends GoogleHttpClientSpiceRequest<RESUL
     private static final String URL_ENDING = "transmission/rpc";
 
     private Server server;
-    private String sessionId = "";
     private String responseSessionId;
 
     private int statusCode = -1;
@@ -44,8 +44,8 @@ public abstract class Request<RESULT> extends GoogleHttpClientSpiceRequest<RESUL
         this.server = server;
     }
 
-    public void setSessionId(@Nonnull String sessionId) {
-        this.sessionId = sessionId;
+    public Server getServer() {
+        return server;
     }
 
     public int getResponseStatusCode() {
@@ -58,8 +58,8 @@ public abstract class Request<RESULT> extends GoogleHttpClientSpiceRequest<RESUL
 
     @Override
     public RESULT loadDataFromNetwork() throws Exception {
-        if (server == null || sessionId == null) {
-            throw new IllegalStateException("Server and sessionId must be set before executing");
+        if (server == null) {
+            throw new IllegalStateException("Server must be set before executing");
         }
 
         String url = "http://" + server.getHost() + ':' + server.getPort() + "/" + URL_ENDING;
@@ -77,14 +77,14 @@ public abstract class Request<RESULT> extends GoogleHttpClientSpiceRequest<RESUL
 
         HttpHeaders headers = new HttpHeaders()
                 .setContentType("json")
-                .set(HEADER_SESSION_ID, sessionId);
+                .set(HEADER_SESSION_ID, Strings.emptyToNull(server.getLastSessionId()));
         if (server.isAuthenticationEnabled()) {
             headers.setBasicAuthentication(server.getUserName(), server.getPassword());
         }
         request.setHeaders(headers);
 
         JsonObjectParser jsonParser = new JsonObjectParser.Builder(new JacksonFactory())
-                .setWrapperKeys(Arrays.asList("arguments")).build();
+                .setWrapperKeys(Collections.singletonList("arguments")).build();
         request.setParser(jsonParser);
 
         HttpResponse response = null;

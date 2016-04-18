@@ -527,7 +527,7 @@ public class TorrentListFragment extends Fragment {
 
         private void updateCABTitle() {
             int count = adapter.getSelectedItemsCount();
-            String text = getResources().getQuantityString(R.plurals.selected_torrents, count, count);
+            String text = getResources().getQuantityString(R.plurals.torrents, count, count);
             actionMode.setTitle(text);
         }
 

@@ -2,9 +2,12 @@ package net.yupol.transmissionremote.app;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
@@ -14,6 +17,7 @@ import com.google.common.collect.FluentIterable;
 import net.yupol.transmissionremote.app.filtering.Filter;
 import net.yupol.transmissionremote.app.filtering.Filters;
 import net.yupol.transmissionremote.app.model.json.Torrent;
+import net.yupol.transmissionremote.app.notifications.UpdateService;
 import net.yupol.transmissionremote.app.server.Server;
 import net.yupol.transmissionremote.app.sorting.SortOrder;
 import net.yupol.transmissionremote.app.sorting.SortedBy;
@@ -30,7 +34,7 @@ import java.util.WeakHashMap;
 
 import javax.annotation.Nonnull;
 
-public class TransmissionRemote extends Application {
+public class TransmissionRemote extends Application implements SharedPreferences.OnSharedPreferenceChangeListener {
 
     private static final String SHARED_PREFS_NAME = "transmission_remote_shared_prefs";
     private static final String KEY_SERVERS = "key_servers";
@@ -62,11 +66,32 @@ public class TransmissionRemote extends Application {
     private String defaultDownloadDir;
 
     private Map<Server, Boolean> speedLimitsCache = new WeakHashMap<>();
+    private SharedPreferences sharedPreferences;
 
     @Override
     public void onCreate() {
         super.onCreate();
         restore();
+
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        sharedPreferences.registerOnSharedPreferenceChangeListener(this);
+
+        if (isNotificationEnabled()) {
+            startService(new Intent(this, UpdateService.class));
+        }
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        if (key.equals(getString(R.string.torrent_finished_notification_enabled_key))) {
+            if (isNotificationEnabled()) {
+                startService(new Intent(this, UpdateService.class));
+            } else {
+                stopService(new Intent(this, UpdateService.class));
+            }
+        } else if (key.equals(getString(R.string.background_update_interval_key))) {
+            stopService(new Intent(this, UpdateService.class));
+        }
     }
 
     public static TransmissionRemote getApplication(Context context) {
@@ -82,6 +107,10 @@ public class TransmissionRemote extends Application {
         persistServers();
         for (OnServerListChangedListener l : serverListListeners) {
             l.serverAdded(server);
+        }
+
+        if (isNotificationEnabled()) {
+            startService(new Intent(this, UpdateService.class));
         }
     }
 
@@ -141,9 +170,31 @@ public class TransmissionRemote extends Application {
     }
 
     public int getUpdateInterval() {
-        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
-        return Integer.parseInt(sp.getString(getString(R.string.update_interval_key),
+        return Integer.parseInt(sharedPreferences.getString(getString(R.string.update_interval_key),
                 getString(R.string.update_interval_default_value)));
+    }
+
+    /**
+     * @return background update interval in minutes
+     */
+    public int getBackgroundUpdateInterval() {
+        return Integer.parseInt(sharedPreferences.getString(getString(R.string.background_update_interval_key),
+                getString((R.string.background_update_interval_default_value))));
+    }
+
+    public boolean isNotificationEnabled() {
+        return sharedPreferences.getBoolean(getString(R.string.torrent_finished_notification_enabled_key),
+                Boolean.parseBoolean(getString(R.string.torrent_finished_notification_enabled_default_value)));
+    }
+
+    public boolean isNotificationVibroEnabled() {
+        return sharedPreferences.getBoolean(getString(R.string.torrent_finished_notification_vibrate_key), false);
+    }
+
+    @Nullable
+    public Uri getNotificationSound() {
+        String uri = sharedPreferences.getString(getString(R.string.torrent_finished_notification_sound_key), "");
+        return uri.isEmpty() ? null : Uri.parse(uri);
     }
 
     public void setSpeedLimitEnabled(boolean isEnabled) {

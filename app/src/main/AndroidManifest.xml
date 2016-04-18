@@ -5,6 +5,8 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
         android:name=".TransmissionRemote"
@@ -85,7 +87,7 @@
             android:name=".server.AddServerActivity"
             android:label="@string/add_new_server_title" >
         </activity>
-        <activity android:name=".preferences.RemotePreferencesActivity"
+        <activity android:name=".preferences.PreferencesActivity"
             android:label="@string/remote_preferences">
             <meta-data android:name="android.support.PARENT_ACTIVITY" android:value=".MainActivity"/>
         </activity>
@@ -105,9 +107,29 @@
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data android:name="android.support.PARENT_ACTIVITY" android:value=".MainActivity"/>
         </activity>
+        <activity android:name=".preferences.NotificationsPreferencesActivity"
+            android:label="@string/notifications_pref_title">
+            <intent-filter>
+                <action android:name=".preferences.NotificationsPreferencesActivity"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
 
         <service android:name=".transport.NoCacheGoogleHttpClientSpiceService"
             android:exported="false" />
+
+        <service android:name=".notifications.UpdateService"
+            android:exported="false"/>
+
+        <receiver android:name=".notifications.BootCompleteBroadcastReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.QUICKBOOT_POWERED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+                <category android:name="android.intent.category.HOME" />
+            </intent-filter>
+        </receiver>
+
     </application>
 
 </manifest>

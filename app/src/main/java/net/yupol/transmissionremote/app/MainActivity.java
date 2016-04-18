@@ -54,10 +54,11 @@ import net.yupol.transmissionremote.app.filtering.Filter;
 import net.yupol.transmissionremote.app.model.json.AddTorrentResult;
 import net.yupol.transmissionremote.app.model.json.ServerSettings;
 import net.yupol.transmissionremote.app.model.json.Torrent;
+import net.yupol.transmissionremote.app.notifications.UpdateService;
 import net.yupol.transmissionremote.app.opentorrent.DownloadLocationDialogFragment;
 import net.yupol.transmissionremote.app.opentorrent.OpenAddressDialogFragment;
 import net.yupol.transmissionremote.app.opentorrent.OpenByDialogFragment;
-import net.yupol.transmissionremote.app.preferences.RemotePreferencesActivity;
+import net.yupol.transmissionremote.app.preferences.PreferencesActivity;
 import net.yupol.transmissionremote.app.preferences.ServerPreferencesActivity;
 import net.yupol.transmissionremote.app.preferences.ServersActivity;
 import net.yupol.transmissionremote.app.server.AddServerActivity;
@@ -90,6 +91,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
@@ -298,7 +300,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
                     public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
                         switch (drawerItem.getIdentifier()) {
                             case DRAWER_ITEM_ID_SETTINGS:
-                                startActivity(new Intent(MainActivity.this, RemotePreferencesActivity.class));
+                                startActivity(new Intent(MainActivity.this, PreferencesActivity.class));
                                 return true;
                         }
 
@@ -621,6 +623,13 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
     @Override
     public void onTorrentUpdate(List<Torrent> torrents) {
         application.setTorrents(torrents);
+
+        if (application.isNotificationEnabled()) {
+            Intent intent = new Intent(this, UpdateService.class);
+            intent.putExtra(UpdateService.KEY_SERVER, application.getActiveServer());
+            intent.putParcelableArrayListExtra(UpdateService.KEY_TORRENT_LIST, new ArrayList<>(torrents));
+            startService(intent);
+        }
 
         if (getTorrentListFragment() == null) {
             showTorrentListFragment();

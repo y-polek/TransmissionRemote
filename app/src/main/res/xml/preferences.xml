@@ -14,4 +14,9 @@
         android:summary="@string/add_remove_servers">
         <intent android:action=".preferences.ServersActivity"/>
     </PreferenceScreen>
+    <PreferenceScreen
+        android:title="@string/preferences_notifications_title"
+        android:summary="@string/preferences_notifications_summary">
+        <intent android:action=".preferences.NotificationsPreferencesActivity"/>
+    </PreferenceScreen>
 </PreferenceScreen>

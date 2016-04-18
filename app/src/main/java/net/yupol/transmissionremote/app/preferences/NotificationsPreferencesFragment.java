@@ -5,11 +5,10 @@ import android.preference.PreferenceFragment;
 
 import net.yupol.transmissionremote.app.R;
 
-
-public class RemotePreferencesFragment extends PreferenceFragment {
+public class NotificationsPreferencesFragment extends PreferenceFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        addPreferencesFromResource(R.xml.preferences);
+        addPreferencesFromResource(R.xml.notification_preferences);
     }
 }
