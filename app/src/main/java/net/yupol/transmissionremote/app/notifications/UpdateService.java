@@ -129,19 +129,19 @@ public class UpdateService extends Service {
     private void checkForFinishedTorrents(Server server, List<Torrent> torrents) {
         SparseBooleanArray previousFinishedStates = readPreviousFinishedStates(server);
 
-        dbHelper.clearServerData(db, server.getHost());
+        dbHelper.clearServerData(db, server.getId());
 
         List<Torrent> finishedTorrents = new LinkedList<>();
         try {
             db.beginTransaction();
             for (Torrent torrent : torrents) {
                 ContentValues values = new ContentValues();
-                values.put(Columns.SERVER_IP, server.getHost());
+                values.put(Columns.SERVER_ID, server.getId());
                 values.put(Columns.TORRENT_ID, torrent.getId());
                 values.put(Columns.TORRENT_IS_FINISHED, torrent.isFinished());
                 db.insert(TorrentStatusDbHelper.TABLE_NAME_FINISHED_STATUS, null, values);
 
-                if (torrent.isFinished() && !previousFinishedStates.get(torrent.getId(), false)) {
+                if (torrent.isFinished() && !previousFinishedStates.get(torrent.getId(), true)) {
                     Log.d(TAG, "Torrent finished: " + torrent.getId() + " " + torrent.getName());
                     finishedTorrents.add(torrent);
                 }
@@ -160,9 +160,9 @@ public class UpdateService extends Service {
                 Columns.TORRENT_IS_FINISHED
         };
 
-        String whereClause = Columns.SERVER_IP + " = ?";
+        String whereClause = Columns.SERVER_ID + " = ?";
         String[] whereArgs = {
-                server.getHost()
+                server.getId()
         };
         Cursor cursor = db.query(TorrentStatusDbHelper.TABLE_NAME_FINISHED_STATUS, projection, whereClause, whereArgs, null, null, null);
         int idColumnIdx = cursor.getColumnIndexOrThrow(Columns.TORRENT_ID);

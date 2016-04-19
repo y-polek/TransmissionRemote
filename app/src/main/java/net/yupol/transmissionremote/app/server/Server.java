@@ -15,6 +15,7 @@ public class Server implements Parcelable {
     public static final String TAG = Server.class.getSimpleName();
 
     private UUID id;
+    private String idStr;
     private String name;
     private String host;
     private int port;
@@ -26,7 +27,7 @@ public class Server implements Parcelable {
     public Server(@Nonnull String name, @Nonnull String host, int port) {
         if (port <= 0 || port > 0xFFFF)
             throw new IllegalArgumentException("Port number value must be in range [1, 65535], actual value: " + port);
-        id = UUID.randomUUID();
+        setId(UUID.randomUUID());
         this.name = name;
         this.host = host;
         this.port = port;
@@ -101,6 +102,15 @@ public class Server implements Parcelable {
 
     public String toJson() {
         return new Gson().toJson(this);
+    }
+
+    private void setId(UUID id) {
+        this.id = id;
+        this.idStr = id.toString();
+    }
+
+    public String getId() {
+        return idStr;
     }
 
     public static Server fromJson(String jsonObj) {
@@ -185,7 +195,7 @@ public class Server implements Parcelable {
             } else {
                 server = new Server(name, host, port);
             }
-            server.id = id;
+            server.setId(id);
             String sessionId = Strings.emptyToNull(parcel.readString());
             server.setLastSessionId(sessionId);
             return server;
