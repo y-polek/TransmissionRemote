@@ -833,7 +833,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
 
     private void updateTurtleModeActionIcon() {
         if (turtleModeItem != null) {
-            turtleModeItem.setIcon(application.isSpeedLimitEnabled() ? R.drawable.turtle_blue : R.drawable.turtle_white);
+            turtleModeItem.setIcon(application.isSpeedLimitEnabled() ? R.drawable.ic_turtle_active : R.drawable.ic_turtle_default);
         }
         if (turtleModeButton != null) {
             turtleModeButton.setEnabled(application.isSpeedLimitEnabled());

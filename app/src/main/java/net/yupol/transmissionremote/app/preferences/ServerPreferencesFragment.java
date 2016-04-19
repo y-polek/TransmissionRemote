@@ -170,7 +170,7 @@ public class ServerPreferencesFragment extends Fragment {
         altBandwidthLimitFragment.setDownloadLimit(altLimitDown);
         altBandwidthLimitFragment.setUploadLimit(altLimitUp);
 
-        int turtleImage = isAltLimitEnabled ? R.drawable.turtle_blue : R.drawable.turtle;
+        int turtleImage = isAltLimitEnabled ? R.drawable.ic_turtle_active : R.drawable.ic_turtle_black;
         altLimitHeader.setCompoundDrawablesWithIntrinsicBounds(turtleImage, 0, 0, 0);
     }
 

@@ -26,8 +26,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@null"
-            custom:src_enabled="@drawable/turtle_blue"
-            custom:src_disabled="@drawable/turtle_white"
+            custom:src_enabled="@drawable/ic_turtle_active"
+            custom:src_disabled="@drawable/ic_turtle_default"
             custom:enabled="true"/>
     </android.support.v7.widget.Toolbar>
 </LinearLayout>

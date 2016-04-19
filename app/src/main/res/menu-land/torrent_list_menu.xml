@@ -11,7 +11,7 @@
             app:actionViewClass="net.yupol.transmissionremote.app.actionbar.SpeedTextView$UploadSpeedTextView"
             app:showAsAction="always" />
         <item android:id="@+id/action_turtle_mode"
-            android:icon="@drawable/turtle_white"
+            android:icon="@drawable/ic_turtle_default"
             android:title="@string/speed_limit"
             app:showAsAction="always" />
     </group>
