@@ -5,11 +5,15 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.IBinder;
 import android.os.SystemClock;
@@ -52,6 +56,7 @@ public class UpdateService extends Service {
     private SpiceTransportManager transportManager;
     private TorrentStatusDbHelper dbHelper;
     private SQLiteDatabase db;
+    private ConnectivityManager connectivityManager;
 
     @Override
     public void onCreate() {
@@ -62,6 +67,8 @@ public class UpdateService extends Service {
 
         dbHelper = new TorrentStatusDbHelper(this);
         db = dbHelper.getWritableDatabase();
+
+        connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
     }
 
     @Override
@@ -75,21 +82,28 @@ public class UpdateService extends Service {
             List<Torrent> torrents = intent.getParcelableArrayListExtra(KEY_TORRENT_LIST);
             checkForFinishedTorrents(server, torrents);
         } else {
-            for (final Server server : app.getServers()) {
-                transportManager.doRequest(new TorrentGetRequest(), server, new RequestListener<Torrents>() {
-                    @Override
-                    public void onRequestFailure(SpiceException spiceException) {
-                        Log.e(TAG, "Failed to retrieve torrent list from " + server.getName() + "(" + server.getHost() + ")");
-                    }
+            NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+            boolean isConnected = networkInfo != null && networkInfo.isConnected();
+            if (isConnected) {
+                for (final Server server : app.getServers()) {
+                    transportManager.doRequest(new TorrentGetRequest(), server, new RequestListener<Torrents>() {
+                        @Override
+                        public void onRequestFailure(SpiceException spiceException) {
+                            Log.e(TAG, "Failed to retrieve torrent list from " + server.getName() + "(" + server.getHost() + ")");
+                        }
 
-                    @Override
-                    public void onRequestSuccess(Torrents torrents) {
-                        checkForFinishedTorrents(server, torrents);
-                    }
-                });
+                        @Override
+                        public void onRequestSuccess(Torrents torrents) {
+                            checkForFinishedTorrents(server, torrents);
+                        }
+                    });
+                }
+
+                scheduleNextUpdate();
+            } else {
+                ConnectivityChangeReceiver.startServiceOnceConnected(this);
+                stopSelf();
             }
-
-            scheduleNextUpdate();
         }
 
         return START_STICKY;
@@ -221,5 +235,29 @@ public class UpdateService extends Service {
 
         NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         notificationManager.notify(NOTIFICATION_ID_TORRENT_FINISHED, builder.build());
+    }
+
+    private static class ConnectivityChangeReceiver extends BroadcastReceiver {
+
+        private static ConnectivityChangeReceiver receiver = new ConnectivityChangeReceiver();
+        private static boolean isRegistered = false;
+
+        public static void startServiceOnceConnected(Context context) {
+            if (!isRegistered) {
+                context.getApplicationContext().registerReceiver(receiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+                isRegistered = true;
+            }
+        }
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo networkInfo = cm.getActiveNetworkInfo();
+            if (networkInfo != null && networkInfo.isConnected()) {
+                context.unregisterReceiver(this);
+                isRegistered = false;
+                context.startService(new Intent(context, UpdateService.class));
+            }
+        }
     }
 }

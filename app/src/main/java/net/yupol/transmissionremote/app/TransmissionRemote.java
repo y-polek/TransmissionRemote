@@ -90,7 +90,7 @@ public class TransmissionRemote extends Application implements SharedPreferences
                 stopService(new Intent(this, UpdateService.class));
             }
         } else if (key.equals(getString(R.string.background_update_interval_key))) {
-            stopService(new Intent(this, UpdateService.class));
+            startService(new Intent(this, UpdateService.class));
         }
     }
 
