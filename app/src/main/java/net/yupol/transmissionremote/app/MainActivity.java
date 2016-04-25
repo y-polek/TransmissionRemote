@@ -104,7 +104,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
         TorrentListFragment.OnTorrentSelectedListener, TorrentListFragment.ContextualActionBarListener,
         OpenByDialogFragment.OnOpenTorrentSelectedListener, OpenAddressDialogFragment.OnOpenMagnetListener,
         DownloadLocationDialogFragment.OnDownloadLocationSelectedListener,
-        RemoveTorrentsDialogFragment.OnRemoveTorrentSelectionListener {
+        RemoveTorrentsDialogFragment.OnRemoveTorrentSelectionListener, NetworkErrorFragment.OnRefreshPressedListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
@@ -116,6 +116,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
     private static final String TAG_EMPTY_SERVER = "tag_empty_server";
     private static final String TAG_PROGRESSBAR = "tag_progressbar";
     private static final String TAG_TORRENT_LIST = "tag_torrent_list";
+    private static final String TAG_NETWORK_ERROR = "tag_network_error";
     private static final String TAG_OPEN_TORRENT_DIALOG = "tag_open_torrent_dialog";
     private static final String TAG_OPEN_TORRENT_BY_ADDRESS_DIALOG = "tag_open_torrent_by_address_dialog";
     private static final String TAG_DOWNLOAD_LOCATION_DIALOG = "tag_download_location_dialog";
@@ -650,6 +651,22 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
     }
 
     @Override
+    public void onNoNetwork() {
+        showNetworkErrorFragment(getString(R.string.network_error_message_no_network));
+    }
+
+    @Override
+    public void onNetworkError() {
+        showNetworkErrorFragment(getString(R.string.network_error_message_connection_error));
+    }
+
+    @Override
+    public void onRefreshPressed() {
+        showProgressbarFragment();
+        torrentUpdater.scheduleUpdate(0);
+    }
+
+    @Override
     public void onTorrentSelected(Torrent torrent) {
         Intent intent = new Intent(this, TorrentDetailsActivity.class);
         intent.putExtra(TorrentDetailsActivity.EXTRA_NAME_TORRENT, torrent);
@@ -828,6 +845,22 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
             Bundle args = new Bundle();
             args.putString(TorrentListFragment.KEY_SEARCH_QUERY, currentSearchQuery);
             torrentListFragment.setArguments(args);
+        }
+    }
+
+    private void showNetworkErrorFragment(String message) {
+        FragmentManager fm = getSupportFragmentManager();
+        NetworkErrorFragment fragment = (NetworkErrorFragment) fm.findFragmentByTag(TAG_NETWORK_ERROR);
+        if (fragment == null) {
+            fragment = new NetworkErrorFragment();
+            Bundle args = new Bundle();
+            args.putString(NetworkErrorFragment.KEY_MESSAGE, message);
+            fragment.setArguments(args);
+            FragmentTransaction ft = fm.beginTransaction();
+            ft.replace(R.id.torrent_list_container, fragment, TAG_NETWORK_ERROR);
+            ft.commitAllowingStateLoss();
+        } else {
+            fragment.setErrorMessage(message);
         }
     }
 

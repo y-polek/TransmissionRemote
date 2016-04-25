@@ -30,6 +30,8 @@ public class ServersActivity extends AppCompatActivity {
 
     private static final int REQUEST_CODE_NEW_SERVER = 1;
 
+    public static final String KEY_SERVER = "key_server";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,20 +60,7 @@ public class ServersActivity extends AppCompatActivity {
         serversFragment.setOnServerSelectedListener(new ServersFragment.OnServerSelectedListener() {
             @Override
             public void onServerSelected(Server server) {
-                FragmentManager fm = getFragmentManager();
-                ServerDetailsFragment serverDetailsFragment = (ServerDetailsFragment) fm.findFragmentByTag(TAG_SERVER_DETAILS);
-                if (serverDetailsFragment == null) {
-                    serverDetailsFragment = new ServerDetailsFragment();
-                }
-
-                Bundle arguments = new Bundle();
-                arguments.putParcelable(ServerDetailsFragment.ARGUMENT_SERVER, server);
-                serverDetailsFragment.setArguments(arguments);
-
-                FragmentTransaction ft = fm.beginTransaction();
-                ft.replace(R.id.fragment_container, serverDetailsFragment, TAG_SERVER_DETAILS);
-                ft.addToBackStack(null);
-                ft.commit();
+                showServerDetails(server);
             }
         });
 
@@ -81,6 +70,27 @@ public class ServersActivity extends AppCompatActivity {
                 invalidateOptionsMenu();
             }
         });
+
+        if (getIntent().hasExtra(KEY_SERVER)) {
+            showServerDetails((Server) getIntent().getParcelableExtra(KEY_SERVER));
+        }
+    }
+
+    private void showServerDetails(Server server) {
+        FragmentManager fm = getFragmentManager();
+        ServerDetailsFragment serverDetailsFragment = (ServerDetailsFragment) fm.findFragmentByTag(TAG_SERVER_DETAILS);
+        if (serverDetailsFragment == null) {
+            serverDetailsFragment = new ServerDetailsFragment();
+        }
+
+        Bundle arguments = new Bundle();
+        arguments.putParcelable(ServerDetailsFragment.ARGUMENT_SERVER, server);
+        serverDetailsFragment.setArguments(arguments);
+
+        FragmentTransaction ft = fm.beginTransaction();
+        ft.replace(R.id.fragment_container, serverDetailsFragment, TAG_SERVER_DETAILS);
+        ft.addToBackStack(null);
+        ft.commit();
     }
 
     @Override

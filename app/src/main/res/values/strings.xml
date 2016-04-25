@@ -60,7 +60,7 @@
     <string name="save_changes_question">Save changes?</string>
     <string name="save_changes_save">Save</string>
     <string name="save_changes_discard">Discard</string>
-    <string name="add_server_details">Add server details to start.</string>
+    <string name="add_server_details">Add server details to start</string>
     <string name="add_server">Add Server</string>
     <string name="manage_servers">Manage Servers</string>
 
@@ -143,6 +143,12 @@
     <string name="options_update_failed">Failed to update torrent options</string>
     <string name="three_dots">&#8230;</string>
     <string name="disabled">disabled</string>
+
+    <string name="retry">Retry</string>
+    <string name="server_settings">Server settings</string>
+    <string name="network_settings">Network settings</string>
+    <string name="network_error_message_no_network">Failed to connect to server. Please check your network settings</string>
+    <string name="network_error_message_connection_error">Failed to connect to server. Please check server settings</string>
 
     <plurals name="torrents">
         <item quantity="zero">%d torrents</item>

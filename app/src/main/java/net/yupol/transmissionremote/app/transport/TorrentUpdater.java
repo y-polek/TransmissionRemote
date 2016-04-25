@@ -2,6 +2,8 @@ package net.yupol.transmissionremote.app.transport;
 
 import android.util.Log;
 
+import com.octo.android.robospice.exception.NetworkException;
+import com.octo.android.robospice.exception.NoNetworkException;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
 
@@ -102,6 +104,12 @@ public class TorrentUpdater {
                 public void onRequestFailure(SpiceException spiceException) {
                     Log.d(TAG, "TorrentGetRequest failed. SC: " + currentRequest.getResponseStatusCode());
                     responseReceived = Boolean.TRUE;
+                    if (spiceException instanceof NoNetworkException) {
+                        listener.onNoNetwork();
+                    } else if (spiceException instanceof NetworkException) {
+                        Log.d(TAG, "NetworkException: " + spiceException.getMessage());
+                        listener.onNetworkError();
+                    }
                 }
 
                 @Override
@@ -128,5 +136,7 @@ public class TorrentUpdater {
 
     public interface TorrentUpdateListener {
         void onTorrentUpdate(List<Torrent> torrents);
+        void onNetworkError();
+        void onNoNetwork();
     }
 }

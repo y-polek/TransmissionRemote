@@ -9,19 +9,9 @@
     <dimen name="default_padding">8dp</dimen>
     <dimen name="default_padding_big">16dp</dimen>
     <dimen name="default_padding_small">4dp</dimen>
+    <dimen name="default_button_icon_size">22dp</dimen>
 
                 <!-- Drawer -->
-    <dimen name="drawer_list_group_text_size">18sp</dimen>
-    <dimen name="drawer_list_item_text_size">18sp</dimen>
-    <dimen name="drawer_list_group_margin">16dp</dimen>
-    <dimen name="drawer_list_item_margin">12dp</dimen>
-    <dimen name="drawer_list_group_height">32dp</dimen>
-    <dimen name="drawer_list_item_height">48dp</dimen>
-    <dimen name="drawer_list_group_divider_height">2dp</dimen>
-    <dimen name="drawer_list_item_divider_height">1dp</dimen>
-    <dimen name="activity_horizontal_margin">16dp</dimen>
-    <dimen name="activity_vertical_margin">16dp</dimen>
-    <dimen name="drawer_list_image_text_margin">12dp</dimen>
     <dimen name="header_settings_size">48dp</dimen>
     <dimen name="header_settings_padding">16dp</dimen>
     <dimen name="header_server_current_size">64dp</dimen>
@@ -31,7 +21,6 @@
     <dimen name="header_text_padding_left">16dp</dimen>
     <dimen name="header_text_padding_top">16dp</dimen>
     <dimen name="header_text_padding_bottom">16dp</dimen>
-    <dimen name="material_drawer_item_primary_description">12sp</dimen>
 
                 <!-- Servers -->
     <dimen name="add_server_title_size">20sp</dimen>

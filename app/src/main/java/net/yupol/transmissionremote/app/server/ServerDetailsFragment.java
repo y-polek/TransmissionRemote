@@ -21,6 +21,7 @@ public class ServerDetailsFragment extends Fragment {
 
     private static final String TAG = ServerDetailsFragment.class.getSimpleName();
     private static final int DEFAULT_PORT = 9091;
+    private static final String KEY_IS_AUTH_ENABLED = "key_is_auth_enabled";
 
     private boolean isAuthEnabled = false;
 
@@ -62,6 +63,21 @@ public class ServerDetailsFragment extends Fragment {
         updateUI(getServerArgument());
 
         return view;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(KEY_IS_AUTH_ENABLED, isAuthEnabled);
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        if (savedInstanceState != null && savedInstanceState.containsKey(KEY_IS_AUTH_ENABLED)) {
+            isAuthEnabled = savedInstanceState.getBoolean(KEY_IS_AUTH_ENABLED);
+            updateAuth(isAuthEnabled);
+        }
     }
 
     public Server getNewServer() {
