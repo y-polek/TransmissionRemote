@@ -9,18 +9,21 @@ import android.util.Log;
 import com.octo.android.robospice.SpiceManager;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
+import com.octo.android.robospice.retry.DefaultRetryPolicy;
+import com.octo.android.robospice.retry.RetryPolicy;
 
 import net.yupol.transmissionremote.app.server.Server;
 import net.yupol.transmissionremote.app.transport.request.Request;
 
-import org.apache.http.HttpStatus;
-
+import java.net.HttpURLConnection;
 import java.util.Timer;
 import java.util.TimerTask;
 
 public class SpiceTransportManager extends SpiceManager implements TransportManager {
 
     private static final String TAG = SpiceTransportManager.class.getSimpleName();
+
+    private static final RetryPolicy RETRY_POLICY_NO_RETRIES = new DefaultRetryPolicy(0, 0L, 0);
 
     private Timer timer;
     private Server currentServer;
@@ -36,14 +39,18 @@ public class SpiceTransportManager extends SpiceManager implements TransportMana
     public <T> void doRequest(final Request<T> request, @NonNull Server server, final RequestListener<T> listener) {
 
         request.setServer(server);
+        request.setRetryPolicy(RETRY_POLICY_NO_RETRIES);
 
+        Log.d(TAG, "execute " + request.getClass().getSimpleName() + " sessionId: " + request.getServer().getLastSessionId());
         execute(request, new PropagateRequestListener<T>(listener) {
             @Override
             protected boolean onFailure(SpiceException spiceException) {
-                if (request.getResponseStatusCode() == HttpStatus.SC_CONFLICT) {
+                Log.d(TAG, "onFailure SC: " + request.getResponseStatusCode() + " " + request.getClass().getSimpleName() + " " + request.getServer().getLastSessionId());
+                if (request.getResponseStatusCode() == HttpURLConnection.HTTP_CONFLICT) {
+                    Log.d(TAG, "SC_CONFLICT old sessionId: " + request.getServer().getLastSessionId());
                     String responseSessionId = request.getResponseSessionId();
-                    request.getServer().setLastSessionId(responseSessionId);
                     Log.d(TAG, "new sessionId: " + responseSessionId);
+                    request.getServer().setLastSessionId(responseSessionId);
                     doRequest(request, request.getServer(), listener);
                     return false;
                 }
@@ -52,6 +59,7 @@ public class SpiceTransportManager extends SpiceManager implements TransportMana
 
             @Override
             protected boolean onSuccess(T t) {
+                Log.d(TAG, "onSuccess " + request.getClass().getSimpleName() + " " + request.getServer().getLastSessionId());
                 return true;
             }
         });

@@ -54,7 +54,7 @@ public class NetworkErrorFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getContext(), ServersActivity.class);
-                intent.putExtra(ServersActivity.KEY_SERVER, ((TransmissionRemote) getContext().getApplicationContext()).getActiveServer());
+                intent.putExtra(ServersActivity.KEY_SERVER_UUID, TransmissionRemote.getApplication(getContext()).getActiveServer().getId());
                 startActivity(intent);
             }
         });

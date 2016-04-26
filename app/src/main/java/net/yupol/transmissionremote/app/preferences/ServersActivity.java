@@ -30,7 +30,9 @@ public class ServersActivity extends AppCompatActivity {
 
     private static final int REQUEST_CODE_NEW_SERVER = 1;
 
-    public static final String KEY_SERVER = "key_server";
+    public static final String KEY_SERVER_UUID = "key_server_uuid";
+
+    private TransmissionRemote app;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,8 +73,11 @@ public class ServersActivity extends AppCompatActivity {
             }
         });
 
-        if (getIntent().hasExtra(KEY_SERVER)) {
-            showServerDetails((Server) getIntent().getParcelableExtra(KEY_SERVER));
+        app = TransmissionRemote.getApplication(this);
+
+        if (getIntent().hasExtra(KEY_SERVER_UUID)) {
+            String id = getIntent().getStringExtra(KEY_SERVER_UUID);
+            showServerDetails(app.getServerById(id));
         }
     }
 
@@ -125,7 +130,7 @@ public class ServersActivity extends AppCompatActivity {
                             if (detailsFragment != null) {
                                 Server server = detailsFragment.getServerArgument();
                                 if (server != null) {
-                                    ((TransmissionRemote) getApplication()).removeServer(server);
+                                    app.removeServer(server);
                                     getFragmentManager().popBackStack();
                                 }
                             }
@@ -138,7 +143,7 @@ public class ServersActivity extends AppCompatActivity {
                 ServerDetailsFragment detailsFragment = (ServerDetailsFragment) getFragmentManager().findFragmentByTag(TAG_SERVER_DETAILS);
                 if (detailsFragment != null) {
                     detailsFragment.saveServer();
-                    ((TransmissionRemote) getApplication()).updateServer(detailsFragment.getServerArgument());
+                    app.updateServer(detailsFragment.getServerArgument());
                     getFragmentManager().popBackStack();
                     Toast.makeText(this, R.string.saved, Toast.LENGTH_SHORT).show();
                 } else {
@@ -166,7 +171,6 @@ public class ServersActivity extends AppCompatActivity {
         if (requestCode == REQUEST_CODE_NEW_SERVER) {
             if (resultCode == RESULT_OK) {
                 Server server = data.getParcelableExtra(AddServerActivity.EXTRA_SEVER);
-                TransmissionRemote app = (TransmissionRemote) getApplication();
                 app.addServer(server);
                 app.setActiveServer(server);
             }

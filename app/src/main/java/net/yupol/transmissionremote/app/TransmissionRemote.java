@@ -102,6 +102,14 @@ public class TransmissionRemote extends Application implements SharedPreferences
         return servers;
     }
 
+    @Nullable
+    public Server getServerById(@NonNull final String id) {
+        for (Server server : servers) {
+            if (id.equals(server.getId())) return server;
+        }
+        return null;
+    }
+
     public void addServer(Server server) {
         servers.add(server);
         persistServers();

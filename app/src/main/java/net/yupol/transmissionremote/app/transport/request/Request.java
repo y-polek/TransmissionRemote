@@ -87,24 +87,25 @@ public abstract class Request<RESULT> extends GoogleHttpClientSpiceRequest<RESUL
                 .setWrapperKeys(Collections.singletonList("arguments")).build();
         request.setParser(jsonParser);
 
-        HttpResponse response = null;
-        try {
-            response = request.execute();
-        } finally {
-            if (response != null) {
-                statusCode = response.getStatusCode();
-                responseSessionId = response.getHeaders().getFirstHeaderStringValue(HEADER_SESSION_ID);
+        HttpResponse response = request.execute();
 
-                /*if (this instanceof TorrentGetRequest) {
-                    String responseBody = IOUtils.toString(response.getContent());
-                    Log.d(TAG, "responseBody: " + responseBody);
-                }*/
-            } else {
-                statusCode = -1;
-                responseSessionId = null;
-            }
+        statusCode = response.getStatusCode();
+        responseSessionId = response.getHeaders().getFirstHeaderStringValue(HEADER_SESSION_ID);
+
+        RESULT result;
+        try {
+            result = response.parseAs(getResultType());
+            /*String responseBody = response.parseAsString();
+            Log.d(TAG + "SpiceTransportManager", getClass().getSimpleName() + " responseBody: " + responseBody);
+            result = request.getParser().parseAndClose(new StringReader(responseBody), getResultType());*/
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to parse response. SC: " + statusCode, e);
+            throw e;
+        } finally {
+            response.disconnect();
         }
-        return response.parseAs(getResultType());
+
+        return result;
     }
 
     private String createBody() {

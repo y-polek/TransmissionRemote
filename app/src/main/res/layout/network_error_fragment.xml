@@ -10,8 +10,7 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:textSize="@dimen/tr_abc_text_size_title_material"
-        android:gravity="center"
-        android:text="Network er sdfasdf asdfaas dfasas dfaasdf asdfas d asdfsdf as asdf af sdfa sdfasdf as asf a "/>
+        android:gravity="center"/>
     <LinearLayout
         android:layout_width="0dp"
         app:layout_widthPercent="65%"

@@ -11,6 +11,7 @@ import net.yupol.transmissionremote.app.model.json.Torrent;
 import net.yupol.transmissionremote.app.model.json.Torrents;
 import net.yupol.transmissionremote.app.transport.request.TorrentGetRequest;
 
+import java.net.HttpURLConnection;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -105,10 +106,14 @@ public class TorrentUpdater {
                     Log.d(TAG, "TorrentGetRequest failed. SC: " + currentRequest.getResponseStatusCode());
                     responseReceived = Boolean.TRUE;
                     if (spiceException instanceof NoNetworkException) {
-                        listener.onNoNetwork();
+                        listener.onNetworkError(NetworkError.NO_NETWORK);
                     } else if (spiceException instanceof NetworkException) {
-                        Log.d(TAG, "NetworkException: " + spiceException.getMessage());
-                        listener.onNetworkError();
+                        Log.d(TAG, "NetworkException: " + spiceException.getMessage() + " status code: " + currentRequest.getResponseStatusCode());
+                        NetworkError error = NetworkError.OTHER;
+                        if (currentRequest.getResponseStatusCode() == HttpURLConnection.HTTP_UNAUTHORIZED) {
+                            error = NetworkError.UNAUTHORIZED;
+                        }
+                        listener.onNetworkError(error);
                     }
                 }
 
@@ -136,7 +141,6 @@ public class TorrentUpdater {
 
     public interface TorrentUpdateListener {
         void onTorrentUpdate(List<Torrent> torrents);
-        void onNetworkError();
-        void onNoNetwork();
+        void onNetworkError(NetworkError error);
     }
 }

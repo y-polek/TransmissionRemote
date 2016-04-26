@@ -70,6 +70,7 @@ import net.yupol.transmissionremote.app.torrentlist.EmptyServerFragment;
 import net.yupol.transmissionremote.app.torrentlist.RemoveTorrentsDialogFragment;
 import net.yupol.transmissionremote.app.torrentlist.TorrentListFragment;
 import net.yupol.transmissionremote.app.transport.BaseSpiceActivity;
+import net.yupol.transmissionremote.app.transport.NetworkError;
 import net.yupol.transmissionremote.app.transport.TorrentUpdater;
 import net.yupol.transmissionremote.app.transport.TransportManager;
 import net.yupol.transmissionremote.app.transport.request.AddTorrentByFileRequest;
@@ -651,13 +652,21 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
     }
 
     @Override
-    public void onNoNetwork() {
-        showNetworkErrorFragment(getString(R.string.network_error_message_no_network));
-    }
+    public void onNetworkError(NetworkError error) {
+        int messageRes;
 
-    @Override
-    public void onNetworkError() {
-        showNetworkErrorFragment(getString(R.string.network_error_message_connection_error));
+        switch (error) {
+            case NO_NETWORK:
+                messageRes = R.string.network_error_message_no_network;
+                break;
+            case UNAUTHORIZED:
+                messageRes = R.string.network_error_message_unauthorized;
+                break;
+            default:
+                messageRes = R.string.network_error_message_connection_error;
+        }
+
+        showNetworkErrorFragment(getString(messageRes));
     }
 
     @Override

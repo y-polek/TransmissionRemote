@@ -147,8 +147,9 @@
     <string name="retry">Retry</string>
     <string name="server_settings">Server settings</string>
     <string name="network_settings">Network settings</string>
-    <string name="network_error_message_no_network">Failed to connect to server. Please check your network settings</string>
-    <string name="network_error_message_connection_error">Failed to connect to server. Please check server settings</string>
+    <string name="network_error_message_no_network">Failed to connect to the server. Check network settings</string>
+    <string name="network_error_message_connection_error">Failed to connect to the server. Check server settings</string>
+    <string name="network_error_message_unauthorized">Unauthorized access. Check username/password in server settings</string>
 
     <plurals name="torrents">
         <item quantity="zero">%d torrents</item>
