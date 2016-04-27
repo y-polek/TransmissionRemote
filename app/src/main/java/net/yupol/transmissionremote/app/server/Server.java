@@ -2,6 +2,7 @@ package net.yupol.transmissionremote.app.server;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
@@ -13,6 +14,7 @@ import javax.annotation.Nonnull;
 public class Server implements Parcelable {
 
     public static final String TAG = Server.class.getSimpleName();
+    public static final String DEFAULT_RPC_URL = "transmission/rpc";
 
     private UUID id;
     private String idStr;
@@ -22,6 +24,7 @@ public class Server implements Parcelable {
     private boolean useAuthentication;
     private String userName;
     private String password;
+    private String rpcUrl = DEFAULT_RPC_URL;
     private String lastSessionId;
 
     public Server(@Nonnull String name, @Nonnull String host, int port) {
@@ -92,6 +95,15 @@ public class Server implements Parcelable {
         this.password = password;
     }
 
+    @NonNull
+    public String getRpcUrl() {
+        return rpcUrl;
+    }
+
+    public void setRpcUrl(@NonNull String url) {
+        this.rpcUrl = url;
+    }
+
     public void setLastSessionId(String sessionId) {
         lastSessionId = sessionId;
     }
@@ -126,13 +138,13 @@ public class Server implements Parcelable {
 
         if (port != server.port) return false;
         if (useAuthentication != server.useAuthentication) return false;
-        if (!host.equals(server.host)) return false;
         if (!id.equals(server.id)) return false;
         if (!name.equals(server.name)) return false;
+        if (!host.equals(server.host)) return false;
         if (userName != null ? !userName.equals(server.userName) : server.userName != null)
             return false;
+        return rpcUrl.equals(server.rpcUrl);
 
-        return true;
     }
 
     @Override
@@ -143,6 +155,7 @@ public class Server implements Parcelable {
         result = 31 * result + port;
         result = 31 * result + (useAuthentication ? 1 : 0);
         result = 31 * result + (userName != null ? userName.hashCode() : 0);
+        result = 31 * result + rpcUrl.hashCode();
         return result;
     }
 
@@ -175,6 +188,7 @@ public class Server implements Parcelable {
             dest.writeString(userName);
             dest.writeString(password);
         }
+        dest.writeString(rpcUrl);
         dest.writeString(Strings.nullToEmpty(lastSessionId));
     }
 
@@ -196,6 +210,7 @@ public class Server implements Parcelable {
                 server = new Server(name, host, port);
             }
             server.setId(id);
+            server.setRpcUrl(parcel.readString());
             String sessionId = Strings.emptyToNull(parcel.readString());
             server.setLastSessionId(sessionId);
             return server;

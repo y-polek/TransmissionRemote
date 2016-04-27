@@ -29,7 +29,6 @@ public abstract class Request<RESULT> extends GoogleHttpClientSpiceRequest<RESUL
     private static final String TAG = Request.class.getSimpleName();
 
     private static final String HEADER_SESSION_ID = "X-Transmission-Session-Id";
-    private static final String URL_ENDING = "transmission/rpc";
 
     private Server server;
     private String responseSessionId;
@@ -62,7 +61,7 @@ public abstract class Request<RESULT> extends GoogleHttpClientSpiceRequest<RESUL
             throw new IllegalStateException("Server must be set before executing");
         }
 
-        String url = "http://" + server.getHost() + ':' + server.getPort() + "/" + URL_ENDING;
+        String url = "http://" + server.getHost() + ':' + server.getPort() + "/" + server.getRpcUrl();
 
         HttpRequestFactory requestFactory = getHttpRequestFactory();
         Log.d(TAG, "requestFactory: " + requestFactory);

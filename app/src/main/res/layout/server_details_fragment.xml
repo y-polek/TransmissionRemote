@@ -45,8 +45,35 @@
             android:layout_marginBottom="@dimen/add_server_group_margin"
             android:hint="@string/server_port_hint"
             android:singleLine="true"
-            android:numeric="integer"
+            android:inputType="number"
             android:text="@integer/default_port" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="@dimen/default_text_margin_small"
+                android:text="@string/rpc_url"/>
+            <EditText android:id="@+id/rpc_url_edit_text"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/default_edit_text_height"
+                android:layout_weight="1"
+                android:paddingTop="@dimen/default_edit_text_padding"
+                android:paddingBottom="@dimen/default_edit_text_padding"
+                android:layout_marginBottom="@dimen/add_server_group_margin"
+                android:hint="@string/server_rpc_url_hint"
+                android:singleLine="true"
+                android:inputType="textUri"
+                android:text="@string/default_rpc_url"/>
+            <Button android:id="@+id/default_rpc_url_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/default_text_margin_small"
+                android:text="@string/default_url"/>
+        </LinearLayout>
 
         <CheckBox android:id="@+id/aunthentication_checkbox"
             android:layout_width="match_parent"
@@ -68,8 +95,7 @@
             android:paddingBottom="@dimen/default_edit_text_padding"
             android:hint="@string/password"
             android:singleLine="true"
-            android:password="true" />
-
+            android:inputType="textPassword" />
     </LinearLayout>
 
 </ScrollView>

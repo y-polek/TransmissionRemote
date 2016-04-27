@@ -8,12 +8,15 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 
 import com.google.api.client.repackaged.com.google.common.base.Strings;
 
 import net.yupol.transmissionremote.app.R;
+
+import org.apache.commons.lang3.StringUtils;
 
 public class ServerDetailsFragment extends Fragment {
 
@@ -22,6 +25,7 @@ public class ServerDetailsFragment extends Fragment {
     private static final String TAG = ServerDetailsFragment.class.getSimpleName();
     private static final int DEFAULT_PORT = 9091;
     private static final String KEY_IS_AUTH_ENABLED = "key_is_auth_enabled";
+    private static final String CHARS_TO_STRIP_RPC = "/";
 
     private boolean isAuthEnabled = false;
 
@@ -31,6 +35,7 @@ public class ServerDetailsFragment extends Fragment {
     private CheckBox authCheckBox;
     private EditText userNameEdit;
     private EditText passwordEdit;
+    private EditText rpcUrlEdit;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -42,6 +47,14 @@ public class ServerDetailsFragment extends Fragment {
         authCheckBox = (CheckBox) view.findViewById(R.id.aunthentication_checkbox);
         userNameEdit = (EditText) view.findViewById(R.id.user_name_edit_text);
         passwordEdit = (EditText) view.findViewById(R.id.password_edit_text);
+        rpcUrlEdit = (EditText) view.findViewById(R.id.rpc_url_edit_text);
+        Button defaultRpcUrlBtn = (Button) view.findViewById(R.id.default_rpc_url_button);
+        defaultRpcUrlBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                rpcUrlEdit.setText(Server.DEFAULT_RPC_URL);
+            }
+        });
 
         portNumberEdit.setFilters(new InputFilter[]{PortNumberFilter.instance()});
 
@@ -51,16 +64,18 @@ public class ServerDetailsFragment extends Fragment {
         authCheckBox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                isAuthEnabled = authCheckBox.isChecked();
-                updateAuth(isAuthEnabled);
+                updateAuth(authCheckBox.isChecked());
             }
         });
+
+        Server server = getServerArgument();
+        rpcUrlEdit.setText(server != null ? server.getRpcUrl() : Server.DEFAULT_RPC_URL);
 
         serverNameEdit.addTextChangedListener(new ClearErrorTextWatcher(serverNameEdit));
         hostNameEdit.addTextChangedListener(new ClearErrorTextWatcher(hostNameEdit));
         portNumberEdit.addTextChangedListener(new ClearErrorTextWatcher(portNumberEdit));
 
-        updateUI(getServerArgument());
+        updateUI(server);
 
         return view;
     }
@@ -112,6 +127,7 @@ public class ServerDetailsFragment extends Fragment {
         server.setAuthenticationEnabled(isAuthEnabled);
         server.setUserName(getUiUserName());
         server.setPassword(getUiPassword());
+        server.setRpcUrl(getUiRpcUrl());
     }
 
     public boolean hasChanges() {
@@ -131,6 +147,8 @@ public class ServerDetailsFragment extends Fragment {
             return true;
         if (!getUiPassword().equals(Strings.nullToEmpty(server.getPassword())))
             return true;
+        if (!getUiRpcUrl().equals(server.getRpcUrl()))
+            return true;
         return false;
     }
 
@@ -142,6 +160,7 @@ public class ServerDetailsFragment extends Fragment {
             updateAuth(false);
             userNameEdit.setText("");
             passwordEdit.setText("");
+            rpcUrlEdit.setText(Server.DEFAULT_RPC_URL);
         } else {
             serverNameEdit.setText(server.getName());
             hostNameEdit.setText(server.getHost());
@@ -149,6 +168,7 @@ public class ServerDetailsFragment extends Fragment {
             updateAuth(server.isAuthenticationEnabled());
             userNameEdit.setText(server.getUserName());
             passwordEdit.setText(server.getPassword());
+            rpcUrlEdit.setText(server.getRpcUrl());
         }
     }
 
@@ -170,6 +190,10 @@ public class ServerDetailsFragment extends Fragment {
 
     private String getUiPassword() {
         return passwordEdit.getText().toString();
+    }
+
+    private String getUiRpcUrl() {
+        return StringUtils.stripEnd(StringUtils.stripStart(rpcUrlEdit.getText().toString(), CHARS_TO_STRIP_RPC), CHARS_TO_STRIP_RPC);
     }
 
     private boolean checkValidity() {

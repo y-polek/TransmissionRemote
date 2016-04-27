@@ -43,7 +43,10 @@
     <string name="server_name_hint">Server name</string>
     <string name="server_host_hint">Host name or IP address</string>
     <string name="server_port_hint">Port number</string>
+    <string name="server_rpc_url_hint">RPC URL</string>
     <string name="authentication">Authentication</string>
+    <string name="rpc_url">RPC URL:</string>
+    <string name="default_url">Default</string>
     <string name="username">Username</string>
     <string name="password">Password</string>
     <string name="server_name_error_message">Name must be non-empty</string>
