@@ -16,8 +16,8 @@
 
         <net.yupol.transmissionremote.app.torrentlist.PlayPauseButton
             android:id="@+id/pause_resume_button"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="@dimen/torrent_list_start_button_size"
+            android:layout_height="@dimen/torrent_list_start_button_size"
             android:layout_gravity="center_vertical"
             android:focusable="false"
             android:focusableInTouchMode="false"/>
@@ -25,7 +25,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingLeft="8dp"
+            android:paddingLeft="@dimen/torrent_list_start_button_padding"
             android:orientation="vertical"
             android:clickable="false">
 
@@ -42,7 +42,7 @@
                 <TextView android:id="@+id/downloaded_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="@dimen/abc_text_size_body_1_material"
+                    android:textSize="@dimen/tr_abc_text_size_caption_material"
                     android:textColor="?android:textColorSecondary"/>
                 <ImageView android:id="@+id/download_icon"
                     android:layout_width="@dimen/torrent_list_down_up_icon_size"
@@ -60,7 +60,7 @@
                     android:layout_toLeftOf="@id/download_icon"
                     android:gravity="end"
                     android:layout_marginRight="@dimen/default_text_margin"
-                    android:textSize="@dimen/abc_text_size_body_1_material"
+                    android:textSize="@dimen/tr_abc_text_size_caption_material"
                     android:textColor="?android:textColorSecondary"/>
             </RelativeLayout>
 
@@ -70,7 +70,7 @@
                 <TextView android:id="@+id/uploaded_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="@dimen/abc_text_size_body_1_material"
+                    android:textSize="@dimen/tr_abc_text_size_caption_material"
                     android:textColor="?android:textColorSecondary"/>
 
                 <ImageView android:id="@+id/upload_icon"
@@ -89,15 +89,38 @@
                     android:layout_toLeftOf="@id/upload_icon"
                     android:gravity="end"
                     android:layout_marginRight="@dimen/default_text_margin"
-                    android:textSize="@dimen/abc_text_size_body_1_material"
+                    android:textSize="@dimen/tr_abc_text_size_caption_material"
                     android:textColor="?android:textColorSecondary"/>
             </RelativeLayout>
 
             <ProgressBar android:id="@+id/progress_bar"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/torrent_list_progressbar_height"
-                android:progress="15"
+                android:layout_marginTop="@dimen/default_text_margin_small"
+                android:layout_marginBottom="@dimen/default_text_margin_small"
                 style="@android:style/Widget.Holo.ProgressBar.Horizontal"/>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView android:id="@+id/percent_done_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:textSize="@dimen/tr_abc_text_size_caption_material"
+                    android:textColor="?android:textColorSecondary"
+                    android:text="99.9%"/>
+
+                <TextView android:id="@+id/remainitn_time_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true"
+                    android:textSize="@dimen/tr_abc_text_size_caption_material"
+                    android:textColor="?android:textColorSecondary"
+                    android:text="9h 23m 59s"/>
+            </RelativeLayout>
 
             <TextView android:id="@+id/error_message"
                 android:layout_width="match_parent"

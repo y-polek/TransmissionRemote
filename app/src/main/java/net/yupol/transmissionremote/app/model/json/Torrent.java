@@ -20,6 +20,7 @@ public class Torrent implements ID, Parcelable {
     @Key("rateDownload") private int downloadRate;
     @Key("rateUpload") private int uploadRate;
     @Key private long leftUntilDone;
+    @Key private long eta;
     @Key("uploadedEver") private long uploadedSize;
     @Key private double uploadRatio;
     @Key("error") private int errorId;
@@ -54,6 +55,7 @@ public class Torrent implements ID, Parcelable {
         downloadRate = in.readInt();
         uploadRate = in.readInt();
         leftUntilDone = in.readLong();
+        eta = in.readLong();
         uploadedSize = in.readLong();
         uploadRatio = in.readDouble();
         errorId = in.readInt();
@@ -107,6 +109,10 @@ public class Torrent implements ID, Parcelable {
 
     public long getLeftUntilDone() {
         return leftUntilDone;
+    }
+
+    public long getEta() {
+        return eta;
     }
 
     public long getUploadedSize() {
@@ -204,6 +210,7 @@ public class Torrent implements ID, Parcelable {
         out.writeInt(downloadRate);
         out.writeInt(uploadRate);
         out.writeLong(leftUntilDone);
+        out.writeLong(eta);
         out.writeLong(uploadedSize);
         out.writeDouble(uploadRatio);
         out.writeInt(errorId);

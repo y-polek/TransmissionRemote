@@ -27,6 +27,7 @@ public class TorrentGetRequest extends Request<Torrents> {
             TorrentMetadata.LEFT_UNTIL_DONE,
             TorrentMetadata.UPLOADED_EVER,
             TorrentMetadata.UPLOAD_RATIO,
+            TorrentMetadata.ETA,
             TorrentMetadata.ERROR,
             TorrentMetadata.ERROR_STRING,
             TorrentMetadata.IS_FINISHED,

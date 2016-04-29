@@ -10,7 +10,7 @@ import com.google.common.base.Strings;
 
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.utils.MetricsUtils;
-import net.yupol.transmissionremote.app.utils.SizeUtils;
+import net.yupol.transmissionremote.app.utils.TextUtils;
 
 public abstract class SpeedTextView extends TextView {
 
@@ -42,7 +42,7 @@ public abstract class SpeedTextView extends TextView {
     }
 
     private String speedText(long bytes) {
-        return Strings.padStart(SizeUtils.displayableSize(bytes), 5, ' ') + "/s";
+        return Strings.padStart(TextUtils.displayableSize(bytes), 5, ' ') + "/s";
     }
 
     private enum Direction {

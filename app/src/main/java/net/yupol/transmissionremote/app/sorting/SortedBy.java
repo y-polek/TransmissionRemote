@@ -1,6 +1,7 @@
 package net.yupol.transmissionremote.app.sorting;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.ComparisonChain;
 
 import net.yupol.transmissionremote.app.model.json.Torrent;
 
@@ -27,7 +28,11 @@ public enum SortedBy {
     TIME_REMAINING(new Comparator<Torrent>() {
         @Override
         public int compare(Torrent t1, Torrent t2) {
-            return Long.signum(t1.getLeftUntilDone() - t2.getLeftUntilDone());
+            return ComparisonChain.start()
+                    .compareFalseFirst(t1.isFinished(), t2.isFinished())
+                    .compareFalseFirst(t1.getEta() < 0, t2.getEta() < 0)
+                    .compare(t1.getEta(), t2.getEta())
+                    .result();
         }
     }),
 

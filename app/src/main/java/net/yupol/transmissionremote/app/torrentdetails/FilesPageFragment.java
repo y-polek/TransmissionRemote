@@ -19,7 +19,7 @@ import net.yupol.transmissionremote.app.model.json.Torrent;
 import net.yupol.transmissionremote.app.transport.BaseSpiceActivity;
 import net.yupol.transmissionremote.app.transport.TransportManager;
 import net.yupol.transmissionremote.app.transport.request.TorrentSetRequest;
-import net.yupol.transmissionremote.app.utils.SizeUtils;
+import net.yupol.transmissionremote.app.utils.TextUtils;
 
 import java.util.Arrays;
 import java.util.Comparator;
@@ -127,8 +127,8 @@ public class FilesPageFragment extends BasePageFragment {
                 holder.dirName.setVisibility(dirName.isEmpty() ? View.GONE : View.VISIBLE);
 
                 String stats = String.format("%s of %s (%d%%)",
-                        SizeUtils.displayableSize(file.getBytesCompleted()),
-                        SizeUtils.displayableSize(file.getLength()),
+                        TextUtils.displayableSize(file.getBytesCompleted()),
+                        TextUtils.displayableSize(file.getLength()),
                         (int) (100 * file.getBytesCompleted()/(double) file.getLength()));
                 holder.starts.setText(stats);
 

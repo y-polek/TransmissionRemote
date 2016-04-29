@@ -30,7 +30,7 @@ import net.yupol.transmissionremote.app.TransmissionRemote;
 import net.yupol.transmissionremote.app.model.json.FreeSpace;
 import net.yupol.transmissionremote.app.transport.BaseSpiceActivity;
 import net.yupol.transmissionremote.app.transport.request.FreeSpaceRequest;
-import net.yupol.transmissionremote.app.utils.SizeUtils;
+import net.yupol.transmissionremote.app.utils.TextUtils;
 
 public class DownloadLocationDialogFragment extends DialogFragment {
 
@@ -139,7 +139,7 @@ public class DownloadLocationDialogFragment extends DialogFragment {
                 public void onRequestSuccess(FreeSpace freeSpace) {
                     if (freeSpace.getSizeInBytes() >= 0) {
                         freeSpaceText.setText(getString(
-                                R.string.free_space, SizeUtils.displayableSize(freeSpace.getSizeInBytes())));
+                                R.string.free_space, TextUtils.displayableSize(freeSpace.getSizeInBytes())));
                         ((AlertDialog) getDialog()).getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(true);
                     } else {
                         String useDefaultText = getString(R.string.use_default_directory);

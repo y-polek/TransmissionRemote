@@ -49,7 +49,7 @@ import net.yupol.transmissionremote.app.transport.request.StartTorrentRequest;
 import net.yupol.transmissionremote.app.transport.request.StopTorrentRequest;
 import net.yupol.transmissionremote.app.transport.request.TorrentGetRequest;
 import net.yupol.transmissionremote.app.utils.ColorUtils;
-import net.yupol.transmissionremote.app.utils.SizeUtils;
+import net.yupol.transmissionremote.app.utils.TextUtils;
 import net.yupol.transmissionremote.app.utils.diff.Equals;
 import net.yupol.transmissionremote.app.utils.diff.ListDiff;
 import net.yupol.transmissionremote.app.utils.diff.Range;
@@ -62,6 +62,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 public class TorrentListFragment extends Fragment {
 
@@ -76,6 +77,8 @@ public class TorrentListFragment extends Fragment {
     public static final String KEY_SEARCH_QUERY = "key_search_query";
 
     private static final NameFilter NAME_FILTER = new NameFilter();
+
+    private static final long ETA_INFINITE_THRESHOLD = TimeUnit.DAYS.toSeconds(7);
 
     private TransmissionRemote app;
     private TransportManager transportManager;
@@ -407,20 +410,20 @@ public class TorrentListFragment extends Fragment {
                 holder.nameText.setText(torrent.getName());
             }
 
-            String totalSize = SizeUtils.displayableSize(torrent.getTotalSize());
+            String totalSize = TextUtils.displayableSize(torrent.getTotalSize());
             String downloadedText;
-            if (torrent.getPercentDone() == 1.0) {
+            boolean isFinished = torrent.isFinished();
+            if (isFinished) {
                 downloadedText = totalSize;
             } else {
-                String downloadedSize = SizeUtils.displayableSize((long) (torrent.getPercentDone() * torrent.getTotalSize()));
-                String percentDone = String.format(Locale.getDefault(), "%.2f%%", 100 * torrent.getPercentDone());
-                downloadedText = context.getString(R.string.downloaded_text, downloadedSize, totalSize, percentDone);
+                String downloadedSize = TextUtils.displayableSize((long) (torrent.getPercentDone() * torrent.getTotalSize()));
+                downloadedText = context.getString(R.string.downloaded_text, downloadedSize, totalSize);
             }
             holder.downloadedTextView.setText(downloadedText);
 
             double uploadRatio = Math.max(torrent.getUploadRatio(), 0.0);
             String uploadedText = context.getString(R.string.uploaded_text,
-                    SizeUtils.displayableSize(torrent.getUploadedSize()), uploadRatio);
+                    TextUtils.displayableSize(torrent.getUploadedSize()), uploadRatio);
             holder.uploadedTextView.setText(uploadedText);
 
             holder.progressBar.setProgress((int) (torrent.getPercentDone() * holder.progressBar.getMax()));
@@ -430,6 +433,20 @@ public class TorrentListFragment extends Fragment {
 
             holder.downloadRateText.setText(speedText(torrent.getDownloadRate()));
             holder.uploadRateText.setText(speedText(torrent.getUploadRate()));
+
+            holder.percentDoneText.setVisibility(isFinished ? View.GONE : View.VISIBLE);
+            holder.remainingTimeText.setVisibility(isFinished ? View.GONE : View.VISIBLE);
+            if (!isFinished) {
+                String percentDone = String.format(Locale.getDefault(), "%.2f%%", 100 * torrent.getPercentDone());
+                holder.percentDoneText.setText(percentDone);
+
+                long eta = torrent.getEta();
+                String etaText;
+                if (eta < 0) etaText = getString(R.string.eta_unknown);
+                else if (eta > ETA_INFINITE_THRESHOLD) etaText = getString(R.string.eta_infinite);
+                else etaText = TextUtils.displayableTime(torrent.getEta());
+                holder.remainingTimeText.setText(etaText);
+            }
 
             holder.pauseResumeBtn.setPaused(isPaused);
 
@@ -553,7 +570,7 @@ public class TorrentListFragment extends Fragment {
         }
 
         private String speedText(long bytes) {
-            return Strings.padStart(SizeUtils.displayableSize(bytes), 5, ' ') + "/s";
+            return Strings.padStart(TextUtils.displayableSize(bytes), 5, ' ') + "/s";
         }
 
         private void updateTorrent(Torrent torrent) {
@@ -583,6 +600,8 @@ public class TorrentListFragment extends Fragment {
         public final ProgressBar progressBar;
         public final TextView downloadRateText;
         public final TextView uploadRateText;
+        public final TextView percentDoneText;
+        public final TextView remainingTimeText;
         public final PlayPauseButton pauseResumeBtn;
         public final TextView errorMsgView;
         public final View selectedOverlay;
@@ -601,6 +620,9 @@ public class TorrentListFragment extends Fragment {
             int maxWidth = bounds.width();
             downloadRateText.setWidth(maxWidth);
             uploadRateText.setWidth(maxWidth);
+
+            percentDoneText = (TextView) itemView.findViewById(R.id.percent_done_text);
+            remainingTimeText = (TextView) itemView.findViewById(R.id.remainitn_time_text);
 
             pauseResumeBtn = (PlayPauseButton) itemView.findViewById(R.id.pause_resume_button);
 

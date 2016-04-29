@@ -90,7 +90,7 @@
 
     <!-- Torrent List -->
     <string name="unknown_error_message">Unknown error</string>
-    <string name="downloaded_text">%1$s of %2$s (%3$s)</string>
+    <string name="downloaded_text">%1$s of %2$s</string>
     <string name="uploaded_text">%1$s (Ratio: %2$.2f)</string>
     <string name="speed_limit">Speed limit</string>
     <string name="download_speed">Download speed</string>
@@ -99,6 +99,8 @@
     <string name="remove_from_list">Remove from list</string>
     <string name="remove_data">Remove data</string>
     <string name="search">Search</string>
+    <string name="eta_unknown">Remaining time unknown</string>
+    <string name="eta_infinite">~ \u221e</string>
 
     <!-- Open torrent -->
     <string name="error_install_file_manager_msg">Please, install a file manager</string>
