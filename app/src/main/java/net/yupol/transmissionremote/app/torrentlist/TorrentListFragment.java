@@ -122,9 +122,6 @@ public class TorrentListFragment extends Fragment {
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
             MenuInflater inflater = mode.getMenuInflater();
             inflater.inflate(R.menu.context_torrent_list_menu, menu);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                getActivity().getWindow().setStatusBarColor(ColorUtils.resolveColor(getContext(), R.attr.colorPrimaryDark, R.color.primary_dark));
-            }
 
             if (cabListener != null) cabListener.onCABOpen();
 
