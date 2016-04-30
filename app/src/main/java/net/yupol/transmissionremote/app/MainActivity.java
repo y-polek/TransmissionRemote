@@ -33,9 +33,6 @@ import android.widget.SearchView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import com.google.common.base.Function;
-import com.google.common.base.Joiner;
-import com.google.common.collect.FluentIterable;
 import com.mikepenz.fontawesome_typeface_library.FontAwesome;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.iconics.context.IconicsLayoutInflater;
@@ -99,7 +96,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
@@ -369,23 +365,28 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         setIntent(intent);
+        openTorrentFromIntent();
     }
 
     private void openTorrentFromIntent() {
         Uri data = getIntent().getData();
-        if (data != null) {
-            getIntent().setData(null);
-            String scheme = data.getScheme();
-            if (SCHEME_MAGNET.equals(scheme)) {
-                openTorrentByMagnet(data.toString());
-            } else if (ContentResolver.SCHEME_FILE.equals(scheme)) {
-                try {
-                    openTorrentByLocalFile(getContentResolver().openInputStream(data));
-                } catch (FileNotFoundException e) {
-                    Toast.makeText(MainActivity.this, getString(R.string.error_cannot_read_file_msg), Toast.LENGTH_LONG).show();
-                    Log.e(TAG, "Can't open stream for '" + data + "'", e);
-                }
-            } else if (ContentResolver.SCHEME_CONTENT.equals(scheme)) {
+        if (data == null) return;
+
+        getIntent().setData(null);
+        String scheme = data.getScheme();
+        if (SCHEME_MAGNET.equals(scheme)) {
+            openTorrentByMagnet(data.toString());
+        } else if (ContentResolver.SCHEME_FILE.equals(scheme)) {
+            try {
+                openTorrentByLocalFile(getContentResolver().openInputStream(data));
+            } catch (FileNotFoundException e) {
+                Toast.makeText(MainActivity.this, getString(R.string.error_cannot_read_file_msg), Toast.LENGTH_LONG).show();
+                Log.e(TAG, "Can't open stream for '" + data + "'", e);
+            }
+        } else if (ContentResolver.SCHEME_CONTENT.equals(scheme)) {
+            try {
+                openTorrentByLocalFile(getContentResolver().openInputStream(data));
+            } catch (IOException ex) {
                 Cursor cursor = getContentResolver().query(data, null, null, null, null);
                 if (cursor != null && cursor.moveToFirst()) {
                     int dataColumn = cursor.getColumnIndex(MediaStore.MediaColumns.DATA);
@@ -400,9 +401,9 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
                         Log.e(TAG, "Can't open stream for '" + path + "'", e);
                     }
                 }
-            } else if (SCHEME_HTTP.equals(scheme) || SCHEME_HTTPS.equals(scheme)) {
-                openTorrentByRemoteFile(data);
             }
+        } else if (SCHEME_HTTP.equals(scheme) || SCHEME_HTTPS.equals(scheme)) {
+            openTorrentByRemoteFile(data);
         }
     }
 
@@ -649,15 +650,6 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
         updateSpeedActions(torrents);
 
         toolbarSpinnerAdapter.notifyDataSetChanged();
-
-        String text = Joiner.on("\n").join(FluentIterable.from(torrents).transform(new Function<Torrent, String>() {
-            @Override
-            public String apply(Torrent torrent) {
-                String percents = String.format(Locale.getDefault(), "%.2f", torrent.getPercentDone() * 100);
-                return torrent.getStatus() + " " + percents + "% " + torrent.getName();
-            }
-        }));
-        Log.d(TAG, "Torrents:\n" + text);
     }
 
     @Override
