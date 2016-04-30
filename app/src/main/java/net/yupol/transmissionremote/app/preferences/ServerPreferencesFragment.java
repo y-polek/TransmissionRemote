@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
 
@@ -23,6 +24,7 @@ import net.yupol.transmissionremote.app.transport.BaseSpiceActivity;
 import net.yupol.transmissionremote.app.transport.TransportManager;
 import net.yupol.transmissionremote.app.transport.request.SessionGetRequest;
 import net.yupol.transmissionremote.app.transport.request.SessionSetRequest;
+import net.yupol.transmissionremote.app.utils.IconUtils;
 
 public class ServerPreferencesFragment extends Fragment {
 
@@ -89,6 +91,7 @@ public class ServerPreferencesFragment extends Fragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         this.menu = menu;
         inflater.inflate(R.menu.server_preferences_menu, menu);
+        IconUtils.setMenuIcon(getContext(), menu, R.id.action_save, GoogleMaterial.Icon.gmd_save);
     }
 
     @Override

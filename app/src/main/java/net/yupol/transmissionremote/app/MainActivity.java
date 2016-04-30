@@ -17,6 +17,7 @@ import android.provider.OpenableColumns;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.LayoutInflaterCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.Toolbar;
@@ -35,7 +36,9 @@ import android.widget.Toast;
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
 import com.google.common.collect.FluentIterable;
+import com.mikepenz.fontawesome_typeface_library.FontAwesome;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
+import com.mikepenz.iconics.context.IconicsLayoutInflater;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
@@ -80,6 +83,7 @@ import net.yupol.transmissionremote.app.transport.request.SessionSetRequest;
 import net.yupol.transmissionremote.app.transport.request.StartTorrentRequest;
 import net.yupol.transmissionremote.app.transport.request.StopTorrentRequest;
 import net.yupol.transmissionremote.app.transport.request.TorrentRemoveRequest;
+import net.yupol.transmissionremote.app.utils.IconUtils;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -179,6 +183,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        LayoutInflaterCompat.setFactory(getLayoutInflater(), new IconicsLayoutInflater(getDelegate()));
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
 
@@ -458,6 +463,9 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.torrent_list_menu, menu);
 
+        IconUtils.setMenuIcon(this, menu, R.id.action_start_all_torrents, FontAwesome.Icon.faw_play);
+        IconUtils.setMenuIcon(this, menu, R.id.action_pause_all_torrents, FontAwesome.Icon.faw_pause);
+
         turtleModeItem = menu.findItem(R.id.action_turtle_mode);
         updateTurtleModeActionIcon();
 
@@ -474,6 +482,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
         if (searchMenuItem == null) {
             searchMenuItem = bottomToolbar.getMenu().findItem(R.id.action_search);
         }
+        IconUtils.setMenuIcon(this, searchMenuItem, FontAwesome.Icon.faw_search);
 
         searchView = (SearchView) MenuItemCompat.getActionView(searchMenuItem);
         // iconifiedByDefault must be false to avoid closing SearchView by close button (close button only clears text)

@@ -7,6 +7,8 @@ import android.util.TypedValue;
 import android.widget.TextView;
 
 import com.google.common.base.Strings;
+import com.mikepenz.fontawesome_typeface_library.FontAwesome;
+import com.mikepenz.iconics.IconicsDrawable;
 
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.utils.MetricsUtils;
@@ -17,18 +19,18 @@ public abstract class SpeedTextView extends TextView {
     private static final int PADDING_LEFT = 5; // dp
     private static final int PADDING_IMAGE = 8; // dp
 
-    public SpeedTextView(Context context, Direction direction) {
+    public SpeedTextView(Context context, Drawable drawable) {
         super(context);
         int horPadding = (int) MetricsUtils.dp2px(context, PADDING_LEFT);
         setPadding(horPadding, 0, horPadding, 0);
 
         setTextSize(TypedValue.COMPLEX_UNIT_PX, getResources().getDimensionPixelSize(R.dimen.speed_text_size));
+        setTextColor(context.getResources().getColor(R.color.text_primary_inverse));
         setTypeface(null, Typeface.BOLD);
 
         setSpeed(0);
 
         setCompoundDrawablePadding((int) MetricsUtils.dp2px(context, PADDING_IMAGE));
-        Drawable drawable = getResources().getDrawable(direction.iconId);
         if (drawable != null) {
             measure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED);
             int size = 2 * getMeasuredHeight() / 3;
@@ -45,27 +47,21 @@ public abstract class SpeedTextView extends TextView {
         return Strings.padStart(TextUtils.displayableSize(bytes), 5, ' ') + "/s";
     }
 
-    private enum Direction {
-        DOWNLOAD(R.drawable.download_icon),
-        UPLOAD(R.drawable.upload_icon);
-
-
-        private int iconId;
-
-        Direction(int iconId) {
-            this.iconId = iconId;
-        }
-    }
-
     public static class DownloadSpeedTextView extends SpeedTextView {
         public DownloadSpeedTextView(Context context) {
-            super(context, Direction.DOWNLOAD);
+            super(context, new IconicsDrawable(context)
+                    .icon(FontAwesome.Icon.faw_arrow_down)
+                    .colorRes(R.color.md_green_A700)
+            );
         }
     }
 
     public static class UploadSpeedTextView extends SpeedTextView {
         public UploadSpeedTextView(Context context) {
-            super(context, Direction.UPLOAD);
+            super(context, new IconicsDrawable(context)
+                    .icon(FontAwesome.Icon.faw_arrow_up)
+                    .colorRes(R.color.md_red_A700)
+            );
         }
     }
 }

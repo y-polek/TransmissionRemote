@@ -50,7 +50,7 @@
     <string name="username">Username</string>
     <string name="password">Password</string>
     <string name="server_name_error_message">Name must be non-empty</string>
-    <string name="host_name_error_message">Please, enter IP address or hostname of the computer on which Transmission launched</string>
+    <string name="host_name_error_message">Enter IP address or hostname of the computer on which Transmission is launched</string>
     <string name="port_number_error_message">Please, enter port number. It must be the same as specified in \'Listening port\' field on \'Remote\' tab of Transmission preferences dialog</string>
     <string name="edit_servers_drawer_item">Edit servers</string>
     <string name="servers">Servers</string>

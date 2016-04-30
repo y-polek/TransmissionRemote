@@ -30,6 +30,7 @@ import android.widget.TextView;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.FluentIterable;
+import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
 
@@ -49,6 +50,7 @@ import net.yupol.transmissionremote.app.transport.request.StartTorrentRequest;
 import net.yupol.transmissionremote.app.transport.request.StopTorrentRequest;
 import net.yupol.transmissionremote.app.transport.request.TorrentGetRequest;
 import net.yupol.transmissionremote.app.utils.ColorUtils;
+import net.yupol.transmissionremote.app.utils.IconUtils;
 import net.yupol.transmissionremote.app.utils.TextUtils;
 import net.yupol.transmissionremote.app.utils.diff.Equals;
 import net.yupol.transmissionremote.app.utils.diff.ListDiff;
@@ -122,6 +124,9 @@ public class TorrentListFragment extends Fragment {
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
             MenuInflater inflater = mode.getMenuInflater();
             inflater.inflate(R.menu.context_torrent_list_menu, menu);
+
+            IconUtils.setMenuIcon(getContext(), menu, R.id.action_remove_torrents, GoogleMaterial.Icon.gmd_delete);
+            IconUtils.setMenuIcon(getContext(), menu, R.id.action_select_all, GoogleMaterial.Icon.gmd_select_all);
 
             if (cabListener != null) cabListener.onCABOpen();
 
@@ -425,7 +430,12 @@ public class TorrentListFragment extends Fragment {
 
             holder.progressBar.setProgress((int) (torrent.getPercentDone() * holder.progressBar.getMax()));
             boolean isPaused = torrent.getStatus() == Torrent.Status.STOPPED;
-            int progressbarDrawable = isPaused ? R.drawable.torrent_progressbar_disabled : R.drawable.torrent_progressbar;
+            int progressbarDrawable = R.drawable.torrent_progressbar;
+            if (isPaused) {
+                progressbarDrawable = R.drawable.torrent_progressbar_disabled;
+            } else if (isFinished) {
+                progressbarDrawable = R.drawable.torrent_progressbar_finished;
+            }
             holder.progressBar.setProgressDrawable(context.getResources().getDrawable(progressbarDrawable));
 
             holder.downloadRateText.setText(speedText(torrent.getDownloadRate()));

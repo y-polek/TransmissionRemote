@@ -1,6 +1,7 @@
 package net.yupol.transmissionremote.app.torrentdetails;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.text.InputFilter;
 import android.util.Log;
@@ -17,22 +18,24 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
 
 import net.yupol.transmissionremote.app.R;
-import net.yupol.transmissionremote.app.model.limitmode.IdleLimitMode;
-import net.yupol.transmissionremote.app.model.limitmode.LimitMode;
-import net.yupol.transmissionremote.app.model.limitmode.RatioLimitMode;
 import net.yupol.transmissionremote.app.model.json.ServerSettings;
 import net.yupol.transmissionremote.app.model.json.Torrent;
 import net.yupol.transmissionremote.app.model.json.Torrents;
 import net.yupol.transmissionremote.app.model.json.TransferPriority;
+import net.yupol.transmissionremote.app.model.limitmode.IdleLimitMode;
+import net.yupol.transmissionremote.app.model.limitmode.LimitMode;
+import net.yupol.transmissionremote.app.model.limitmode.RatioLimitMode;
 import net.yupol.transmissionremote.app.transport.BaseSpiceActivity;
 import net.yupol.transmissionremote.app.transport.TransportManager;
 import net.yupol.transmissionremote.app.transport.request.SessionGetRequest;
 import net.yupol.transmissionremote.app.transport.request.TorrentGetRequest;
 import net.yupol.transmissionremote.app.transport.request.TorrentSetRequest;
+import net.yupol.transmissionremote.app.utils.IconUtils;
 import net.yupol.transmissionremote.app.utils.MinMaxTextWatcher;
 
 public class OptionsPageFragment extends BasePageFragment implements AdapterView.OnItemSelectedListener {
@@ -56,8 +59,9 @@ public class OptionsPageFragment extends BasePageFragment implements AdapterView
     private Menu menu;
 
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        Activity activity = getActivity();
         if (activity instanceof BaseSpiceActivity) {
             transportManager = ((BaseSpiceActivity) activity).getTransportManager();
         }
@@ -235,6 +239,7 @@ public class OptionsPageFragment extends BasePageFragment implements AdapterView
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         this.menu = menu;
         inflater.inflate(R.menu.torrent_options_menu, menu);
+        IconUtils.setMenuIcon(getContext(), menu, R.id.action_save, GoogleMaterial.Icon.gmd_save);
     }
 
     @Override

@@ -1,7 +1,6 @@
 package net.yupol.transmissionremote.app.preferences;
 
 import android.app.AlertDialog;
-import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.DialogInterface;
@@ -11,7 +10,6 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
@@ -96,14 +94,6 @@ public class ServersActivity extends AppCompatActivity {
         ft.replace(R.id.fragment_container, serverDetailsFragment, TAG_SERVER_DETAILS);
         ft.addToBackStack(null);
         ft.commit();
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        Fragment detailsFragment = getFragmentManager().findFragmentByTag(TAG_SERVER_DETAILS);
-        int menuResId = detailsFragment != null ? R.menu.server_details_menu : R.menu.servers_menu;
-        getMenuInflater().inflate(menuResId, menu);
-        return super.onCreateOptionsMenu(menu);
     }
 
     @Override

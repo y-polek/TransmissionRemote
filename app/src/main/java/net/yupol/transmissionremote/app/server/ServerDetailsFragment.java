@@ -6,6 +6,8 @@ import android.text.Editable;
 import android.text.InputFilter;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -13,8 +15,10 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 
 import com.google.api.client.repackaged.com.google.common.base.Strings;
+import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 
 import net.yupol.transmissionremote.app.R;
+import net.yupol.transmissionremote.app.utils.IconUtils;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -36,6 +40,12 @@ public class ServerDetailsFragment extends Fragment {
     private EditText userNameEdit;
     private EditText passwordEdit;
     private EditText rpcUrlEdit;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(getServerArgument() != null);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -95,6 +105,13 @@ public class ServerDetailsFragment extends Fragment {
         }
     }
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.server_details_menu, menu);
+        IconUtils.setMenuIcon(getActivity(), menu, R.id.action_remove, GoogleMaterial.Icon.gmd_delete);
+        IconUtils.setMenuIcon(getActivity(), menu, R.id.action_save, GoogleMaterial.Icon.gmd_save);
+    }
+
     public Server getNewServer() {
         if (!checkValidity())
             return null;
@@ -105,6 +122,7 @@ public class ServerDetailsFragment extends Fragment {
         } else {
             server = new Server(getUiName(), getUiHost(), getUiPort());
         }
+        server.setRpcUrl(getUiRpcUrl());
 
         return server;
     }

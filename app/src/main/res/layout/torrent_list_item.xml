@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
     <LinearLayout
@@ -53,7 +55,9 @@
                     android:layout_alignParentRight="true"
                     android:layout_alignTop="@id/downloaded_text"
                     android:layout_alignBottom="@id/downloaded_text"
-                    android:src="@drawable/download_icon"/>
+                    app:ico_color="@color/md_green_700"
+                    app:ico_icon="faw_arrow_down"
+                    tools:ignore="MissingPrefix" />
                 <TextView android:id="@+id/download_rate"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -82,7 +86,9 @@
                     android:layout_alignParentRight="true"
                     android:layout_alignTop="@id/uploaded_text"
                     android:layout_alignBottom="@id/uploaded_text"
-                    android:src="@drawable/upload_icon"/>
+                    app:ico_color="@color/md_red_700"
+                    app:ico_icon="faw_arrow_up"
+                    tools:ignore="MissingPrefix" />
                 <TextView android:id="@+id/upload_rate"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

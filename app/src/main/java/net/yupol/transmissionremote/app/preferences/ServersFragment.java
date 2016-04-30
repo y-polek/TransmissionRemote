@@ -3,7 +3,10 @@ package net.yupol.transmissionremote.app.preferences;
 import android.app.Activity;
 import android.app.ListFragment;
 import android.content.Context;
+import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -11,9 +14,12 @@ import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
+import com.mikepenz.google_material_typeface_library.GoogleMaterial;
+
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.TransmissionRemote;
 import net.yupol.transmissionremote.app.server.Server;
+import net.yupol.transmissionremote.app.utils.IconUtils;
 
 public class ServersFragment extends ListFragment {
 
@@ -63,6 +69,12 @@ public class ServersFragment extends ListFragment {
     }
 
     @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
         ((BaseAdapter) getListAdapter()).notifyDataSetChanged();
@@ -72,6 +84,12 @@ public class ServersFragment extends ListFragment {
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         app = (TransmissionRemote) activity.getApplication();
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.servers_menu, menu);
+        IconUtils.setMenuIcon(getActivity(), menu, R.id.action_add, GoogleMaterial.Icon.gmd_add);
     }
 
     @Override

@@ -21,16 +21,13 @@
             app:showAsAction="never"/>
         <item android:id="@+id/action_start_all_torrents"
             android:title="@string/action_start_all_torrents"
-            android:icon="@drawable/ic_media_play"
             app:showAsAction="ifRoom|collapseActionView"/>
         <item android:id="@+id/action_pause_all_torrents"
             android:title="@string/action_pause_all_torrents"
-            android:icon="@drawable/ic_media_pause"
             app:showAsAction="ifRoom|collapseActionView"/>
     </group>
     <item android:id="@+id/action_search"
         android:title="@string/search"
-        android:icon="@drawable/ic_search"
         app:actionViewClass="android.widget.SearchView"
         app:showAsAction="always|collapseActionView" />
 </menu>
