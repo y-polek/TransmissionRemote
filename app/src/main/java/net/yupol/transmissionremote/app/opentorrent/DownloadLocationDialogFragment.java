@@ -128,10 +128,14 @@ public class DownloadLocationDialogFragment extends DialogFragment {
                 @Override
                 public void onRequestFailure(SpiceException spiceException) {
                     Log.e(TAG, "Can't fetch free space for '" + path + "'. " + spiceException.getMessage());
-                    freeSpaceProgressbar.setVisibility(View.INVISIBLE);
-                    freeSpaceText.setVisibility(View.VISIBLE);
-                    freeSpaceText.setText(R.string.free_space_unknown);
-                    ((AlertDialog) getDialog()).getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(false);
+
+                    AlertDialog dialog = (AlertDialog) getDialog();
+                    if (dialog != null) {
+                        freeSpaceProgressbar.setVisibility(View.INVISIBLE);
+                        freeSpaceText.setVisibility(View.VISIBLE);
+                        freeSpaceText.setText(R.string.free_space_unknown);
+                        dialog.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(false);
+                    }
                     currentRequest = null;
                 }
 
