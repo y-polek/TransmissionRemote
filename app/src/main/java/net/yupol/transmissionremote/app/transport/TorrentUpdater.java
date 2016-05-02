@@ -100,10 +100,10 @@ public class TorrentUpdater {
 
         private void sendRequest() {
             currentRequest = new TorrentGetRequest();
-            transportManager.doRequest(currentRequest, new RequestListener<Torrents>() {
+            transportManager.doRequest(currentRequest, TimeUnit.SECONDS.toMillis(timeout), new RequestListener<Torrents>() {
                 @Override
                 public void onRequestFailure(SpiceException spiceException) {
-                    Log.d(TAG, "TorrentGetRequest failed. SC: " + currentRequest.getResponseStatusCode());
+                    Log.d(TAG + "SpiceTransportManager", "TorrentGetRequest failed. SC: " + currentRequest.getResponseStatusCode());
                     responseReceived = Boolean.TRUE;
                     if (spiceException instanceof NoNetworkException) {
                         listener.onNetworkError(NetworkError.NO_NETWORK);
@@ -119,6 +119,7 @@ public class TorrentUpdater {
 
                 @Override
                 public void onRequestSuccess(Torrents torrents) {
+                    Log.d(TAG + "SpiceTransportManager", "onRequestSuccess count: " + torrents.size());
                     responseReceived = Boolean.TRUE;
                     if (!canceled) {
                         listener.onTorrentUpdate(torrents);

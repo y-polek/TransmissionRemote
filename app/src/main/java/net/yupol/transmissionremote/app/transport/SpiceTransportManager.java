@@ -36,13 +36,14 @@ public class SpiceTransportManager extends SpiceManager implements TransportMana
         currentServer = server;
     }
 
-    public <T> void doRequest(final Request<T> request, @NonNull Server server, final RequestListener<T> listener) {
+    public <T> void doRequest(final Request<T> request, @NonNull Server server, long cacheExpiryDuration, final RequestListener<T> listener) {
 
         request.setServer(server);
         request.setRetryPolicy(RETRY_POLICY_NO_RETRIES);
+        request.setAggregatable(false);
 
         Log.d(TAG, "execute " + request.getClass().getSimpleName() + " sessionId: " + request.getServer().getLastSessionId());
-        execute(request, new PropagateRequestListener<T>(listener) {
+        PropagateRequestListener<T> requestListener = new PropagateRequestListener<T>(listener) {
             @Override
             protected boolean onFailure(SpiceException spiceException) {
                 Log.d(TAG, "onFailure SC: " + request.getResponseStatusCode() + " " + request.getClass().getSimpleName() + " " + request.getServer().getLastSessionId());
@@ -62,13 +63,31 @@ public class SpiceTransportManager extends SpiceManager implements TransportMana
                 Log.d(TAG, "onSuccess " + request.getClass().getSimpleName() + " " + request.getServer().getLastSessionId());
                 return true;
             }
-        });
+        };
+
+        if (cacheExpiryDuration > 0) {
+            Log.d(TAG, "execute " + request.getClass().getSimpleName() + " " + cacheExpiryDuration);
+            execute(request, request.createCacheKey(), cacheExpiryDuration, requestListener);
+        } else {
+            Log.d(TAG, "execute no cache " + request.getClass().getSimpleName());
+            execute(request, requestListener);
+        }
     }
 
-    public <T> void doRequest(Request<T> request, RequestListener<T> listener) {
+    public <T> void doRequest(Request<T> request, @NonNull Server server, RequestListener<T> listener) {
+        doRequest(request, server, -1, listener);
+    }
+
+    @Override
+    public <T> void doRequest(Request<T> request, long cacheExpiryDuration, RequestListener<T> listener) {
         if (currentServer == null)
             throw new IllegalStateException("Trying to send request while there is no active server");
-        doRequest(request, currentServer, listener);
+        doRequest(request, currentServer, cacheExpiryDuration, listener);
+    }
+
+    @Override
+    public <T> void doRequest(Request<T> request, RequestListener<T> listener) {
+        doRequest(request, -1, listener);
     }
 
     @Override

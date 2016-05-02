@@ -61,6 +61,8 @@ public abstract class Request<RESULT> extends GoogleHttpClientSpiceRequest<RESUL
             throw new IllegalStateException("Server must be set before executing");
         }
 
+        Log.d(TAG + "SpiceTransportManager", "loadDataFromNetwork " + getClass().getSimpleName());
+
         String url = "http://" + server.getHost() + ':' + server.getPort() + "/" + server.getRpcUrl();
 
         HttpRequestFactory requestFactory = getHttpRequestFactory();
@@ -116,6 +118,10 @@ public abstract class Request<RESULT> extends GoogleHttpClientSpiceRequest<RESUL
             Log.e(TAG, "Error while creating json body", e);
         }
         return bodyObj.toString();
+    }
+
+    public String createCacheKey() {
+        return server.getId();
     }
 
     protected abstract String getMethod();

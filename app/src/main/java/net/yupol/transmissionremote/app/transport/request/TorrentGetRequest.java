@@ -2,8 +2,8 @@ package net.yupol.transmissionremote.app.transport.request;
 
 import android.util.Log;
 
-import net.yupol.transmissionremote.app.model.json.Torrents;
 import net.yupol.transmissionremote.app.model.TorrentMetadata;
+import net.yupol.transmissionremote.app.model.json.Torrents;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -53,7 +53,15 @@ public class TorrentGetRequest extends Request<Torrents> {
 
     public TorrentGetRequest(int... ids) {
         this();
-        this.ids = ids;
+        this.ids = Arrays.copyOf(ids, ids.length);
+        Arrays.sort(this.ids);
+    }
+
+    @Override
+    public String createCacheKey() {
+        return super.createCacheKey()
+                + ".torrent-get."
+                + (ids == null ? "all" : Arrays.toString(ids));
     }
 
     @Override
