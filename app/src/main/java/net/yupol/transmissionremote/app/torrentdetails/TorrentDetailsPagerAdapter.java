@@ -8,6 +8,7 @@ import android.util.SparseArray;
 import android.view.ViewGroup;
 
 import net.yupol.transmissionremote.app.model.json.Torrent;
+import net.yupol.transmissionremote.app.model.json.TorrentInfo;
 
 public class TorrentDetailsPagerAdapter extends FragmentPagerAdapter {
 
@@ -25,6 +26,12 @@ public class TorrentDetailsPagerAdapter extends FragmentPagerAdapter {
         super(fragmentManager);
         this.context = context;
         this.torrent = torrent;
+    }
+
+    public void setTorrentInfo(TorrentInfo torrentInfo) {
+        for (int i=0; i<fragments.size(); i++) {
+            fragments.valueAt(i).setTorrentInfo(torrentInfo);
+        }
     }
 
     @Override
@@ -59,8 +66,7 @@ public class TorrentDetailsPagerAdapter extends FragmentPagerAdapter {
 
     public BasePageFragment getFragment(Class<? extends BasePageFragment> c) {
         for (int i=0; i<fragments.size(); i++) {
-            int key = fragments.keyAt(i);
-            BasePageFragment f = fragments.get(key);
+            BasePageFragment f = fragments.valueAt(i);
             if (c.isInstance(f)) {
                 return f;
             }

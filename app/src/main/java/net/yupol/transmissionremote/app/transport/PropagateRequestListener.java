@@ -16,7 +16,7 @@ public abstract class PropagateRequestListener<RESULT> implements RequestListene
     @Override
     public final void onRequestFailure(SpiceException spiceException) {
         boolean propagate = onFailure(spiceException);
-        if (propagate) {
+        if (propagate && listener != null) {
             listener.onRequestFailure(spiceException);
         }
     }

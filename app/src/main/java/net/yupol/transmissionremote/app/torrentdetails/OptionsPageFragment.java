@@ -13,7 +13,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -24,8 +26,7 @@ import com.octo.android.robospice.request.listener.RequestListener;
 
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.model.json.ServerSettings;
-import net.yupol.transmissionremote.app.model.json.Torrent;
-import net.yupol.transmissionremote.app.model.json.Torrents;
+import net.yupol.transmissionremote.app.model.json.TorrentInfo;
 import net.yupol.transmissionremote.app.model.json.TransferPriority;
 import net.yupol.transmissionremote.app.model.limitmode.IdleLimitMode;
 import net.yupol.transmissionremote.app.model.limitmode.LimitMode;
@@ -33,7 +34,7 @@ import net.yupol.transmissionremote.app.model.limitmode.RatioLimitMode;
 import net.yupol.transmissionremote.app.transport.BaseSpiceActivity;
 import net.yupol.transmissionremote.app.transport.TransportManager;
 import net.yupol.transmissionremote.app.transport.request.SessionGetRequest;
-import net.yupol.transmissionremote.app.transport.request.TorrentGetRequest;
+import net.yupol.transmissionremote.app.transport.request.TorrentInfoGetRequest;
 import net.yupol.transmissionremote.app.transport.request.TorrentSetRequest;
 import net.yupol.transmissionremote.app.utils.IconUtils;
 import net.yupol.transmissionremote.app.utils.MinMaxTextWatcher;
@@ -56,7 +57,9 @@ public class OptionsPageFragment extends BasePageFragment implements AdapterView
 
     private ServerSettings serverSettings;
 
-    private Menu menu;
+    private View contentView;
+    private ProgressBar progressBar;
+    private MenuItem saveMenuItem;
 
     @Override
     public void onAttach(Context context) {
@@ -98,6 +101,12 @@ public class OptionsPageFragment extends BasePageFragment implements AdapterView
         prioritySpinner.setAdapter(new TransferPrioritySpinnerAdapter());
 
         stayWithGlobalCheckbox = (CheckBox) view.findViewById(R.id.stay_with_global_bandwidth_checkbox);
+        stayWithGlobalCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                Log.d(TAG, "stayWithGlobalCheckbox: " + isChecked);
+            }
+        });
 
         bandwidthLimitFragment = (BandwidthLimitFragment)
                 getChildFragmentManager().findFragmentById(R.id.torrent_bandwidth_limit_fragment);
@@ -115,7 +124,15 @@ public class OptionsPageFragment extends BasePageFragment implements AdapterView
         idleLimitEdit.addTextChangedListener(new MinMaxTextWatcher(1, 0xFFFF));
         idleLimitGlobalText = (TextView) view.findViewById(R.id.idle_limit_global_value);
 
-        updateUi(true);
+        contentView = view.findViewById(R.id.content);
+        progressBar = (ProgressBar) view.findViewById(R.id.progress_bar);
+        if (getTorrentInfo() == null) {
+            contentView.setVisibility(View.GONE);
+            progressBar.setVisibility(View.VISIBLE);
+        } else {
+            showContent();
+            updateUi(true);
+        }
 
         // Postpone listeners registration to avoid notifying listeners on layout.
         // http://stackoverflow.com/questions/2562248/how-to-keep-onitemselected-from-firing-off-on-a-newly-instantiated-spinner
@@ -130,30 +147,45 @@ public class OptionsPageFragment extends BasePageFragment implements AdapterView
         return view;
     }
 
+    @Override
+    public void setTorrentInfo(TorrentInfo torrentInfo) {
+        super.setTorrentInfo(torrentInfo);
+        showContent();
+        updateUi(true);
+        if (saveMenuItem != null) {
+            saveMenuItem.setEnabled(true);
+        }
+    }
+
+    private void showContent() {
+        contentView.setVisibility(View.VISIBLE);
+        progressBar.setVisibility(View.GONE);
+    }
+
     private void updateUi(boolean syncWithModel) {
-        Torrent torrent = getTorrent();
+        TorrentInfo torrentInfo = getTorrentInfo();
 
-        prioritySpinner.setSelection(torrent.getTransferPriority().ordinal());
+        prioritySpinner.setSelection(torrentInfo.getTransferPriority().ordinal());
 
-        stayWithGlobalCheckbox.setChecked(torrent.isSessionLimitsHonored());
+        stayWithGlobalCheckbox.setChecked(torrentInfo.isSessionLimitsHonored());
 
-        bandwidthLimitFragment.setDownloadLimited(torrent.isDownloadLimited());
-        bandwidthLimitFragment.setDownloadLimit(torrent.getDownloadLimit());
-        bandwidthLimitFragment.setUploadLimited(torrent.isUploadLimited());
-        bandwidthLimitFragment.setUploadLimit(torrent.getUploadLimit());
+        bandwidthLimitFragment.setDownloadLimited(torrentInfo.isDownloadLimited());
+        bandwidthLimitFragment.setDownloadLimit(torrentInfo.getDownloadLimit());
+        bandwidthLimitFragment.setUploadLimited(torrentInfo.isUploadLimited());
+        bandwidthLimitFragment.setUploadLimit(torrentInfo.getUploadLimit());
 
-        ratioLimitSpinner.setSelection(torrent.getSeedRatioMode().ordinal());
-        idleLimitSpinner.setSelection(torrent.getSeedIdleMode().ordinal());
+        ratioLimitSpinner.setSelection(torrentInfo.getSeedRatioMode().ordinal());
+        idleLimitSpinner.setSelection(torrentInfo.getSeedIdleMode().ordinal());
         updateSeedingLimitsUi(syncWithModel);
     }
 
     private void updateSeedingLimitsUi(boolean syncWithModel) {
-        Torrent torrent = getTorrent();
+        TorrentInfo torrentInfo = getTorrentInfo();
 
         switch (getRatioLimitMode()) {
             case STOP_AT_RATIO:
                 if (syncWithModel || ratioLimitEdit.getText().length() == 0) {
-                    ratioLimitEdit.setText(String.valueOf(torrent.getSeedRatioLimit()));
+                    ratioLimitEdit.setText(String.valueOf(torrentInfo.getSeedRatioLimit()));
                 }
                 ratioLimitEdit.setVisibility(View.VISIBLE);
                 ratioLimitEdit.setEnabled(true);
@@ -173,7 +205,7 @@ public class OptionsPageFragment extends BasePageFragment implements AdapterView
                 break;
             case UNLIMITED:
                 if (syncWithModel || ratioLimitEdit.getText().length() == 0) {
-                    ratioLimitEdit.setText(String.valueOf(torrent.getSeedRatioLimit()));
+                    ratioLimitEdit.setText(String.valueOf(torrentInfo.getSeedRatioLimit()));
                 }
                 ratioLimitEdit.setVisibility(View.VISIBLE);
                 ratioLimitEdit.setEnabled(false);
@@ -184,7 +216,7 @@ public class OptionsPageFragment extends BasePageFragment implements AdapterView
         switch (getIdleLimitMode()) {
             case STOP_WHEN_INACTIVE:
                 if (syncWithModel || idleLimitEdit.getText().length() == 0) {
-                    idleLimitEdit.setText(String.valueOf(torrent.getSeedIdleLimit()));
+                    idleLimitEdit.setText(String.valueOf(torrentInfo.getSeedIdleLimit()));
                 }
                 idleLimitEdit.setVisibility(View.VISIBLE);
                 idleLimitEdit.setEnabled(true);
@@ -202,7 +234,7 @@ public class OptionsPageFragment extends BasePageFragment implements AdapterView
                 break;
             case UNLIMITED:
                 if (syncWithModel || idleLimitEdit.getText().length() == 0) {
-                    idleLimitEdit.setText(String.valueOf(torrent.getSeedIdleLimit()));
+                    idleLimitEdit.setText(String.valueOf(torrentInfo.getSeedIdleLimit()));
                 }
                 idleLimitEdit.setVisibility(View.VISIBLE);
                 idleLimitEdit.setEnabled(false);
@@ -219,7 +251,7 @@ public class OptionsPageFragment extends BasePageFragment implements AdapterView
         try {
             return Double.parseDouble(ratioLimitEdit.getText().toString());
         } catch (NumberFormatException e) {
-            return getTorrent().getSeedRatioLimit();
+            return getTorrentInfo().getSeedRatioLimit();
         }
     }
 
@@ -231,15 +263,16 @@ public class OptionsPageFragment extends BasePageFragment implements AdapterView
         try {
             return Integer.parseInt(idleLimitEdit.getText().toString());
         } catch (NumberFormatException e) {
-            return getTorrent().getSeedIdleLimit();
+            return getTorrentInfo().getSeedIdleLimit();
         }
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        this.menu = menu;
         inflater.inflate(R.menu.torrent_options_menu, menu);
-        IconUtils.setMenuIcon(getContext(), menu, R.id.action_save, GoogleMaterial.Icon.gmd_save);
+        saveMenuItem = menu.findItem(R.id.action_save);
+        saveMenuItem.setEnabled(getTorrentInfo() != null);
+        IconUtils.setMenuIcon(getContext(), saveMenuItem, GoogleMaterial.Icon.gmd_save);
     }
 
     @Override
@@ -273,56 +306,56 @@ public class OptionsPageFragment extends BasePageFragment implements AdapterView
      * @return optional which contain {@link TorrentSetRequest} or contain nothing if no options changed
      */
     public TorrentSetRequest.Builder getSaveOptionsRequestBuilder() {
-        Torrent torrent = getTorrent();
-        TorrentSetRequest.Builder requestBuilder = TorrentSetRequest.builder(torrent.getId());
+        TorrentInfo torrentInfo = getTorrentInfo();
+        TorrentSetRequest.Builder requestBuilder = TorrentSetRequest.builder(torrentInfo.getId());
 
         TransferPriority priority = (TransferPriority) prioritySpinner.getSelectedItem();
-        if (priority != torrent.getTransferPriority()) {
+        if (priority != torrentInfo.getTransferPriority()) {
             requestBuilder.transferPriority(priority);
         }
 
         boolean honorsSessionLimits = stayWithGlobalCheckbox.isChecked();
-        if (honorsSessionLimits != torrent.isSessionLimitsHonored()) {
+        if (honorsSessionLimits != torrentInfo.isSessionLimitsHonored()) {
             requestBuilder.honorsSessionLimits(honorsSessionLimits);
         }
 
         boolean isDownloadLimited = bandwidthLimitFragment.isDownloadLimited();
-        if (isDownloadLimited != torrent.isDownloadLimited()) {
+        if (isDownloadLimited != torrentInfo.isDownloadLimited()) {
             requestBuilder.downloadLimited(isDownloadLimited);
         }
 
         long downloadLimit = bandwidthLimitFragment.getDownloadLimit();
-        if (downloadLimit != torrent.getDownloadLimit()) {
+        if (downloadLimit != torrentInfo.getDownloadLimit()) {
             requestBuilder.downloadLimit(downloadLimit);
         }
 
         boolean isUploadLimited = bandwidthLimitFragment.isUploadLimited();
-        if (isUploadLimited != torrent.isUploadLimited()) {
+        if (isUploadLimited != torrentInfo.isUploadLimited()) {
             requestBuilder.uploadLimited(isUploadLimited);
         }
 
         long uploadLimit = bandwidthLimitFragment.getUploadLimit();
-        if (uploadLimit != torrent.getUploadLimit()) {
+        if (uploadLimit != torrentInfo.getUploadLimit()) {
             requestBuilder.uploadLimit(uploadLimit);
         }
 
         LimitMode ratioLimitMode = getRatioLimitMode();
-        if (ratioLimitMode != torrent.getSeedRatioMode()) {
+        if (ratioLimitMode != torrentInfo.getSeedRatioMode()) {
             requestBuilder.seedRatioMode(ratioLimitMode);
         }
 
         double ratioLimit = getRatioLimit();
-        if (ratioLimit != torrent.getSeedRatioLimit()) {
+        if (ratioLimit != torrentInfo.getSeedRatioLimit()) {
             requestBuilder.seedRatioLimit(ratioLimit);
         }
 
         LimitMode idleLimitMode = getIdleLimitMode();
-        if (idleLimitMode != torrent.getSeedIdleMode()) {
+        if (idleLimitMode != torrentInfo.getSeedIdleMode()) {
             requestBuilder.seedIdleMode(idleLimitMode);
         }
 
         int idleLimit = getIdleLimit();
-        if (idleLimit != torrent.getSeedIdleLimit()) {
+        if (idleLimit != torrentInfo.getSeedIdleLimit()) {
             requestBuilder.seedIdleLimit(idleLimit);
         }
 
@@ -350,7 +383,7 @@ public class OptionsPageFragment extends BasePageFragment implements AdapterView
     }
 
     private void sendTorrentUpdateRequest() {
-        transportManager.doRequest(new TorrentGetRequest(getTorrent().getId()), new RequestListener<Torrents>() {
+        transportManager.doRequest(new TorrentInfoGetRequest(getTorrent().getId()), new RequestListener<TorrentInfo>() {
             @Override
             public void onRequestFailure(SpiceException spiceException) {
                 Toast.makeText(getActivity(), getString(R.string.options_update_failed), Toast.LENGTH_LONG).show();
@@ -358,25 +391,18 @@ public class OptionsPageFragment extends BasePageFragment implements AdapterView
             }
 
             @Override
-            public void onRequestSuccess(Torrents torrents) {
-                if (torrents.size() == 1) {
-                    setTorrent(torrents.get(0));
-                    updateUi(true);
-                    Toast.makeText(getActivity(), getString(R.string.saved), Toast.LENGTH_SHORT).show();
-                } else {
-                    Log.e(TAG, "Torrents count does not match. One torrent expected, actual count: " + torrents.size());
-                }
-
-                saveFinished();
+            public void onRequestSuccess(TorrentInfo torrentInfo) {
+                setTorrentInfo(torrentInfo);
+                Toast.makeText(getActivity(), getString(R.string.saved), Toast.LENGTH_SHORT).show();
             }
         });
     }
 
     private void saveStarted() {
-        menu.findItem(R.id.action_save).setEnabled(false);
+        saveMenuItem.setEnabled(false);
     }
 
     private void saveFinished() {
-        menu.findItem(R.id.action_save).setEnabled(true);
+        saveMenuItem.setEnabled(true);
     }
 }

@@ -6,9 +6,6 @@ import android.os.Parcelable;
 import com.google.api.client.util.Key;
 
 import net.yupol.transmissionremote.app.model.ID;
-import net.yupol.transmissionremote.app.model.limitmode.IdleLimitMode;
-import net.yupol.transmissionremote.app.model.limitmode.LimitMode;
-import net.yupol.transmissionremote.app.model.limitmode.RatioLimitMode;
 
 public class Torrent implements ID, Parcelable {
     @Key private int id;
@@ -19,7 +16,6 @@ public class Torrent implements ID, Parcelable {
     @Key private int status;
     @Key("rateDownload") private int downloadRate;
     @Key("rateUpload") private int uploadRate;
-    @Key private long leftUntilDone;
     @Key private long eta;
     @Key("uploadedEver") private long uploadedSize;
     @Key private double uploadRatio;
@@ -27,21 +23,6 @@ public class Torrent implements ID, Parcelable {
     private Error error;
     @Key private String errorString;
     @Key private boolean isFinished;
-    @Key private File[] files;
-    @Key private FileStat[] fileStats;
-    @Key("bandwidthPriority") private int transferPriorityValue;
-    private TransferPriority transferPriority;
-    @Key private boolean honorsSessionLimits;
-    @Key private boolean downloadLimited;
-    @Key private long downloadLimit;
-    @Key private boolean uploadLimited;
-    @Key private long uploadLimit;
-    @Key private double seedRatioLimit;
-    @Key("seedRatioMode") private int seedRatioModeValue;
-    private LimitMode seedRatioMode;
-    @Key private int seedIdleLimit;
-    @Key("seedIdleMode") private int seedIdleModeValue;
-    private LimitMode seedIdleMode;
 
     public Torrent() {}
 
@@ -54,25 +35,12 @@ public class Torrent implements ID, Parcelable {
         status = in.readInt();
         downloadRate = in.readInt();
         uploadRate = in.readInt();
-        leftUntilDone = in.readLong();
         eta = in.readLong();
         uploadedSize = in.readLong();
         uploadRatio = in.readDouble();
         errorId = in.readInt();
         errorString = in.readString();
         isFinished = in.readInt() != 0;
-        files = in.createTypedArray(File.CREATOR);
-        fileStats = in.createTypedArray(FileStat.CREATOR);
-        transferPriorityValue = in.readInt();
-        honorsSessionLimits = in.readInt() != 0;
-        downloadLimited = in.readInt() != 0;
-        downloadLimit = in.readLong();
-        uploadLimited = in.readInt() != 0;
-        uploadLimit = in.readLong();
-        seedRatioLimit = in.readDouble();
-        seedRatioModeValue = in.readInt();
-        seedIdleLimit = in.readInt();
-        seedIdleModeValue = in.readInt();
     }
 
     public int getId() {
@@ -107,10 +75,6 @@ public class Torrent implements ID, Parcelable {
         return uploadRate;
     }
 
-    public long getLeftUntilDone() {
-        return leftUntilDone;
-    }
-
     public long getEta() {
         return eta;
     }
@@ -121,14 +85,6 @@ public class Torrent implements ID, Parcelable {
 
     public double getUploadRatio() {
         return uploadRatio;
-    }
-
-    public File[] getFiles() {
-        return files;
-    }
-
-    public FileStat[] getFileStats() {
-        return fileStats;
     }
 
     public int getErrorId() {
@@ -151,49 +107,6 @@ public class Torrent implements ID, Parcelable {
         return percentDone == 1.0;
     }
 
-    public TransferPriority getTransferPriority() {
-        if (transferPriority == null) transferPriority = TransferPriority.fromModelValue(transferPriorityValue);
-        return transferPriority;
-    }
-
-    public boolean isSessionLimitsHonored() {
-        return honorsSessionLimits;
-    }
-
-    public boolean isDownloadLimited() {
-        return downloadLimited;
-    }
-
-    public long getDownloadLimit() {
-        return downloadLimit;
-    }
-
-    public boolean isUploadLimited() {
-        return uploadLimited;
-    }
-
-    public long getUploadLimit() {
-        return uploadLimit;
-    }
-
-    public double getSeedRatioLimit() {
-        return seedRatioLimit;
-    }
-
-    public LimitMode getSeedRatioMode() {
-        if (seedRatioMode == null) seedRatioMode = RatioLimitMode.fromValue(seedRatioModeValue);
-        return seedRatioMode;
-    }
-
-    public int getSeedIdleLimit() {
-        return seedIdleLimit;
-    }
-
-    public LimitMode getSeedIdleMode() {
-        if (seedIdleMode == null) seedIdleMode = IdleLimitMode.fromValue(seedIdleModeValue);
-        return seedIdleMode;
-    }
-
     @Override
     public int describeContents() {
         return 0;
@@ -209,25 +122,12 @@ public class Torrent implements ID, Parcelable {
         out.writeInt(status);
         out.writeInt(downloadRate);
         out.writeInt(uploadRate);
-        out.writeLong(leftUntilDone);
         out.writeLong(eta);
         out.writeLong(uploadedSize);
         out.writeDouble(uploadRatio);
         out.writeInt(errorId);
         out.writeString(errorString);
         out.writeInt(isFinished ? 1 : 0);
-        out.writeTypedArray(files, flags);
-        out.writeTypedArray(fileStats, flags);
-        out.writeInt(transferPriorityValue);
-        out.writeInt(honorsSessionLimits ? 1 : 0);
-        out.writeInt(downloadLimited ? 1 : 0);
-        out.writeLong(downloadLimit);
-        out.writeInt(uploadLimited ? 1 : 0);
-        out.writeLong(uploadLimit);
-        out.writeDouble(seedRatioLimit);
-        out.writeInt(seedRatioModeValue);
-        out.writeInt(seedIdleLimit);
-        out.writeInt(seedIdleModeValue);
     }
 
     public static final Creator<Torrent> CREATOR = new Creator<Torrent>() {
@@ -253,20 +153,12 @@ public class Torrent implements ID, Parcelable {
                 ", status=" + status +
                 ", downloadRate=" + downloadRate +
                 ", uploadRate=" + uploadRate +
-                ", leftUntilDone=" + leftUntilDone +
                 ", uploadedSize=" + uploadedSize +
                 ", uploadRatio=" + uploadRatio +
                 ", errorId=" + errorId +
                 ", error=" + error +
                 ", errorString='" + errorString + '\'' +
                 ", isFinished=" + isFinished +
-                ", transferPriorityValue=" + transferPriorityValue +
-                ", transferPriority=" + transferPriority +
-                ", honorsSessionLimits=" + honorsSessionLimits +
-                ", downloadLimited=" + downloadLimited +
-                ", downloadLimit=" + downloadLimit +
-                ", uploadLimited=" + uploadLimited +
-                ", uploadLimit=" + uploadLimit +
                 '}';
     }
 
