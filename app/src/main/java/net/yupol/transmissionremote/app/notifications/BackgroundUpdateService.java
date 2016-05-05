@@ -33,6 +33,8 @@ import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.TransmissionRemote;
 import net.yupol.transmissionremote.app.model.json.Torrent;
 import net.yupol.transmissionremote.app.model.json.Torrents;
+import net.yupol.transmissionremote.app.preferences.NotificationsPreferencesActivity;
+import net.yupol.transmissionremote.app.preferences.PreferencesActivity;
 import net.yupol.transmissionremote.app.server.Server;
 import net.yupol.transmissionremote.app.transport.SpiceTransportManager;
 import net.yupol.transmissionremote.app.transport.request.TorrentGetRequest;
@@ -43,9 +45,9 @@ import java.util.concurrent.TimeUnit;
 
 import static net.yupol.transmissionremote.app.notifications.TorrentStatusDbHelper.Columns;
 
-public class UpdateService extends Service {
+public class BackgroundUpdateService extends Service {
 
-    private static final String TAG = UpdateService.class.getSimpleName();
+    private static final String TAG = BackgroundUpdateService.class.getSimpleName();
 
     public static final String KEY_TORRENT_LIST = "key_torrent_list";
     public static final String KEY_SERVER = "key_server";
@@ -125,7 +127,7 @@ public class UpdateService extends Service {
     private void scheduleNextUpdate() {
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 
-        Intent intent = new Intent(this, UpdateService.class);
+        Intent intent = new Intent(this, BackgroundUpdateService.class);
         PendingIntent pendingIntent = PendingIntent.getService(this, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
         alarmManager.set(AlarmManager.ELAPSED_REALTIME,
                 SystemClock.elapsedRealtime() + TimeUnit.MINUTES.toMillis(app.getBackgroundUpdateInterval()),
@@ -135,7 +137,7 @@ public class UpdateService extends Service {
     private void cancelNextUpdate() {
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 
-        Intent intent = new Intent(this, UpdateService.class);
+        Intent intent = new Intent(this, BackgroundUpdateService.class);
         PendingIntent pendingIntent = PendingIntent.getService(this, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
         alarmManager.cancel(pendingIntent);
     }
@@ -225,13 +227,16 @@ public class UpdateService extends Service {
         }
         builder.setStyle(inboxStyle);
 
-        Intent resultIntent = new Intent(this, MainActivity.class);
+        PendingIntent contentPendingIntent = PendingIntent.getActivity(this, 0,
+                new Intent(this, MainActivity.class),
+                PendingIntent.FLAG_UPDATE_CURRENT);
+        builder.setContentIntent(contentPendingIntent);
 
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
-        stackBuilder.addParentStack(MainActivity.class);
-        stackBuilder.addNextIntent(resultIntent);
-        PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
-        builder.setContentIntent(resultPendingIntent);
+        stackBuilder.addNextIntentWithParentStack(new Intent(this, PreferencesActivity.class));
+        stackBuilder.addNextIntent(new Intent(this, NotificationsPreferencesActivity.class));
+        PendingIntent preferencesPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+        builder.addAction(R.drawable.ic_settings_black_18dp, getString(R.string.notification_settings), preferencesPendingIntent);
 
         NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         notificationManager.notify(NOTIFICATION_ID_TORRENT_FINISHED, builder.build());
@@ -256,7 +261,7 @@ public class UpdateService extends Service {
             if (networkInfo != null && networkInfo.isConnected()) {
                 context.unregisterReceiver(this);
                 isRegistered = false;
-                context.startService(new Intent(context, UpdateService.class));
+                context.startService(new Intent(context, BackgroundUpdateService.class));
             }
         }
     }

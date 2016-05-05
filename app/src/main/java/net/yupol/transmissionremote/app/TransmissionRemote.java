@@ -17,7 +17,7 @@ import com.google.common.collect.FluentIterable;
 import net.yupol.transmissionremote.app.filtering.Filter;
 import net.yupol.transmissionremote.app.filtering.Filters;
 import net.yupol.transmissionremote.app.model.json.Torrent;
-import net.yupol.transmissionremote.app.notifications.UpdateService;
+import net.yupol.transmissionremote.app.notifications.BackgroundUpdateService;
 import net.yupol.transmissionremote.app.server.Server;
 import net.yupol.transmissionremote.app.sorting.SortOrder;
 import net.yupol.transmissionremote.app.sorting.SortedBy;
@@ -77,7 +77,7 @@ public class TransmissionRemote extends Application implements SharedPreferences
         sharedPreferences.registerOnSharedPreferenceChangeListener(this);
 
         if (isNotificationEnabled()) {
-            startService(new Intent(this, UpdateService.class));
+            startService(new Intent(this, BackgroundUpdateService.class));
         }
     }
 
@@ -85,12 +85,12 @@ public class TransmissionRemote extends Application implements SharedPreferences
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         if (key.equals(getString(R.string.torrent_finished_notification_enabled_key))) {
             if (isNotificationEnabled()) {
-                startService(new Intent(this, UpdateService.class));
+                startService(new Intent(this, BackgroundUpdateService.class));
             } else {
-                stopService(new Intent(this, UpdateService.class));
+                stopService(new Intent(this, BackgroundUpdateService.class));
             }
         } else if (key.equals(getString(R.string.background_update_interval_key))) {
-            startService(new Intent(this, UpdateService.class));
+            startService(new Intent(this, BackgroundUpdateService.class));
         }
     }
 
@@ -118,7 +118,7 @@ public class TransmissionRemote extends Application implements SharedPreferences
         }
 
         if (isNotificationEnabled()) {
-            startService(new Intent(this, UpdateService.class));
+            startService(new Intent(this, BackgroundUpdateService.class));
         }
     }
 

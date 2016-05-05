@@ -54,7 +54,7 @@ import net.yupol.transmissionremote.app.filtering.Filter;
 import net.yupol.transmissionremote.app.model.json.AddTorrentResult;
 import net.yupol.transmissionremote.app.model.json.ServerSettings;
 import net.yupol.transmissionremote.app.model.json.Torrent;
-import net.yupol.transmissionremote.app.notifications.UpdateService;
+import net.yupol.transmissionremote.app.notifications.BackgroundUpdateService;
 import net.yupol.transmissionremote.app.opentorrent.DownloadLocationDialogFragment;
 import net.yupol.transmissionremote.app.opentorrent.OpenAddressDialogFragment;
 import net.yupol.transmissionremote.app.opentorrent.OpenByDialogFragment;
@@ -637,9 +637,9 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
         application.setTorrents(torrents);
 
         if (application.isNotificationEnabled()) {
-            Intent intent = new Intent(this, UpdateService.class);
-            intent.putExtra(UpdateService.KEY_SERVER, application.getActiveServer());
-            intent.putParcelableArrayListExtra(UpdateService.KEY_TORRENT_LIST, new ArrayList<>(torrents));
+            Intent intent = new Intent(this, BackgroundUpdateService.class);
+            intent.putExtra(BackgroundUpdateService.KEY_SERVER, application.getActiveServer());
+            intent.putParcelableArrayListExtra(BackgroundUpdateService.KEY_TORRENT_LIST, new ArrayList<>(torrents));
             startService(intent);
         }
 

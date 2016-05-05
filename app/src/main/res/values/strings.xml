@@ -36,6 +36,7 @@
     <!-- Preferences -->
     <string name="action_settings">Settings</string>
     <string name="notifications_pref_title">Notifications</string>
+    <string name="notification_settings">Notification settings</string>
 
     <!-- Servers -->
     <string name="add_new_server_title">Add new server</string>
