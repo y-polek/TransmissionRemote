@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.ImageButton;
 
 import net.yupol.transmissionremote.app.R;
+import net.yupol.transmissionremote.app.utils.CheatSheet;
 
 public class TurtleModeButton extends ImageButton implements View.OnClickListener {
 
@@ -31,6 +32,8 @@ public class TurtleModeButton extends ImageButton implements View.OnClickListene
         updateImage();
 
         setOnClickListener(this);
+
+        CheatSheet.setup(this, R.string.tooltip_turtle_mode);
     }
 
     public boolean isEnabled() {

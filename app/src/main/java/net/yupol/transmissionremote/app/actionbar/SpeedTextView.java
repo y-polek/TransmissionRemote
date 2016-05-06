@@ -11,6 +11,7 @@ import com.mikepenz.fontawesome_typeface_library.FontAwesome;
 import com.mikepenz.iconics.IconicsDrawable;
 
 import net.yupol.transmissionremote.app.R;
+import net.yupol.transmissionremote.app.utils.CheatSheet;
 import net.yupol.transmissionremote.app.utils.MetricsUtils;
 import net.yupol.transmissionremote.app.utils.TextUtils;
 
@@ -53,6 +54,8 @@ public abstract class SpeedTextView extends TextView {
                     .icon(FontAwesome.Icon.faw_arrow_down)
                     .colorRes(R.color.md_green_A700)
             );
+
+            CheatSheet.setup(this, R.string.tooltip_total_download_speed);
         }
     }
 
@@ -62,6 +65,8 @@ public abstract class SpeedTextView extends TextView {
                     .icon(FontAwesome.Icon.faw_arrow_up)
                     .colorRes(R.color.md_red_A700)
             );
+
+            CheatSheet.setup(this, R.string.tooltip_total_upload_speed);
         }
     }
 }

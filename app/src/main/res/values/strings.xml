@@ -158,6 +158,10 @@
     <string name="network_error_message_unauthorized">Unauthorized access. Check username/password in server settings</string>
     <string name="error_retrieve_torrent_details">Can\'t retrieve torrent details. Try again</string>
 
+    <string name="tooltip_turtle_mode">Speed limit mode</string>
+    <string name="tooltip_total_download_speed">Total download speed</string>
+    <string name="tooltip_total_upload_speed">Total upload speed</string>
+
     <plurals name="torrents">
         <item quantity="zero">%d torrents</item>
         <item quantity="one">%d torrent</item>
