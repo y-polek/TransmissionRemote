@@ -15,7 +15,7 @@
             android:layout_marginLeft="@dimen/default_text_margin"
             android:text="@string/server_parameters"
             android:textStyle="bold"
-            android:textSize="@dimen/add_server_title_size" />
+            android:textSize="@dimen/tr_abc_text_size_title_material" />
 
         <include layout="@layout/separator" />
 
@@ -24,10 +24,10 @@
             android:layout_height="@dimen/default_edit_text_height"
             android:paddingTop="@dimen/default_edit_text_padding"
             android:paddingBottom="@dimen/default_edit_text_padding"
-            android:layout_marginBottom="@dimen/add_server_group_margin"
             android:hint="@string/server_name_hint"
             android:singleLine="true"
-            android:maxLength="20" />
+            android:maxLength="20"
+            android:textSize="@dimen/tr_abc_text_size_body_1_material"/>
 
         <EditText android:id="@+id/host_edit_text"
             android:layout_width="match_parent"
@@ -35,7 +35,8 @@
             android:paddingTop="@dimen/default_edit_text_padding"
             android:paddingBottom="@dimen/default_edit_text_padding"
             android:hint="@string/server_host_hint"
-            android:singleLine="true" />
+            android:singleLine="true"
+            android:textSize="@dimen/tr_abc_text_size_body_1_material"/>
 
         <EditText android:id="@+id/port_edit_text"
             android:layout_width="match_parent"
@@ -46,6 +47,7 @@
             android:hint="@string/server_port_hint"
             android:singleLine="true"
             android:inputType="number"
+            android:textSize="@dimen/tr_abc_text_size_body_1_material"
             android:text="@integer/default_port" />
 
         <LinearLayout
@@ -56,6 +58,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="@dimen/default_text_margin_small"
+                android:textSize="@dimen/tr_abc_text_size_body_1_material"
                 android:text="@string/rpc_url"/>
             <EditText android:id="@+id/rpc_url_edit_text"
                 android:layout_width="0dp"
@@ -67,17 +70,20 @@
                 android:hint="@string/server_rpc_url_hint"
                 android:singleLine="true"
                 android:inputType="textUri"
+                android:textSize="@dimen/tr_abc_text_size_body_1_material"
                 android:text="@string/default_rpc_url"/>
             <Button android:id="@+id/default_rpc_url_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/default_text_margin_small"
+                android:textSize="@dimen/tr_abc_text_size_button_material"
                 android:text="@string/default_url"/>
         </LinearLayout>
 
         <CheckBox android:id="@+id/aunthentication_checkbox"
             android:layout_width="match_parent"
             android:layout_height="@dimen/default_edit_text_height"
+            android:textSize="@dimen/tr_abc_text_size_body_1_material"
             android:text="@string/authentication" />
 
         <EditText android:id="@+id/user_name_edit_text"
@@ -86,7 +92,8 @@
             android:paddingTop="@dimen/default_edit_text_padding"
             android:paddingBottom="@dimen/default_edit_text_padding"
             android:hint="@string/username"
-            android:singleLine="true" />
+            android:singleLine="true"
+            android:textSize="@dimen/tr_abc_text_size_body_1_material"/>
 
         <EditText android:id="@+id/password_edit_text"
             android:layout_width="match_parent"
@@ -95,7 +102,8 @@
             android:paddingBottom="@dimen/default_edit_text_padding"
             android:hint="@string/password"
             android:singleLine="true"
-            android:inputType="textPassword" />
+            android:inputType="textPassword"
+            android:textSize="@dimen/tr_abc_text_size_body_1_material"/>
     </LinearLayout>
 
 </ScrollView>

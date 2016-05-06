@@ -12,6 +12,7 @@
         <item name="actionBarTheme">@style/ActionBarTheme</item>
         <item name="actionModeStyle">@style/ActionModeTheme</item>
         <item name="windowActionModeOverlay">true</item>
+        <item name="editTextStyle">@style/AppEditTextStyle</item>
     </style>
 
     <style name="AppTheme.NoActionBar" parent="AppTheme">
@@ -36,5 +37,9 @@
 
     <style name="ActionBarSubTitleAppearance" parent="ActionBarTitleAppearance">
         <item name="android:textSize">@dimen/actionbar_subtitle_text_size</item>
+    </style>
+
+    <style name="AppEditTextStyle" parent="@style/Widget.AppCompat.EditText">
+        <item name="android:textColor">@color/edit_text_color</item>
     </style>
 </resources>
