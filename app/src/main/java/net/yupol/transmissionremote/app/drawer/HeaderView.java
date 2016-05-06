@@ -1,16 +1,21 @@
 package net.yupol.transmissionremote.app.drawer;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.TypedArray;
 import android.graphics.Color;
+import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.google.common.collect.Iterables;
+import com.google.common.base.Function;
+import com.google.common.collect.FluentIterable;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.iconics.IconicsDrawable;
 import com.mikepenz.materialdrawer.Drawer;
@@ -20,19 +25,28 @@ import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.mikepenz.materialdrawer.view.BezelImageView;
 
 import net.yupol.transmissionremote.app.R;
+import net.yupol.transmissionremote.app.TransmissionRemote;
 import net.yupol.transmissionremote.app.server.Server;
+
+import org.json.JSONArray;
+import org.json.JSONException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 public class HeaderView extends RelativeLayout implements View.OnClickListener {
+
+    private static final String TAG = HeaderView.class.getSimpleName();
 
     private static final float CIRCLE_TEXT_PADDING_RATIO = 0.35f;
 
     private static final int DRAWER_ITEM_ID_ADD_SERVER = -1;
     private static final int DRAWER_ITEM_ID_MANAGE_SERVERS = -2;
+
+    private static final String KEY_ORDERED_SERVERS = "key_ordered_servers";
 
     private Drawer drawer;
     private List<Server> servers;
@@ -131,8 +145,6 @@ public class HeaderView extends RelativeLayout implements View.OnClickListener {
         serverCircleSmallFirst.setOnClickListener(this);
         serverCircleSmallSecond = (BezelImageView) findViewById(R.id.circle_2);
         serverCircleSmallSecond.setOnClickListener(this);
-
-
     }
 
     public void setServers(List<Server> servers, int currentServerPosition) {
@@ -142,15 +154,47 @@ public class HeaderView extends RelativeLayout implements View.OnClickListener {
             return;
         }
 
-        serversInCircles[0] = servers.get(currentServerPosition);
-        nameText.setText(serversInCircles[0].getName());
+        TransmissionRemote app = TransmissionRemote.getApplication(getContext());
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getContext());
+        List<String> orderedServers;
+        if (sp.contains(KEY_ORDERED_SERVERS)) {
+            orderedServers = serversFromJson(sp.getString(KEY_ORDERED_SERVERS, ""));
+            // remove servers which are not in server list from ordered server list
+            Iterator<String> it = orderedServers.iterator();
+            while (it.hasNext()) {
+                if (app.getServerById(it.next()) == null) it.remove();
+            }
+            // add new servers to ordered server list
+            for (Server server : servers) {
+                if (orderedServers.indexOf(server.getId()) < 0) {
+                    orderedServers.add(server.getId());
+                }
+            }
+        } else {
+            orderedServers = FluentIterable.from(servers).transform(new Function<Server, String>() {
+                @Override
+                public String apply(Server server) {
+                    return server.getId();
+                }
+            }).copyInto(new LinkedList<String>());
+        }
 
-        Iterator<Server> nonCurrentServers = Iterables.concat(
-                servers.subList(0, currentServerPosition),
-                servers.subList(currentServerPosition + 1, servers.size()))
-                .iterator();
-        serversInCircles[1] = nonCurrentServers.hasNext() ? nonCurrentServers.next() : null;
-        serversInCircles[2] = nonCurrentServers.hasNext() ? nonCurrentServers.next() : null;
+        String currentServerId = servers.get(currentServerPosition).getId();
+        orderedServers.remove(currentServerId);
+        orderedServers.add(0, currentServerId);
+
+        SharedPreferences.Editor editor = sp.edit();
+        editor.putString(KEY_ORDERED_SERVERS, serversToJson(orderedServers));
+        editor.apply();
+
+        Arrays.fill(serversInCircles, null);
+        int i = 0;
+        Iterator<String> it = orderedServers.iterator();
+        while (it.hasNext() && i < serversInCircles.length) {
+            serversInCircles[i++] = app.getServerById(it.next());
+        }
+
+        nameText.setText(serversInCircles[0].getName());
 
         updateServerCircles();
 
@@ -160,27 +204,49 @@ public class HeaderView extends RelativeLayout implements View.OnClickListener {
         }
     }
 
+    private String serversToJson(List<String> servers) {
+        return new JSONArray(servers).toString();
+    }
+
+    private List<String> serversFromJson(String serversJson) {
+        List<String> servers = new LinkedList<>();
+        try {
+            JSONArray serversArray = new JSONArray(serversJson);
+            for (int i=0; i<serversArray.length(); i++) {
+                servers.add(serversArray.getString(i));
+            }
+        } catch (JSONException e) {
+            Log.e(TAG, "Failed to parse servers list");
+        }
+        return servers;
+    }
+
     private void updateServerCircles() {
         if (serversInCircles[0] != null) {
-            serverCircleCurrent.setImageDrawable(new ServerDrawable(serversInCircles[0].getName(), Color.WHITE, secondaryTextColor, CIRCLE_TEXT_PADDING_RATIO));
+            serverCircleCurrent.setImageDrawable(serverDrawable(serversInCircles[0].getName()));
             serverCircleCurrent.setVisibility(VISIBLE);
         } else {
             serverCircleCurrent.setVisibility(GONE);
         }
 
         if (serversInCircles[1] != null) {
-            serverCircleSmallFirst.setImageDrawable(new ServerDrawable(serversInCircles[1].getName(), Color.WHITE, secondaryTextColor, CIRCLE_TEXT_PADDING_RATIO));
+            serverCircleSmallFirst.setImageDrawable(serverDrawable(serversInCircles[1].getName()));
             serverCircleSmallFirst.setVisibility(VISIBLE);
         } else {
             serverCircleSmallFirst.setVisibility(GONE);
         }
 
         if (serversInCircles[2] != null) {
-            serverCircleSmallSecond.setImageDrawable(new ServerDrawable(serversInCircles[2].getName(), Color.WHITE, secondaryTextColor, CIRCLE_TEXT_PADDING_RATIO));
+            serverCircleSmallSecond.setImageDrawable(serverDrawable(serversInCircles[2].getName()));
             serverCircleSmallSecond.setVisibility(VISIBLE);
         } else {
             serverCircleSmallSecond.setVisibility(GONE);
         }
+    }
+
+    @NonNull
+    private ServerDrawable serverDrawable(String name) {
+        return new ServerDrawable(name, Color.WHITE, secondaryTextColor, CIRCLE_TEXT_PADDING_RATIO);
     }
 
     private void buildServerSelectionDrawerItems() {
