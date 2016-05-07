@@ -69,6 +69,7 @@
     <string name="add_server_details">Add server details to start</string>
     <string name="add_server">Add Server</string>
     <string name="manage_servers">Manage Servers</string>
+    <string name="servers_empty_text">No servers</string>
 
     <!-- Preferences -->
     <string name="update_interval_title">Update interval</string>

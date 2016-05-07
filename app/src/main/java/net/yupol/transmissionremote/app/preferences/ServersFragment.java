@@ -75,6 +75,12 @@ public class ServersFragment extends ListFragment {
     }
 
     @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        setEmptyText(getString(R.string.servers_empty_text));
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
         ((BaseAdapter) getListAdapter()).notifyDataSetChanged();
