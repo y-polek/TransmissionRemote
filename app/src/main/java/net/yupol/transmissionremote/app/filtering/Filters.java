@@ -2,14 +2,16 @@ package net.yupol.transmissionremote.app.filtering;
 
 import net.yupol.transmissionremote.app.model.json.Torrent;
 
-import static net.yupol.transmissionremote.app.R.string.filter_empty_active;
-import static net.yupol.transmissionremote.app.R.string.filter_empty_all;
-import static net.yupol.transmissionremote.app.R.string.filter_empty_downloading;
-import static net.yupol.transmissionremote.app.R.string.filter_empty_paused;
-import static net.yupol.transmissionremote.app.R.string.filter_empty_seeding;
 import static net.yupol.transmissionremote.app.R.string.filter_active;
 import static net.yupol.transmissionremote.app.R.string.filter_all;
 import static net.yupol.transmissionremote.app.R.string.filter_downloading;
+import static net.yupol.transmissionremote.app.R.string.filter_empty_active;
+import static net.yupol.transmissionremote.app.R.string.filter_empty_all;
+import static net.yupol.transmissionremote.app.R.string.filter_empty_downloading;
+import static net.yupol.transmissionremote.app.R.string.filter_empty_finished;
+import static net.yupol.transmissionremote.app.R.string.filter_empty_paused;
+import static net.yupol.transmissionremote.app.R.string.filter_empty_seeding;
+import static net.yupol.transmissionremote.app.R.string.filter_finished;
 import static net.yupol.transmissionremote.app.R.string.filter_paused;
 import static net.yupol.transmissionremote.app.R.string.filter_seeding;
 
@@ -46,6 +48,13 @@ public class Filters {
         @Override
         public boolean apply(Torrent torrent) {
             return torrent.getStatus() == Torrent.Status.STOPPED;
+        }
+    };
+
+    public static final Filter FINISHED = new BaseFilter(filter_finished, filter_empty_finished) {
+        @Override
+        public boolean apply(Torrent torrent) {
+            return torrent.isFinished();
         }
     };
 }
