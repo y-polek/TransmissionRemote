@@ -6,7 +6,9 @@
     <color name="accent">#FF5252</color>
     <color name="alternative_accent">#ff8a80</color>
     <color name="text_primary">#212121</color>
+    <color name="text_primary_disabled">#80000000</color>
     <color name="text_secondary">#727272</color>
+    <color name="text_secondary_disabled">#80323232</color>
     <color name="text_primary_inverse">#FFFFFF</color>
     <color name="divider">#B6B6B6</color>
 

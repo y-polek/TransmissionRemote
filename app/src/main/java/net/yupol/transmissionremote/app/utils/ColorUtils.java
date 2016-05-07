@@ -1,6 +1,7 @@
 package net.yupol.transmissionremote.app.utils;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.util.TypedValue;
 
 public class ColorUtils {
@@ -9,9 +10,14 @@ public class ColorUtils {
         TypedValue typedValue = new TypedValue();
         boolean resolved = context.getTheme().resolveAttribute(colorAttr, typedValue, true);
         if (resolved) {
-            return typedValue.data;
-        } else {
-            return context.getResources().getColor(defaultResId);
+            if (typedValue.type == TypedValue.TYPE_STRING) {
+                ColorStateList stateList = context.getResources().getColorStateList(typedValue.resourceId);
+                if (stateList != null) return stateList.getDefaultColor();
+            } else {
+                return typedValue.data;
+            }
         }
+
+        return context.getResources().getColor(defaultResId);
     }
 }
