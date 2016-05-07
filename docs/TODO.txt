@@ -1,2 +1,0 @@
-1. Automatic discovery with Bonjour.
-2. Store passwords properly.
