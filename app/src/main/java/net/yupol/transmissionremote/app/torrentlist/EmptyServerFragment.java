@@ -19,7 +19,7 @@ public class EmptyServerFragment extends Fragment {
         View view = inflater.inflate(R.layout.empty_server_layout, container, false);
 
         Button addBtn = (Button) view.findViewById(R.id.add_server_button);
-        int iconColor = ColorUtils.resolveColor(getContext(), android.R.attr.textColorSecondary, R.color.text_secondary);
+        int iconColor = ColorUtils.resolveColor(getContext(), R.attr.colorAccent, R.color.accent);
         addBtn.setCompoundDrawables(
                 new IconicsDrawable(getContext()).icon(GoogleMaterial.Icon.gmd_add).color(iconColor).sizeRes(R.dimen.default_button_icon_size),
                 null, null, null);

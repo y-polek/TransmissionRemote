@@ -10,8 +10,9 @@
         android:layout_marginLeft="@dimen/default_layout_margin"
         android:layout_marginRight="@dimen/default_layout_margin"
         android:layout_marginBottom="@dimen/default_layout_margin"
-        android:textSize="@dimen/tr_abc_text_size_title_material"
-        android:gravity="center"/>
+        android:gravity="center"
+        android:textSize="@dimen/tr_abc_text_size_medium_material"
+        android:textColor="?android:attr/textColorPrimary"/>
     <Button android:id="@+id/server_settings_button"
         android:layout_width="@dimen/default_button_with_icon_width"
         android:layout_height="wrap_content"

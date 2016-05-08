@@ -33,7 +33,7 @@ public class NetworkErrorFragment extends Fragment {
         messageView = (TextView) view.findViewById(R.id.error_message);
         messageView.setText(getArguments().getString(KEY_MESSAGE));
 
-        int iconColor = ColorUtils.resolveColor(getContext(), android.R.attr.textColorSecondary, R.color.text_secondary);
+        int iconColor = ColorUtils.resolveColor(getContext(), R.attr.colorAccent, R.color.accent);
 
         Button retryBtn = (Button) view.findViewById(R.id.retry_button);
         retryBtn.setCompoundDrawables(

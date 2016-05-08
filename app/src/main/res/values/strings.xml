@@ -66,7 +66,7 @@
     <string name="save_changes_question">Save changes?</string>
     <string name="save_changes_save">Save</string>
     <string name="save_changes_discard">Discard</string>
-    <string name="add_server_details">Add server details to start</string>
+    <string name="enter_server_parameters">Enter server parameters to start.</string>
     <string name="add_server">Add Server</string>
     <string name="manage_servers">Manage Servers</string>
     <string name="servers_empty_text">No servers</string>
@@ -156,14 +156,16 @@
     <string name="retry">Retry</string>
     <string name="server_settings">Server settings</string>
     <string name="network_settings">Network settings</string>
-    <string name="network_error_message_no_network">Failed to connect to the server. Check network settings</string>
-    <string name="network_error_message_connection_error">Failed to connect to the server. Check server settings</string>
-    <string name="network_error_message_unauthorized">Unauthorized access. Check username/password in server settings</string>
+    <string name="network_error_message_no_network">Failed to connect to the server. Check network settings.</string>
+    <string name="network_error_message_connection_error">Failed to connect to the server. Check server settings.</string>
+    <string name="network_error_message_unauthorized">Unauthorized access. Check username and password in server settings.</string>
     <string name="error_retrieve_torrent_details">Can\'t retrieve torrent details. Try again</string>
 
     <string name="tooltip_turtle_mode">Speed limit mode</string>
     <string name="tooltip_total_download_speed">Total download speed</string>
     <string name="tooltip_total_upload_speed">Total upload speed</string>
+
+    <string name="welcome">Welcome!</string>
 
     <plurals name="torrents">
         <item quantity="zero">%d torrents</item>
