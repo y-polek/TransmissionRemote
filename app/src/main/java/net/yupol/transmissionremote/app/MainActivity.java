@@ -594,27 +594,31 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
         } else if (requestCode == REQUEST_CODE_CHOOSE_TORRENT) {
             if (resultCode == RESULT_OK) {
                 Uri uri = data.getData();
-                Cursor cursor = getContentResolver().query(uri, null, null, null, null);
-                if (cursor == null) {
-                    String msg = getString(R.string.error_file_does_not_exists_msg);
-                    Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
-                    return;
-                }
-                int nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
-                cursor.moveToFirst();
-                String fileName = cursor.getString(nameIndex);
-                cursor.close();
-                String extension = FilenameUtils.getExtension(fileName);
-                if (!"torrent".equals(extension)) {
-                    String msg = getResources().getString(R.string.error_wrong_file_extension_msg,  extension);
-                    Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
-                    return;
-                }
                 try {
                     openTorrentByLocalFile(getContentResolver().openInputStream(uri));
-                } catch (FileNotFoundException e) {
-                    String msg = getResources().getString(R.string.error_file_does_not_exists_msg, fileName);
-                    Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
+                } catch (IOException ex) {
+                    Cursor cursor = getContentResolver().query(uri, null, null, null, null);
+                    if (cursor == null) {
+                        String msg = getString(R.string.error_file_does_not_exists_msg, uri.toString());
+                        Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
+                        return;
+                    }
+                    int nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+                    cursor.moveToFirst();
+                    String fileName = cursor.getString(nameIndex);
+                    cursor.close();
+                    String extension = FilenameUtils.getExtension(fileName);
+                    if (!"torrent".equals(extension)) {
+                        String msg = getResources().getString(R.string.error_wrong_file_extension_msg, extension);
+                        Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
+                        return;
+                    }
+                    try {
+                        openTorrentByLocalFile(getContentResolver().openInputStream(uri));
+                    } catch (FileNotFoundException e) {
+                        String msg = getResources().getString(R.string.error_file_does_not_exists_msg, fileName);
+                        Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
+                    }
                 }
             }
         }
