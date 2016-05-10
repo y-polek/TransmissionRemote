@@ -2,7 +2,6 @@ package net.yupol.transmissionremote.app.drawer;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
@@ -27,6 +26,7 @@ import com.mikepenz.materialdrawer.view.BezelImageView;
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.TransmissionRemote;
 import net.yupol.transmissionremote.app.server.Server;
+import net.yupol.transmissionremote.app.utils.ColorUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -65,7 +65,7 @@ public class HeaderView extends RelativeLayout implements View.OnClickListener {
 
     private ArrayList<IDrawerItem> serverSelectionItems;
 
-    private int primaryTextColor;
+    private int primaryInverseTextColor;
     private int secondaryTextColor;
 
     private Drawer.OnDrawerItemClickListener drawerItemClickListener = new Drawer.OnDrawerItemClickListener() {
@@ -101,17 +101,15 @@ public class HeaderView extends RelativeLayout implements View.OnClickListener {
         super(context, attrs);
         inflate(context, R.layout.drawer_header, this);
 
-        TypedArray arr = context.obtainStyledAttributes(new int[] { android.R.attr.textColorPrimaryInverse, android.R.attr.textColorSecondary });
-        primaryTextColor = arr.getColor(0, Color.WHITE);
-        secondaryTextColor = arr.getColor(1, Color.BLACK);
-        arr.recycle();
+        primaryInverseTextColor = ColorUtils.resolveColor(context, android.R.attr.textColorPrimaryInverse, R.color.text_primary_inverse);
+        secondaryTextColor = ColorUtils.resolveColor(context, android.R.attr.textColorSecondary, R.color.text_secondary);
 
         nameText = (TextView) findViewById(R.id.name_text);
 
         final ImageView serverListButton = (ImageView) findViewById(R.id.server_list_button);
         expandIcon = new IconicsDrawable(context)
                 .icon(serverListExpanded ? MaterialDrawerFont.Icon.mdf_arrow_drop_up : MaterialDrawerFont.Icon.mdf_arrow_drop_down)
-                .color(primaryTextColor)
+                .color(primaryInverseTextColor)
                 .sizeRes(R.dimen.material_drawer_account_header_dropdown)
                 .paddingRes(R.dimen.material_drawer_account_header_dropdown_padding);
         serverListButton.setImageDrawable(expandIcon);
@@ -129,7 +127,7 @@ public class HeaderView extends RelativeLayout implements View.OnClickListener {
 
         ImageButton settingsButton = (ImageButton) findViewById(R.id.settings_button);
         settingsButton.setImageDrawable(new IconicsDrawable(context).icon(GoogleMaterial.Icon.gmd_settings)
-                .color(primaryTextColor)
+                .color(primaryInverseTextColor)
                 .sizeRes(R.dimen.header_settings_size)
                 .paddingRes(R.dimen.header_settings_padding));
         settingsButton.setOnClickListener(new OnClickListener() {
