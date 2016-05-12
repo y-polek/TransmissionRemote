@@ -676,6 +676,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
                 messageRes = R.string.network_error_message_connection_error;
         }
 
+        hasTorrentList = false;
         showNetworkErrorFragment(getString(messageRes));
     }
 

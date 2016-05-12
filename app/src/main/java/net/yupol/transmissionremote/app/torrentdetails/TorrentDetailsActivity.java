@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.octo.android.robospice.exception.RequestCancelledException;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
 
@@ -33,6 +34,7 @@ public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveCha
     private TorrentSetRequest saveChangesRequest;
     private TorrentDetailsPagerAdapter pagerAdapter;
     private boolean hasTorrentInfo = false;
+    private TorrentInfoGetRequest lastTorrentInfoRequest;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,9 +53,11 @@ public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveCha
         pager.setAdapter(pagerAdapter);
 
         if (!hasTorrentInfo) {
-            getTransportManager().doRequest(new TorrentInfoGetRequest(torrent.getId()), new RequestListener<TorrentInfo>() {
+            lastTorrentInfoRequest = new TorrentInfoGetRequest(torrent.getId());
+            getTransportManager().doRequest(lastTorrentInfoRequest, new RequestListener<TorrentInfo>() {
                 @Override
                 public void onRequestFailure(SpiceException spiceException) {
+                    if (spiceException instanceof RequestCancelledException) return;
                     Log.e(TAG, "Failed to get torrent info", spiceException);
                     Toast.makeText(TorrentDetailsActivity.this, R.string.error_retrieve_torrent_details, Toast.LENGTH_LONG).show();
                     onBackPressed();
@@ -96,7 +100,11 @@ public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveCha
     @Override
     public void onBackPressed() {
 
-        if (!hasTorrentInfo) return;
+        if (!hasTorrentInfo) {
+            if (lastTorrentInfoRequest != null) lastTorrentInfoRequest.cancel();
+            super.onBackPressed();
+            return;
+        }
 
         OptionsPageFragment optionsPage = (OptionsPageFragment) pagerAdapter.getFragment(OptionsPageFragment.class);
         TorrentSetRequest.Builder saveChangesRequestBuilder = optionsPage.getSaveOptionsRequestBuilder();
