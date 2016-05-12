@@ -134,6 +134,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
     private static final String KEY_DRAWER_SERVER_LIST_EXPANDED = "key_drawer_server_list_expanded";
     private static final String KEY_SEARCH_ACTION_EXPANDED = "key_search_action_expanded";
     private static final String KEY_SEARCH_QUERY = "key_search_query";
+    private static final String KEY_HAS_TORRENT_LIST = "has_torrent_list";
 
     private TransmissionRemote application;
     private TorrentUpdater torrentUpdater;
@@ -177,6 +178,8 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
     private CharSequence restoredSearchQuery = "";
     private String currentSearchQuery;
 
+    private boolean hasTorrentList = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         LayoutInflaterCompat.setFactory(getLayoutInflater(), new IconicsLayoutInflater(getDelegate()));
@@ -188,8 +191,6 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
         setupActionBar();
         setupBottomToolbar();
         setupDrawer();
-
-        showProgressbarFragment();
 
         application.addOnSpeedLimitEnabledChangedListener(this);
 
@@ -446,6 +447,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
         outState.putBoolean(KEY_DRAWER_SERVER_LIST_EXPANDED, drawer.switchedDrawerContent());
         outState.putBoolean(KEY_SEARCH_ACTION_EXPANDED, searchMenuItem.isActionViewExpanded());
         outState.putCharSequence(KEY_SEARCH_QUERY, searchView.getQuery());
+        outState.putBoolean(KEY_HAS_TORRENT_LIST, hasTorrentList);
     }
 
     @Override
@@ -458,6 +460,8 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
 
         restoredSearchMenuItemExpanded = savedInstanceState.getBoolean(KEY_SEARCH_ACTION_EXPANDED, false);
         restoredSearchQuery = savedInstanceState.getCharSequence(KEY_SEARCH_QUERY, "");
+
+        hasTorrentList = savedInstanceState.getBoolean(KEY_HAS_TORRENT_LIST, false);
     }
 
     @Override
@@ -639,6 +643,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
     @Override
     public void onTorrentUpdate(List<Torrent> torrents) {
         application.setTorrents(torrents);
+        hasTorrentList = true;
 
         if (application.isNotificationEnabled()) {
             Intent intent = new Intent(this, BackgroundUpdateService.class);
@@ -774,6 +779,9 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
     }
 
     private void switchServer(Server server) {
+        if (!server.equals(application.getActiveServer())) {
+            hasTorrentList = false;
+        }
         application.setActiveServer(server);
 
         // Stop old server connections
@@ -781,7 +789,11 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
             torrentUpdater.stop();
         }
         stopPreferencesUpdateTimer();
-        showProgressbarFragment();
+        if (hasTorrentList) {
+            showTorrentListFragment();
+        } else {
+            showProgressbarFragment();
+        }
 
         // Start new server connections
         List<Server> servers = application.getServers();
@@ -849,12 +861,10 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
         TorrentListFragment torrentListFragment = (TorrentListFragment) fm.findFragmentByTag(TAG_TORRENT_LIST);
         if (torrentListFragment == null) {
             torrentListFragment = new TorrentListFragment();
-            torrentListFragment.setOnTorrentSelectedListener(this);
             FragmentTransaction ft = fm.beginTransaction();
             ft.replace(R.id.torrent_list_container, torrentListFragment, TAG_TORRENT_LIST);
             ft.commit();
         }
-        torrentListFragment.setContextualActionBarListener(this);
         if (currentSearchQuery != null) {
             Bundle args = new Bundle();
             args.putString(TorrentListFragment.KEY_SEARCH_QUERY, currentSearchQuery);

@@ -175,7 +175,6 @@ public class TorrentListFragment extends Fragment {
         super.onAttach(context);
 
         Activity activity = getActivity();
-        if (activity == null) throw new IllegalStateException("Fragment must be attached to activity");
 
         app = (TransmissionRemote) getActivity().getApplication();
         app.addOnFilterSetListener(filterListener);
@@ -184,6 +183,14 @@ public class TorrentListFragment extends Fragment {
         if (!(activity instanceof BaseSpiceActivity))
             throw new IllegalStateException("Fragment must be used with BaseSpiceActivity");
         transportManager = ((BaseSpiceActivity) activity).getTransportManager();
+
+        if (activity instanceof OnTorrentSelectedListener) {
+            torrentSelectedListener = (OnTorrentSelectedListener) activity;
+        }
+
+        if (activity instanceof ContextualActionBarListener) {
+            cabListener = (ContextualActionBarListener) activity;
+        }
     }
 
     @Nullable
@@ -238,14 +245,6 @@ public class TorrentListFragment extends Fragment {
         app.removeOnFilterSelectedListener(filterListener);
         app.removeOnSortingChangedListener(sortingListener);
         super.onDetach();
-    }
-
-    public void setOnTorrentSelectedListener(OnTorrentSelectedListener listener) {
-        torrentSelectedListener = listener;
-    }
-
-    public void setContextualActionBarListener(ContextualActionBarListener listener) {
-        cabListener = listener;
     }
 
     public void search(String query) {
