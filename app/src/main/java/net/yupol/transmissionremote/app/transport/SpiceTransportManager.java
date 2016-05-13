@@ -19,6 +19,8 @@ import java.net.HttpURLConnection;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import roboguice.util.temp.Ln;
+
 public class SpiceTransportManager extends SpiceManager implements TransportManager {
 
     private static final String TAG = SpiceTransportManager.class.getSimpleName();
@@ -30,6 +32,7 @@ public class SpiceTransportManager extends SpiceManager implements TransportMana
 
     public SpiceTransportManager() {
         super(NoCacheGoogleHttpClientSpiceService.class);
+        Ln.getConfig().setLoggingLevel(Log.ERROR);
     }
 
     public void setServer(Server server) {
