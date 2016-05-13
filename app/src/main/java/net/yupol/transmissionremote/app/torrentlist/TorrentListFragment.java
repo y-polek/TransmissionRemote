@@ -76,8 +76,6 @@ public class TorrentListFragment extends Fragment {
 
     private static final String TAG_REMOVE_TORRENTS_DIALOG = "tag_remove_torrents_dialog";
 
-    public static final String KEY_SEARCH_QUERY = "key_search_query";
-
     private static final NameFilter NAME_FILTER = new NameFilter();
 
     private static final long ETA_INFINITE_THRESHOLD = TimeUnit.DAYS.toSeconds(7);
@@ -221,12 +219,6 @@ public class TorrentListFragment extends Fragment {
         super.onStart();
         app.addTorrentsUpdatedListener(torrentsListener);
         allTorrents = app.getTorrents();
-
-        Bundle args = getArguments();
-        if (args != null && args.containsKey(KEY_SEARCH_QUERY)) {
-            searchQuery = args.getString(KEY_SEARCH_QUERY);
-            inSearchMode = searchQuery != null && !searchQuery.isEmpty();
-        }
 
         updateTorrentList();
     }

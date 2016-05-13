@@ -866,11 +866,6 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
             ft.replace(R.id.torrent_list_container, torrentListFragment, TAG_TORRENT_LIST);
             ft.commit();
         }
-        if (currentSearchQuery != null) {
-            Bundle args = new Bundle();
-            args.putString(TorrentListFragment.KEY_SEARCH_QUERY, currentSearchQuery);
-            torrentListFragment.setArguments(args);
-        }
     }
 
     private void showNetworkErrorFragment(String message) {
