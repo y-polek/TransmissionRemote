@@ -45,7 +45,7 @@ public class TorrentInfo implements Parcelable {
     }
 
     public File[] getFiles() {
-        return items[0].files;
+        return items.length == 1 ? items[0].files : null;
     }
 
     public FileStat[] getFileStats() {

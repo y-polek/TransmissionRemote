@@ -59,14 +59,25 @@ public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveCha
                 public void onRequestFailure(SpiceException spiceException) {
                     if (spiceException instanceof RequestCancelledException) return;
                     Log.e(TAG, "Failed to get torrent info", spiceException);
-                    Toast.makeText(TorrentDetailsActivity.this, R.string.error_retrieve_torrent_details, Toast.LENGTH_LONG).show();
-                    onBackPressed();
+                    showErrorAndExit();
                 }
 
                 @Override
                 public void onRequestSuccess(TorrentInfo torrentInfo) {
-                    pagerAdapter.setTorrentInfo(torrentInfo);
-                    hasTorrentInfo = true;
+                    // TorrentInfo may be empty if torrent is removed after request was sent.
+                    // Show content only if TorrentInfo contain files data.
+                    if (torrentInfo.getFiles() != null) {
+                        pagerAdapter.setTorrentInfo(torrentInfo);
+                        hasTorrentInfo = true;
+                    } else {
+                        Log.e(TAG, "Empty TorrentInfo");
+                        showErrorAndExit();
+                    }
+                }
+
+                private void showErrorAndExit() {
+                    Toast.makeText(TorrentDetailsActivity.this, R.string.error_retrieve_torrent_details, Toast.LENGTH_LONG).show();
+                    onBackPressed();
                 }
             });
         }
