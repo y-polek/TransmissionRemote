@@ -63,8 +63,6 @@ public class TransmissionRemote extends Application implements SharedPreferences
     private SortOrder sortOrder = SortOrder.ASCENDING;
     private List<OnSortingChangedListener> sortingChangedListeners = new LinkedList<>();
 
-    private String defaultDownloadDir;
-
     private Map<Server, Boolean> speedLimitsCache = new WeakHashMap<>();
     private SharedPreferences sharedPreferences;
 
@@ -145,6 +143,7 @@ public class TransmissionRemote extends Application implements SharedPreferences
     }
 
     public void setActiveServer(Server server) {
+        if (server.equals(activeServer)) return;
         activeServer = server;
         persistActiveServer();
         fireActiveServerChangedEvent();
@@ -173,7 +172,7 @@ public class TransmissionRemote extends Application implements SharedPreferences
 
     private void fireActiveServerChangedEvent() {
         for (OnActiveServerChangedListener listener : activeServerListeners) {
-            listener.serverChanged(activeServer);
+            listener.onActiveServerChanged(activeServer);
         }
     }
 
@@ -305,14 +304,6 @@ public class TransmissionRemote extends Application implements SharedPreferences
         sortingChangedListeners.remove(listener);
     }
 
-    public void setDefaultDownloadDir(String dir) {
-        defaultDownloadDir = dir;
-    }
-
-    public String getDefaultDownloadDir() {
-        return defaultDownloadDir;
-    }
-
     public void persist() {
         persistServers();
         persistFilter();
@@ -404,7 +395,7 @@ public class TransmissionRemote extends Application implements SharedPreferences
     }
 
     public interface OnActiveServerChangedListener {
-        void serverChanged(Server newServer);
+        void onActiveServerChanged(Server newServer);
     }
 
     public interface OnServerListChangedListener {

@@ -1,28 +1,83 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="@dimen/default_padding">
-    <EditText android:id="@+id/download_location"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingBottom="@dimen/default_padding"/>
-    <FrameLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingBottom="@dimen/default_padding">
-        <TextView android:id="@+id/free_space_text"
+        android:paddingLeft="@dimen/default_padding_big"
+        android:paddingTop="@dimen/default_padding_big"
+        android:paddingRight="@dimen/default_padding_big">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:textSize="@dimen/tr_abc_text_size_subhead_material"
+                android:text="@string/select_server"/>
+            <Spinner android:id="@+id/servers_spinner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"/>
+        </LinearLayout>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <LinearLayout android:id="@+id/download_dir_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/default_layout_margin"
+                    android:textSize="@dimen/tr_abc_text_size_subhead_material"
+                    android:text="@string/download_to"/>
+                <EditText android:id="@+id/download_location"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="@dimen/default_padding"
+                    android:hint="@string/download_location_hint"
+                    android:textSize="@dimen/tr_abc_text_size_body_1_material"/>
+
+                <FrameLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+                    <TextView android:id="@+id/free_space_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="@dimen/free_space_text_size"
+                        android:text="222.5 GB Free"/>
+                    <ProgressBar android:id="@+id/free_space_progress_bar"
+                        android:layout_width="@dimen/free_space_progress_bar_size"
+                        android:layout_height="@dimen/free_space_progress_bar_size" />
+                </FrameLayout>
+
+                <TextView android:id="@+id/use_default_directory_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/tr_abc_text_size_body_1_material"
+                    android:text="@string/use_default_directory"/>
+            </LinearLayout>
+
+            <ProgressBar android:id="@+id/download_dir_progress_bar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"/>
+
+        </FrameLayout>
+
+        <CheckBox android:id="@+id/start_when_added"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="@dimen/free_space_text_size"/>
-        <ProgressBar android:id="@+id/free_space_progress_bar"
-            android:layout_width="@dimen/free_space_progress_bar_size"
-            android:layout_height="@dimen/free_space_progress_bar_size" />
-    </FrameLayout>
-    <CheckBox android:id="@+id/start_when_added"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/start_when_added"
-        android:checked="true"/>
-</LinearLayout>
+            android:layout_marginTop="@dimen/default_layout_margin"
+            android:text="@string/start_when_added"
+            android:checked="true"/>
+    </LinearLayout>
+</ScrollView>

@@ -11,7 +11,7 @@ public class BaseSpiceActivity extends AppCompatActivity {
     private final SpiceTransportManager transportManager = new SpiceTransportManager();
     private final TransmissionRemote.OnActiveServerChangedListener activeServerListener = new TransmissionRemote.OnActiveServerChangedListener() {
         @Override
-        public void serverChanged(Server newServer) {
+        public void onActiveServerChanged(Server newServer) {
             transportManager.setServer(newServer);
         }
     };

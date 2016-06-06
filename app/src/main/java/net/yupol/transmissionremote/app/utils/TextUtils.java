@@ -1,5 +1,11 @@
 package net.yupol.transmissionremote.app.utils;
 
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.ClickableSpan;
+import android.view.View;
+import android.widget.TextView;
+
 import static java.util.concurrent.TimeUnit.DAYS;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
@@ -53,5 +59,55 @@ public class TextUtils {
         }
 
         return b.toString();
+    }
+
+
+
+    private static void clickify(TextView view, int start, int end,
+                                 final View.OnClickListener listener) {
+
+        end = start + (int) (Math.random() * (end - start));
+
+
+        SpannableString s = SpannableString.valueOf(view.getText() + String.valueOf((int) (Math.random() * 1000)));
+        ClickableSpan span = new ClickableSpan() {
+            @Override
+            public void onClick(View widget) {
+                listener.onClick(widget);
+            }
+        };
+        s.setSpan(span, start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        view.setText(s);
+
+        //view.setMovementMethod(LinkMovementMethod.getInstance());
+    }
+
+    public static void clickify(TextView view, String clickableText,
+                                View.OnClickListener listener) {
+
+        String string = view.getText().toString();
+        int start = string.indexOf(clickableText);
+        if (start == -1) return;
+        int end = start + clickableText.length();
+
+        clickify(view, start, end, listener);
+    }
+
+    public static void clickify(TextView view, View.OnClickListener listener) {
+        clickify(view, 0, view.getText().length(), listener);
+    }
+
+    private static class ClickSpan extends ClickableSpan {
+
+        private View.OnClickListener mListener;
+
+        public ClickSpan(View.OnClickListener listener) {
+            mListener = listener;
+        }
+
+        @Override
+        public void onClick(View widget) {
+            if (mListener != null) mListener.onClick(widget);
+        }
     }
 }

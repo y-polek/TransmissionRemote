@@ -1,6 +1,5 @@
 package net.yupol.transmissionremote.app;
 
-import android.app.DialogFragment;
 import android.app.SearchManager;
 import android.content.ActivityNotFoundException;
 import android.content.ContentResolver;
@@ -15,6 +14,7 @@ import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.provider.OpenableColumns;
 import android.support.annotation.Nullable;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.LayoutInflaterCompat;
@@ -105,7 +105,8 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
         TorrentListFragment.OnTorrentSelectedListener, TorrentListFragment.ContextualActionBarListener,
         OpenByDialogFragment.OnOpenTorrentSelectedListener, OpenAddressDialogFragment.OnOpenMagnetListener,
         DownloadLocationDialogFragment.OnDownloadLocationSelectedListener,
-        RemoveTorrentsDialogFragment.OnRemoveTorrentSelectionListener, NetworkErrorFragment.OnRefreshPressedListener {
+        RemoveTorrentsDialogFragment.OnRemoveTorrentSelectionListener, NetworkErrorFragment.OnRefreshPressedListener,
+        TransmissionRemote.OnActiveServerChangedListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
@@ -192,6 +193,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
         setupBottomToolbar();
         setupDrawer();
 
+        application.addOnActiveServerChangedListener(this);
         application.addOnSpeedLimitEnabledChangedListener(this);
 
         // Workaround for bug https://code.google.com/p/android/issues/detail?id=63777
@@ -214,9 +216,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if (id == ActionBarNavigationAdapter.ID_SERVER) {
                     Server server = (Server) toolbarSpinnerAdapter.getItem(position);
-                    if (!server.equals(application.getActiveServer())) {
-                        switchServer(server);
-                    }
+                    application.setActiveServer(server);
                 } else if (id == ActionBarNavigationAdapter.ID_FILTER) {
                     Filter filter = (Filter) toolbarSpinnerAdapter.getItem(position);
                     if (!filter.equals(application.getActiveFilter())) {
@@ -270,7 +270,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
 
             @Override
             public void onServerSelected(Server server) {
-                switchServer(server);
+                application.setActiveServer(server);
             }
 
             @Override
@@ -350,6 +350,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
 
     @Override
     protected void onDestroy() {
+        application.removeOnActiveServerChangedListener(this);
         application.removeOnSpeedLimitEnabledChangedListener(this);
         turtleModeButton = null;
         keyboardUtil.disable();
@@ -593,7 +594,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
             if (resultCode == RESULT_OK) {
                 Server server = data.getParcelableExtra(AddServerActivity.EXTRA_SEVER);
                 addNewServer(server);
-                switchServer(server);
+                application.setActiveServer(server);
             }
         } else if (requestCode == REQUEST_CODE_CHOOSE_TORRENT) {
             if (resultCode == RESULT_OK) {
@@ -770,6 +771,12 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
         torrentUpdater.scheduleUpdate(UPDATE_REQUEST_DELAY);
     }
 
+    @Override
+    public void onActiveServerChanged(Server server) {
+        hasTorrentList = false;
+        switchServer(server);
+    }
+
     public void openAddServerActivity(View view) {
         Intent intent = new Intent(this, AddServerActivity.class);
         startActivityForResult(intent, REQUEST_CODE_SERVER_PARAMS);
@@ -780,11 +787,6 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
     }
 
     private void switchServer(Server server) {
-        if (!server.equals(application.getActiveServer())) {
-            hasTorrentList = false;
-        }
-        application.setActiveServer(server);
-
         // Stop old server connections
         if (torrentUpdater != null) {
             torrentUpdater.stop();
@@ -822,7 +824,6 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
                     @Override
                     public void onRequestSuccess(ServerSettings serverSettings) {
                         application.setSpeedLimitEnabled(serverSettings.isAltSpeedLimitEnabled());
-                        application.setDefaultDownloadDir(serverSettings.getDownloadDir());
                     }
                 });
             }
@@ -947,7 +948,8 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
         Bundle args = new Bundle();
         args.putInt(DownloadLocationDialogFragment.KEY_REQUEST_CODE, DownloadLocationDialogFragment.REQUEST_CODE_BY_LOCAL_FILE);
         try {
-            args.putByteArray(DownloadLocationDialogFragment.KEY_FILE_BYTES, IOUtils.toByteArray(fileStream));
+            byte[] fileBytes = IOUtils.toByteArray(fileStream);
+            args.putByteArray(DownloadLocationDialogFragment.KEY_FILE_BYTES, fileBytes);
         } catch (IOException e) {
             Toast.makeText(MainActivity.this, getString(R.string.error_cannot_read_file_msg), Toast.LENGTH_SHORT).show();
             return;
@@ -959,7 +961,8 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
             }
         }
         dialog.setArguments(args);
-        dialog.show(getFragmentManager(), TAG_DOWNLOAD_LOCATION_DIALOG);
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.add(dialog, TAG_DOWNLOAD_LOCATION_DIALOG).commitAllowingStateLoss();
     }
 
     private void openTorrentByRemoteFile(final Uri fileUri) {
@@ -968,7 +971,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
         args.putInt(DownloadLocationDialogFragment.KEY_REQUEST_CODE, DownloadLocationDialogFragment.REQUEST_CODE_BY_REMOTE_FILE);
         args.putParcelable(DownloadLocationDialogFragment.KEY_FILE_URI, fileUri);
         dialog.setArguments(args);
-        dialog.show(getFragmentManager(), TAG_DOWNLOAD_LOCATION_DIALOG);
+        dialog.show(getSupportFragmentManager(), TAG_DOWNLOAD_LOCATION_DIALOG);
     }
 
     private void openTorrentByMagnet(final String magnetUri) {
@@ -977,7 +980,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
         bundle.putInt(DownloadLocationDialogFragment.KEY_REQUEST_CODE, DownloadLocationDialogFragment.REQUEST_CODE_BY_MAGNET);
         bundle.putString(DownloadLocationDialogFragment.KEY_MAGNET_URI, magnetUri);
         dialog.setArguments(bundle);
-        dialog.show(getFragmentManager(), TAG_DOWNLOAD_LOCATION_DIALOG);
+        dialog.show(getSupportFragmentManager(), TAG_DOWNLOAD_LOCATION_DIALOG);
     }
 
     private void startAllTorrents() {

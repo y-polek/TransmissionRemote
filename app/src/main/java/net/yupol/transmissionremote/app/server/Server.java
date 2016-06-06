@@ -26,6 +26,7 @@ public class Server implements Parcelable {
     private String password;
     private String rpcUrl = DEFAULT_RPC_URL;
     private String lastSessionId;
+    private String downloadDir;
 
     public Server(@Nonnull String name, @Nonnull String host, int port) {
         if (port <= 0 || port > 0xFFFF)
@@ -112,6 +113,14 @@ public class Server implements Parcelable {
         return lastSessionId;
     }
 
+    public void setDownloadDir(String downloadDir) {
+        this.downloadDir = downloadDir;
+    }
+
+    public String getDownloadDir() {
+        return downloadDir;
+    }
+
     public String toJson() {
         return new Gson().toJson(this);
     }
@@ -143,7 +152,8 @@ public class Server implements Parcelable {
         if (!host.equals(server.host)) return false;
         if (userName != null ? !userName.equals(server.userName) : server.userName != null)
             return false;
-        return rpcUrl.equals(server.rpcUrl);
+        if (rpcUrl != null ? !rpcUrl.equals(server.rpcUrl) : server.rpcUrl != null) return false;
+        return downloadDir != null ? downloadDir.equals(server.downloadDir) : server.downloadDir == null;
 
     }
 
@@ -155,7 +165,8 @@ public class Server implements Parcelable {
         result = 31 * result + port;
         result = 31 * result + (useAuthentication ? 1 : 0);
         result = 31 * result + (userName != null ? userName.hashCode() : 0);
-        result = 31 * result + rpcUrl.hashCode();
+        result = 31 * result + (rpcUrl != null ? rpcUrl.hashCode() : 0);
+        result = 31 * result + (downloadDir != null ? downloadDir.hashCode() : 0);
         return result;
     }
 
@@ -169,6 +180,7 @@ public class Server implements Parcelable {
                 ", useAuthentication=" + useAuthentication +
                 ", userName='" + userName + '\'' +
                 ", lastSessionId='" + lastSessionId + '\'' +
+                ", downloadDir='" + downloadDir + '\'' +
                 '}';
     }
 
@@ -190,6 +202,7 @@ public class Server implements Parcelable {
         }
         dest.writeString(rpcUrl);
         dest.writeString(Strings.nullToEmpty(lastSessionId));
+        dest.writeString(Strings.nullToEmpty(downloadDir));
     }
 
     public static final Creator<Server> CREATOR = new Creator<Server>() {
@@ -211,8 +224,8 @@ public class Server implements Parcelable {
             }
             server.setId(id);
             server.setRpcUrl(parcel.readString());
-            String sessionId = Strings.emptyToNull(parcel.readString());
-            server.setLastSessionId(sessionId);
+            server.setLastSessionId(Strings.emptyToNull(parcel.readString()));
+            server.setDownloadDir(Strings.emptyToNull(parcel.readString()));
             return server;
         }
 
