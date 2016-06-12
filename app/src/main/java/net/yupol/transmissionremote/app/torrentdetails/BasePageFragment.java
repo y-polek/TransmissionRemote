@@ -1,6 +1,8 @@
 package net.yupol.transmissionremote.app.torrentdetails;
 
+import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.CallSuper;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -10,7 +12,7 @@ import android.view.ViewGroup;
 import net.yupol.transmissionremote.app.model.json.Torrent;
 import net.yupol.transmissionremote.app.model.json.TorrentInfo;
 
-public abstract class BasePageFragment extends Fragment {
+public abstract class BasePageFragment extends Fragment implements OnDataAvailableListener<TorrentInfo> {
 
     private static final String KEY_TORRENT = "key_torrent";
     private static final String KEY_TORRENT_INFO = "key_torrent_info";
@@ -18,23 +20,28 @@ public abstract class BasePageFragment extends Fragment {
     private Torrent torrent;
     private TorrentInfo torrentInfo;
 
+    @CallSuper
     public void setTorrent(Torrent torrent) {
         this.torrent = torrent;
-    }
-
-    public void setTorrentInfo(TorrentInfo torrentInfo) {
-        this.torrentInfo = torrentInfo;
     }
 
     protected Torrent getTorrent() {
         return torrent;
     }
 
+    @CallSuper
+    public void setTorrentInfo(TorrentInfo torrentInfo) {
+        this.torrentInfo = torrentInfo;
+    }
+
     protected TorrentInfo getTorrentInfo() {
         return torrentInfo;
     }
 
-    public abstract int getPageTitleRes();
+    @Override
+    public void onDataAvailable(TorrentInfo data) {
+        setTorrentInfo(data);
+    }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -43,7 +50,29 @@ public abstract class BasePageFragment extends Fragment {
         outState.putParcelable(KEY_TORRENT_INFO, torrentInfo);
     }
 
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        if (getActivity() instanceof TorrentDetailsActivity) {
+            TorrentDetailsActivity activity = (TorrentDetailsActivity) getActivity();
+            torrentInfo = activity.getTorrentInfo();
+            activity.addTorrentInfoListener(this);
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+
+        if (getActivity() instanceof TorrentDetailsActivity) {
+            TorrentDetailsActivity activity = (TorrentDetailsActivity) getActivity();
+            activity.removeTorrentInfoListener(this);
+        }
+    }
+
     @Nullable
+    @CallSuper
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         if (savedInstanceState != null) {

@@ -29,7 +29,17 @@ public class TorrentInfoGetRequest extends Request<TorrentInfo> {
             TorrentMetadata.SEED_RATIO_LIMIT,
             TorrentMetadata.SEED_RATIO_MODE,
             TorrentMetadata.SEED_IDLE_LIMIT,
-            TorrentMetadata.SEED_IDLE_MODE
+            TorrentMetadata.SEED_IDLE_MODE,
+
+            TorrentMetadata.DESIRED_AVAILABLE,
+            TorrentMetadata.PIECE_COUNT,
+            TorrentMetadata.PIECE_SIZE,
+            TorrentMetadata.DOWNLOAD_DIR,
+            TorrentMetadata.HASH_STRING,
+            TorrentMetadata.IS_PRIVATE,
+            TorrentMetadata.CREATOR,
+            TorrentMetadata.DATE_CREATED,
+            TorrentMetadata.COMMENT
     );
 
     private int id;

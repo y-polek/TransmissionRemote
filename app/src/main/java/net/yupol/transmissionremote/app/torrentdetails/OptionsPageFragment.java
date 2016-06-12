@@ -13,7 +13,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
@@ -39,7 +38,8 @@ import net.yupol.transmissionremote.app.transport.request.TorrentSetRequest;
 import net.yupol.transmissionremote.app.utils.IconUtils;
 import net.yupol.transmissionremote.app.utils.MinMaxTextWatcher;
 
-public class OptionsPageFragment extends BasePageFragment implements AdapterView.OnItemSelectedListener {
+public class OptionsPageFragment extends BasePageFragment implements AdapterView.OnItemSelectedListener,
+        OnActivityExitingListener<TorrentSetRequest.Builder> {
 
     private static final String TAG = OptionsPageFragment.class.getSimpleName();
 
@@ -61,12 +61,30 @@ public class OptionsPageFragment extends BasePageFragment implements AdapterView
     private ProgressBar progressBar;
     private MenuItem saveMenuItem;
 
+    private boolean viewCreated;
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
         Activity activity = getActivity();
         if (activity instanceof BaseSpiceActivity) {
             transportManager = ((BaseSpiceActivity) activity).getTransportManager();
+        }
+        if (activity instanceof TorrentDetailsActivity) {
+            ((TorrentDetailsActivity) activity).addOnActivityExitingListener(this);
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        if (getActivity() instanceof TorrentDetailsActivity) {
+            TorrentDetailsActivity activity = (TorrentDetailsActivity) getActivity();
+            activity.removeOnActivityExitingListener(this);
+            if (getTorrentInfo() != null) {
+                TorrentSetRequest.Builder requestBuilder = getSaveOptionsRequestBuilder();
+                if (requestBuilder.isChanged()) activity.addSaveChangesRequest(requestBuilder);
+            }
         }
     }
 
@@ -101,12 +119,6 @@ public class OptionsPageFragment extends BasePageFragment implements AdapterView
         prioritySpinner.setAdapter(new TransferPrioritySpinnerAdapter());
 
         stayWithGlobalCheckbox = (CheckBox) view.findViewById(R.id.stay_with_global_bandwidth_checkbox);
-        stayWithGlobalCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                Log.d(TAG, "stayWithGlobalCheckbox: " + isChecked);
-            }
-        });
 
         bandwidthLimitFragment = (BandwidthLimitFragment)
                 getChildFragmentManager().findFragmentById(R.id.torrent_bandwidth_limit_fragment);
@@ -144,17 +156,32 @@ public class OptionsPageFragment extends BasePageFragment implements AdapterView
             }
         });
 
+        viewCreated = true;
+
         return view;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        viewCreated = false;
     }
 
     @Override
     public void setTorrentInfo(TorrentInfo torrentInfo) {
         super.setTorrentInfo(torrentInfo);
-        showContent();
-        updateUi(true);
+        if (viewCreated) {
+            showContent();
+            updateUi(true);
+        }
         if (saveMenuItem != null) {
             saveMenuItem.setEnabled(true);
         }
+    }
+
+    @Override
+    public TorrentSetRequest.Builder onActivityExiting() {
+        return getSaveOptionsRequestBuilder();
     }
 
     private void showContent() {
@@ -290,11 +317,6 @@ public class OptionsPageFragment extends BasePageFragment implements AdapterView
     }
 
     @Override
-    public int getPageTitleRes() {
-        return R.string.options;
-    }
-
-    @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         updateSeedingLimitsUi(false);
     }
@@ -307,59 +329,59 @@ public class OptionsPageFragment extends BasePageFragment implements AdapterView
      */
     public TorrentSetRequest.Builder getSaveOptionsRequestBuilder() {
         TorrentInfo torrentInfo = getTorrentInfo();
-        TorrentSetRequest.Builder requestBuilder = TorrentSetRequest.builder(torrentInfo.getId());
+        TorrentSetRequest.Builder saveChangesRequestBuilder = TorrentSetRequest.builder(torrentInfo.getId());
 
         TransferPriority priority = (TransferPriority) prioritySpinner.getSelectedItem();
         if (priority != torrentInfo.getTransferPriority()) {
-            requestBuilder.transferPriority(priority);
+            saveChangesRequestBuilder.transferPriority(priority);
         }
 
         boolean honorsSessionLimits = stayWithGlobalCheckbox.isChecked();
         if (honorsSessionLimits != torrentInfo.isSessionLimitsHonored()) {
-            requestBuilder.honorsSessionLimits(honorsSessionLimits);
+            saveChangesRequestBuilder.honorsSessionLimits(honorsSessionLimits);
         }
 
         boolean isDownloadLimited = bandwidthLimitFragment.isDownloadLimited();
         if (isDownloadLimited != torrentInfo.isDownloadLimited()) {
-            requestBuilder.downloadLimited(isDownloadLimited);
+            saveChangesRequestBuilder.downloadLimited(isDownloadLimited);
         }
 
         long downloadLimit = bandwidthLimitFragment.getDownloadLimit();
         if (downloadLimit != torrentInfo.getDownloadLimit()) {
-            requestBuilder.downloadLimit(downloadLimit);
+            saveChangesRequestBuilder.downloadLimit(downloadLimit);
         }
 
         boolean isUploadLimited = bandwidthLimitFragment.isUploadLimited();
         if (isUploadLimited != torrentInfo.isUploadLimited()) {
-            requestBuilder.uploadLimited(isUploadLimited);
+            saveChangesRequestBuilder.uploadLimited(isUploadLimited);
         }
 
         long uploadLimit = bandwidthLimitFragment.getUploadLimit();
         if (uploadLimit != torrentInfo.getUploadLimit()) {
-            requestBuilder.uploadLimit(uploadLimit);
+            saveChangesRequestBuilder.uploadLimit(uploadLimit);
         }
 
         LimitMode ratioLimitMode = getRatioLimitMode();
         if (ratioLimitMode != torrentInfo.getSeedRatioMode()) {
-            requestBuilder.seedRatioMode(ratioLimitMode);
+            saveChangesRequestBuilder.seedRatioMode(ratioLimitMode);
         }
 
         double ratioLimit = getRatioLimit();
         if (ratioLimit != torrentInfo.getSeedRatioLimit()) {
-            requestBuilder.seedRatioLimit(ratioLimit);
+            saveChangesRequestBuilder.seedRatioLimit(ratioLimit);
         }
 
         LimitMode idleLimitMode = getIdleLimitMode();
         if (idleLimitMode != torrentInfo.getSeedIdleMode()) {
-            requestBuilder.seedIdleMode(idleLimitMode);
+            saveChangesRequestBuilder.seedIdleMode(idleLimitMode);
         }
 
         int idleLimit = getIdleLimit();
         if (idleLimit != torrentInfo.getSeedIdleLimit()) {
-            requestBuilder.seedIdleLimit(idleLimit);
+            saveChangesRequestBuilder.seedIdleLimit(idleLimit);
         }
 
-        return requestBuilder;
+        return saveChangesRequestBuilder;
     }
 
     private void sendUpdateOptionsRequest(TorrentSetRequest request) {

@@ -32,6 +32,15 @@ public class TorrentInfo implements Parcelable {
         i.seedRatioModeValue = in.readInt();
         i.seedIdleLimit = in.readInt();
         i.seedIdleModeValue = in.readInt();
+        i.availableSize = in.readLong();
+        i.pieceCount = in.readLong();
+        i.pieceSize = in.readLong();
+        i.downloadDir = in.readString();
+        i.hashString = in.readString();
+        i.isPrivate = in.readInt() != 0;
+        i.creator = in.readString();
+        i.dateCreated = in.readLong();
+        i.comment = in.readString();
     }
 
     public TransferPriority getTransferPriority() {
@@ -92,6 +101,42 @@ public class TorrentInfo implements Parcelable {
         return i.seedIdleMode;
     }
 
+    public long getAvailableSize() {
+        return items[0].availableSize;
+    }
+
+    public long getPieceCount() {
+        return items[0].pieceCount;
+    }
+
+    public long getPieceSize() {
+        return items[0].pieceSize;
+    }
+
+    public String getDownloadDir() {
+        return items[0].downloadDir;
+    }
+
+    public String getHashString() {
+        return items[0].hashString;
+    }
+
+    public boolean isPrivate() {
+        return items[0].isPrivate;
+    }
+
+    public String getCreator() {
+        return items[0].creator;
+    }
+
+    public long getDateCreated() {
+        return items[0].dateCreated;
+    }
+
+    public String getComment() {
+        return items[0].comment;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -113,6 +158,15 @@ public class TorrentInfo implements Parcelable {
         out.writeInt(i.seedRatioModeValue);
         out.writeInt(i.seedIdleLimit);
         out.writeInt(i.seedIdleModeValue);
+        out.writeLong(i.availableSize);
+        out.writeLong(i.pieceCount);
+        out.writeLong(i.pieceSize);
+        out.writeString(i.downloadDir);
+        out.writeString(i.hashString);
+        out.writeInt(i.isPrivate ? 1 : 0);
+        out.writeString(i.creator);
+        out.writeLong(i.dateCreated);
+        out.writeString(i.comment);
     }
 
     public static final Creator<TorrentInfo> CREATOR = new Creator<TorrentInfo>() {
@@ -145,5 +199,14 @@ public class TorrentInfo implements Parcelable {
         @Key private int seedIdleLimit;
         @Key("seedIdleMode") private int seedIdleModeValue;
         private LimitMode seedIdleMode;
+        @Key("desiredAvailable") private long availableSize;
+        @Key private long pieceCount;
+        @Key private long pieceSize;
+        @Key private String downloadDir;
+        @Key private String hashString;
+        @Key private boolean isPrivate;
+        @Key private String creator;
+        @Key private long dateCreated;
+        @Key private String comment;
     }
 }

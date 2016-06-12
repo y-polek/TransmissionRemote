@@ -36,6 +36,8 @@ public class FilesPageFragment extends BasePageFragment {
     private ProgressBar progressBar;
     private TransportManager transportManager;
 
+    private boolean viewCreated;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
@@ -50,7 +52,15 @@ public class FilesPageFragment extends BasePageFragment {
             showList();
         }
 
+        viewCreated = true;
+
         return view;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        viewCreated = false;
     }
 
     @Override
@@ -64,14 +74,11 @@ public class FilesPageFragment extends BasePageFragment {
     }
 
     @Override
-    public int getPageTitleRes() {
-        return R.string.files;
-    }
-
-    @Override
     public void setTorrentInfo(TorrentInfo torrentInfo) {
         super.setTorrentInfo(torrentInfo);
-        showList();
+        if (viewCreated) {
+            showList();
+        }
     }
 
     private void showList() {
