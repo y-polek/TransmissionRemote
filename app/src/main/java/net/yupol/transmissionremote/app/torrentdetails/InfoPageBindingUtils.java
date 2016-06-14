@@ -38,4 +38,29 @@ public class InfoPageBindingUtils {
             return text;
         }
     }
+
+    public static String downloadedSize(TorrentInfo torrentInfo) {
+        if (torrentInfo == null) return "";
+
+        String downloaded = displayableSize(torrentInfo.getDownloadedEver());
+        long corrupt = torrentInfo.getCorruptEver();
+
+        if (corrupt > 0) {
+            return TransmissionRemote.getInstance().getString(R.string.downloaded_ever_text,
+                    downloaded, displayableSize(corrupt));
+        }
+        return downloaded;
+    }
+
+    public static String uploadedSize(TorrentInfo torrentInfo) {
+        if (torrentInfo == null) return "";
+
+        long downloaded = torrentInfo.getDownloadedEver();
+        if (downloaded == 0) downloaded = torrentInfo.getHaveValid();
+        long uploaded = torrentInfo.getUploadedEver();
+        double ratio = downloaded > 0 ? (double) uploaded / downloaded : 0;
+
+        return TransmissionRemote.getInstance().getString(R.string.uploaded_ever_text,
+                displayableSize(uploaded), ratio);
+    }
 }

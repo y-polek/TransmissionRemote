@@ -44,6 +44,9 @@ public class TorrentInfo implements Parcelable {
         i.creator = in.readString();
         i.dateCreated = in.readLong();
         i.comment = in.readString();
+        i.downloadedEver = in.readLong();
+        i.corruptEver = in.readLong();
+        i.uploadedEver = in.readLong();
     }
 
     public TransferPriority getTransferPriority() {
@@ -125,14 +128,15 @@ public class TorrentInfo implements Parcelable {
     }
 
     public double getHavePercent() {
-        //d = 100.0 * ( sizeWhenDone ? ( sizeWhenDone - leftUntilDone ) / sizeWhenDone : 1 );
         long sizeWhenDone = getSizeWhenDone();
         long leftUntilDone = getLeftUntilDone();
         return 100.0 * (sizeWhenDone - leftUntilDone)/(double) sizeWhenDone;
     }
 
     public double getAvailablePercent() {
-        return 100.0 * (getHaveValid() + getHaveUnchecked() + getDesiredAvailable())/(double) getSizeWhenDone();
+        long sizeWhenDone = getSizeWhenDone();
+        if (sizeWhenDone <= 0) return 0.0;
+        return (100.0 * (getHaveValid() + getHaveUnchecked() + getDesiredAvailable())) / sizeWhenDone;
     }
 
     public long getPieceCount() {
@@ -161,6 +165,18 @@ public class TorrentInfo implements Parcelable {
 
     public String getComment() {
         return items[0].comment;
+    }
+
+    public long getDownloadedEver() {
+        return items[0].downloadedEver;
+    }
+
+    public long getCorruptEver() {
+        return items[0].corruptEver;
+    }
+
+    public long getUploadedEver() {
+        return items[0].uploadedEver;
     }
 
     @Override
@@ -196,6 +212,9 @@ public class TorrentInfo implements Parcelable {
         out.writeString(i.creator);
         out.writeLong(i.dateCreated);
         out.writeString(i.comment);
+        out.writeLong(i.downloadedEver);
+        out.writeLong(i.corruptEver);
+        out.writeLong(i.uploadedEver);
     }
 
     public static final Creator<TorrentInfo> CREATOR = new Creator<TorrentInfo>() {
@@ -240,5 +259,8 @@ public class TorrentInfo implements Parcelable {
         @Key private String creator;
         @Key private long dateCreated;
         @Key private String comment;
+        @Key private long downloadedEver;
+        @Key private long corruptEver;
+        @Key private long uploadedEver;
     }
 }

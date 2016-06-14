@@ -160,6 +160,8 @@
     <string name="available_text">%1$.1f%%</string>
     <string name="privacy_public_torrent">Public Torrent</string>
     <string name="privacy_private_torrent">Private Torrent, non-tracker peer discovery disabled</string>
+    <string name="downloaded_ever_text">%1$s (%2$s corrupt)</string>
+    <string name="uploaded_ever_text">%1$s (Ratio: %2$.2f)</string>
 
     <string name="retry">Retry</string>
     <string name="server_settings">Server settings</string>

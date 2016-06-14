@@ -24,7 +24,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:visibility="@{torrentInfo != null ? View.VISIBLE : View.GONE}">
-                <TableRow>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="?android:attr/textColorPrimary"
+                    android:textSize="@dimen/tr_abc_text_size_subhead_material"
+                    android:textStyle="bold"
+                    android:text="Torrent Information"/>
+                <TableRow
+                    android:layout_marginTop="@dimen/default_text_margin"
+                    android:layout_marginLeft="@dimen/default_text_margin">
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -41,41 +50,8 @@
                         android:text="@{InfoPageBindingUtils.totalSize(torrent, torrentInfo)}" />
                 </TableRow>
                 <TableRow
-                    android:layout_marginTop="@dimen/default_text_margin">
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:textSize="@dimen/tr_abc_text_size_body_1_material"
-                        android:textColor="?android:attr/textColorSecondary"
-                        android:text="Have:"/>
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="3"
-                        android:textSize="@dimen/tr_abc_text_size_body_1_material"
-                        android:textColor="?android:attr/textColorPrimary"
-                        android:text="@{InfoPageBindingUtils.haveSize(torrentInfo)}" />
-                </TableRow>
-                <TableRow
-                    android:layout_marginTop="@dimen/default_text_margin">
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:textSize="@dimen/tr_abc_text_size_body_1_material"
-                        android:textColor="?android:attr/textColorSecondary"
-                        android:text="Available:"/>
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="3"
-                        android:textSize="@dimen/tr_abc_text_size_body_1_material"
-                        android:textColor="?android:attr/textColorPrimary"
-                        android:text="@{@string/available_text(torrentInfo.availablePercent)}" />
-                </TableRow>
-                <TableRow
-                    android:layout_marginTop="@dimen/default_text_margin">
+                    android:layout_marginTop="@dimen/default_text_margin"
+                    android:layout_marginLeft="@dimen/default_text_margin">
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -92,7 +68,8 @@
                         android:text="@{torrentInfo.downloadDir}" />
                 </TableRow>
                 <TableRow
-                    android:layout_marginTop="@dimen/default_text_margin">
+                    android:layout_marginTop="@dimen/default_text_margin"
+                    android:layout_marginLeft="@dimen/default_text_margin">
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -110,6 +87,7 @@
                 </TableRow>
                 <TableRow
                     android:layout_marginTop="@dimen/default_text_margin"
+                    android:layout_marginLeft="@dimen/default_text_margin"
                     android:visibility="@{(torrentInfo.creator == null || torrentInfo.creator.isEmpty()) ? View.GONE : View.VISIBLE}">
                     <TextView
                         android:layout_width="0dp"
@@ -128,6 +106,7 @@
                 </TableRow>
                 <TableRow
                     android:layout_marginTop="@dimen/default_text_margin"
+                    android:layout_marginLeft="@dimen/default_text_margin"
                     android:visibility="@{torrentInfo.dateCreated > 0 ? View.VISIBLE : View.GONE}">
                     <TextView
                         android:layout_width="0dp"
@@ -146,6 +125,7 @@
                 </TableRow>
                 <TableRow
                     android:visibility="@{(torrentInfo.comment == null || torrentInfo.comment.isEmpty()) ? View.GONE : View.VISIBLE}"
+                    android:layout_marginLeft="@dimen/default_text_margin"
                     android:layout_marginTop="@dimen/default_text_margin">
                     <TextView
                         android:layout_width="0dp"
@@ -163,6 +143,88 @@
                         android:textColor="?android:attr/textColorPrimary"
                         android:text="@{torrentInfo.comment}" />
                 </TableRow>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/default_layout_margin"
+                    android:textColor="?android:attr/textColorPrimary"
+                    android:textSize="@dimen/tr_abc_text_size_subhead_material"
+                    android:textStyle="bold"
+                    android:text="Transfer"/>
+                <TableRow
+                    android:layout_marginTop="@dimen/default_text_margin"
+                    android:layout_marginLeft="@dimen/default_text_margin">
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textSize="@dimen/tr_abc_text_size_body_1_material"
+                        android:textColor="?android:attr/textColorSecondary"
+                        android:text="Have:"/>
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="3"
+                        android:textSize="@dimen/tr_abc_text_size_body_1_material"
+                        android:textColor="?android:attr/textColorPrimary"
+                        android:text="@{InfoPageBindingUtils.haveSize(torrentInfo)}" />
+                </TableRow>
+                <TableRow
+                    android:layout_marginTop="@dimen/default_text_margin"
+                    android:layout_marginLeft="@dimen/default_text_margin">
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textSize="@dimen/tr_abc_text_size_body_1_material"
+                        android:textColor="?android:attr/textColorSecondary"
+                        android:text="Available:"/>
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="3"
+                        android:textSize="@dimen/tr_abc_text_size_body_1_material"
+                        android:textColor="?android:attr/textColorPrimary"
+                        android:text="@{@string/available_text(torrentInfo.availablePercent)}" />
+                </TableRow>
+                <TableRow
+                    android:layout_marginTop="@dimen/default_text_margin"
+                    android:layout_marginLeft="@dimen/default_text_margin">
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textSize="@dimen/tr_abc_text_size_body_1_material"
+                        android:textColor="?android:attr/textColorSecondary"
+                        android:text="Downloaded:"/>
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="3"
+                        android:textSize="@dimen/tr_abc_text_size_body_1_material"
+                        android:textColor="?android:attr/textColorPrimary"
+                        android:text="@{InfoPageBindingUtils.downloadedSize(torrentInfo)}" />
+                </TableRow>
+                <TableRow
+                    android:layout_marginTop="@dimen/default_text_margin"
+                    android:layout_marginLeft="@dimen/default_text_margin">
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textSize="@dimen/tr_abc_text_size_body_1_material"
+                        android:textColor="?android:attr/textColorSecondary"
+                        android:text="Uploaded:"/>
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="3"
+                        android:textSize="@dimen/tr_abc_text_size_body_1_material"
+                        android:textColor="?android:attr/textColorPrimary"
+                        android:text="@{InfoPageBindingUtils.uploadedSize(torrentInfo)}" />
+                </TableRow>
+
             </TableLayout>
 
             <ProgressBar
