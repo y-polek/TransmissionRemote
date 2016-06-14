@@ -1,11 +1,15 @@
 package net.yupol.transmissionremote.app.utils;
 
+import java.text.DateFormat;
+import java.util.Date;
+
 import static java.util.concurrent.TimeUnit.DAYS;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
 public class TextUtils {
 
     private static final long ETA_INFINITE_THRESHOLD = DAYS.toSeconds(7);
+    private static final DateFormat DATE_FORMAT = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT);
 
     public static String abbreviate(String text) {
         String[] words = text.split("\\s");
@@ -53,5 +57,9 @@ public class TextUtils {
         }
 
         return b.toString();
+    }
+
+    public static String displayableDate(long timestampSeconds) {
+        return DATE_FORMAT.format(new Date(timestampSeconds * 1000));
     }
 }

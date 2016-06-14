@@ -45,6 +45,8 @@ public class TransmissionRemote extends Application implements SharedPreferences
 
     private static final Filter[] ALL_FILTERS = { Filters.ALL, Filters.DOWNLOADING, Filters.FINISHED, Filters.SEEDING, Filters.ACTIVE, Filters.PAUSED };
 
+    private static TransmissionRemote instance;
+
     private List<Server> servers = new LinkedList<>();
     private Server activeServer;
     private List<OnActiveServerChangedListener> activeServerListeners = new LinkedList<>();
@@ -71,6 +73,7 @@ public class TransmissionRemote extends Application implements SharedPreferences
     @Override
     public void onCreate() {
         super.onCreate();
+        instance = this;
         restore();
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
@@ -96,6 +99,10 @@ public class TransmissionRemote extends Application implements SharedPreferences
 
     public static TransmissionRemote getApplication(Context context) {
         return (TransmissionRemote) context.getApplicationContext();
+    }
+
+    public static TransmissionRemote getInstance() {
+        return instance;
     }
 
     public List<Server> getServers() {

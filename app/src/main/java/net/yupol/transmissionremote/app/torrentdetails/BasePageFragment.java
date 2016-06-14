@@ -76,8 +76,8 @@ public abstract class BasePageFragment extends Fragment implements OnDataAvailab
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         if (savedInstanceState != null) {
-            torrent = savedInstanceState.getParcelable(KEY_TORRENT);
-            torrentInfo = savedInstanceState.getParcelable(KEY_TORRENT_INFO);
+            if (torrent == null) torrent = savedInstanceState.getParcelable(KEY_TORRENT);
+            if (torrentInfo == null) torrentInfo = savedInstanceState.getParcelable(KEY_TORRENT_INFO);
         }
 
         return super.onCreateView(inflater, container, savedInstanceState);

@@ -32,11 +32,14 @@ public class TorrentInfo implements Parcelable {
         i.seedRatioModeValue = in.readInt();
         i.seedIdleLimit = in.readInt();
         i.seedIdleModeValue = in.readInt();
-        i.availableSize = in.readLong();
+        i.haveUnchecked = in.readLong();
+        i.haveValid = in.readLong();
+        i.sizeWhenDone = in.readLong();
+        i.leftUntilDone = in.readLong();
+        i.desiredAvailable = in.readLong();
         i.pieceCount = in.readLong();
         i.pieceSize = in.readLong();
         i.downloadDir = in.readString();
-        i.hashString = in.readString();
         i.isPrivate = in.readInt() != 0;
         i.creator = in.readString();
         i.dateCreated = in.readLong();
@@ -101,8 +104,35 @@ public class TorrentInfo implements Parcelable {
         return i.seedIdleMode;
     }
 
-    public long getAvailableSize() {
-        return items[0].availableSize;
+    public long getHaveUnchecked() {
+        return items[0].haveUnchecked;
+    }
+
+    public long getHaveValid() {
+        return items[0].haveValid;
+    }
+
+    public long getSizeWhenDone() {
+        return items[0].sizeWhenDone;
+    }
+
+    public long getLeftUntilDone() {
+        return items[0].leftUntilDone;
+    }
+
+    public long getDesiredAvailable() {
+        return items[0].desiredAvailable;
+    }
+
+    public double getHavePercent() {
+        //d = 100.0 * ( sizeWhenDone ? ( sizeWhenDone - leftUntilDone ) / sizeWhenDone : 1 );
+        long sizeWhenDone = getSizeWhenDone();
+        long leftUntilDone = getLeftUntilDone();
+        return 100.0 * (sizeWhenDone - leftUntilDone)/(double) sizeWhenDone;
+    }
+
+    public double getAvailablePercent() {
+        return 100.0 * (getHaveValid() + getHaveUnchecked() + getDesiredAvailable())/(double) getSizeWhenDone();
     }
 
     public long getPieceCount() {
@@ -115,10 +145,6 @@ public class TorrentInfo implements Parcelable {
 
     public String getDownloadDir() {
         return items[0].downloadDir;
-    }
-
-    public String getHashString() {
-        return items[0].hashString;
     }
 
     public boolean isPrivate() {
@@ -158,11 +184,14 @@ public class TorrentInfo implements Parcelable {
         out.writeInt(i.seedRatioModeValue);
         out.writeInt(i.seedIdleLimit);
         out.writeInt(i.seedIdleModeValue);
-        out.writeLong(i.availableSize);
+        out.writeLong(i.haveUnchecked);
+        out.writeLong(i.haveValid);
+        out.writeLong(i.sizeWhenDone);
+        out.writeLong(i.leftUntilDone);
+        out.writeLong(i.desiredAvailable);
         out.writeLong(i.pieceCount);
         out.writeLong(i.pieceSize);
         out.writeString(i.downloadDir);
-        out.writeString(i.hashString);
         out.writeInt(i.isPrivate ? 1 : 0);
         out.writeString(i.creator);
         out.writeLong(i.dateCreated);
@@ -199,11 +228,14 @@ public class TorrentInfo implements Parcelable {
         @Key private int seedIdleLimit;
         @Key("seedIdleMode") private int seedIdleModeValue;
         private LimitMode seedIdleMode;
-        @Key("desiredAvailable") private long availableSize;
+        @Key private long haveUnchecked;
+        @Key private long haveValid;
+        @Key private long sizeWhenDone;
+        @Key private long leftUntilDone;
+        @Key private long desiredAvailable;
         @Key private long pieceCount;
         @Key private long pieceSize;
         @Key private String downloadDir;
-        @Key private String hashString;
         @Key private boolean isPrivate;
         @Key private String creator;
         @Key private long dateCreated;

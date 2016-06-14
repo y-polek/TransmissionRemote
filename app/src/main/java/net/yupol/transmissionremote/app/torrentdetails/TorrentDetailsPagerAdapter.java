@@ -2,7 +2,6 @@ package net.yupol.transmissionremote.app.torrentdetails;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
@@ -29,10 +28,13 @@ public class TorrentDetailsPagerAdapter extends FragmentStatePagerAdapter {
     private Torrent torrent;
     private TorrentInfo torrentInfo;
 
-    public TorrentDetailsPagerAdapter(Context context, FragmentManager fragmentManager, @NonNull Torrent torrent, @Nullable TorrentInfo torrentInfo) {
+    public TorrentDetailsPagerAdapter(Context context, FragmentManager fragmentManager, @NonNull Torrent torrent) {
         super(fragmentManager);
         this.context = context;
         this.torrent = torrent;
+    }
+
+    public void setTorrentInfo(TorrentInfo torrentInfo) {
         this.torrentInfo = torrentInfo;
     }
 

@@ -29,6 +29,10 @@ android {
         exclude 'META-INF/NOTICE.txt'
     }
 
+    dataBinding {
+        enabled true
+    }
+
     useLibrary 'org.apache.http.legacy'
 }
 

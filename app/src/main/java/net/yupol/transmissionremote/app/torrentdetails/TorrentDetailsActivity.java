@@ -47,6 +47,8 @@ public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveCha
         setContentView(R.layout.torrent_details_layout);
 
         torrent = getIntent().getParcelableExtra(EXTRA_NAME_TORRENT);
+        final TorrentDetailsPagerAdapter pagerAdapter = new TorrentDetailsPagerAdapter(this, getSupportFragmentManager(), torrent);
+
         if (savedInstanceState != null) {
             torrentInfo = savedInstanceState.getParcelable(KEY_TORRENT_INFO);
         }
@@ -66,6 +68,7 @@ public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveCha
                     // Show content only if TorrentInfo contain files data.
                     if (torrentInfo.getFiles() != null) {
                         TorrentDetailsActivity.this.torrentInfo = torrentInfo;
+                        pagerAdapter.setTorrentInfo(torrentInfo);
                         notifyTorrentInfoListeners();
                     } else {
                         Log.e(TAG, "Empty TorrentInfo");
@@ -78,13 +81,14 @@ public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveCha
                     onBackPressed();
                 }
             });
+        } else {
+            pagerAdapter.setTorrentInfo(torrentInfo);
         }
 
         setupActionBar();
 
         ViewPager pager = (ViewPager) findViewById(R.id.pager);
         assert pager != null;
-        TorrentDetailsPagerAdapter pagerAdapter = new TorrentDetailsPagerAdapter(this, getSupportFragmentManager(), torrent, torrentInfo);
         pager.setAdapter(pagerAdapter);
     }
 

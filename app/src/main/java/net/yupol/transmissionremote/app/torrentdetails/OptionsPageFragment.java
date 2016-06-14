@@ -62,6 +62,7 @@ public class OptionsPageFragment extends BasePageFragment implements AdapterView
     private MenuItem saveMenuItem;
 
     private boolean viewCreated;
+    private SessionGetRequest sessionGetRequest;
 
     @Override
     public void onAttach(Context context) {
@@ -78,6 +79,11 @@ public class OptionsPageFragment extends BasePageFragment implements AdapterView
     @Override
     public void onDetach() {
         super.onDetach();
+
+        if (sessionGetRequest != null) {
+            sessionGetRequest.cancel();
+        }
+
         if (getActivity() instanceof TorrentDetailsActivity) {
             TorrentDetailsActivity activity = (TorrentDetailsActivity) getActivity();
             activity.removeOnActivityExitingListener(this);
@@ -94,7 +100,8 @@ public class OptionsPageFragment extends BasePageFragment implements AdapterView
 
         setHasOptionsMenu(true);
 
-        transportManager.doRequest(new SessionGetRequest(), new RequestListener<ServerSettings>() {
+        sessionGetRequest = new SessionGetRequest();
+        transportManager.doRequest(sessionGetRequest, new RequestListener<ServerSettings>() {
             @Override
             public void onRequestFailure(SpiceException spiceException) {
                 Log.e(TAG, "Failed to retrieve server settings");

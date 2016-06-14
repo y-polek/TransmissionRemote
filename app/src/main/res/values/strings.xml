@@ -153,6 +153,13 @@
     <string name="options_update_failed">Failed to update torrent options</string>
     <string name="three_dots">&#8230;</string>
     <string name="disabled">disabled</string>
+    <string name="total_size_text">%1$s (%2$d pieces of %3$s)</string>
+    <string name="have_size_text">%1$s of %2$s (%3$.1f%%)</string>
+    <string name="have_size_100p_text">%1$s (100%%)</string>
+    <string name="have_unverified_size_text">, %1$s Unverified</string>
+    <string name="available_text">%1$.1f%%</string>
+    <string name="privacy_public_torrent">Public Torrent</string>
+    <string name="privacy_private_torrent">Private Torrent, non-tracker peer discovery disabled</string>
 
     <string name="retry">Retry</string>
     <string name="server_settings">Server settings</string>
