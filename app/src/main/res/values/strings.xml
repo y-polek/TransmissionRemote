@@ -105,6 +105,7 @@
     <string name="search">Search</string>
     <string name="eta_unknown">Remaining time unknown</string>
     <string name="eta_infinite">~ \u221e</string>
+    <string name="eta">~ %1$s</string>
 
     <!-- Open torrent -->
     <string name="error_install_file_manager_msg">Please, install a file manager</string>
@@ -162,6 +163,9 @@
     <string name="privacy_private_torrent">Private Torrent, non-tracker peer discovery disabled</string>
     <string name="downloaded_ever_text">%1$s (%2$s corrupt)</string>
     <string name="uploaded_ever_text">%1$s (Ratio: %2$.2f)</string>
+    <string name="today_time">Today at %1$s</string>
+    <string name="yesterday_time">Yesterday at %1$s</string>
+    <string name="date_time">%1$s at %2$s</string>
 
     <string name="retry">Retry</string>
     <string name="server_settings">Server settings</string>

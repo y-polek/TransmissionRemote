@@ -23,7 +23,7 @@
             <TableLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="@dimen/default_padding_big"
+                android:padding="@dimen/default_padding_big"
                 android:stretchColumns="1"
                 android:shrinkColumns="1"
                 android:visibility="@{torrentInfo != null ? View.VISIBLE : View.GONE}">
@@ -172,6 +172,87 @@
                         android:layout_height="wrap_content"
                         style="@style/InfoPageSecondColumnStyle"
                         android:text="@{InfoPageBindingUtils.uploadedSize(torrentInfo)}" />
+                </TableRow>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/default_layout_margin"
+                    style="@style/InfoPageTitleStyle"
+                    android:text="Dates"/>
+                <TableRow
+                    android:layout_marginTop="@dimen/default_text_margin">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        style="@style/InfoPageFirstColumnStyle"
+                        android:text="Added:"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        style="@style/InfoPageSecondColumnStyle"
+                        android:text="@{TextUtils.displayableDate(torrentInfo.addedDate)}" />
+                </TableRow>
+                <TableRow
+                    android:layout_marginTop="@dimen/default_text_margin"
+                    android:visibility="@{torrentInfo.doneDate > 0 ? View.VISIBLE : View.GONE}">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        style="@style/InfoPageFirstColumnStyle"
+                        android:text="Completed:"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        style="@style/InfoPageSecondColumnStyle"
+                        android:text="@{TextUtils.displayableDate(torrentInfo.doneDate)}" />
+                </TableRow>
+                <TableRow
+                    android:layout_marginTop="@dimen/default_text_margin"
+                    android:visibility="@{torrentInfo.activityDate > 0 ? View.VISIBLE : View.GONE}">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        style="@style/InfoPageFirstColumnStyle"
+                        android:text="Last Activity:"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        style="@style/InfoPageSecondColumnStyle"
+                        android:text="@{TextUtils.displayableDate(torrentInfo.activityDate)}" />
+                </TableRow>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/default_layout_margin"
+                    style="@style/InfoPageTitleStyle"
+                    android:text="Time Elapsed"/>
+                <TableRow
+                    android:layout_marginTop="@dimen/default_text_margin">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        style="@style/InfoPageFirstColumnStyle"
+                        android:text="Downloading:"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        style="@style/InfoPageSecondColumnStyle"
+                        android:text="@{TextUtils.displayableTime(torrentInfo.secondsDownloading)}" />
+                </TableRow>
+                <TableRow
+                    android:layout_marginTop="@dimen/default_text_margin">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        style="@style/InfoPageFirstColumnStyle"
+                        android:text="Seeding:"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        style="@style/InfoPageSecondColumnStyle"
+                        android:text="@{TextUtils.displayableTime(torrentInfo.secondsSeeding)}" />
                 </TableRow>
             </TableLayout>
         </ScrollView>

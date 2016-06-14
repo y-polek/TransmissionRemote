@@ -47,6 +47,11 @@ public class TorrentInfo implements Parcelable {
         i.downloadedEver = in.readLong();
         i.corruptEver = in.readLong();
         i.uploadedEver = in.readLong();
+        i.addedDate = in.readLong();
+        i.doneDate = in.readLong();
+        i.activityDate = in.readLong();
+        i.secondsDownloading = in.readLong();
+        i.secondsSeeding = in.readLong();
     }
 
     public TransferPriority getTransferPriority() {
@@ -139,6 +144,18 @@ public class TorrentInfo implements Parcelable {
         return (100.0 * (getHaveValid() + getHaveUnchecked() + getDesiredAvailable())) / sizeWhenDone;
     }
 
+    public long getAddedDate() {
+        return items[0].addedDate;
+    }
+
+    public long getDoneDate() {
+        return items[0].doneDate;
+    }
+
+    public long getActivityDate() {
+        return items[0].activityDate;
+    }
+
     public long getPieceCount() {
         return items[0].pieceCount;
     }
@@ -179,6 +196,14 @@ public class TorrentInfo implements Parcelable {
         return items[0].uploadedEver;
     }
 
+    public long getSecondsDownloading() {
+        return items[0].secondsDownloading;
+    }
+
+    public long getSecondsSeeding() {
+        return items[0].secondsSeeding;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -215,6 +240,11 @@ public class TorrentInfo implements Parcelable {
         out.writeLong(i.downloadedEver);
         out.writeLong(i.corruptEver);
         out.writeLong(i.uploadedEver);
+        out.writeLong(i.addedDate);
+        out.writeLong(i.doneDate);
+        out.writeLong(i.activityDate);
+        out.writeLong(i.secondsDownloading);
+        out.writeLong(i.secondsSeeding);
     }
 
     public static final Creator<TorrentInfo> CREATOR = new Creator<TorrentInfo>() {
@@ -262,5 +292,10 @@ public class TorrentInfo implements Parcelable {
         @Key private long downloadedEver;
         @Key private long corruptEver;
         @Key private long uploadedEver;
+        @Key private long addedDate;
+        @Key private long doneDate;
+        @Key private long activityDate;
+        @Key private long secondsDownloading;
+        @Key private long secondsSeeding;
     }
 }

@@ -442,7 +442,7 @@ public class TorrentListFragment extends Fragment {
                 String etaText;
                 if (eta < 0) etaText = getString(R.string.eta_unknown);
                 else if (eta > ETA_INFINITE_THRESHOLD) etaText = getString(R.string.eta_infinite);
-                else etaText = TextUtils.displayableTime(torrent.getEta());
+                else etaText = getString(R.string.eta, TextUtils.displayableTime(torrent.getEta()));
                 holder.remainingTimeText.setText(etaText);
             }
 

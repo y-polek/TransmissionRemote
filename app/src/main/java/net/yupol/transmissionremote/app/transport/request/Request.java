@@ -20,7 +20,6 @@ import net.yupol.transmissionremote.app.server.Server;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.StringReader;
 import java.util.Collections;
 
 import javax.annotation.Nonnull;
@@ -94,10 +93,10 @@ public abstract class Request<RESULT> extends GoogleHttpClientSpiceRequest<RESUL
 
         RESULT result;
         try {
-            //result = response.parseAs(getResultType());
-            String responseBody = response.parseAsString();
+            result = response.parseAs(getResultType());
+            /*String responseBody = response.parseAsString();
             Log.d(TAG + "SpiceTransportManager", getClass().getSimpleName() + " responseBody: " + responseBody);
-            result = request.getParser().parseAndClose(new StringReader(responseBody), getResultType());
+            result = request.getParser().parseAndClose(new StringReader(responseBody), getResultType());*/
         } catch (Exception e) {
             Log.e(TAG, "Failed to parse response. SC: " + statusCode, e);
             throw e;
