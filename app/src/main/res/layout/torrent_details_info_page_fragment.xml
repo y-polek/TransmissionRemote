@@ -12,17 +12,18 @@
             name="torrentInfo"
             type="net.yupol.transmissionremote.app.model.json.TorrentInfo" />
     </data>
-    <ScrollView
+
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/default_padding_big">
 
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
             <TableLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_margin="@dimen/default_padding_big"
                 android:stretchColumns="1"
                 android:shrinkColumns="1"
                 android:visibility="@{torrentInfo != null ? View.VISIBLE : View.GONE}">
@@ -172,15 +173,14 @@
                         style="@style/InfoPageSecondColumnStyle"
                         android:text="@{InfoPageBindingUtils.uploadedSize(torrentInfo)}" />
                 </TableRow>
-
             </TableLayout>
+        </ScrollView>
 
-            <ProgressBar
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_gravity="center"
-                android:visibility="@{torrentInfo == null ? View.VISIBLE : View.GONE}"/>
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="@{torrentInfo == null ? View.VISIBLE : View.GONE}"/>
 
-        </FrameLayout>
-    </ScrollView>
+    </FrameLayout>
 </layout>
