@@ -30,6 +30,7 @@ import android.widget.TextView;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.FluentIterable;
+import com.mikepenz.fontawesome_typeface_library.FontAwesome;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
@@ -125,6 +126,8 @@ public class TorrentListFragment extends Fragment {
 
             IconUtils.setMenuIcon(getContext(), menu, R.id.action_remove_torrents, GoogleMaterial.Icon.gmd_delete);
             IconUtils.setMenuIcon(getContext(), menu, R.id.action_select_all, GoogleMaterial.Icon.gmd_select_all);
+            IconUtils.setMenuIcon(getContext(), menu, R.id.action_pause, FontAwesome.Icon.faw_pause);
+            IconUtils.setMenuIcon(getContext(), menu, R.id.action_start, FontAwesome.Icon.faw_play);
 
             if (cabListener != null) cabListener.onCABOpen();
 
@@ -150,6 +153,18 @@ public class TorrentListFragment extends Fragment {
                     } else {
                         adapter.clearSelection();
                     }
+                    return true;
+                case R.id.action_pause:
+                    sendStopTorrentsRequest(adapter.getSelectedItemsIds());
+                    mode.finish();
+                    return true;
+                case R.id.action_start:
+                    sendStartTorrentsRequest(adapter.getSelectedItemsIds(), false);
+                    mode.finish();
+                    return true;
+                case R.id.action_start_now:
+                    sendStartTorrentsRequest(adapter.getSelectedItemsIds(), true);
+                    mode.finish();
                     return true;
             }
             return false;
@@ -373,18 +388,7 @@ public class TorrentListFragment extends Fragment {
                     Request<Void> request = wasPaused
                             ? new StartTorrentRequest(Collections.singletonList(torrent))
                             : new StopTorrentRequest(Collections.singletonList(torrent));
-                    transportManager.doRequest(request, new RequestListener<Void>() {
-                        @Override
-                        public void onRequestFailure(SpiceException spiceException) {
-                            Log.e(TAG, "Failed to start/stop torrent", spiceException);
-                            sendTorrentGetRequest(torrent);
-                        }
-
-                        @Override
-                        public void onRequestSuccess(Void aVoid) {
-                            sendTorrentGetRequest(torrent);
-                        }
-                    });
+                    sendRequestAndUpdateTorrents(request, torrent.getId());
                 }
             });
 
@@ -553,27 +557,6 @@ public class TorrentListFragment extends Fragment {
             actionMode.setTitle(text);
         }
 
-        private void sendTorrentGetRequest(final Torrent torrent) {
-            updateRequests.add(torrent.getId());
-            transportManager.doRequest(new TorrentGetRequest(torrent.getId()), new RequestListener<Torrents>() {
-                @Override
-                public void onRequestFailure(SpiceException spiceException) {
-                    updateRequests.remove(torrent.getId());
-                    Log.e(TAG, "Failed to update torrent", spiceException);
-                }
-
-                @Override
-                public void onRequestSuccess(Torrents torrents) {
-                    updateRequests.remove(torrent.getId());
-                    if (torrents.size() != 1) {
-                        Log.e(TAG, "Response must contain one torrent");
-                        return;
-                    }
-                    updateTorrent(torrents.get(0));
-                }
-            }, UPDATE_REQUEST_DELAY);
-        }
-
         private String speedText(long bytes) {
             return Strings.padStart(TextUtils.displayableSize(bytes), 5, ' ') + "/s";
         }
@@ -593,6 +576,57 @@ public class TorrentListFragment extends Fragment {
             }
             return -1;
         }
+    }
+
+    private void sendTorrentGetRequest(final int... torrentIds) {
+        for (int id : torrentIds) {
+            updateRequests.add(id);
+        }
+
+        transportManager.doRequest(new TorrentGetRequest(torrentIds), new RequestListener<Torrents>() {
+            @Override
+            public void onRequestFailure(SpiceException spiceException) {
+                removeIds();
+                Log.e(TAG, "Failed to update torrent", spiceException);
+            }
+
+            @Override
+            public void onRequestSuccess(Torrents torrents) {
+                removeIds();
+                for (Torrent torrent : torrents) {
+                    adapter.updateTorrent(torrent);
+                }
+            }
+
+            private void removeIds() {
+                for (int id : torrentIds) {
+                    updateRequests.remove(id);
+                }
+            }
+        }, UPDATE_REQUEST_DELAY);
+    }
+
+    private void sendStopTorrentsRequest(final int... ids) {
+        sendRequestAndUpdateTorrents(new StopTorrentRequest(ids), ids);
+    }
+
+    private void sendStartTorrentsRequest(final int[] ids, boolean noQueue) {
+        sendRequestAndUpdateTorrents(new StartTorrentRequest(ids, noQueue), ids);
+    }
+
+    private <T> void sendRequestAndUpdateTorrents(Request<T> request, final int... torrentIds) {
+        transportManager.doRequest(request, new RequestListener<T>() {
+            @Override
+            public void onRequestFailure(SpiceException spiceException) {
+                Log.e(TAG, "Request failed", spiceException);
+                sendTorrentGetRequest(torrentIds);
+            }
+
+            @Override
+            public void onRequestSuccess(Object result) {
+                sendTorrentGetRequest(torrentIds);
+            }
+        });
     }
 
     private static class ViewHolder extends RecyclerView.ViewHolder {

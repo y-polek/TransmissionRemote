@@ -15,12 +15,12 @@ public abstract class TorrentActionRequest extends Request<Void> {
     private static final String TAG = TorrentActionRequest.class.getSimpleName();
 
     private String method;
-    private Collection<Torrent> torrents;
+    private int[] torrentIds;
 
-    public TorrentActionRequest(String method, Collection<Torrent> torrents) {
+    public TorrentActionRequest(String method, int[] torrentIds) {
         super(Void.class);
         this.method = method;
-        this.torrents = torrents;
+        this.torrentIds = torrentIds;
     }
 
     @Override
@@ -32,20 +32,25 @@ public abstract class TorrentActionRequest extends Request<Void> {
     protected JSONObject getArguments() {
         JSONObject args = new JSONObject();
 
-        JSONArray torrentIds = new JSONArray();
-        for (Torrent torrent : torrents) {
-            torrentIds.put(torrent.getId());
+        JSONArray ids = new JSONArray();
+        for (int id : torrentIds) {
+            ids.put(id);
         }
 
         try {
-            args.put("ids", torrentIds);
+            args.put("ids", ids);
         } catch (JSONException e) {
             Log.e(TAG, "Failed to form arguments JSON object for '" + getMethod() + "' request", e);
         }
         return args;
     }
 
-    protected Collection<Torrent> getTorrents() {
-        return torrents;
+    public static int[] toIds(Collection<Torrent> torrents) {
+        int[] ids = new int[torrents.size()];
+        int i = 0;
+        for (Torrent torrent : torrents) {
+            ids[i++] = torrent.getId();
+        }
+        return ids;
     }
 }

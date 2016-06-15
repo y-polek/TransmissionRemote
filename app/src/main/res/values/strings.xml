@@ -9,7 +9,10 @@
     <string name="action_start_all_torrents">Start all torrents</string>
     <string name="action_pause_all_torrents">Pause all torrents</string>
     <string name="action_remove_torrents">Remove selected torrents</string>
-    <string name="action_select_all">Select All</string>
+    <string name="action_select_all">Select all</string>
+    <string name="action_pause">Pause</string>
+    <string name="action_start">Start</string>
+    <string name="action_start_now">Start now (no queue)</string>
 
     <!-- Filters -->
     <string name="filters">Filters</string>
