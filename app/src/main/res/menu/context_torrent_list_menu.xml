@@ -19,5 +19,15 @@
         android:showAsAction="never"
         app:showAsAction="never"
         tools:ignore="AppCompatResource" />
+    <item android:id="@+id/action_verify"
+        android:title="@string/action_verify"
+        android:showAsAction="never"
+        app:showAsAction="never"
+        tools:ignore="AppCompatResource" />
+    <item android:id="@+id/action_reannounce"
+        android:title="@string/action_request_more_peers"
+        android:showAsAction="never"
+        app:showAsAction="never"
+        tools:ignore="AppCompatResource" />
 </menu>
 

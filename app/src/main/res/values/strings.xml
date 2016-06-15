@@ -13,6 +13,8 @@
     <string name="action_pause">Pause</string>
     <string name="action_start">Start</string>
     <string name="action_start_now">Start now (no queue)</string>
+    <string name="action_verify">Verify local data</string>
+    <string name="action_request_more_peers">Request more peers</string>
 
     <!-- Filters -->
     <string name="filters">Filters</string>

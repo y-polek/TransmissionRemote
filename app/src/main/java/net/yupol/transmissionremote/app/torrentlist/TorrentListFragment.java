@@ -46,10 +46,12 @@ import net.yupol.transmissionremote.app.model.json.Torrent;
 import net.yupol.transmissionremote.app.model.json.Torrents;
 import net.yupol.transmissionremote.app.transport.BaseSpiceActivity;
 import net.yupol.transmissionremote.app.transport.TransportManager;
+import net.yupol.transmissionremote.app.transport.request.ReannounceTorrentRequest;
 import net.yupol.transmissionremote.app.transport.request.Request;
 import net.yupol.transmissionremote.app.transport.request.StartTorrentRequest;
 import net.yupol.transmissionremote.app.transport.request.StopTorrentRequest;
 import net.yupol.transmissionremote.app.transport.request.TorrentGetRequest;
+import net.yupol.transmissionremote.app.transport.request.VerifyTorrentRequest;
 import net.yupol.transmissionremote.app.utils.ColorUtils;
 import net.yupol.transmissionremote.app.utils.IconUtils;
 import net.yupol.transmissionremote.app.utils.TextUtils;
@@ -164,6 +166,14 @@ public class TorrentListFragment extends Fragment {
                     return true;
                 case R.id.action_start_now:
                     sendStartTorrentsRequest(adapter.getSelectedItemsIds(), true);
+                    mode.finish();
+                    return true;
+                case R.id.action_verify:
+                    transportManager.doRequest(new VerifyTorrentRequest(adapter.getSelectedItemsIds()), null);
+                    mode.finish();
+                    return true;
+                case R.id.action_reannounce:
+                    transportManager.doRequest(new ReannounceTorrentRequest(adapter.getSelectedItemsIds()), null);
                     mode.finish();
                     return true;
             }
