@@ -403,14 +403,21 @@ public class TorrentListFragment extends Fragment {
                 holder.nameText.setText(torrent.getName());
             }
 
-            String totalSize = TextUtils.displayableSize(torrent.getTotalSize());
             String downloadedText;
             boolean isFinished = torrent.isFinished();
             if (isFinished) {
-                downloadedText = totalSize;
+                if (torrent.getTotalSize() == torrent.getSizeWhenDone()) {
+                    downloadedText = TextUtils.displayableSize(torrent.getTotalSize());
+                } else {
+                    downloadedText = context.getString(R.string.downloaded_text,
+                            TextUtils.displayableSize(torrent.getSizeWhenDone()),
+                            TextUtils.displayableSize(torrent.getTotalSize()));
+                }
             } else {
-                String downloadedSize = TextUtils.displayableSize((long) (torrent.getPercentDone() * torrent.getTotalSize()));
-                downloadedText = context.getString(R.string.downloaded_text, downloadedSize, totalSize);
+                long downloaded = torrent.getSizeWhenDone() - torrent.getLeftUntilDone();
+                downloadedText = context.getString(R.string.downloaded_text,
+                        TextUtils.displayableSize(downloaded),
+                        TextUtils.displayableSize(torrent.getSizeWhenDone()));
             }
             holder.downloadedTextView.setText(downloadedText);
 

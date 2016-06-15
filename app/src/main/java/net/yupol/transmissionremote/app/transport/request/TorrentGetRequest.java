@@ -30,7 +30,9 @@ public class TorrentGetRequest extends Request<Torrents> {
             TorrentMetadata.ETA,
             TorrentMetadata.ERROR,
             TorrentMetadata.ERROR_STRING,
-            TorrentMetadata.IS_FINISHED
+            TorrentMetadata.IS_FINISHED,
+            TorrentMetadata.SIZE_WHEN_DONE,
+            TorrentMetadata.LEFT_UNTIL_DONE
     );
 
     private JSONObject args = new JSONObject();

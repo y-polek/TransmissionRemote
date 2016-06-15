@@ -23,6 +23,8 @@ public class Torrent implements ID, Parcelable {
     private Error error;
     @Key private String errorString;
     @Key private boolean isFinished;
+    @Key private long sizeWhenDone;
+    @Key private long leftUntilDone;
 
     public Torrent() {}
 
@@ -41,6 +43,8 @@ public class Torrent implements ID, Parcelable {
         errorId = in.readInt();
         errorString = in.readString();
         isFinished = in.readInt() != 0;
+        sizeWhenDone = in.readLong();
+        leftUntilDone = in.readLong();
     }
 
     public int getId() {
@@ -104,7 +108,15 @@ public class Torrent implements ID, Parcelable {
         // FIXME: isFinished JSON field always contain false value.
         // For now finished state is determined by percentDone value.
         //return isFinished;
-        return percentDone == 1.0;
+        return leftUntilDone <= 0;
+    }
+
+    public long getSizeWhenDone() {
+        return sizeWhenDone;
+    }
+
+    public long getLeftUntilDone() {
+        return leftUntilDone;
     }
 
     @Override
@@ -128,6 +140,8 @@ public class Torrent implements ID, Parcelable {
         out.writeInt(errorId);
         out.writeString(errorString);
         out.writeInt(isFinished ? 1 : 0);
+        out.writeLong(sizeWhenDone);
+        out.writeLong(leftUntilDone);
     }
 
     public static final Creator<Torrent> CREATOR = new Creator<Torrent>() {
