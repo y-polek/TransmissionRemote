@@ -31,14 +31,14 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     style="@style/InfoPageTitleStyle"
-                    android:text="Torrent Information"/>
+                    android:text="@string/torrent_information"/>
                 <TableRow
                     android:layout_marginTop="@dimen/default_text_margin">
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         style="@style/InfoPageFirstColumnStyle"
-                        android:text="Total Size:"/>
+                        android:text="@string/total_size"/>
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -51,7 +51,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         style="@style/InfoPageFirstColumnStyle"
-                        android:text="Location:"/>
+                        android:text="@string/location"/>
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -64,7 +64,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         style="@style/InfoPageFirstColumnStyle"
-                        android:text="Privacy:"/>
+                        android:text="@string/privacy"/>
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -78,7 +78,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         style="@style/InfoPageFirstColumnStyle"
-                        android:text="Creator:"/>
+                        android:text="@string/creator"/>
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -92,7 +92,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         style="@style/InfoPageFirstColumnStyle"
-                        android:text="Created On:"/>
+                        android:text="@string/created_on"/>
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -106,7 +106,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         style="@style/InfoPageFirstColumnStyle"
-                        android:text="Comment:"/>
+                        android:text="@string/comment"/>
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -120,14 +120,14 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/default_layout_margin"
                     style="@style/InfoPageTitleStyle"
-                    android:text="Transfer"/>
+                    android:text="@string/transfer"/>
                 <TableRow
                     android:layout_marginTop="@dimen/default_text_margin">
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         style="@style/InfoPageFirstColumnStyle"
-                        android:text="Have:"/>
+                        android:text="@string/have"/>
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -140,7 +140,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         style="@style/InfoPageFirstColumnStyle"
-                        android:text="Available:"/>
+                        android:text="@string/available"/>
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -153,7 +153,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         style="@style/InfoPageFirstColumnStyle"
-                        android:text="Downloaded:"/>
+                        android:text="@string/downloaded"/>
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -166,7 +166,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         style="@style/InfoPageFirstColumnStyle"
-                        android:text="Uploaded:"/>
+                        android:text="@string/uploaded"/>
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -179,14 +179,14 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/default_layout_margin"
                     style="@style/InfoPageTitleStyle"
-                    android:text="Dates"/>
+                    android:text="@string/dates"/>
                 <TableRow
                     android:layout_marginTop="@dimen/default_text_margin">
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         style="@style/InfoPageFirstColumnStyle"
-                        android:text="Added:"/>
+                        android:text="@string/added"/>
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -200,7 +200,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         style="@style/InfoPageFirstColumnStyle"
-                        android:text="Completed:"/>
+                        android:text="@string/completed"/>
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -214,7 +214,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         style="@style/InfoPageFirstColumnStyle"
-                        android:text="Last Activity:"/>
+                        android:text="@string/last_activity"/>
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -227,14 +227,14 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/default_layout_margin"
                     style="@style/InfoPageTitleStyle"
-                    android:text="Time Elapsed"/>
+                    android:text="@string/time_elapsed"/>
                 <TableRow
                     android:layout_marginTop="@dimen/default_text_margin">
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         style="@style/InfoPageFirstColumnStyle"
-                        android:text="Downloading:"/>
+                        android:text="@string/downloading"/>
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -247,7 +247,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         style="@style/InfoPageFirstColumnStyle"
-                        android:text="Seeding:"/>
+                        android:text="@string/seeding"/>
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"

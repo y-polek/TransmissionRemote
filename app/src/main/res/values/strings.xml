@@ -166,6 +166,25 @@
     <string name="today_time">Today at %1$s</string>
     <string name="yesterday_time">Yesterday at %1$s</string>
     <string name="date_time">%1$s at %2$s</string>
+    <string name="torrent_information">Torrent Information</string>
+    <string name="total_size">Total Size:</string>
+    <string name="location">Location:</string>
+    <string name="privacy">Privacy:</string>
+    <string name="creator">Creator:</string>
+    <string name="created_on">Created On:</string>
+    <string name="comment">Comment:</string>
+    <string name="transfer">Transfer</string>
+    <string name="have">Have:</string>
+    <string name="available">Available:</string>
+    <string name="downloaded">Downloaded:</string>
+    <string name="uploaded">Uploaded:</string>
+    <string name="dates">Dates</string>
+    <string name="added">Added:</string>
+    <string name="completed">Completed:</string>
+    <string name="last_activity">Last Activity:</string>
+    <string name="time_elapsed">Time Elapsed</string>
+    <string name="downloading">Downloading:</string>
+    <string name="seeding">Seeding:</string>
 
     <string name="retry">Retry</string>
     <string name="server_settings">Server settings</string>
