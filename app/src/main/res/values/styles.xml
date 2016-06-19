@@ -11,6 +11,7 @@
 
         <item name="actionBarTheme">@style/ActionBarTheme</item>
         <item name="actionModeStyle">@style/ActionModeTheme</item>
+        <item name="actionBarPopupTheme">@style/ThemeOverlay.AppCompat.Light</item>
         <item name="windowActionModeOverlay">true</item>
     </style>
 
