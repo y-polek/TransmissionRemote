@@ -7,14 +7,12 @@ import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
-import static java.util.concurrent.TimeUnit.DAYS;
-import static java.util.concurrent.TimeUnit.SECONDS;
-import static java.util.Calendar.YEAR;
 import static java.util.Calendar.DAY_OF_YEAR;
+import static java.util.Calendar.YEAR;
+import static java.util.concurrent.TimeUnit.SECONDS;
 
 public class TextUtils {
 
-    private static final long ETA_INFINITE_THRESHOLD = DAYS.toSeconds(7);
     private static final DateFormat DATE_FORMAT = DateFormat.getDateInstance(DateFormat.MEDIUM);
     private static final DateFormat TIME_FORMAT = DateFormat.getTimeInstance(DateFormat.SHORT);
 
