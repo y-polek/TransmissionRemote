@@ -6,9 +6,12 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.util.SparseArray;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.mikepenz.fontawesome_typeface_library.FontAwesome;
+import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.octo.android.robospice.exception.RequestCancelledException;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
@@ -16,14 +19,22 @@ import com.octo.android.robospice.request.listener.RequestListener;
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.model.json.Torrent;
 import net.yupol.transmissionremote.app.model.json.TorrentInfo;
+import net.yupol.transmissionremote.app.torrentlist.RemoveTorrentsDialogFragment;
 import net.yupol.transmissionremote.app.transport.BaseSpiceActivity;
+import net.yupol.transmissionremote.app.transport.request.ReannounceTorrentRequest;
+import net.yupol.transmissionremote.app.transport.request.StartTorrentRequest;
+import net.yupol.transmissionremote.app.transport.request.StopTorrentRequest;
 import net.yupol.transmissionremote.app.transport.request.TorrentInfoGetRequest;
+import net.yupol.transmissionremote.app.transport.request.TorrentRemoveRequest;
 import net.yupol.transmissionremote.app.transport.request.TorrentSetRequest;
+import net.yupol.transmissionremote.app.transport.request.VerifyTorrentRequest;
+import net.yupol.transmissionremote.app.utils.IconUtils;
 
 import java.util.LinkedList;
 import java.util.List;
 
-public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveChangesDialogFragment.SaveDiscardListener {
+public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveChangesDialogFragment.SaveDiscardListener,
+        RemoveTorrentsDialogFragment.OnRemoveTorrentSelectionListener {
 
     private static final String TAG = TorrentDetailsActivity.class.getSimpleName();
 
@@ -175,10 +186,38 @@ public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveCha
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.torrent_actions_menu, menu);
+        IconUtils.setMenuIcon(this, menu, R.id.action_remove_torrents, GoogleMaterial.Icon.gmd_delete);
+        IconUtils.setMenuIcon(this, menu, R.id.action_pause, FontAwesome.Icon.faw_pause);
+        IconUtils.setMenuIcon(this, menu, R.id.action_start, FontAwesome.Icon.faw_play);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
                 onBackPressed();
+                return true;
+            case R.id.action_remove_torrents:
+                RemoveTorrentsDialogFragment.newInstance(torrent.getId())
+                        .show(getSupportFragmentManager(), RemoveTorrentsDialogFragment.TAG_REMOVE_TORRENTS_DIALOG);
+                return true;
+            case R.id.action_pause:
+                getTransportManager().doRequest(new StopTorrentRequest(torrent.getId()), null);
+                return true;
+            case R.id.action_start:
+                getTransportManager().doRequest(new StartTorrentRequest(torrent.getId()), null);
+                return true;
+            case R.id.action_start_now:
+                getTransportManager().doRequest(new StartTorrentRequest(new int[] { torrent.getId() }, true), null);
+                return true;
+            case R.id.action_verify:
+                getTransportManager().doRequest(new VerifyTorrentRequest(torrent.getId()), null);
+                return true;
+            case R.id.action_reannounce:
+                getTransportManager().doRequest(new ReannounceTorrentRequest(torrent.getId()), null);
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -196,5 +235,21 @@ public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveCha
     @Override
     public void onDiscardPressed() {
         super.onBackPressed();
+    }
+
+    @Override
+    public void onRemoveTorrentsSelected(int[] torrentsToRemove, boolean removeData) {
+        getTransportManager().doRequest(new TorrentRemoveRequest(torrentsToRemove, removeData), new RequestListener<Void>() {
+            @Override
+            public void onRequestFailure(SpiceException spiceException) {
+                Toast.makeText(TorrentDetailsActivity.this, R.string.remove_failed, Toast.LENGTH_SHORT).show();
+                Log.e(TAG, "Failed to remove torrent", spiceException);
+            }
+
+            @Override
+            public void onRequestSuccess(Void aVoid) {
+                TorrentDetailsActivity.super.onBackPressed();
+            }
+        });
     }
 }

@@ -10,7 +10,7 @@ public class StartTorrentRequest extends TorrentActionRequest {
         super(noQueue ? "torrent-start-now" : "torrent-start", torrentIds);
     }
 
-    public StartTorrentRequest(int[] torrentIds) {
+    public StartTorrentRequest(int... torrentIds) {
         this(torrentIds, false);
     }
 

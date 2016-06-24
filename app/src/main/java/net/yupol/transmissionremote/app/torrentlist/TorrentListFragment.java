@@ -77,8 +77,6 @@ public class TorrentListFragment extends Fragment {
     private static final Equals<Torrent> DISPLAYED_FIELDS_EQUALS_IMPL = new DisplayedFieldsEquals();
     private static final long UPDATE_REQUEST_DELAY = 500;
 
-    private static final String TAG_REMOVE_TORRENTS_DIALOG = "tag_remove_torrents_dialog";
-
     private static final NameFilter NAME_FILTER = new NameFilter();
 
     private static final long ETA_INFINITE_THRESHOLD = TimeUnit.DAYS.toSeconds(7);
@@ -125,7 +123,7 @@ public class TorrentListFragment extends Fragment {
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
             MenuInflater inflater = mode.getMenuInflater();
             inflater.inflate(R.menu.context_torrent_list_menu, menu);
-
+            inflater.inflate(R.menu.torrent_actions_menu, menu);
             IconUtils.setMenuIcon(getContext(), menu, R.id.action_remove_torrents, GoogleMaterial.Icon.gmd_delete);
             IconUtils.setMenuIcon(getContext(), menu, R.id.action_select_all, GoogleMaterial.Icon.gmd_select_all);
             IconUtils.setMenuIcon(getContext(), menu, R.id.action_pause, FontAwesome.Icon.faw_pause);
@@ -146,7 +144,8 @@ public class TorrentListFragment extends Fragment {
             switch (item.getItemId()) {
                 case R.id.action_remove_torrents:
                     int[] torrentsToRemove = adapter.getSelectedItemsIds();
-                    RemoveTorrentsDialogFragment.newInstance(torrentsToRemove).show(getFragmentManager(), TAG_REMOVE_TORRENTS_DIALOG);
+                    RemoveTorrentsDialogFragment.newInstance(torrentsToRemove)
+                            .show(getFragmentManager(), RemoveTorrentsDialogFragment.TAG_REMOVE_TORRENTS_DIALOG);
                     mode.finish();
                     return true;
                 case R.id.action_select_all:

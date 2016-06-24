@@ -190,6 +190,7 @@
     <string name="time_elapsed">Time Elapsed</string>
     <string name="downloading">Downloading:</string>
     <string name="seeding">Seeding:</string>
+    <string name="remove_failed">Failed to remove torrent. Try again.</string>
 
     <string name="retry">Retry</string>
     <string name="server_settings">Server settings</string>

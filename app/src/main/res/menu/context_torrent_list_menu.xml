@@ -1,33 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:tools="http://schemas.android.com/tools"
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item android:id="@+id/action_select_all"
         android:title="@string/action_select_all"
         app:showAsAction="always"/>
-    <item android:id="@+id/action_remove_torrents"
-        android:title="@string/action_remove_torrents"
-        app:showAsAction="ifRoom"/>
-    <item android:id="@+id/action_pause"
-        android:title="@string/action_pause"
-        app:showAsAction="ifRoom"/>
-    <item android:id="@+id/action_start"
-        android:title="@string/action_start"
-        app:showAsAction="ifRoom"/>
-    <item android:id="@+id/action_start_now"
-        android:title="@string/action_start_now"
-        android:showAsAction="never"
-        app:showAsAction="never"
-        tools:ignore="AppCompatResource" />
-    <item android:id="@+id/action_verify"
-        android:title="@string/action_verify"
-        android:showAsAction="never"
-        app:showAsAction="never"
-        tools:ignore="AppCompatResource" />
-    <item android:id="@+id/action_reannounce"
-        android:title="@string/action_request_more_peers"
-        android:showAsAction="never"
-        app:showAsAction="never"
-        tools:ignore="AppCompatResource" />
 </menu>
 
