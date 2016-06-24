@@ -11,6 +11,7 @@
 
         <item name="actionBarTheme">@style/ActionBarTheme</item>
         <item name="actionModeStyle">@style/ActionModeTheme</item>
+        <item name="actionBarPopupTheme">@style/ThemeOverlay.AppCompat.Light</item>
         <item name="windowActionModeOverlay">true</item>
     </style>
 
@@ -36,5 +37,23 @@
 
     <style name="ActionBarSubTitleAppearance" parent="ActionBarTitleAppearance">
         <item name="android:textSize">@dimen/actionbar_subtitle_text_size</item>
+    </style>
+
+    <style name="InfoPageFirstColumnStyle">
+        <item name="android:textSize">@dimen/tr_abc_text_size_body_1_material</item>
+        <item name="android:textColor">?android:attr/textColorSecondary</item>
+        <item name="android:layout_marginLeft">@dimen/default_text_margin</item>
+        <item name="android:layout_marginRight">@dimen/default_text_margin</item>
+    </style>
+
+    <style name="InfoPageSecondColumnStyle">
+        <item name="android:textSize">@dimen/tr_abc_text_size_body_1_material</item>
+        <item name="android:textColor">?android:attr/textColorPrimary</item>
+    </style>
+
+    <style name="InfoPageTitleStyle">
+        <item name="android:textSize">@dimen/tr_abc_text_size_subhead_material</item>
+        <item name="android:textColor">?android:attr/textColorPrimary</item>
+        <item name="android:textStyle">bold</item>
     </style>
 </resources>

@@ -5,9 +5,13 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.util.SparseArray;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.mikepenz.fontawesome_typeface_library.FontAwesome;
+import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.octo.android.robospice.exception.RequestCancelledException;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
@@ -15,11 +19,22 @@ import com.octo.android.robospice.request.listener.RequestListener;
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.model.json.Torrent;
 import net.yupol.transmissionremote.app.model.json.TorrentInfo;
+import net.yupol.transmissionremote.app.torrentlist.RemoveTorrentsDialogFragment;
 import net.yupol.transmissionremote.app.transport.BaseSpiceActivity;
+import net.yupol.transmissionremote.app.transport.request.ReannounceTorrentRequest;
+import net.yupol.transmissionremote.app.transport.request.StartTorrentRequest;
+import net.yupol.transmissionremote.app.transport.request.StopTorrentRequest;
 import net.yupol.transmissionremote.app.transport.request.TorrentInfoGetRequest;
+import net.yupol.transmissionremote.app.transport.request.TorrentRemoveRequest;
 import net.yupol.transmissionremote.app.transport.request.TorrentSetRequest;
+import net.yupol.transmissionremote.app.transport.request.VerifyTorrentRequest;
+import net.yupol.transmissionremote.app.utils.IconUtils;
 
-public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveChangesDialogFragment.SaveDiscardListener {
+import java.util.LinkedList;
+import java.util.List;
+
+public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveChangesDialogFragment.SaveDiscardListener,
+        RemoveTorrentsDialogFragment.OnRemoveTorrentSelectionListener {
 
     private static final String TAG = TorrentDetailsActivity.class.getSimpleName();
 
@@ -28,31 +43,27 @@ public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveCha
     private static final String TAG_SAVE_CHANGES_DIALOG = "tag_save_changes_dialog";
 
     private static final String KEY_OPTIONS_CHANGE_REQUEST = "key_options_request";
-    private static final String KEY_HAS_TORRENT_INFO = "key_has_torrent_info";
+    private static final String KEY_TORRENT_INFO = "key_torrent_info";
 
     private Torrent torrent;
-    private TorrentSetRequest saveChangesRequest;
-    private TorrentDetailsPagerAdapter pagerAdapter;
-    private boolean hasTorrentInfo = false;
+    private TorrentInfo torrentInfo;
+    private SparseArray<TorrentSetRequest> saveChangesRequests = new SparseArray<>();
     private TorrentInfoGetRequest lastTorrentInfoRequest;
+    private List<OnDataAvailableListener<TorrentInfo>> torrentInfoListeners = new LinkedList<>();
+    private List<OnActivityExitingListener<TorrentSetRequest.Builder>> activityExitingListeners = new LinkedList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.torrent_details_layout);
 
-        hasTorrentInfo = savedInstanceState != null && savedInstanceState.getBoolean(KEY_HAS_TORRENT_INFO, false);
-
         torrent = getIntent().getParcelableExtra(EXTRA_NAME_TORRENT);
+        final TorrentDetailsPagerAdapter pagerAdapter = new TorrentDetailsPagerAdapter(this, getSupportFragmentManager(), torrent);
 
-        setupActionBar();
-
-        ViewPager pager = (ViewPager) findViewById(R.id.pager);
-        pagerAdapter = new TorrentDetailsPagerAdapter(this, getSupportFragmentManager(), torrent);
-        assert pager != null;
-        pager.setAdapter(pagerAdapter);
-
-        if (!hasTorrentInfo) {
+        if (savedInstanceState != null) {
+            torrentInfo = savedInstanceState.getParcelable(KEY_TORRENT_INFO);
+        }
+        if (torrentInfo == null) {
             lastTorrentInfoRequest = new TorrentInfoGetRequest(torrent.getId());
             getTransportManager().doRequest(lastTorrentInfoRequest, new RequestListener<TorrentInfo>() {
                 @Override
@@ -67,8 +78,9 @@ public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveCha
                     // TorrentInfo may be empty if torrent is removed after request was sent.
                     // Show content only if TorrentInfo contain files data.
                     if (torrentInfo.getFiles() != null) {
+                        TorrentDetailsActivity.this.torrentInfo = torrentInfo;
                         pagerAdapter.setTorrentInfo(torrentInfo);
-                        hasTorrentInfo = true;
+                        notifyTorrentInfoListeners();
                     } else {
                         Log.e(TAG, "Empty TorrentInfo");
                         showErrorAndExit();
@@ -80,20 +92,62 @@ public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveCha
                     onBackPressed();
                 }
             });
+        } else {
+            pagerAdapter.setTorrentInfo(torrentInfo);
         }
+
+        setupActionBar();
+
+        ViewPager pager = (ViewPager) findViewById(R.id.pager);
+        assert pager != null;
+        pager.setAdapter(pagerAdapter);
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        outState.putParcelable(KEY_OPTIONS_CHANGE_REQUEST, saveChangesRequest);
-        outState.putBoolean(KEY_HAS_TORRENT_INFO, hasTorrentInfo);
+        outState.putSparseParcelableArray(KEY_OPTIONS_CHANGE_REQUEST, saveChangesRequests);
+        outState.putParcelable(KEY_TORRENT_INFO, torrentInfo);
         super.onSaveInstanceState(outState);
     }
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        saveChangesRequest = savedInstanceState.getParcelable(KEY_OPTIONS_CHANGE_REQUEST);
+        saveChangesRequests = savedInstanceState.getSparseParcelableArray(KEY_OPTIONS_CHANGE_REQUEST);
         super.onRestoreInstanceState(savedInstanceState);
+    }
+
+    public TorrentInfo getTorrentInfo() {
+        return torrentInfo;
+    }
+
+    public void addTorrentInfoListener(OnDataAvailableListener<TorrentInfo> listener) {
+        if (!torrentInfoListeners.contains(listener)) {
+            torrentInfoListeners.add(listener);
+        }
+    }
+
+    public void removeTorrentInfoListener(OnDataAvailableListener<TorrentInfo> listener) {
+        torrentInfoListeners.remove(listener);
+    }
+
+    private void notifyTorrentInfoListeners() {
+        for (OnDataAvailableListener<TorrentInfo> listener : torrentInfoListeners) {
+            listener.onDataAvailable(torrentInfo);
+        }
+    }
+
+    public void addOnActivityExitingListener(OnActivityExitingListener<TorrentSetRequest.Builder> listener) {
+        if (!activityExitingListeners.contains(listener)) {
+            activityExitingListeners.add(listener);
+        }
+    }
+
+    public void removeOnActivityExitingListener(OnActivityExitingListener<TorrentSetRequest.Builder> listener) {
+        activityExitingListeners.remove(listener);
+    }
+
+    public void addSaveChangesRequest(TorrentSetRequest.Builder requestBuilder) {
+        saveChangesRequests.put(requestBuilder.getTorrentId(), requestBuilder.build());
     }
 
     private void setupActionBar() {
@@ -111,22 +165,33 @@ public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveCha
     @Override
     public void onBackPressed() {
 
-        if (!hasTorrentInfo) {
+        if (torrentInfo == null) {
             if (lastTorrentInfoRequest != null) lastTorrentInfoRequest.cancel();
             super.onBackPressed();
             return;
         }
 
-        OptionsPageFragment optionsPage = (OptionsPageFragment) pagerAdapter.getFragment(OptionsPageFragment.class);
-        TorrentSetRequest.Builder saveChangesRequestBuilder = optionsPage.getSaveOptionsRequestBuilder();
-
-        if (saveChangesRequestBuilder == null || !saveChangesRequestBuilder.isChanged()) {
-            super.onBackPressed();
-            return;
+        for (OnActivityExitingListener<TorrentSetRequest.Builder> listener : activityExitingListeners) {
+            TorrentSetRequest.Builder saveChangesRequestBuilder = listener.onActivityExiting();
+            if (saveChangesRequestBuilder != null && saveChangesRequestBuilder.isChanged()) {
+                addSaveChangesRequest(saveChangesRequestBuilder);
+            }
         }
 
-        saveChangesRequest = saveChangesRequestBuilder.build();
-        new SaveChangesDialogFragment().show(getFragmentManager(), TAG_SAVE_CHANGES_DIALOG);
+        if (saveChangesRequests.size() > 0) {
+            new SaveChangesDialogFragment().show(getFragmentManager(), TAG_SAVE_CHANGES_DIALOG);
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.torrent_actions_menu, menu);
+        IconUtils.setMenuIcon(this, menu, R.id.action_remove_torrents, GoogleMaterial.Icon.gmd_delete);
+        IconUtils.setMenuIcon(this, menu, R.id.action_pause, FontAwesome.Icon.faw_pause);
+        IconUtils.setMenuIcon(this, menu, R.id.action_start, FontAwesome.Icon.faw_play);
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
@@ -135,18 +200,56 @@ public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveCha
             case android.R.id.home:
                 onBackPressed();
                 return true;
+            case R.id.action_remove_torrents:
+                RemoveTorrentsDialogFragment.newInstance(torrent.getId())
+                        .show(getSupportFragmentManager(), RemoveTorrentsDialogFragment.TAG_REMOVE_TORRENTS_DIALOG);
+                return true;
+            case R.id.action_pause:
+                getTransportManager().doRequest(new StopTorrentRequest(torrent.getId()), null);
+                return true;
+            case R.id.action_start:
+                getTransportManager().doRequest(new StartTorrentRequest(torrent.getId()), null);
+                return true;
+            case R.id.action_start_now:
+                getTransportManager().doRequest(new StartTorrentRequest(new int[] { torrent.getId() }, true), null);
+                return true;
+            case R.id.action_verify:
+                getTransportManager().doRequest(new VerifyTorrentRequest(torrent.getId()), null);
+                return true;
+            case R.id.action_reannounce:
+                getTransportManager().doRequest(new ReannounceTorrentRequest(torrent.getId()), null);
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
     @Override
     public void onSavePressed() {
-        getTransportManager().doRequest(saveChangesRequest, null);
+        for (int i=0; i<saveChangesRequests.size(); i++) {
+            TorrentSetRequest request = saveChangesRequests.valueAt(i);
+            getTransportManager().doRequest(request, null);
+        }
         super.onBackPressed();
     }
 
     @Override
     public void onDiscardPressed() {
         super.onBackPressed();
+    }
+
+    @Override
+    public void onRemoveTorrentsSelected(int[] torrentsToRemove, boolean removeData) {
+        getTransportManager().doRequest(new TorrentRemoveRequest(torrentsToRemove, removeData), new RequestListener<Void>() {
+            @Override
+            public void onRequestFailure(SpiceException spiceException) {
+                Toast.makeText(TorrentDetailsActivity.this, R.string.remove_failed, Toast.LENGTH_SHORT).show();
+                Log.e(TAG, "Failed to remove torrent", spiceException);
+            }
+
+            @Override
+            public void onRequestSuccess(Void aVoid) {
+                TorrentDetailsActivity.super.onBackPressed();
+            }
+        });
     }
 }

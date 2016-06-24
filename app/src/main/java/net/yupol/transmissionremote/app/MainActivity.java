@@ -446,8 +446,13 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putBoolean(KEY_DRAWER_SERVER_LIST_EXPANDED, drawer.switchedDrawerContent());
-        outState.putBoolean(KEY_SEARCH_ACTION_EXPANDED, searchMenuItem.isActionViewExpanded());
-        outState.putCharSequence(KEY_SEARCH_QUERY, searchView.getQuery());
+        if (searchMenuItem != null) {
+            outState.putBoolean(KEY_SEARCH_ACTION_EXPANDED, searchMenuItem.isActionViewExpanded());
+            outState.putCharSequence(KEY_SEARCH_QUERY, searchView.getQuery());
+        } else {
+            outState.putBoolean(KEY_SEARCH_ACTION_EXPANDED, restoredSearchMenuItemExpanded);
+            outState.putCharSequence(KEY_SEARCH_QUERY, restoredSearchQuery);
+        }
         outState.putBoolean(KEY_HAS_TORRENT_LIST, hasTorrentList);
     }
 

@@ -9,7 +9,12 @@
     <string name="action_start_all_torrents">Start all torrents</string>
     <string name="action_pause_all_torrents">Pause all torrents</string>
     <string name="action_remove_torrents">Remove selected torrents</string>
-    <string name="action_select_all">Select All</string>
+    <string name="action_select_all">Select all</string>
+    <string name="action_pause">Pause</string>
+    <string name="action_start">Start</string>
+    <string name="action_start_now">Start now (no queue)</string>
+    <string name="action_verify">Verify local data</string>
+    <string name="action_request_more_peers">Ask for more peers</string>
 
     <!-- Filters -->
     <string name="filters">Filters</string>
@@ -105,6 +110,7 @@
     <string name="search">Search</string>
     <string name="eta_unknown">Remaining time unknown</string>
     <string name="eta_infinite">~ \u221e</string>
+    <string name="eta">~ %1$s</string>
 
     <!-- Open torrent -->
     <string name="error_install_file_manager_msg">Please, install a file manager</string>
@@ -131,6 +137,7 @@
 
     <!-- Torrent details -->
     <string name="torrent_details">Torrent details</string>
+    <string name="info">Info</string>
     <string name="files">Files</string>
     <string name="options">Options</string>
     <string name="priority">Priority</string>
@@ -155,6 +162,38 @@
     <string name="options_update_failed">Failed to update torrent options</string>
     <string name="three_dots">&#8230;</string>
     <string name="disabled">disabled</string>
+    <string name="total_size_text">%1$s (%2$d pieces of %3$s)</string>
+    <string name="have_size_text">%1$s of %2$s (%3$.1f%%)</string>
+    <string name="have_size_100p_text">%1$s (100%%)</string>
+    <string name="have_unverified_size_text">, %1$s Unverified</string>
+    <string name="available_text">%1$.1f%%</string>
+    <string name="privacy_public_torrent">Public Torrent</string>
+    <string name="privacy_private_torrent">Private Torrent, non-tracker peer discovery disabled</string>
+    <string name="downloaded_ever_text">%1$s (%2$s corrupt)</string>
+    <string name="uploaded_ever_text">%1$s (Ratio: %2$.2f)</string>
+    <string name="today_time">Today at %1$s</string>
+    <string name="yesterday_time">Yesterday at %1$s</string>
+    <string name="date_time">%1$s at %2$s</string>
+    <string name="torrent_information">Torrent Information</string>
+    <string name="total_size">Total Size:</string>
+    <string name="location">Location:</string>
+    <string name="privacy">Privacy:</string>
+    <string name="creator">Creator:</string>
+    <string name="created_on">Created On:</string>
+    <string name="comment">Comment:</string>
+    <string name="transfer">Transfer</string>
+    <string name="have">Have:</string>
+    <string name="available">Available:</string>
+    <string name="downloaded">Downloaded:</string>
+    <string name="uploaded">Uploaded:</string>
+    <string name="dates">Dates</string>
+    <string name="added">Added:</string>
+    <string name="completed">Completed:</string>
+    <string name="last_activity">Last Activity:</string>
+    <string name="time_elapsed">Time Elapsed</string>
+    <string name="downloading">Downloading:</string>
+    <string name="seeding">Seeding:</string>
+    <string name="remove_failed">Failed to remove torrent. Try again.</string>
 
     <string name="retry">Retry</string>
     <string name="server_settings">Server settings</string>

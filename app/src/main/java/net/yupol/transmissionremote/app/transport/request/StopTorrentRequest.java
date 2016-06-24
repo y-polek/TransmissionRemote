@@ -6,7 +6,11 @@ import java.util.Collection;
 
 public class StopTorrentRequest extends TorrentActionRequest {
 
+    public StopTorrentRequest(int... torrentIds) {
+        super("torrent-stop", torrentIds);
+    }
+
     public StopTorrentRequest(Collection<Torrent> torrents) {
-        super("torrent-stop", torrents);
+        this(toIds(torrents));
     }
 }

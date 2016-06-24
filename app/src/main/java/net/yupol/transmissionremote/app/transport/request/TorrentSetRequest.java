@@ -90,6 +90,10 @@ public class TorrentSetRequest extends Request<Void> implements Parcelable {
             this.torrentId = torrentId;
         }
 
+        public int getTorrentId() {
+            return torrentId;
+        }
+
         public Builder filesWanted(int... fileIndices) {
             filesWantedIndices = fileIndices;
             return changedBuilder();
@@ -157,6 +161,25 @@ public class TorrentSetRequest extends Request<Void> implements Parcelable {
 
         public boolean isChanged() {
             return changed;
+        }
+
+        public Builder clear() {
+            filesWantedIndices = null;
+            filesUnwantedIndices = null;
+            transferPriority = null;
+            honorsSessionLimits = null;
+            downloadLimited = null;
+            downloadLimit = null;
+            uploadLimited = null;
+            uploadLimit = null;
+            seedRatioMode = null;
+            seedRatioLimit = null;
+            seedIdleMode = null;
+            seedIdleLimit = null;
+
+            changed = false;
+
+            return this;
         }
 
         @Override

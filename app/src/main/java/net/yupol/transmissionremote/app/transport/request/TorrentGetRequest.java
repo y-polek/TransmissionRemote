@@ -30,7 +30,9 @@ public class TorrentGetRequest extends Request<Torrents> {
             TorrentMetadata.ETA,
             TorrentMetadata.ERROR,
             TorrentMetadata.ERROR_STRING,
-            TorrentMetadata.IS_FINISHED
+            TorrentMetadata.IS_FINISHED,
+            TorrentMetadata.SIZE_WHEN_DONE,
+            TorrentMetadata.LEFT_UNTIL_DONE
     );
 
     private JSONObject args = new JSONObject();
@@ -45,10 +47,15 @@ public class TorrentGetRequest extends Request<Torrents> {
         }
     }
 
-    public TorrentGetRequest(int id) {
+    public TorrentGetRequest(int... ids) {
         this();
+
+        JSONArray idsArray = new JSONArray();
+        for (int id : ids) {
+            idsArray.put(id);
+        }
         try {
-            args.put("ids", new JSONArray().put(id));
+            args.put("ids", idsArray);
         } catch (JSONException e) {
             Log.e(TAG, "Error while creating json object", e);
             throw new RuntimeException(e);

@@ -32,6 +32,26 @@ public class TorrentInfo implements Parcelable {
         i.seedRatioModeValue = in.readInt();
         i.seedIdleLimit = in.readInt();
         i.seedIdleModeValue = in.readInt();
+        i.haveUnchecked = in.readLong();
+        i.haveValid = in.readLong();
+        i.sizeWhenDone = in.readLong();
+        i.leftUntilDone = in.readLong();
+        i.desiredAvailable = in.readLong();
+        i.pieceCount = in.readLong();
+        i.pieceSize = in.readLong();
+        i.downloadDir = in.readString();
+        i.isPrivate = in.readInt() != 0;
+        i.creator = in.readString();
+        i.dateCreated = in.readLong();
+        i.comment = in.readString();
+        i.downloadedEver = in.readLong();
+        i.corruptEver = in.readLong();
+        i.uploadedEver = in.readLong();
+        i.addedDate = in.readLong();
+        i.doneDate = in.readLong();
+        i.activityDate = in.readLong();
+        i.secondsDownloading = in.readLong();
+        i.secondsSeeding = in.readLong();
     }
 
     public TransferPriority getTransferPriority() {
@@ -92,6 +112,98 @@ public class TorrentInfo implements Parcelable {
         return i.seedIdleMode;
     }
 
+    public long getHaveUnchecked() {
+        return items[0].haveUnchecked;
+    }
+
+    public long getHaveValid() {
+        return items[0].haveValid;
+    }
+
+    public long getSizeWhenDone() {
+        return items[0].sizeWhenDone;
+    }
+
+    public long getLeftUntilDone() {
+        return items[0].leftUntilDone;
+    }
+
+    public long getDesiredAvailable() {
+        return items[0].desiredAvailable;
+    }
+
+    public double getHavePercent() {
+        long sizeWhenDone = getSizeWhenDone();
+        long leftUntilDone = getLeftUntilDone();
+        return 100.0 * (sizeWhenDone - leftUntilDone)/(double) sizeWhenDone;
+    }
+
+    public double getAvailablePercent() {
+        long sizeWhenDone = getSizeWhenDone();
+        if (sizeWhenDone <= 0) return 0.0;
+        return (100.0 * (getHaveValid() + getHaveUnchecked() + getDesiredAvailable())) / sizeWhenDone;
+    }
+
+    public long getAddedDate() {
+        return items[0].addedDate;
+    }
+
+    public long getDoneDate() {
+        return items[0].doneDate;
+    }
+
+    public long getActivityDate() {
+        return items[0].activityDate;
+    }
+
+    public long getPieceCount() {
+        return items[0].pieceCount;
+    }
+
+    public long getPieceSize() {
+        return items[0].pieceSize;
+    }
+
+    public String getDownloadDir() {
+        return items[0].downloadDir;
+    }
+
+    public boolean isPrivate() {
+        return items[0].isPrivate;
+    }
+
+    public String getCreator() {
+        return items[0].creator;
+    }
+
+    public long getDateCreated() {
+        return items[0].dateCreated;
+    }
+
+    public String getComment() {
+        return items[0].comment;
+    }
+
+    public long getDownloadedEver() {
+        return items[0].downloadedEver;
+    }
+
+    public long getCorruptEver() {
+        return items[0].corruptEver;
+    }
+
+    public long getUploadedEver() {
+        return items[0].uploadedEver;
+    }
+
+    public long getSecondsDownloading() {
+        return items[0].secondsDownloading;
+    }
+
+    public long getSecondsSeeding() {
+        return items[0].secondsSeeding;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -113,6 +225,26 @@ public class TorrentInfo implements Parcelable {
         out.writeInt(i.seedRatioModeValue);
         out.writeInt(i.seedIdleLimit);
         out.writeInt(i.seedIdleModeValue);
+        out.writeLong(i.haveUnchecked);
+        out.writeLong(i.haveValid);
+        out.writeLong(i.sizeWhenDone);
+        out.writeLong(i.leftUntilDone);
+        out.writeLong(i.desiredAvailable);
+        out.writeLong(i.pieceCount);
+        out.writeLong(i.pieceSize);
+        out.writeString(i.downloadDir);
+        out.writeInt(i.isPrivate ? 1 : 0);
+        out.writeString(i.creator);
+        out.writeLong(i.dateCreated);
+        out.writeString(i.comment);
+        out.writeLong(i.downloadedEver);
+        out.writeLong(i.corruptEver);
+        out.writeLong(i.uploadedEver);
+        out.writeLong(i.addedDate);
+        out.writeLong(i.doneDate);
+        out.writeLong(i.activityDate);
+        out.writeLong(i.secondsDownloading);
+        out.writeLong(i.secondsSeeding);
     }
 
     public static final Creator<TorrentInfo> CREATOR = new Creator<TorrentInfo>() {
@@ -145,5 +277,25 @@ public class TorrentInfo implements Parcelable {
         @Key private int seedIdleLimit;
         @Key("seedIdleMode") private int seedIdleModeValue;
         private LimitMode seedIdleMode;
+        @Key private long haveUnchecked;
+        @Key private long haveValid;
+        @Key private long sizeWhenDone;
+        @Key private long leftUntilDone;
+        @Key private long desiredAvailable;
+        @Key private long pieceCount;
+        @Key private long pieceSize;
+        @Key private String downloadDir;
+        @Key private boolean isPrivate;
+        @Key private String creator;
+        @Key private long dateCreated;
+        @Key private String comment;
+        @Key private long downloadedEver;
+        @Key private long corruptEver;
+        @Key private long uploadedEver;
+        @Key private long addedDate;
+        @Key private long doneDate;
+        @Key private long activityDate;
+        @Key private long secondsDownloading;
+        @Key private long secondsSeeding;
     }
 }

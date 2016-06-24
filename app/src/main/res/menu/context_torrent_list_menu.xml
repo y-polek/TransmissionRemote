@@ -4,8 +4,5 @@
     <item android:id="@+id/action_select_all"
         android:title="@string/action_select_all"
         app:showAsAction="always"/>
-    <item android:id="@+id/action_remove_torrents"
-        android:title="@string/action_remove_torrents"
-        app:showAsAction="ifRoom"/>
 </menu>
 

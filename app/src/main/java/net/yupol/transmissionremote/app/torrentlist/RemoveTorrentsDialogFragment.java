@@ -13,6 +13,8 @@ import net.yupol.transmissionremote.app.R;
 
 public class RemoveTorrentsDialogFragment extends DialogFragment {
 
+    public static final String TAG_REMOVE_TORRENTS_DIALOG = "tag_remove_torrents_dialog";
+
     private static final String KEY_TORRENTS_TO_REMOVE = "key_torrents_to_remove";
 
     private OnRemoveTorrentSelectionListener listener;
@@ -43,7 +45,7 @@ public class RemoveTorrentsDialogFragment extends DialogFragment {
         }
     }
 
-    public static RemoveTorrentsDialogFragment newInstance(int[] torrentsToRemove) {
+    public static RemoveTorrentsDialogFragment newInstance(int... torrentsToRemove) {
         Bundle args = new Bundle();
         args.putIntArray(KEY_TORRENTS_TO_REMOVE, torrentsToRemove);
         RemoveTorrentsDialogFragment dialog = new RemoveTorrentsDialogFragment();

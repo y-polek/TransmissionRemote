@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+    <data>
+
+        <import type="android.view.View" />
+        <import type="net.yupol.transmissionremote.app.torrentdetails.InfoPageBindingUtils" />
+        <import type="net.yupol.transmissionremote.app.utils.TextUtils" />
+        <variable
+            name="torrent"
+            type="net.yupol.transmissionremote.app.model.json.Torrent" />
+        <variable
+            name="torrentInfo"
+            type="net.yupol.transmissionremote.app.model.json.TorrentInfo" />
+    </data>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <TableLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/default_padding_big"
+                android:stretchColumns="1"
+                android:shrinkColumns="1"
+                android:visibility="@{torrentInfo != null ? View.VISIBLE : View.GONE}">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/InfoPageTitleStyle"
+                    android:text="@string/torrent_information"/>
+                <TableRow
+                    android:layout_marginTop="@dimen/default_text_margin">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        style="@style/InfoPageFirstColumnStyle"
+                        android:text="@string/total_size"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        style="@style/InfoPageSecondColumnStyle"
+                        android:text="@{InfoPageBindingUtils.totalSize(torrent, torrentInfo)}" />
+                </TableRow>
+                <TableRow
+                    android:layout_marginTop="@dimen/default_text_margin">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        style="@style/InfoPageFirstColumnStyle"
+                        android:text="@string/location"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        style="@style/InfoPageSecondColumnStyle"
+                        android:text="@{torrentInfo.downloadDir}" />
+                </TableRow>
+                <TableRow
+                    android:layout_marginTop="@dimen/default_text_margin">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        style="@style/InfoPageFirstColumnStyle"
+                        android:text="@string/privacy"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        style="@style/InfoPageSecondColumnStyle"
+                        android:text="@{torrentInfo.private ? @string/privacy_private_torrent : @string/privacy_public_torrent}" />
+                </TableRow>
+                <TableRow
+                    android:layout_marginTop="@dimen/default_text_margin"
+                    android:visibility="@{(torrentInfo.creator == null || torrentInfo.creator.isEmpty()) ? View.GONE : View.VISIBLE}">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        style="@style/InfoPageFirstColumnStyle"
+                        android:text="@string/creator"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        style="@style/InfoPageSecondColumnStyle"
+                        android:text="@{torrentInfo.creator}" />
+                </TableRow>
+                <TableRow
+                    android:layout_marginTop="@dimen/default_text_margin"
+                    android:visibility="@{torrentInfo.dateCreated > 0 ? View.VISIBLE : View.GONE}">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        style="@style/InfoPageFirstColumnStyle"
+                        android:text="@string/created_on"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        style="@style/InfoPageSecondColumnStyle"
+                        android:text="@{TextUtils.displayableDate(torrentInfo.dateCreated)}" />
+                </TableRow>
+                <TableRow
+                    android:visibility="@{(torrentInfo.comment == null || torrentInfo.comment.isEmpty()) ? View.GONE : View.VISIBLE}"
+                    android:layout_marginTop="@dimen/default_text_margin">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        style="@style/InfoPageFirstColumnStyle"
+                        android:text="@string/comment"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:autoLink="web"
+                        style="@style/InfoPageSecondColumnStyle"
+                        android:text="@{torrentInfo.comment}" />
+                </TableRow>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/default_layout_margin"
+                    style="@style/InfoPageTitleStyle"
+                    android:text="@string/transfer"/>
+                <TableRow
+                    android:layout_marginTop="@dimen/default_text_margin">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        style="@style/InfoPageFirstColumnStyle"
+                        android:text="@string/have"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        style="@style/InfoPageSecondColumnStyle"
+                        android:text="@{InfoPageBindingUtils.haveSize(torrentInfo)}" />
+                </TableRow>
+                <TableRow
+                    android:layout_marginTop="@dimen/default_text_margin">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        style="@style/InfoPageFirstColumnStyle"
+                        android:text="@string/available"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        style="@style/InfoPageSecondColumnStyle"
+                        android:text="@{@string/available_text(torrentInfo.availablePercent)}" />
+                </TableRow>
+                <TableRow
+                    android:layout_marginTop="@dimen/default_text_margin">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        style="@style/InfoPageFirstColumnStyle"
+                        android:text="@string/downloaded"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        style="@style/InfoPageSecondColumnStyle"
+                        android:text="@{InfoPageBindingUtils.downloadedSize(torrentInfo)}" />
+                </TableRow>
+                <TableRow
+                    android:layout_marginTop="@dimen/default_text_margin">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        style="@style/InfoPageFirstColumnStyle"
+                        android:text="@string/uploaded"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        style="@style/InfoPageSecondColumnStyle"
+                        android:text="@{InfoPageBindingUtils.uploadedSize(torrentInfo)}" />
+                </TableRow>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/default_layout_margin"
+                    style="@style/InfoPageTitleStyle"
+                    android:text="@string/dates"/>
+                <TableRow
+                    android:layout_marginTop="@dimen/default_text_margin">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        style="@style/InfoPageFirstColumnStyle"
+                        android:text="@string/added"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        style="@style/InfoPageSecondColumnStyle"
+                        android:text="@{TextUtils.displayableDate(torrentInfo.addedDate)}" />
+                </TableRow>
+                <TableRow
+                    android:layout_marginTop="@dimen/default_text_margin"
+                    android:visibility="@{torrentInfo.doneDate > 0 ? View.VISIBLE : View.GONE}">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        style="@style/InfoPageFirstColumnStyle"
+                        android:text="@string/completed"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        style="@style/InfoPageSecondColumnStyle"
+                        android:text="@{TextUtils.displayableDate(torrentInfo.doneDate)}" />
+                </TableRow>
+                <TableRow
+                    android:layout_marginTop="@dimen/default_text_margin"
+                    android:visibility="@{torrentInfo.activityDate > 0 ? View.VISIBLE : View.GONE}">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        style="@style/InfoPageFirstColumnStyle"
+                        android:text="@string/last_activity"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        style="@style/InfoPageSecondColumnStyle"
+                        android:text="@{TextUtils.displayableDate(torrentInfo.activityDate)}" />
+                </TableRow>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/default_layout_margin"
+                    style="@style/InfoPageTitleStyle"
+                    android:text="@string/time_elapsed"/>
+                <TableRow
+                    android:layout_marginTop="@dimen/default_text_margin">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        style="@style/InfoPageFirstColumnStyle"
+                        android:text="@string/downloading"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        style="@style/InfoPageSecondColumnStyle"
+                        android:text="@{TextUtils.displayableTime(torrentInfo.secondsDownloading)}" />
+                </TableRow>
+                <TableRow
+                    android:layout_marginTop="@dimen/default_text_margin">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        style="@style/InfoPageFirstColumnStyle"
+                        android:text="@string/seeding"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        style="@style/InfoPageSecondColumnStyle"
+                        android:text="@{TextUtils.displayableTime(torrentInfo.secondsSeeding)}" />
+                </TableRow>
+            </TableLayout>
+        </ScrollView>
+
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="@{torrentInfo == null ? View.VISIBLE : View.GONE}"/>
+
+    </FrameLayout>
+</layout>

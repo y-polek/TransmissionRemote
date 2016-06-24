@@ -58,4 +58,7 @@ public class TorrentMetadata {
     public static final String SEED_RATIO_MODE = "seedRatioMode";
     public static final String SEED_IDLE_LIMIT = "seedIdleLimit";
     public static final String SEED_IDLE_MODE = "seedIdleMode";
+    public static final String DONE_DATE = "doneDate";
+    public static final String SECONDS_DOWNLOADING = "secondsDownloading";
+    public static final String SECONDS_SEEDING = "secondsSeeding";
 }
