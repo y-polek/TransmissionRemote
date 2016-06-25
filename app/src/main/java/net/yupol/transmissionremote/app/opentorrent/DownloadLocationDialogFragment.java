@@ -122,14 +122,6 @@ public class DownloadLocationDialogFragment extends android.support.v4.app.Dialo
             }
         });
 
-        TextView defaultDirText = (TextView) view.findViewById(R.id.use_default_directory_text);
-        TextUtils.clickify(defaultDirText, new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                downloadLocationText.setText(defaultDownloadDir);
-            }
-        });
-
         downloadDirLayout = view.findViewById(R.id.download_dir_content);
         downloadDirProgressbar = (ProgressBar) view.findViewById(R.id.download_dir_progress_bar);
 

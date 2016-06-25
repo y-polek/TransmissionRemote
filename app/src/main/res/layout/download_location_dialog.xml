@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
     <LinearLayout
@@ -39,12 +40,27 @@
                     android:layout_marginTop="@dimen/default_layout_margin"
                     android:textSize="@dimen/tr_abc_text_size_subhead_material"
                     android:text="@string/download_to"/>
-                <EditText android:id="@+id/download_location"
+                <FrameLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingBottom="@dimen/default_padding"
-                    android:hint="@string/download_location_hint"
-                    android:textSize="@dimen/tr_abc_text_size_body_1_material"/>
+                    android:layout_height="wrap_content">
+                    <EditText android:id="@+id/download_location"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingBottom="@dimen/default_padding"
+                        android:hint="@string/download_location_hint"
+                        android:textSize="@dimen/tr_abc_text_size_body_1_material" />
+                    <com.mikepenz.iconics.view.IconicsButton
+                        android:id="@+id/expand_button"
+                        android:layout_width="@dimen/iconics_button_size"
+                        android:layout_height="32dp"
+                        android:layout_gravity="center_vertical|end"
+                        android:padding="0dp"
+                        android:textColor="?android:attr/textColorSecondary"
+                        android:background="@null"
+                        android:textSize="@dimen/iconics_button_text_size"
+                        android:text="{gmd_arrow_drop_down}"
+                        tools:ignore="HardcodedText,SpUsage" />
+                </FrameLayout>
 
                 <FrameLayout
                     android:layout_width="wrap_content"
@@ -58,12 +74,6 @@
                         android:layout_width="@dimen/free_space_progress_bar_size"
                         android:layout_height="@dimen/free_space_progress_bar_size" />
                 </FrameLayout>
-
-                <TextView android:id="@+id/use_default_directory_text"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="@dimen/tr_abc_text_size_body_1_material"
-                    android:text="@string/use_default_directory"/>
             </LinearLayout>
 
             <ProgressBar android:id="@+id/download_dir_progress_bar"

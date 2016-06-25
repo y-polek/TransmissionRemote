@@ -130,7 +130,6 @@
     <string name="free_space">%1$s free</string>
     <string name="free_space_unknown">Free space unknown</string>
     <string name="no_directory">There is no such directory</string>
-    <string name="use_default_directory">Use default directory</string>
     <string name="select_server">Server:</string>
     <string name="download_location_hint">Path on server</string>
     <string name="open_torrent_title">Open torrent</string>
