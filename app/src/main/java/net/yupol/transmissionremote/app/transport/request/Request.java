@@ -64,11 +64,9 @@ public abstract class Request<RESULT> extends GoogleHttpClientSpiceRequest<RESUL
         String url = "http://" + server.getHost() + ':' + server.getPort() + "/" + server.getRpcUrl();
 
         HttpRequestFactory requestFactory = getHttpRequestFactory();
-        Log.d(TAG, "requestFactory: " + requestFactory);
 
         String body = Optional.fromNullable(createBody()).or("");
         HttpContent content = new ByteArrayContent("application/json", body.getBytes());
-        Log.d(TAG, "requestBody: " + body);
 
         HttpRequest request = requestFactory.buildPostRequest(new GenericUrl(url), content);
         request.setThrowExceptionOnExecuteError(false);
