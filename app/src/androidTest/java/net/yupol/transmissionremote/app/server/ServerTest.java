@@ -1,10 +1,8 @@
-package net.yupol.transmissionremote.app.tests;
+package net.yupol.transmissionremote.app.server;
 
 import android.os.Parcel;
 
 import junit.framework.TestCase;
-
-import net.yupol.transmissionremote.app.server.Server;
 
 public class ServerTest extends TestCase {
 
