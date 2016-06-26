@@ -6,19 +6,28 @@ import android.os.Parcelable;
 import com.google.api.client.util.Key;
 
 public class File implements Parcelable {
-    @Key private String name;
+    @Key("name") private String path;
+    private String name;
     @Key private long bytesCompleted;
     @Key private long length;
 
     public File() {}
 
     public File(Parcel in) {
-        name = in.readString();
+        path = in.readString();
         bytesCompleted = in.readLong();
         length = in.readLong();
     }
 
+    public String getPath() {
+        return path;
+    }
+
     public String getName() {
+        if (name == null) {
+            String[] nameParts = path.split("/");
+            name = nameParts[nameParts.length - 1];
+        }
         return name;
     }
 
@@ -37,7 +46,7 @@ public class File implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel out, int flags) {
-        out.writeString(name);
+        out.writeString(path);
         out.writeLong(bytesCompleted);
         out.writeLong(length);
     }
