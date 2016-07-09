@@ -51,6 +51,8 @@ public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveCha
     private TorrentInfoGetRequest lastTorrentInfoRequest;
     private List<OnDataAvailableListener<TorrentInfo>> torrentInfoListeners = new LinkedList<>();
     private List<OnActivityExitingListener<TorrentSetRequest.Builder>> activityExitingListeners = new LinkedList<>();
+    private TorrentDetailsPagerAdapter pagerAdapter;
+    private ViewPager pager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,7 +60,7 @@ public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveCha
         setContentView(R.layout.torrent_details_layout);
 
         torrent = getIntent().getParcelableExtra(EXTRA_NAME_TORRENT);
-        final TorrentDetailsPagerAdapter pagerAdapter = new TorrentDetailsPagerAdapter(this, getSupportFragmentManager(), torrent);
+        pagerAdapter = new TorrentDetailsPagerAdapter(this, getSupportFragmentManager(), torrent);
 
         if (savedInstanceState != null) {
             torrentInfo = savedInstanceState.getParcelable(KEY_TORRENT_INFO);
@@ -98,7 +100,7 @@ public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveCha
 
         setupActionBar();
 
-        ViewPager pager = (ViewPager) findViewById(R.id.pager);
+        pager = (ViewPager) findViewById(R.id.pager);
         assert pager != null;
         pager.setAdapter(pagerAdapter);
     }
@@ -164,6 +166,10 @@ public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveCha
 
     @Override
     public void onBackPressed() {
+
+        BasePageFragment currentFragment = pagerAdapter.findFragment(getSupportFragmentManager(), pager.getCurrentItem());
+        boolean handled = currentFragment.onBackPressed();
+        if (handled) return;
 
         if (torrentInfo == null) {
             if (lastTorrentInfoRequest != null) lastTorrentInfoRequest.cancel();

@@ -12,7 +12,8 @@ import android.view.ViewGroup;
 import net.yupol.transmissionremote.app.model.json.Torrent;
 import net.yupol.transmissionremote.app.model.json.TorrentInfo;
 
-public abstract class BasePageFragment extends Fragment implements OnDataAvailableListener<TorrentInfo> {
+public abstract class BasePageFragment extends Fragment implements OnDataAvailableListener<TorrentInfo>,
+        OnBackPressedListener {
 
     private static final String KEY_TORRENT = "key_torrent";
     private static final String KEY_TORRENT_INFO = "key_torrent_info";
@@ -81,5 +82,10 @@ public abstract class BasePageFragment extends Fragment implements OnDataAvailab
         }
 
         return super.onCreateView(inflater, container, savedInstanceState);
+    }
+
+    @Override
+    public boolean onBackPressed() {
+        return false;
     }
 }

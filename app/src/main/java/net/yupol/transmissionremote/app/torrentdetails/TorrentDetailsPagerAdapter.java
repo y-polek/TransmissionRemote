@@ -15,12 +15,14 @@ public class TorrentDetailsPagerAdapter extends FragmentStatePagerAdapter {
     private Class<?>[] fragmentsClasses = {
             TorrentInfoPageFragment.class,
             FilesPageFragment.class,
+            DirectoryFragment.class,
             OptionsPageFragment.class,
     };
 
     private int[] pageTitles = {
             R.string.info,
             R.string.files,
+            R.string.torrent_details,
             R.string.options
     };
 
@@ -44,6 +46,16 @@ public class TorrentDetailsPagerAdapter extends FragmentStatePagerAdapter {
         fragment.setTorrent(torrent);
         if (torrentInfo != null) fragment.setTorrentInfo(torrentInfo);
         return fragment;
+    }
+
+    public BasePageFragment findFragment(FragmentManager fragmentManager, int position) {
+        Class fragmentClass = fragmentsClasses[position];
+        for (Fragment fragment : fragmentManager.getFragments()) {
+            if (fragmentClass.isInstance(fragment)) {
+                return (BasePageFragment) fragment;
+            }
+        }
+        return null;
     }
 
     @Override

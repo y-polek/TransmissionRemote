@@ -1,5 +1,7 @@
 package net.yupol.transmissionremote.app.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
 import net.yupol.transmissionremote.app.model.json.File;
@@ -8,7 +10,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-public final class Dir {
+public final class Dir implements Parcelable {
 
     private String name;
     private List<Dir> dirs = new LinkedList<>();
@@ -17,6 +19,12 @@ public final class Dir {
 
     public Dir(String name) {
         this.name = name;
+    }
+
+    protected Dir(Parcel in) {
+        name = in.readString();
+        dirs = in.createTypedArrayList(Dir.CREATOR);
+        files = in.createTypedArrayList(File.CREATOR);
     }
 
     public String getName() {
@@ -48,6 +56,10 @@ public final class Dir {
         return root;
     }
 
+    public static Dir emptyDir() {
+        return new Dir("/");
+    }
+
     private static void parsePath(List<String> pathParts, Dir parentDir, File fileAtPath, int fileIndex) {
         if (pathParts.size() == 1) {
             parentDir.files.add(fileAtPath);
@@ -70,4 +82,28 @@ public final class Dir {
         }
         return null;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(name);
+        dest.writeTypedList(dirs);
+        dest.writeTypedList(files);
+    }
+
+    public static final Creator<Dir> CREATOR = new Creator<Dir>() {
+        @Override
+        public Dir createFromParcel(Parcel in) {
+            return new Dir(in);
+        }
+
+        @Override
+        public Dir[] newArray(int size) {
+            return new Dir[size];
+        }
+    };
 }

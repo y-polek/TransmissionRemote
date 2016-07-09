@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+    <data>
+        <variable name="dir" type="net.yupol.transmissionremote.app.model.Dir" />
+        <variable name="file" type="net.yupol.transmissionremote.app.model.json.File" />
+    </data>
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:background="?android:attr/selectableItemBackground">
+        <CheckBox android:id="@+id/checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/default_padding_small"
+            android:layout_marginLeft="@dimen/default_text_margin"
+            android:checked="@{}"/>
+        <ImageView android:id="@+id/icon"
+            android:layout_width="48dp"
+            android:layout_height="48dp" />
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
+            <TextView android:id="@+id/file_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/default_text_margin_small"
+                android:layout_marginRight="@dimen/default_text_margin_small"
+                android:layout_marginBottom="@dimen/default_text_margin_small"
+                android:textSize="@dimen/tr_abc_text_size_body_1_material"
+                android:textStyle="bold"
+                android:text="@{dir != null ? dir.name : file.name}"/>
+            <TextView android:id="@+id/stats_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="@dimen/default_text_margin_small"
+                android:layout_marginBottom="@dimen/default_text_margin_small"
+                android:textSize="@dimen/tr_abc_text_size_body_2_material"
+                android:text="1.93 MB of 1.93 MB (100%)"/>
+        </LinearLayout>
+        <ImageButton android:id="@+id/priority_button"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:paddingLeft="@dimen/default_padding"
+            android:paddingRight="@dimen/default_padding"
+            android:layout_marginRight="@dimen/default_text_margin"
+            android:background="@null"
+            android:src="@drawable/priority_normal"
+            android:contentDescription="@string/priority"/>
+    </LinearLayout>
+</layout>
