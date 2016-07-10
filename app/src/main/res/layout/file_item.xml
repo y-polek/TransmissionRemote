@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout>
     <data>
+        <import type="net.yupol.transmissionremote.app.torrentdetails.FilesPageBindingUtils"/>
         <variable name="dir" type="net.yupol.transmissionremote.app.model.Dir" />
         <variable name="file" type="net.yupol.transmissionremote.app.model.json.File" />
+        <variable name="fileStat" type="net.yupol.transmissionremote.app.model.json.FileStat" />
+        <variable name="fileStats" type="net.yupol.transmissionremote.app.model.json.FileStat[]" />
     </data>
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:orientation="horizontal"
@@ -15,7 +18,7 @@
             android:layout_height="wrap_content"
             android:padding="@dimen/default_padding_small"
             android:layout_marginLeft="@dimen/default_text_margin"
-            android:checked="@{}"/>
+            android:checked="@{dir != null ? FilesPageBindingUtils.isDirChecked(dir, fileStats) : FilesPageBindingUtils.isFileChecked(fileStat)}"/>
         <ImageView android:id="@+id/icon"
             android:layout_width="48dp"
             android:layout_height="48dp" />

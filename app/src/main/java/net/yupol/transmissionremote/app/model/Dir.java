@@ -14,7 +14,6 @@ public final class Dir implements Parcelable {
 
     private String name;
     private List<Dir> dirs = new LinkedList<>();
-    private List<File> files = new LinkedList<>();
     private List<Integer> fileIndices = new LinkedList<>();
 
     public Dir(String name) {
@@ -24,7 +23,6 @@ public final class Dir implements Parcelable {
     protected Dir(Parcel in) {
         name = in.readString();
         dirs = in.createTypedArrayList(Dir.CREATOR);
-        files = in.createTypedArrayList(File.CREATOR);
     }
 
     public String getName() {
@@ -33,10 +31,6 @@ public final class Dir implements Parcelable {
 
     public List<Dir> getDirs() {
         return dirs;
-    }
-
-    public List<File> getFiles() {
-        return files;
     }
 
     public List<Integer> getFileIndices() {
@@ -50,7 +44,7 @@ public final class Dir implements Parcelable {
             File file = files[i];
             List<String> pathParts = Arrays.asList(file.getPath().split("/"));
             if (pathParts.get(0).isEmpty()) pathParts = pathParts.subList(1, pathParts.size());
-            parsePath(pathParts, root, file, i);
+            parsePath(pathParts, root, i);
         }
 
         return root;
@@ -60,9 +54,21 @@ public final class Dir implements Parcelable {
         return new Dir("/");
     }
 
-    private static void parsePath(List<String> pathParts, Dir parentDir, File fileAtPath, int fileIndex) {
+    public static List<Integer> filesInDirRecursively(Dir dir) {
+        List<Integer> fileIndices = new LinkedList<>();
+        collectFilesInDir(dir, fileIndices);
+        return fileIndices;
+    }
+
+    private static void collectFilesInDir(Dir dir, List<Integer> fileIndices) {
+        fileIndices.addAll(dir.getFileIndices());
+        for (Dir subDir : dir.getDirs()) {
+            collectFilesInDir(subDir, fileIndices);
+        }
+    }
+
+    private static void parsePath(List<String> pathParts, Dir parentDir, int fileIndex) {
         if (pathParts.size() == 1) {
-            parentDir.files.add(fileAtPath);
             parentDir.fileIndices.add(fileIndex);
             return;
         }
@@ -73,7 +79,7 @@ public final class Dir implements Parcelable {
             dir = new Dir(dirName);
             parentDir.dirs.add(dir);
         }
-        parsePath(pathParts.subList(1, pathParts.size()), dir, fileAtPath, fileIndex);
+        parsePath(pathParts.subList(1, pathParts.size()), dir, fileIndex);
     }
 
     private static Dir findDirWithName(String name, List<Dir> dirs) {
@@ -92,7 +98,6 @@ public final class Dir implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(name);
         dest.writeTypedList(dirs);
-        dest.writeTypedList(files);
     }
 
     public static final Creator<Dir> CREATOR = new Creator<Dir>() {

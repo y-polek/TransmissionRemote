@@ -6,20 +6,27 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.databinding.FileItemBinding;
 import net.yupol.transmissionremote.app.model.Dir;
 import net.yupol.transmissionremote.app.model.json.File;
+import net.yupol.transmissionremote.app.model.json.FileStat;
 
 import java.util.List;
 
 public class DirectoryAdapter extends RecyclerView.Adapter<DirectoryAdapter.ViewHolder> {
 
+    private File[] files;
+    private FileStat[] fileStats;
     private Dir dir = Dir.emptyDir();
     private OnItemSelectedListener listener;
 
-    public DirectoryAdapter(OnItemSelectedListener listener) {
+    public DirectoryAdapter(File[] files, FileStat[] fileStats, OnItemSelectedListener listener) {
+        this.files = files;
+        this.fileStats = fileStats;
         this.listener = listener;
     }
 
@@ -41,19 +48,21 @@ public class DirectoryAdapter extends RecyclerView.Adapter<DirectoryAdapter.View
         final int viewType = getItemViewType(position);
         switch (viewType) {
             case R.id.view_type_directory:
-                Dir dir = getItem(position);
+                Dir dir = getDir(position);
                 holder.binding.setDir(dir);
                 break;
             case R.id.view_type_file:
-                File file = getItem(position);
-                holder.binding.setFile(file);
+                holder.binding.setFile(getFile(position));
+                holder.binding.setFileStat(getFileStat(position));
                 break;
         }
+        holder.binding.setFileStats(fileStats);
+        holder.binding.executePendingBindings();
     }
 
     @Override
     public int getItemCount() {
-        return dir.getDirs().size() + dir.getFiles().size();
+        return dir.getDirs().size() + dir.getFileIndices().size();
     }
 
     @Override
@@ -64,7 +73,26 @@ public class DirectoryAdapter extends RecyclerView.Adapter<DirectoryAdapter.View
     @SuppressWarnings("unchecked")
     private <T> T getItem(int position) {
         List<Dir> dirs = dir.getDirs();
-        return (T) (position < dirs.size() ? dirs.get(position) : dir.getFiles().get(position - dirs.size()));
+        if (position < dirs.size()) {
+            return (T) dirs.get(position);
+        } else {
+            Integer fileIndex = dir.getFileIndices().get(position - dirs.size());
+            return (T) fileIndex;
+        }
+    }
+
+    private Dir getDir(int position) {
+        return getItem(position);
+    }
+
+    private File getFile(int position) {
+        Integer fileIndex = getItem(position);
+        return files[fileIndex];
+    }
+
+    private FileStat getFileStat(int position) {
+        Integer fileIndex = getItem(position);
+        return fileStats[fileIndex];
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -88,11 +116,25 @@ public class DirectoryAdapter extends RecyclerView.Adapter<DirectoryAdapter.View
 
                 }
             });
+            CheckBox checkBox = (CheckBox) binding.getRoot().findViewById(R.id.checkbox);
+            checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    if (getItemViewType() == R.id.view_type_directory) {
+                        listener.onDirectoryChecked(getAdapterPosition(), isChecked);
+                    } else {
+                        Integer fileIndex = getItem(getAdapterPosition());
+                        listener.onFileChecked(fileIndex, isChecked);
+                    }
+                }
+            });
         }
     }
 
     public interface OnItemSelectedListener {
         void onDirectorySelected(int position);
         void onFileSelected(int position);
+        void onDirectoryChecked(int position, boolean isChecked);
+        void onFileChecked(int fileIndex, boolean isChecked);
     }
 }
