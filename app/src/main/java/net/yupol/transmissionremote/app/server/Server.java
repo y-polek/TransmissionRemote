@@ -26,6 +26,7 @@ public class Server implements Parcelable {
     private String password;
     private String rpcUrl = DEFAULT_RPC_URL;
     private String lastSessionId;
+    private boolean useHttps;
 
     public Server(@Nonnull String name, @Nonnull String host, int port) {
         if (port <= 0 || port > 0xFFFF)
@@ -112,6 +113,14 @@ public class Server implements Parcelable {
         return lastSessionId;
     }
 
+    public void setUseHttps(boolean useHttps) {
+        this.useHttps = useHttps;
+    }
+
+    public boolean useHttps() {
+        return useHttps;
+    }
+
     public String toJson() {
         return new Gson().toJson(this);
     }
@@ -138,8 +147,8 @@ public class Server implements Parcelable {
 
         if (port != server.port) return false;
         if (useAuthentication != server.useAuthentication) return false;
-        if (!id.equals(server.id)) return false;
-        if (!name.equals(server.name)) return false;
+        if (useHttps != server.useHttps) return false;
+        if (name != null ? !name.equals(server.name) : server.name != null) return false;
         if (!host.equals(server.host)) return false;
         if (userName != null ? !userName.equals(server.userName) : server.userName != null)
             return false;
@@ -149,13 +158,13 @@ public class Server implements Parcelable {
 
     @Override
     public int hashCode() {
-        int result = id.hashCode();
-        result = 31 * result + name.hashCode();
+        int result = name != null ? name.hashCode() : 0;
         result = 31 * result + host.hashCode();
         result = 31 * result + port;
         result = 31 * result + (useAuthentication ? 1 : 0);
         result = 31 * result + (userName != null ? userName.hashCode() : 0);
         result = 31 * result + rpcUrl.hashCode();
+        result = 31 * result + (useHttps ? 1 : 0);
         return result;
     }
 
@@ -166,6 +175,7 @@ public class Server implements Parcelable {
                 ", name='" + name + '\'' +
                 ", host='" + host + '\'' +
                 ", port=" + port +
+                ", userHttps=" + useHttps +
                 ", useAuthentication=" + useAuthentication +
                 ", userName='" + userName + '\'' +
                 ", lastSessionId='" + lastSessionId + '\'' +
@@ -183,6 +193,7 @@ public class Server implements Parcelable {
         dest.writeString(name);
         dest.writeString(host);
         dest.writeInt(port);
+        dest.writeByte((byte) (useHttps ? 1 : 0));
         dest.writeByte((byte) (useAuthentication ? 1 : 0));
         if (useAuthentication) {
             dest.writeString(userName);
@@ -200,6 +211,7 @@ public class Server implements Parcelable {
             String name = parcel.readString();
             String host = parcel.readString();
             int port = parcel.readInt();
+            boolean useHttps = parcel.readByte() != 0;
             Server server;
             boolean useAuthentication = parcel.readByte() != 0;
             if (useAuthentication) {
@@ -209,6 +221,7 @@ public class Server implements Parcelable {
             } else {
                 server = new Server(name, host, port);
             }
+            server.useHttps = useHttps;
             server.setId(id);
             server.setRpcUrl(parcel.readString());
             String sessionId = Strings.emptyToNull(parcel.readString());

@@ -52,6 +52,7 @@
     <string name="server_host_hint">Host name or IP address</string>
     <string name="server_port_hint">Port number</string>
     <string name="server_rpc_url_hint">RPC URL</string>
+    <string name="use_https">Use HTTPS</string>
     <string name="authentication">Authentication</string>
     <string name="rpc_url">RPC URL:</string>
     <string name="default_url">Default</string>

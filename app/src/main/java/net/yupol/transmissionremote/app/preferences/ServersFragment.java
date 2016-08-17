@@ -58,7 +58,7 @@ public class ServersFragment extends ListFragment {
                 nameText.setText(server.getName());
 
                 TextView addressText = (TextView) itemView.findViewById(R.id.address);
-                addressText.setText(server.getHost() + ":" + server.getPort());
+                addressText.setText((server.useHttps() ? "https://" : "http://") + server.getHost() + ":" + server.getPort());
 
                 RadioButton radioButton = (RadioButton) itemView.findViewById(R.id.radio_button);
                 radioButton.setChecked(server.equals(app.getActiveServer()));

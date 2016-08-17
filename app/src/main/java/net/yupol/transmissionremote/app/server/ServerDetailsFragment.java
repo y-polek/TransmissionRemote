@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 
 import com.google.api.client.repackaged.com.google.common.base.Strings;
@@ -28,6 +29,7 @@ public class ServerDetailsFragment extends Fragment {
 
     private static final String TAG = ServerDetailsFragment.class.getSimpleName();
     private static final int DEFAULT_PORT = 9091;
+    private static final int DEFAULT_HTTPS_PORT = 443;
     private static final String KEY_IS_AUTH_ENABLED = "key_is_auth_enabled";
     private static final String CHARS_TO_STRIP_RPC = "/";
 
@@ -36,6 +38,7 @@ public class ServerDetailsFragment extends Fragment {
     private EditText serverNameEdit;
     private EditText hostNameEdit;
     private EditText portNumberEdit;
+    private CheckBox httpsCheckBox;
     private CheckBox authCheckBox;
     private EditText userNameEdit;
     private EditText passwordEdit;
@@ -54,6 +57,7 @@ public class ServerDetailsFragment extends Fragment {
         serverNameEdit = (EditText) view.findViewById(R.id.server_name_edit_text);
         hostNameEdit = (EditText) view.findViewById(R.id.host_edit_text);
         portNumberEdit = (EditText) view.findViewById(R.id.port_edit_text);
+        httpsCheckBox = (CheckBox) view.findViewById(R.id.https_checkbox);
         authCheckBox = (CheckBox) view.findViewById(R.id.aunthentication_checkbox);
         userNameEdit = (EditText) view.findViewById(R.id.user_name_edit_text);
         passwordEdit = (EditText) view.findViewById(R.id.password_edit_text);
@@ -67,6 +71,18 @@ public class ServerDetailsFragment extends Fragment {
         });
 
         portNumberEdit.setFilters(new InputFilter[]{PortNumberFilter.instance()});
+
+        httpsCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                int port = getUiPort();
+                if (isChecked) {
+                    if (port == DEFAULT_PORT) portNumberEdit.setText(String.valueOf(DEFAULT_HTTPS_PORT));
+                } else {
+                    if (port == DEFAULT_HTTPS_PORT) portNumberEdit.setText(String.valueOf(DEFAULT_PORT));
+                }
+            }
+        });
 
         authCheckBox.setChecked(isAuthEnabled);
         updateAuth(isAuthEnabled);
@@ -146,6 +162,7 @@ public class ServerDetailsFragment extends Fragment {
         server.setUserName(getUiUserName());
         server.setPassword(getUiPassword());
         server.setRpcUrl(getUiRpcUrl());
+        server.setUseHttps(getUiUseHttps());
     }
 
     public boolean hasChanges() {
@@ -167,6 +184,8 @@ public class ServerDetailsFragment extends Fragment {
             return true;
         if (!getUiRpcUrl().equals(server.getRpcUrl()))
             return true;
+        if (getUiUseHttps() != server.useHttps())
+            return true;
         return false;
     }
 
@@ -175,7 +194,7 @@ public class ServerDetailsFragment extends Fragment {
             serverNameEdit.setText("");
             hostNameEdit.setText("");
             portNumberEdit.setText(String.valueOf(DEFAULT_PORT));
-            updateAuth(false);
+            httpsCheckBox.setChecked(false);
             userNameEdit.setText("");
             passwordEdit.setText("");
             rpcUrlEdit.setText(Server.DEFAULT_RPC_URL);
@@ -183,6 +202,7 @@ public class ServerDetailsFragment extends Fragment {
             serverNameEdit.setText(server.getName());
             hostNameEdit.setText(server.getHost());
             portNumberEdit.setText(String.valueOf(server.getPort()));
+            httpsCheckBox.setChecked(server.useHttps());
             updateAuth(server.isAuthenticationEnabled());
             userNameEdit.setText(server.getUserName());
             passwordEdit.setText(server.getPassword());
@@ -191,27 +211,36 @@ public class ServerDetailsFragment extends Fragment {
     }
 
     private String getUiName() {
-        return serverNameEdit.getText().toString();
+        return serverNameEdit.getText().toString().trim();
     }
 
     private String getUiHost() {
-        return hostNameEdit.getText().toString();
+        String host = hostNameEdit.getText().toString().trim();
+        return host.replaceFirst("(?i)^http(s)?://", "");
     }
 
     private int getUiPort() {
-        return Integer.parseInt(portNumberEdit.getText().toString());
+        try {
+            return Integer.parseInt(portNumberEdit.getText().toString());
+        } catch (NumberFormatException e) {
+            return httpsCheckBox.isChecked() ? DEFAULT_HTTPS_PORT : DEFAULT_PORT;
+        }
     }
 
     private String getUiUserName() {
-        return userNameEdit.getText().toString();
+        return userNameEdit.getText().toString().trim();
     }
 
     private String getUiPassword() {
-        return passwordEdit.getText().toString();
+        return passwordEdit.getText().toString().trim();
     }
 
     private String getUiRpcUrl() {
         return StringUtils.stripEnd(StringUtils.stripStart(rpcUrlEdit.getText().toString(), CHARS_TO_STRIP_RPC), CHARS_TO_STRIP_RPC);
+    }
+
+    private boolean getUiUseHttps() {
+        return httpsCheckBox.isChecked();
     }
 
     private boolean checkValidity() {
