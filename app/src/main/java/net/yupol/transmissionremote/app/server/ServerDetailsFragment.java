@@ -72,18 +72,6 @@ public class ServerDetailsFragment extends Fragment {
 
         portNumberEdit.setFilters(new InputFilter[]{PortNumberFilter.instance()});
 
-        httpsCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                int port = getUiPort();
-                if (isChecked) {
-                    if (port == DEFAULT_PORT) portNumberEdit.setText(String.valueOf(DEFAULT_HTTPS_PORT));
-                } else {
-                    if (port == DEFAULT_HTTPS_PORT) portNumberEdit.setText(String.valueOf(DEFAULT_PORT));
-                }
-            }
-        });
-
         authCheckBox.setChecked(isAuthEnabled);
         updateAuth(isAuthEnabled);
 
@@ -102,6 +90,22 @@ public class ServerDetailsFragment extends Fragment {
         portNumberEdit.addTextChangedListener(new ClearErrorTextWatcher(portNumberEdit));
 
         updateUI(server);
+
+        if (server == null) { // only if creating new server
+            httpsCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    int port = getUiPort();
+                    if (isChecked) {
+                        if (port == DEFAULT_PORT)
+                            portNumberEdit.setText(String.valueOf(DEFAULT_HTTPS_PORT));
+                    } else {
+                        if (port == DEFAULT_HTTPS_PORT)
+                            portNumberEdit.setText(String.valueOf(DEFAULT_PORT));
+                    }
+                }
+            });
+        }
 
         return view;
     }
