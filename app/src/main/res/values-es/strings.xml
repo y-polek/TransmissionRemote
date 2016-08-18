@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Transmission Remote</string>
+    <string name="action_open_torrent">Abrir torrent</string>
+    <string name="action_pause">Pausar</string>
+    <string name="action_pause_all_torrents">Pausar todos los torrents</string>
+    <string name="action_remove_torrents">Borrar los torrents seleccionados</string>
+    <string name="action_request_more_peers">Buscar mas peers</string>
+    <string name="action_select_all">Seleccionar todos</string>
+    <string name="action_settings">Ajustes</string>
+    <string name="action_start">Comenzar</string>
+    <string name="action_start_all_torrents">Comenzar todos los torrents</string>
+    <string name="action_start_now">Forzar descarga (sin cola)</string>
+    <string name="action_verify">Verificar datos locales</string>
+    <string name="add">Agregar</string>
+    <string name="add_new_server_title">Agregar nuevo servidor</string>
+    <string name="add_remove_servers">Agregar o quitar servidores</string>
+    <string name="add_server">Agregar servidor</string>
+    <string name="added">Agregados:</string>
+    <string name="address_of_torrent_file">Url del archivo torrent</string>
+    <string name="authentication">Autentificación</string>
+    <string name="available">Disponible</string>
+    <string name="background_update_interval_summary">Frecuencia del chequeo de torrents en segundo plano</string>
+    <string name="background_update_interval_title">Intervalo entre actualizaciones en segundo plano</string>
+    <string name="comment">Comentarios:</string>
+    <string name="completed">Completados:</string>
+    <string name="created_on">Creado en:</string>
+    <string name="creator">Creador</string>
+    <string name="date_time">%1$s de %2$s</string>
+    <string name="dates">Fechas</string>
+    <string name="download_rate"></string>
+    <string name="download_speed">Velocidad de descarga:</string>
+    <string name="download_to">Descargar en:</string>
+    <string name="downloaded">Descargados:</string>
+    <string name="downloading">Descargando:</string>
+    <string name="drawer_sort_by">Ordenar por</string>
+    <string name="drawer_sort_by_name">Nombre</string>
+    <string name="drawer_sort_by_size">Tamaño</string>
+    <string name="drawer_sort_by_time_remaining">Tiempo restante</string>
+    <string name="welcome">Bienvenido!</string>
+</resources>
