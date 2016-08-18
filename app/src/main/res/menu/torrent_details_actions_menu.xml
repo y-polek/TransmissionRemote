@@ -5,7 +5,7 @@
     <group android:id="@+id/torrent_actions"
         android:menuCategory="secondary">
         <item android:id="@+id/action_remove_torrents"
-            android:title="@string/action_remove_torrents"
+            android:title="@string/action_remove_torrent"
             app:showAsAction="never"/>
         <item android:id="@+id/action_pause"
             android:title="@string/action_pause"
