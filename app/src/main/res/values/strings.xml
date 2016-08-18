@@ -40,6 +40,7 @@
     <string name="drawer_sort_by_size">Size</string>
     <string name="drawer_sort_by_time_remaining">Time remaining</string>
     <string name="drawer_sort_by_date_added">Date added</string>
+    <string name="drawer_sort_by_progress">Progress</string>
 
     <!-- Preferences -->
     <string name="action_settings">Settings</string>
