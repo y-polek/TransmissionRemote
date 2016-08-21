@@ -210,6 +210,7 @@
     <string name="tooltip_total_upload_speed">Total upload speed</string>
 
     <string name="welcome">Welcome!</string>
+    <string name="error_msg_open_torrent_no_server">You have to set up server before adding torrent</string>
 
     <plurals name="torrents">
         <item quantity="zero">%d torrents</item>

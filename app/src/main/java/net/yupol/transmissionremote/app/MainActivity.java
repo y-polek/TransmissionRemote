@@ -1,5 +1,6 @@
 package net.yupol.transmissionremote.app;
 
+import android.app.AlertDialog;
 import android.app.DialogFragment;
 import android.app.SearchManager;
 import android.content.ActivityNotFoundException;
@@ -375,6 +376,15 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
         if (data == null) return;
 
         getIntent().setData(null);
+
+        if (application.getActiveServer() == null) {
+            new AlertDialog.Builder(this)
+                    .setMessage(R.string.error_msg_open_torrent_no_server)
+                    .setPositiveButton(android.R.string.ok, null)
+                    .show();
+            return;
+        }
+
         String scheme = data.getScheme();
         if (SCHEME_MAGNET.equals(scheme)) {
             openTorrentByMagnet(data.toString());
