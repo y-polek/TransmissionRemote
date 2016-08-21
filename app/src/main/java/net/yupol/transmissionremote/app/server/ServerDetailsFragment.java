@@ -1,19 +1,22 @@
 package net.yupol.transmissionremote.app.server;
 
-import android.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.InputFilter;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.Spinner;
 
 import com.google.api.client.repackaged.com.google.common.base.Strings;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
@@ -32,13 +35,17 @@ public class ServerDetailsFragment extends Fragment {
     private static final int DEFAULT_HTTPS_PORT = 443;
     private static final String KEY_IS_AUTH_ENABLED = "key_is_auth_enabled";
     private static final String CHARS_TO_STRIP_RPC = "/";
+    private static final String PROTOCOL_HTTP = "http";
+    private static final String PROTOCOL_HTTPS = "https";
+    private static final String[] PROTOCOLS = { PROTOCOL_HTTP, PROTOCOL_HTTPS };
 
     private boolean isAuthEnabled = false;
 
     private EditText serverNameEdit;
+    private Spinner protocolSpinner;
     private EditText hostNameEdit;
     private EditText portNumberEdit;
-    private CheckBox httpsCheckBox;
+    private CheckBox selfSignedSslCheckbox;
     private CheckBox authCheckBox;
     private EditText userNameEdit;
     private EditText passwordEdit;
@@ -55,9 +62,10 @@ public class ServerDetailsFragment extends Fragment {
         View view = inflater.inflate(R.layout.server_details_fragment, container, false);
 
         serverNameEdit = (EditText) view.findViewById(R.id.server_name_edit_text);
+        protocolSpinner = (Spinner) view.findViewById(R.id.protocol_spinner);
         hostNameEdit = (EditText) view.findViewById(R.id.host_edit_text);
         portNumberEdit = (EditText) view.findViewById(R.id.port_edit_text);
-        httpsCheckBox = (CheckBox) view.findViewById(R.id.https_checkbox);
+        selfSignedSslCheckbox = (CheckBox) view.findViewById(R.id.self_signed_ssl_checkbox);
         authCheckBox = (CheckBox) view.findViewById(R.id.aunthentication_checkbox);
         userNameEdit = (EditText) view.findViewById(R.id.user_name_edit_text);
         passwordEdit = (EditText) view.findViewById(R.id.password_edit_text);
@@ -69,6 +77,11 @@ public class ServerDetailsFragment extends Fragment {
                 rpcUrlEdit.setText(Server.DEFAULT_RPC_URL);
             }
         });
+
+        ArrayAdapter<String> protocolAdapter = new ArrayAdapter<>(
+                getContext(), android.R.layout.simple_spinner_item, PROTOCOLS);
+        protocolAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        protocolSpinner.setAdapter(protocolAdapter);
 
         portNumberEdit.setFilters(new InputFilter[]{PortNumberFilter.instance()});
 
@@ -82,21 +95,21 @@ public class ServerDetailsFragment extends Fragment {
             }
         });
 
-        Server server = getServerArgument();
+        final Server server = getServerArgument();
         rpcUrlEdit.setText(server != null ? server.getRpcUrl() : Server.DEFAULT_RPC_URL);
 
         serverNameEdit.addTextChangedListener(new ClearErrorTextWatcher(serverNameEdit));
         hostNameEdit.addTextChangedListener(new ClearErrorTextWatcher(hostNameEdit));
         portNumberEdit.addTextChangedListener(new ClearErrorTextWatcher(portNumberEdit));
 
-        updateUI(server);
-
-        if (server == null) { // only if creating new server
-            httpsCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+        protocolSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                boolean isHttps = PROTOCOL_HTTPS.equals(protocolSpinner.getSelectedItem());
+                selfSignedSslCheckbox.setEnabled(isHttps);
+                if (server == null) { // only if creating new server
                     int port = getUiPort();
-                    if (isChecked) {
+                    if (isHttps) {
                         if (port == DEFAULT_PORT)
                             portNumberEdit.setText(String.valueOf(DEFAULT_HTTPS_PORT));
                     } else {
@@ -104,8 +117,13 @@ public class ServerDetailsFragment extends Fragment {
                             portNumberEdit.setText(String.valueOf(DEFAULT_PORT));
                     }
                 }
-            });
-        }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {}
+        });
+
+        updateUI(server);
 
         return view;
     }
@@ -144,6 +162,7 @@ public class ServerDetailsFragment extends Fragment {
         }
         server.setRpcUrl(getUiRpcUrl());
         server.setUseHttps(getUiUseHttps());
+        server.setTrustSelfSignedSslCert(getUiTrustSelfSignedCert());
 
         return server;
     }
@@ -160,6 +179,9 @@ public class ServerDetailsFragment extends Fragment {
         if (server == null) {
             throw new IllegalStateException("No server argument, can't save server");
         }
+
+        if (!checkValidity()) return;
+
         server.setName(getUiName());
         server.setHost(getUiHost());
         server.setPort(getUiPort());
@@ -168,6 +190,7 @@ public class ServerDetailsFragment extends Fragment {
         server.setPassword(getUiPassword());
         server.setRpcUrl(getUiRpcUrl());
         server.setUseHttps(getUiUseHttps());
+        server.setTrustSelfSignedSslCert(getUiTrustSelfSignedCert());
     }
 
     public boolean hasChanges() {
@@ -191,23 +214,27 @@ public class ServerDetailsFragment extends Fragment {
             return true;
         if (getUiUseHttps() != server.useHttps())
             return true;
+        if (getUiTrustSelfSignedCert() != server.getTrustSelfSignedSslCert())
+            return true;
         return false;
     }
 
     private void updateUI(Server server) {
         if (server == null) {
             serverNameEdit.setText("");
+            protocolSpinner.setSelection(0);
             hostNameEdit.setText("");
             portNumberEdit.setText(String.valueOf(DEFAULT_PORT));
-            httpsCheckBox.setChecked(false);
+            selfSignedSslCheckbox.setChecked(false);
             userNameEdit.setText("");
             passwordEdit.setText("");
             rpcUrlEdit.setText(Server.DEFAULT_RPC_URL);
         } else {
             serverNameEdit.setText(server.getName());
+            protocolSpinner.setSelection(server.useHttps() ? 1 : 0);
             hostNameEdit.setText(server.getHost());
             portNumberEdit.setText(String.valueOf(server.getPort()));
-            httpsCheckBox.setChecked(server.useHttps());
+            selfSignedSslCheckbox.setChecked(server.getTrustSelfSignedSslCert());
             updateAuth(server.isAuthenticationEnabled());
             userNameEdit.setText(server.getUserName());
             passwordEdit.setText(server.getPassword());
@@ -228,7 +255,7 @@ public class ServerDetailsFragment extends Fragment {
         try {
             return Integer.parseInt(portNumberEdit.getText().toString());
         } catch (NumberFormatException e) {
-            return httpsCheckBox.isChecked() ? DEFAULT_HTTPS_PORT : DEFAULT_PORT;
+            return getUiUseHttps() ? DEFAULT_HTTPS_PORT : DEFAULT_PORT;
         }
     }
 
@@ -245,19 +272,23 @@ public class ServerDetailsFragment extends Fragment {
     }
 
     private boolean getUiUseHttps() {
-        return httpsCheckBox.isChecked();
+        return PROTOCOL_HTTPS.equals(protocolSpinner.getSelectedItem());
+    }
+
+    private boolean getUiTrustSelfSignedCert() {
+        return selfSignedSslCheckbox.isChecked();
     }
 
     private boolean checkValidity() {
-        if (serverNameEdit.getText().length() == 0) {
+        if (TextUtils.getTrimmedLength(serverNameEdit.getText()) == 0) {
             serverNameEdit.setError(getString(R.string.server_name_error_message));
             return false;
         }
-        if (hostNameEdit.getText().length() == 0) {
+        if (TextUtils.getTrimmedLength(hostNameEdit.getText()) == 0) {
             hostNameEdit.setError(getString(R.string.host_name_error_message));
             return false;
         }
-        if (portNumberEdit.getText().length() == 0) {
+        if (TextUtils.getTrimmedLength(portNumberEdit.getText()) == 0) {
             portNumberEdit.setError(getString(R.string.port_number_error_message));
             return false;
         }

@@ -25,35 +25,56 @@
             android:paddingTop="@dimen/default_edit_text_padding"
             android:paddingBottom="@dimen/default_edit_text_padding"
             android:hint="@string/server_name_hint"
-            android:singleLine="true"
+            android:maxLines="1"
             android:maxLength="20"
             android:textSize="@dimen/tr_abc_text_size_body_1_material"/>
 
-        <EditText android:id="@+id/host_edit_text"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="@dimen/default_edit_text_height"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
             android:paddingTop="@dimen/default_edit_text_padding"
             android:paddingBottom="@dimen/default_edit_text_padding"
-            android:hint="@string/server_host_hint"
-            android:singleLine="true"
-            android:textSize="@dimen/tr_abc_text_size_body_1_material"/>
+            android:gravity="center_vertical">
 
-        <EditText android:id="@+id/port_edit_text"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/default_edit_text_height"
-            android:paddingTop="@dimen/default_edit_text_padding"
-            android:paddingBottom="@dimen/default_edit_text_padding"
-            android:hint="@string/server_port_hint"
-            android:singleLine="true"
-            android:inputType="number"
-            android:textSize="@dimen/tr_abc_text_size_body_1_material"
-            android:text="@integer/default_port" />
+            <Spinner android:id="@+id/protocol_spinner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
 
-        <CheckBox android:id="@+id/https_checkbox"
+            <EditText android:id="@+id/host_edit_text"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/default_edit_text_height"
+                android:layout_weight="1"
+                android:hint="@string/server_host_hint"
+                android:maxLines="1"
+                android:singleLine="true"
+                android:textSize="@dimen/tr_abc_text_size_body_1_material"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="?android:attr/textColorPrimary"
+                android:textSize="@dimen/tr_abc_text_size_body_1_material"
+                android:textStyle="bold"
+                android:text=":"/>
+
+            <EditText android:id="@+id/port_edit_text"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/default_edit_text_height"
+                android:hint="@string/server_port_hint"
+                android:maxLines="1"
+                android:singleLine="true"
+                android:inputType="number"
+                android:ems="3"
+                android:textSize="@dimen/tr_abc_text_size_body_1_material"
+                android:text="@integer/default_port" />
+        </LinearLayout>
+
+        <CheckBox android:id="@+id/self_signed_ssl_checkbox"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/add_server_group_margin"
-            android:text="@string/use_https"/>
+            android:text="@string/trust_self_signed_ssl_cert"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -73,6 +94,7 @@
                 android:paddingBottom="@dimen/default_edit_text_padding"
                 android:layout_marginBottom="@dimen/add_server_group_margin"
                 android:hint="@string/server_rpc_url_hint"
+                android:maxLines="1"
                 android:singleLine="true"
                 android:inputType="textUri"
                 android:textSize="@dimen/tr_abc_text_size_body_1_material"
@@ -97,6 +119,7 @@
             android:paddingTop="@dimen/default_edit_text_padding"
             android:paddingBottom="@dimen/default_edit_text_padding"
             android:hint="@string/username"
+            android:maxLines="1"
             android:singleLine="true"
             android:textSize="@dimen/tr_abc_text_size_body_1_material"/>
 
@@ -106,6 +129,7 @@
             android:paddingTop="@dimen/default_edit_text_padding"
             android:paddingBottom="@dimen/default_edit_text_padding"
             android:hint="@string/password"
+            android:maxLines="1"
             android:singleLine="true"
             android:inputType="textPassword"
             android:textSize="@dimen/tr_abc_text_size_body_1_material"/>

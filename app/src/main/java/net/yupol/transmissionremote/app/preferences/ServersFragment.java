@@ -1,9 +1,8 @@
 package net.yupol.transmissionremote.app.preferences;
 
-import android.app.Activity;
-import android.app.ListFragment;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.v4.app.ListFragment;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -87,9 +86,9 @@ public class ServersFragment extends ListFragment {
     }
 
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        app = (TransmissionRemote) activity.getApplication();
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        app = (TransmissionRemote) getActivity().getApplication();
     }
 
     @Override

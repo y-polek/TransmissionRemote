@@ -1,9 +1,9 @@
 package net.yupol.transmissionremote.app.server;
 
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
@@ -30,7 +30,7 @@ public class AddServerActivity extends AppCompatActivity {
             actionBar.setElevation(0);
         }
 
-        FragmentManager fm = getFragmentManager();
+        FragmentManager fm = getSupportFragmentManager();
         serverDetailsFragment = (ServerDetailsFragment) fm.findFragmentById(R.id.add_server_fragment_container);
         if (serverDetailsFragment == null) {
             FragmentTransaction ft = fm.beginTransaction();
