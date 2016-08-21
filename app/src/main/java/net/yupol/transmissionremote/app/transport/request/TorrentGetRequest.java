@@ -32,7 +32,11 @@ public class TorrentGetRequest extends Request<Torrents> {
             TorrentMetadata.ERROR_STRING,
             TorrentMetadata.IS_FINISHED,
             TorrentMetadata.SIZE_WHEN_DONE,
-            TorrentMetadata.LEFT_UNTIL_DONE
+            TorrentMetadata.LEFT_UNTIL_DONE,
+            TorrentMetadata.PEERS_GETTING_FROM_US,
+            TorrentMetadata.PEERS_SENDING_TO_US,
+            TorrentMetadata.WEBSEEDS_SENDING_TO_US
+
     );
 
     private JSONObject args = new JSONObject();

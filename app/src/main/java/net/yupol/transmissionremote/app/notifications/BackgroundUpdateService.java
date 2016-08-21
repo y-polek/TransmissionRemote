@@ -154,10 +154,10 @@ public class BackgroundUpdateService extends Service {
                 ContentValues values = new ContentValues();
                 values.put(Columns.SERVER_ID, server.getId());
                 values.put(Columns.TORRENT_ID, torrent.getId());
-                values.put(Columns.TORRENT_IS_FINISHED, torrent.isFinished());
+                values.put(Columns.TORRENT_IS_FINISHED, torrent.isCompleted());
                 db.insert(TorrentStatusDbHelper.TABLE_NAME_FINISHED_STATUS, null, values);
 
-                if (torrent.isFinished() && !previousFinishedStates.get(torrent.getId(), true)) {
+                if (torrent.isCompleted() && !previousFinishedStates.get(torrent.getId(), true)) {
                     Log.d(TAG, "Torrent finished: " + torrent.getId() + " " + torrent.getName());
                     finishedTorrents.add(torrent);
                 }

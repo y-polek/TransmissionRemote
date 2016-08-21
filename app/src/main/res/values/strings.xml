@@ -24,6 +24,7 @@
     <string name="filter_downloading">Downloading</string>
     <string name="filter_seeding">Seeding</string>
     <string name="filter_paused">Paused</string>
+    <string name="filter_download_completed">Downloaded</string>
     <string name="filter_finished">Finished</string>
     <string name="filter_name">Name</string>
     <string name="filter_empty_all">No torrents</string>
@@ -31,6 +32,7 @@
     <string name="filter_empty_downloading">No downloading torrents</string>
     <string name="filter_empty_seeding">No seeding torrents</string>
     <string name="filter_empty_paused">No paused torrents</string>
+    <string name="filter_empty_download_completed">No downloaded torrents</string>
     <string name="filter_empty_finished">No finished torrents</string>
     <string name="filter_empty_name">No matching torrents</string>
 

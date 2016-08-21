@@ -29,7 +29,7 @@ public enum SortedBy {
         @Override
         public int compare(Torrent t1, Torrent t2) {
             return ComparisonChain.start()
-                    .compareFalseFirst(t1.isFinished(), t2.isFinished())
+                    .compareFalseFirst(t1.isCompleted(), t2.isCompleted())
                     .compareFalseFirst(t1.getEta() < 0, t2.getEta() < 0)
                     .compare(t1.getEta(), t2.getEta())
                     .result();

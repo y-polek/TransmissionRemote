@@ -43,7 +43,15 @@ public class TransmissionRemote extends Application implements SharedPreferences
     private static final String KEY_SORTED_BY = "key_sorted_by";
     private static final String KEY_SORT_ORDER = "key_sort_order";
 
-    private static final Filter[] ALL_FILTERS = { Filters.ALL, Filters.DOWNLOADING, Filters.FINISHED, Filters.SEEDING, Filters.ACTIVE, Filters.PAUSED };
+    private static final Filter[] ALL_FILTERS = {
+            Filters.ALL,
+            Filters.ACTIVE,
+            Filters.DOWNLOADING,
+            Filters.SEEDING,
+            Filters.PAUSED,
+            Filters.DOWNLOAD_COMPLETED,
+            Filters.FINISHED
+    };
 
     private static TransmissionRemote instance;
 
