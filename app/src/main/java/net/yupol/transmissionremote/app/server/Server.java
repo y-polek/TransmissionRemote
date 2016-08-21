@@ -158,22 +158,24 @@ public class Server implements Parcelable {
         if (useAuthentication != server.useAuthentication) return false;
         if (useHttps != server.useHttps) return false;
         if (trustSelfSignedSslCert != server.trustSelfSignedSslCert) return false;
-        if (name != null ? !name.equals(server.name) : server.name != null) return false;
+        if (!id.equals(server.id)) return false;
+        if (!name.equals(server.name)) return false;
         if (!host.equals(server.host)) return false;
         if (userName != null ? !userName.equals(server.userName) : server.userName != null)
             return false;
-        return rpcUrl.equals(server.rpcUrl);
+        return rpcUrl != null ? rpcUrl.equals(server.rpcUrl) : server.rpcUrl == null;
 
     }
 
     @Override
     public int hashCode() {
-        int result = name != null ? name.hashCode() : 0;
+        int result = id.hashCode();
+        result = 31 * result + name.hashCode();
         result = 31 * result + host.hashCode();
         result = 31 * result + port;
         result = 31 * result + (useAuthentication ? 1 : 0);
         result = 31 * result + (userName != null ? userName.hashCode() : 0);
-        result = 31 * result + rpcUrl.hashCode();
+        result = 31 * result + (rpcUrl != null ? rpcUrl.hashCode() : 0);
         result = 31 * result + (useHttps ? 1 : 0);
         result = 31 * result + (trustSelfSignedSslCert ? 1 : 0);
         return result;
