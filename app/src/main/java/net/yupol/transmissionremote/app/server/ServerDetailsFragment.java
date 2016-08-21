@@ -143,6 +143,7 @@ public class ServerDetailsFragment extends Fragment {
             server = new Server(getUiName(), getUiHost(), getUiPort());
         }
         server.setRpcUrl(getUiRpcUrl());
+        server.setUseHttps(getUiUseHttps());
 
         return server;
     }
