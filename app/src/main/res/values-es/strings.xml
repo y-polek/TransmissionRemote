@@ -127,7 +127,6 @@
     <string name="torrent_details">Detalles del torrent</string>
     <string name="transfer">Transferencia</string>
     <string name="unknown_error_message">Error desconocido</string>
-    <string name="use_https">Usar HTTPS</string>
     <string name="use_default_directory">Usar directorio predeterminado</string>
     <string name="unlimited">Ilimitado</string>
     <string name="server_host_hint">Nombre o IP del host</string>
@@ -156,7 +155,7 @@
     <string name="have_unverified_size_text">, %1$s sin verificar</string>
     <string name="info">Info</string>
     <string name="kbps">KB/s</string>
-    <string name="today_time">Hoy a las %1 $s</string>
+    <string name="today_time">Hoy a las %1$s</string>
     <string name="time_elapsed">Tiempo entre</string>
     <string name="tooltip_total_download_speed">Velocidad total de descarga</string>
     <string name="tooltip_total_upload_speed">Velocidad total de subida</string>
