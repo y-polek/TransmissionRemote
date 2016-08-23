@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="update_interval_key">update_interval</string>
-    <string name="update_interval_default_value">2</string>
+    <string name="update_interval_key" translatable="false">update_interval</string>
+    <string name="update_interval_default_value" translatable="false">2</string>
 
-    <string name="torrent_finished_notification_enabled_key">torrent_finished_notification_enabled_key</string>
-    <string name="torrent_finished_notification_enabled_default_value">true</string>
+    <string name="torrent_finished_notification_enabled_key" translatable="false">torrent_finished_notification_enabled_key</string>
+    <string name="torrent_finished_notification_enabled_default_value" translatable="false">true</string>
 
-    <string name="background_update_interval_key">notification_update_interval</string>
-    <string name="background_update_interval_default_value">180</string>
+    <string name="background_update_interval_key" translatable="false">notification_update_interval</string>
+    <string name="background_update_interval_default_value" translatable="false">180</string>
 
-    <string name="torrent_finished_notification_sound_key">torrent_finished_notification_sound_key</string>
+    <string name="torrent_finished_notification_sound_key" translatable="false">torrent_finished_notification_sound_key</string>
 
-    <string name="torrent_finished_notification_vibrate_key">torrent_finished_notification_vibrate_key</string>
-    <string name="torrent_finished_notification_vibrate_default_value">false</string>
+    <string name="torrent_finished_notification_vibrate_key" translatable="false">torrent_finished_notification_vibrate_key</string>
+    <string name="torrent_finished_notification_vibrate_default_value" translatable="false">false</string>
 
 </resources>
