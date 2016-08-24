@@ -183,4 +183,10 @@
     <string name="update_interval_summary">Intervalo de actualizacion de la lista de torrents</string>
     <string name="uploaded_ever_text">%1$s (Ratio: %2$.2f)</string>
     <string name="uploaded_text">%1$s (Ratio: %2$.2f)</string>
+    <string name="trust_self_signed_ssl_cert">Confiar en certificados SSL firmados por sí mismo</string>
+    <string name="filter_empty_download_completed">No hay torrents terminados</string>
+    <string name="filter_download_completed">Terminados</string>
+    <string name="error_msg_open_torrent_no_server">Debes configurar el servidor antes de añadir torrents</string>
+    <string name="drawer_sort_by_progress">Progreso</string>
+    <string name="action_remove_torrent">Quitar torrent</string>
 </resources>
