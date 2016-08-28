@@ -28,7 +28,6 @@
     <string name="creator">Creador:</string>
     <string name="date_time">%1$s de %2$s</string>
     <string name="dates">Fechas</string>
-    <string name="download_rate">Tasa de descarga:</string>
     <string name="download_speed">Velocidad de descarga</string>
     <string name="download_to">Descargar en:</string>
     <string name="downloaded">Descargados:</string>
@@ -109,7 +108,6 @@
     <string name="value">Valor:</string>
     <string name="username">Nombre de usuario:</string>
     <string name="drawer_sort_by_date_added">Fecha de agregado</string>
-    <string name="edit_servers_drawer_item">Editar servidores</string>
     <string name="enter_server_parameters">Ingresa los parámetros del servidor para comenzar.</string>
     <string name="error_cannot_read_file_msg">No se puede leer el contenido del archivo.</string>
     <string name="error_install_file_manager_msg">Por favor, instala un administrador de archivos</string>
@@ -143,7 +141,6 @@
     <string name="limit_upload">Límite de subida:</string>
     <string name="have">Tiene:</string>
     <string name="host_name_error_message">Ingrese el IP o el nombre donde corre el servidor de Transmission.</string>
-    <string name="upload_rate">Tasa de subida:</string>
     <string name="update_interval_title">Intervalo de actualización</string>
     <string name="upload_speed">Velocidad de subida</string>
     <string name="yesterday_time">Ayer a las %1$s</string>
