@@ -33,7 +33,7 @@
     <string name="disabled">отсутствуют</string>
     <string name="download_speed">Скорость скачивания</string>
     <string name="download_to">Скорость раздачи</string>
-    <string name="action_request_more_peers">Запросить у больше участников</string>
+    <string name="action_request_more_peers">Запросить больше участников</string>
     <string name="eta_infinite">~ ∞</string>
     <string name="filter_all">Все</string>
     <string name="filter_download_completed">Скачивание завершено</string>
@@ -66,7 +66,7 @@
     <string name="host_name_error_message">Введите IP-адрес или имя хоста компьютера, на котором запущен Transmission</string>
     <string name="kbps">КБ/с</string>
     <string name="info">Сведения</string>
-    <string name="inactivity_limit">Ограничение неактивности</string>
+    <string name="inactivity_limit">Ограничения неактивности</string>
     <string name="last_activity">Был активен:</string>
     <string name="location">Местоположение:</string>
     <string name="manage_servers">Управление серверами</string>
@@ -101,7 +101,7 @@
     <string name="privacy">Защита:</string>
     <string name="privacy_private_torrent">Частный торрент, обнаружение пользователей вне трекера отключено</string>
     <string name="privacy_public_torrent">Публичный торрент</string>
-    <string name="ratio_limit">Ограничение рейтинка</string>
+    <string name="ratio_limit">Ограничения рейтинга</string>
     <string name="remote_preferences">Настройки</string>
     <string name="remove_data">Удалить данные</string>
     <string name="remove_failed">Не удалось удалить торрент. Попробуй еще раз.</string>
