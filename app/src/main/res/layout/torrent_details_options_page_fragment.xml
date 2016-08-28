@@ -55,6 +55,7 @@
                     <TextView
                         android:layout_marginTop="@dimen/default_layout_margin"
                         android:layout_marginBottom="@dimen/default_text_margin"
+                        android:layout_span="2"
                         android:textSize="@dimen/tr_abc_text_size_subhead_material"
                         android:textStyle="bold"
                         android:text="@string/ratio_limit"/>
@@ -92,6 +93,7 @@
                     <TextView
                         android:layout_marginTop="@dimen/default_layout_margin"
                         android:layout_marginBottom="@dimen/default_text_margin"
+                        android:layout_span="2"
                         android:textSize="@dimen/tr_abc_text_size_subhead_material"
                         android:textStyle="bold"
                         android:text="@string/inactivity_limit"/>

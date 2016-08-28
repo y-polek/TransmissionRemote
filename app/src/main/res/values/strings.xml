@@ -9,6 +9,7 @@
     <string name="action_start_all_torrents">Start all torrents</string>
     <string name="action_pause_all_torrents">Pause all torrents</string>
     <string name="action_remove_torrents">Remove selected torrents</string>
+    <string name="action_remove_torrent">Remove torrent</string>
     <string name="action_select_all">Select all</string>
     <string name="action_pause">Pause</string>
     <string name="action_start">Start</string>
@@ -23,6 +24,7 @@
     <string name="filter_downloading">Downloading</string>
     <string name="filter_seeding">Seeding</string>
     <string name="filter_paused">Paused</string>
+    <string name="filter_download_completed">Downloaded</string>
     <string name="filter_finished">Finished</string>
     <string name="filter_name">Name</string>
     <string name="filter_empty_all">No torrents</string>
@@ -30,6 +32,7 @@
     <string name="filter_empty_downloading">No downloading torrents</string>
     <string name="filter_empty_seeding">No seeding torrents</string>
     <string name="filter_empty_paused">No paused torrents</string>
+    <string name="filter_empty_download_completed">No downloaded torrents</string>
     <string name="filter_empty_finished">No finished torrents</string>
     <string name="filter_empty_name">No matching torrents</string>
 
@@ -39,6 +42,7 @@
     <string name="drawer_sort_by_size">Size</string>
     <string name="drawer_sort_by_time_remaining">Time remaining</string>
     <string name="drawer_sort_by_date_added">Date added</string>
+    <string name="drawer_sort_by_progress">Progress</string>
 
     <!-- Preferences -->
     <string name="action_settings">Settings</string>
@@ -50,8 +54,9 @@
     <string name="server_parameters">Server parameters</string>
     <string name="server_name_hint">Server name</string>
     <string name="server_host_hint">Host name or IP address</string>
-    <string name="server_port_hint">Port number</string>
+    <string name="server_port_hint">Port</string>
     <string name="server_rpc_url_hint">RPC URL</string>
+    <string name="trust_self_signed_ssl_cert">Trust self signed SSL certificates</string>
     <string name="authentication">Authentication</string>
     <string name="rpc_url">RPC URL:</string>
     <string name="default_url">Default</string>
@@ -60,7 +65,6 @@
     <string name="server_name_error_message">Name must be non-empty</string>
     <string name="host_name_error_message">Enter IP address or hostname of the computer on which Transmission is launched</string>
     <string name="port_number_error_message">Please, enter port number. It must be the same as specified in \'Listening port\' field on \'Remote\' tab of Transmission preferences dialog</string>
-    <string name="edit_servers_drawer_item">Edit servers</string>
     <string name="servers">Servers</string>
     <string name="add_remove_servers">Add or remove servers</string>
     <string name="remove_server">Remove server</string>
@@ -88,8 +92,6 @@
     <string name="server_preferences">Server Preferences</string>
     <string name="remote_preferences">Preferences</string>
     <string name="global_bandwidth_limits">Global bandwidth limits</string>
-    <string name="download_rate">Download rate:</string>
-    <string name="upload_rate">Upload rate:</string>
     <string name="kbps">KB/s</string>
     <string name="turtle_speed_limits">Speed Limit mode</string>
     <string name="turtle_speed_limits_description">When enabled Speed Limit overrides the global bandwidth limits</string>
@@ -205,6 +207,7 @@
     <string name="tooltip_total_upload_speed">Total upload speed</string>
 
     <string name="welcome">Welcome!</string>
+    <string name="error_msg_open_torrent_no_server">You have to set up server before adding torrent</string>
 
     <plurals name="torrents">
         <item quantity="zero">%d torrents</item>

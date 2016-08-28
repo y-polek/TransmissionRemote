@@ -10,8 +10,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import com.mikepenz.fontawesome_typeface_library.FontAwesome;
-import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.octo.android.robospice.exception.RequestCancelledException;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
@@ -28,7 +26,6 @@ import net.yupol.transmissionremote.app.transport.request.TorrentInfoGetRequest;
 import net.yupol.transmissionremote.app.transport.request.TorrentRemoveRequest;
 import net.yupol.transmissionremote.app.transport.request.TorrentSetRequest;
 import net.yupol.transmissionremote.app.transport.request.VerifyTorrentRequest;
-import net.yupol.transmissionremote.app.utils.IconUtils;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -193,10 +190,7 @@ public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveCha
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.torrent_actions_menu, menu);
-        IconUtils.setMenuIcon(this, menu, R.id.action_remove_torrents, GoogleMaterial.Icon.gmd_delete);
-        IconUtils.setMenuIcon(this, menu, R.id.action_pause, FontAwesome.Icon.faw_pause);
-        IconUtils.setMenuIcon(this, menu, R.id.action_start, FontAwesome.Icon.faw_play);
+        getMenuInflater().inflate(R.menu.torrent_details_actions_menu, menu);
         return super.onCreateOptionsMenu(menu);
     }
 

@@ -1,11 +1,11 @@
 package net.yupol.transmissionremote.app.preferences;
 
 import android.app.AlertDialog;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -47,7 +47,7 @@ public class ServersActivity extends AppCompatActivity {
             return;
         }
 
-        FragmentManager fm = getFragmentManager();
+        android.support.v4.app.FragmentManager fm = getSupportFragmentManager();
         ServersFragment serversFragment = (ServersFragment) fm.findFragmentByTag(TAG_SERVERS);
         if (serversFragment == null) {
             serversFragment = new ServersFragment();
@@ -80,7 +80,7 @@ public class ServersActivity extends AppCompatActivity {
     }
 
     private void showServerDetails(Server server) {
-        FragmentManager fm = getFragmentManager();
+        FragmentManager fm = getSupportFragmentManager();
         ServerDetailsFragment serverDetailsFragment = (ServerDetailsFragment) fm.findFragmentByTag(TAG_SERVER_DETAILS);
         if (serverDetailsFragment == null) {
             serverDetailsFragment = new ServerDetailsFragment();
@@ -100,7 +100,7 @@ public class ServersActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                FragmentManager fm = getFragmentManager();
+                FragmentManager fm = getSupportFragmentManager();
                 if (fm.getBackStackEntryCount() > 0) {
                     askForSave();
                 } else {
@@ -116,12 +116,12 @@ public class ServersActivity extends AppCompatActivity {
                     .setPositiveButton(R.string.remove_server_positive, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            ServerDetailsFragment detailsFragment = (ServerDetailsFragment) getFragmentManager().findFragmentByTag(TAG_SERVER_DETAILS);
+                            ServerDetailsFragment detailsFragment = (ServerDetailsFragment) getSupportFragmentManager().findFragmentByTag(TAG_SERVER_DETAILS);
                             if (detailsFragment != null) {
                                 Server server = detailsFragment.getServerArgument();
                                 if (server != null) {
                                     app.removeServer(server);
-                                    getFragmentManager().popBackStack();
+                                    getSupportFragmentManager().popBackStack();
                                 }
                             }
                         }
@@ -130,11 +130,11 @@ public class ServersActivity extends AppCompatActivity {
                     .create().show();
                 return true;
             case R.id.action_save:
-                ServerDetailsFragment detailsFragment = (ServerDetailsFragment) getFragmentManager().findFragmentByTag(TAG_SERVER_DETAILS);
+                ServerDetailsFragment detailsFragment = (ServerDetailsFragment) getSupportFragmentManager().findFragmentByTag(TAG_SERVER_DETAILS);
                 if (detailsFragment != null) {
                     detailsFragment.saveServer();
                     app.updateServer(detailsFragment.getServerArgument());
-                    getFragmentManager().popBackStack();
+                    getSupportFragmentManager().popBackStack();
                     Toast.makeText(this, R.string.saved, Toast.LENGTH_SHORT).show();
                 } else {
                     Log.e(TAG, "ServerDetailsFragment is not active while save server action performed");
@@ -148,7 +148,7 @@ public class ServersActivity extends AppCompatActivity {
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
-            FragmentManager fm = getFragmentManager();
+            FragmentManager fm = getSupportFragmentManager();
             if (fm.getBackStackEntryCount() > 0) {
                 askForSave();
                 return true;
@@ -168,7 +168,7 @@ public class ServersActivity extends AppCompatActivity {
     }
 
     private void askForSave() {
-        final ServerDetailsFragment detailsFragment = (ServerDetailsFragment) getFragmentManager().findFragmentByTag(TAG_SERVER_DETAILS);
+        final ServerDetailsFragment detailsFragment = (ServerDetailsFragment) getSupportFragmentManager().findFragmentByTag(TAG_SERVER_DETAILS);
         if (detailsFragment.hasChanges()) {
             new AlertDialog.Builder(this)
                     .setMessage(R.string.save_changes_question)
@@ -176,19 +176,17 @@ public class ServersActivity extends AppCompatActivity {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             detailsFragment.saveServer();
-                            FragmentManager fm = getFragmentManager();
+                            FragmentManager fm = getSupportFragmentManager();
                             fm.popBackStack();
                         }
                     }).setNegativeButton(R.string.save_changes_discard, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    FragmentManager fm = getFragmentManager();
-                    fm.popBackStack();
+                    getSupportFragmentManager().popBackStack();
                 }
             }).create().show();
         } else {
-            FragmentManager fm = getFragmentManager();
-            fm.popBackStack();
+            getSupportFragmentManager().popBackStack();
         }
     }
 }

@@ -11,6 +11,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:layout_gravity="center_vertical"
             android:paddingRight="@dimen/default_padding"
             android:textSize="@dimen/abc_text_size_body_1_material"
             android:text="@string/limit_download"/>
@@ -18,6 +19,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:layout_gravity="center_vertical"
             android:paddingLeft="@dimen/default_padding"
             android:paddingRight="@dimen/default_padding"
             android:textSize="@dimen/abc_text_size_body_1_material"
@@ -26,12 +28,14 @@
         <EditText android:id="@+id/download_limit_edittext"
             android:layout_width="@dimen/server_pref_edittext_width"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
             android:paddingRight="@dimen/default_padding"
             android:inputType="number"
             android:textSize="@dimen/abc_text_size_body_1_material"/>
         <TextView android:id="@+id/download_limit_units"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
             android:textSize="@dimen/abc_text_size_body_1_material"
             android:text="@string/kbps"/>
     </LinearLayout>
@@ -43,6 +47,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:layout_gravity="center_vertical"
             android:paddingRight="@dimen/default_padding"
             android:textSize="@dimen/abc_text_size_body_1_material"
             android:text="@string/limit_upload"/>
@@ -50,6 +55,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:layout_gravity="center_vertical"
             android:paddingLeft="@dimen/default_padding"
             android:paddingRight="@dimen/default_padding"
             android:textSize="@dimen/abc_text_size_body_1_material"
@@ -58,11 +64,13 @@
         <EditText android:id="@+id/upload_limit_edittext"
             android:layout_width="@dimen/server_pref_edittext_width"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
             android:inputType="number"
             android:textSize="@dimen/abc_text_size_body_1_material"/>
         <TextView android:id="@+id/upload_limit_units"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
             android:textSize="@dimen/abc_text_size_body_1_material"
             android:text="@string/kbps"/>
     </LinearLayout>

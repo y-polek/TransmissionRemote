@@ -29,7 +29,7 @@ public enum SortedBy {
         @Override
         public int compare(Torrent t1, Torrent t2) {
             return ComparisonChain.start()
-                    .compareFalseFirst(t1.isFinished(), t2.isFinished())
+                    .compareFalseFirst(t1.isCompleted(), t2.isCompleted())
                     .compareFalseFirst(t1.getEta() < 0, t2.getEta() < 0)
                     .compare(t1.getEta(), t2.getEta())
                     .result();
@@ -40,6 +40,13 @@ public enum SortedBy {
         @Override
         public int compare(Torrent t1, Torrent t2) {
             return Long.signum(t2.getAddedDate() - t1.getAddedDate());
+        }
+    }),
+
+    PROGRESS(new Comparator<Torrent>() {
+        @Override
+        public int compare(Torrent t1, Torrent t2) {
+            return Double.compare(t2.getPercentDone(), t1.getPercentDone());
         }
     });
 

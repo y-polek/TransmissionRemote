@@ -1,9 +1,8 @@
 package net.yupol.transmissionremote.app.preferences;
 
-import android.app.Activity;
-import android.app.ListFragment;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.v4.app.ListFragment;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -58,7 +57,7 @@ public class ServersFragment extends ListFragment {
                 nameText.setText(server.getName());
 
                 TextView addressText = (TextView) itemView.findViewById(R.id.address);
-                addressText.setText(server.getHost() + ":" + server.getPort());
+                addressText.setText((server.useHttps() ? "https://" : "http://") + server.getHost() + ":" + server.getPort());
 
                 RadioButton radioButton = (RadioButton) itemView.findViewById(R.id.radio_button);
                 radioButton.setChecked(server.equals(app.getActiveServer()));
@@ -87,9 +86,9 @@ public class ServersFragment extends ListFragment {
     }
 
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        app = (TransmissionRemote) activity.getApplication();
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        app = (TransmissionRemote) getActivity().getApplication();
     }
 
     @Override

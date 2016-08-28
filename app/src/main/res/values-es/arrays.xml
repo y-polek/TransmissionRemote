@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="pref_update_interval_entries">
+        <item>1 seg</item>
+        <item>2 segs</item>
+        <item>5 segs</item>
+        <item>10 segs</item>
+        <item>15 segs</item>
+        <item>30 segs</item>
+        <item>60 segs</item>
+    </array>
+
+    <array name="pref_background_update_interval_entries">
+        <item>2 minutos</item>
+        <item>5 minutos</item>
+        <item>10 minutos</item>
+        <item>30 minutos</item>
+        <item>1 hora</item>
+        <item>3 horas</item>
+        <item>12 horas</item>
+        <item>1 día</item>
+    </array>
+
+    <string-array name="open_torrent_by_entries">
+        <item>Archivo</item>
+        <item>Url</item>
+    </string-array>
+    <string-array name="remove_torrents_entries">
+        <item>Quitar de la lista…</item>
+        <item>Borrar datos y de la lista…</item>
+    </string-array>
+</resources>

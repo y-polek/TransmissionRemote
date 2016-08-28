@@ -417,8 +417,8 @@ public class TorrentListFragment extends Fragment {
             }
 
             String downloadedText;
-            boolean isFinished = torrent.isFinished();
-            if (isFinished) {
+            boolean isCompleted = torrent.isCompleted();
+            if (isCompleted) {
                 if (torrent.getTotalSize() == torrent.getSizeWhenDone()) {
                     downloadedText = TextUtils.displayableSize(torrent.getTotalSize());
                 } else {
@@ -440,11 +440,11 @@ public class TorrentListFragment extends Fragment {
             holder.uploadedTextView.setText(uploadedText);
 
             holder.progressBar.setProgress((int) (torrent.getPercentDone() * holder.progressBar.getMax()));
-            boolean isPaused = torrent.getStatus() == Torrent.Status.STOPPED;
+            boolean isPaused = torrent.isPaused();
             int progressbarDrawable = R.drawable.torrent_progressbar;
             if (isPaused) {
                 progressbarDrawable = R.drawable.torrent_progressbar_disabled;
-            } else if (isFinished) {
+            } else if (isCompleted) {
                 progressbarDrawable = R.drawable.torrent_progressbar_finished;
             }
             holder.progressBar.setProgressDrawable(context.getResources().getDrawable(progressbarDrawable));
@@ -452,9 +452,9 @@ public class TorrentListFragment extends Fragment {
             holder.downloadRateText.setText(speedText(torrent.getDownloadRate()));
             holder.uploadRateText.setText(speedText(torrent.getUploadRate()));
 
-            holder.percentDoneText.setVisibility(isFinished ? View.GONE : View.VISIBLE);
-            holder.remainingTimeText.setVisibility(isFinished ? View.GONE : View.VISIBLE);
-            if (!isFinished) {
+            holder.percentDoneText.setVisibility(isCompleted ? View.GONE : View.VISIBLE);
+            holder.remainingTimeText.setVisibility(isCompleted ? View.GONE : View.VISIBLE);
+            if (!isCompleted) {
                 String percentDone = String.format(Locale.getDefault(), "%.2f%%", 100 * torrent.getPercentDone());
                 holder.percentDoneText.setText(percentDone);
 

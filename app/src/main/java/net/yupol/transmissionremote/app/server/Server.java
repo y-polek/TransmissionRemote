@@ -26,6 +26,8 @@ public class Server implements Parcelable {
     private String password;
     private String rpcUrl = DEFAULT_RPC_URL;
     private String lastSessionId;
+    private boolean useHttps;
+    private boolean trustSelfSignedSslCert;
 
     public Server(@Nonnull String name, @Nonnull String host, int port) {
         if (port <= 0 || port > 0xFFFF)
@@ -112,6 +114,22 @@ public class Server implements Parcelable {
         return lastSessionId;
     }
 
+    public void setUseHttps(boolean useHttps) {
+        this.useHttps = useHttps;
+    }
+
+    public boolean useHttps() {
+        return useHttps;
+    }
+
+    public void setTrustSelfSignedSslCert(boolean trust) {
+        trustSelfSignedSslCert = trust;
+    }
+
+    public boolean getTrustSelfSignedSslCert() {
+        return trustSelfSignedSslCert;
+    }
+
     public String toJson() {
         return new Gson().toJson(this);
     }
@@ -138,12 +156,14 @@ public class Server implements Parcelable {
 
         if (port != server.port) return false;
         if (useAuthentication != server.useAuthentication) return false;
+        if (useHttps != server.useHttps) return false;
+        if (trustSelfSignedSslCert != server.trustSelfSignedSslCert) return false;
         if (!id.equals(server.id)) return false;
         if (!name.equals(server.name)) return false;
         if (!host.equals(server.host)) return false;
         if (userName != null ? !userName.equals(server.userName) : server.userName != null)
             return false;
-        return rpcUrl.equals(server.rpcUrl);
+        return rpcUrl != null ? rpcUrl.equals(server.rpcUrl) : server.rpcUrl == null;
 
     }
 
@@ -155,7 +175,9 @@ public class Server implements Parcelable {
         result = 31 * result + port;
         result = 31 * result + (useAuthentication ? 1 : 0);
         result = 31 * result + (userName != null ? userName.hashCode() : 0);
-        result = 31 * result + rpcUrl.hashCode();
+        result = 31 * result + (rpcUrl != null ? rpcUrl.hashCode() : 0);
+        result = 31 * result + (useHttps ? 1 : 0);
+        result = 31 * result + (trustSelfSignedSslCert ? 1 : 0);
         return result;
     }
 
@@ -166,6 +188,7 @@ public class Server implements Parcelable {
                 ", name='" + name + '\'' +
                 ", host='" + host + '\'' +
                 ", port=" + port +
+                ", userHttps=" + useHttps +
                 ", useAuthentication=" + useAuthentication +
                 ", userName='" + userName + '\'' +
                 ", lastSessionId='" + lastSessionId + '\'' +
@@ -190,6 +213,8 @@ public class Server implements Parcelable {
         }
         dest.writeString(rpcUrl);
         dest.writeString(Strings.nullToEmpty(lastSessionId));
+        dest.writeByte((byte) (useHttps ? 1 : 0));
+        dest.writeByte((byte) (trustSelfSignedSslCert ? 1 : 0));
     }
 
     public static final Creator<Server> CREATOR = new Creator<Server>() {
@@ -213,6 +238,8 @@ public class Server implements Parcelable {
             server.setRpcUrl(parcel.readString());
             String sessionId = Strings.emptyToNull(parcel.readString());
             server.setLastSessionId(sessionId);
+            server.useHttps = parcel.readByte() != 0;
+            server.trustSelfSignedSslCert = parcel.readByte() != 0;
             return server;
         }
 

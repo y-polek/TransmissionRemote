@@ -21,6 +21,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Collections;
+import java.util.Locale;
 
 import javax.annotation.Nonnull;
 
@@ -61,7 +62,11 @@ public abstract class Request<RESULT> extends GoogleHttpClientSpiceRequest<RESUL
             throw new IllegalStateException("Server must be set before executing");
         }
 
-        String url = "http://" + server.getHost() + ':' + server.getPort() + "/" + server.getRpcUrl();
+        String url = String.format(Locale.ROOT, "%s://%s:%d/%s",
+                server.useHttps() ? "https" : "http",
+                server.getHost(),
+                server.getPort(),
+                server.getRpcUrl());
 
         HttpRequestFactory requestFactory = getHttpRequestFactory();
 

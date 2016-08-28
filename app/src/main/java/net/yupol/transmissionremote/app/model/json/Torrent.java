@@ -25,6 +25,9 @@ public class Torrent implements ID, Parcelable {
     @Key private boolean isFinished;
     @Key private long sizeWhenDone;
     @Key private long leftUntilDone;
+    @Key private int peersGettingFromUs;
+    @Key private int peersSendingToUs;
+    @Key private int webseedsSendingToUs;
 
     public Torrent() {}
 
@@ -45,6 +48,9 @@ public class Torrent implements ID, Parcelable {
         isFinished = in.readInt() != 0;
         sizeWhenDone = in.readLong();
         leftUntilDone = in.readLong();
+        peersGettingFromUs = in.readInt();
+        peersSendingToUs = in.readInt();
+        webseedsSendingToUs = in.readInt();
     }
 
     public int getId() {
@@ -104,11 +110,35 @@ public class Torrent implements ID, Parcelable {
         return errorString;
     }
 
+    public boolean isActive() {
+        return peersGettingFromUs > 0
+                || peersSendingToUs > 0
+                || webseedsSendingToUs > 0
+                || isChecking();
+    }
+
+    public boolean isChecking() {
+        return status == Status.CHECK.value;
+    }
+
+    public boolean isSeeding() {
+        return status == Status.SEED.value || status == Status.SEED_WAIT.value;
+    }
+
+    public boolean isDownloading() {
+        return status == Status.DOWNLOAD.value || status == Status.DOWNLOAD_WAIT.value;
+    }
+
+    public boolean isPaused() {
+        return status == Status.STOPPED.value;
+    }
+
     public boolean isFinished() {
-        // FIXME: isFinished JSON field always contain false value.
-        // For now finished state is determined by percentDone value.
-        //return isFinished;
-        return leftUntilDone <= 0;
+        return isFinished;
+    }
+
+    public boolean isCompleted() {
+        return leftUntilDone <= 0 && sizeWhenDone > 0;
     }
 
     public long getSizeWhenDone() {
@@ -142,6 +172,9 @@ public class Torrent implements ID, Parcelable {
         out.writeInt(isFinished ? 1 : 0);
         out.writeLong(sizeWhenDone);
         out.writeLong(leftUntilDone);
+        out.writeInt(peersGettingFromUs);
+        out.writeInt(peersSendingToUs);
+        out.writeInt(webseedsSendingToUs);
     }
 
     public static final Creator<Torrent> CREATOR = new Creator<Torrent>() {
