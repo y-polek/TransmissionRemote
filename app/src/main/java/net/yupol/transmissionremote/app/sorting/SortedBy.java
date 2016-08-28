@@ -2,6 +2,7 @@ package net.yupol.transmissionremote.app.sorting;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.ComparisonChain;
+import com.google.common.primitives.Ints;
 
 import net.yupol.transmissionremote.app.model.json.Torrent;
 
@@ -47,6 +48,13 @@ public enum SortedBy {
         @Override
         public int compare(Torrent t1, Torrent t2) {
             return Double.compare(t2.getPercentDone(), t1.getPercentDone());
+        }
+    }),
+
+    QUEUE_POSITION(new Comparator<Torrent>() {
+        @Override
+        public int compare(Torrent t1, Torrent t2) {
+            return Ints.compare(t1.getQueuePosition(), t2.getQueuePosition());
         }
     });
 

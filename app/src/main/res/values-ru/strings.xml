@@ -185,4 +185,5 @@
     <string name="torrent_finished_notification_sound_title">Звуки</string>
     <string name="torrent_finished_notification_summary">Проверять торренты в фоновом режиме</string>
     <string name="torrent_finished_notification_title">Включить оповещение о завершенных раздачах</string>
+    <string name="drawer_sort_by_queue_position">Порядку в очереди</string>
 </resources>
