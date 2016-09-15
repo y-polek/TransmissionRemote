@@ -134,6 +134,7 @@
     <string name="free_space_unknown">Free space unknown</string>
     <string name="no_directory">There is no such directory</string>
     <string name="use_default_directory">Use default directory</string>
+    <string name="unknown_free_space_confirmation">There is no such directory. \nAre you sure you want to add torrent?</string>
 
     <!-- Torrent details -->
     <string name="torrent_details">Torrent details</string>

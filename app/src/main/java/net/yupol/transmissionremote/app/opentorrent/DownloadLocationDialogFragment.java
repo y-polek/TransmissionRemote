@@ -1,11 +1,11 @@
 package net.yupol.transmissionremote.app.opentorrent;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
+import android.support.v7.app.AlertDialog;
 import android.text.Editable;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -16,6 +16,7 @@ import android.text.method.MovementMethod;
 import android.text.style.ClickableSpan;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ProgressBar;
@@ -49,6 +50,8 @@ public class DownloadLocationDialogFragment extends DialogFragment {
     private TextView freeSpaceText;
     private ProgressBar freeSpaceProgressbar;
     private FreeSpaceRequest currentRequest;
+    private FreeSpace freeSpace;
+    private CheckBox startWhenAddedCheckbox;
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -63,16 +66,11 @@ public class DownloadLocationDialogFragment extends DialogFragment {
         freeSpaceText = (TextView) view.findViewById(R.id.free_space_text);
         freeSpaceProgressbar = (ProgressBar) view.findViewById(R.id.free_space_progress_bar);
 
-        final CheckBox startWhenAddedCheckbox = (CheckBox) view.findViewById(R.id.start_when_added);
+        startWhenAddedCheckbox = (CheckBox) view.findViewById(R.id.start_when_added);
 
         builder.setTitle(R.string.download_to)
                .setView(view)
-               .setPositiveButton(R.string.add, new DialogInterface.OnClickListener() {
-                   @Override
-                   public void onClick(DialogInterface dialog, int which) {
-                       listener.onDownloadLocationSelected(getArguments(), downloadLocationText.getText().toString(), startWhenAddedCheckbox.isChecked());
-                   }
-               })
+               .setPositiveButton(R.string.add, null)
                .setNegativeButton(android.R.string.cancel, null);
 
         downloadLocationText.addTextChangedListener(new TextWatcher() {
@@ -89,6 +87,43 @@ public class DownloadLocationDialogFragment extends DialogFragment {
         });
 
         return builder.create();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        final AlertDialog dialog = (AlertDialog) getDialog();
+        if (dialog != null) {
+            Button addButton = dialog.getButton(Dialog.BUTTON_POSITIVE);
+            addButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (freeSpace != null && freeSpace.getSizeInBytes() >= 0) {
+                        notifyListener();
+                        dialog.dismiss();
+                    } else {
+                        new AlertDialog.Builder(getContext())
+                                .setMessage(R.string.unknown_free_space_confirmation)
+                                .setPositiveButton(R.string.add, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface thisDialog, int which) {
+                                        notifyListener();
+                                        dialog.dismiss();
+                                    }
+                                })
+                                .setNegativeButton(android.R.string.cancel, null)
+                                .show();
+                    }
+                }
+
+                private void notifyListener() {
+                    listener.onDownloadLocationSelected(
+                            getArguments(),
+                            downloadLocationText.getText().toString(),
+                            startWhenAddedCheckbox.isChecked());
+                }
+            });
+        }
     }
 
     @Override
@@ -115,11 +150,12 @@ public class DownloadLocationDialogFragment extends DialogFragment {
 
     private void updateFreeSpaceInfo() {
         if (currentRequest != null) currentRequest.cancel();
+        if (getDialog() == null) return;
+        freeSpace = null;
+
         freeSpaceText.setVisibility(View.INVISIBLE);
         freeSpaceProgressbar.setVisibility(View.VISIBLE);
-        if (getDialog() != null) {
-            ((AlertDialog) getDialog()).getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(false);
-        }
+        ((AlertDialog) getDialog()).getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(false);
 
         final String path = downloadLocationText.getText().toString();
         currentRequest = new FreeSpaceRequest(path);
@@ -134,31 +170,34 @@ public class DownloadLocationDialogFragment extends DialogFragment {
                         freeSpaceProgressbar.setVisibility(View.INVISIBLE);
                         freeSpaceText.setVisibility(View.VISIBLE);
                         freeSpaceText.setText(R.string.free_space_unknown);
-                        dialog.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(false);
+                        dialog.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(true);
                     }
                     currentRequest = null;
                 }
 
                 @Override
                 public void onRequestSuccess(FreeSpace freeSpace) {
-                    if (freeSpace.getSizeInBytes() >= 0) {
-                        freeSpaceText.setText(getString(
-                                R.string.free_space, TextUtils.displayableSize(freeSpace.getSizeInBytes())));
-                        ((AlertDialog) getDialog()).getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(true);
-                    } else {
-                        String useDefaultText = getString(R.string.use_default_directory);
-                        freeSpaceText.setText(getString(R.string.no_directory) + ". " + useDefaultText);
-                        clickify(freeSpaceText, useDefaultText, new ClickSpan.OnClickListener() {
-                            @Override
-                            public void onClick() {
-                                TransmissionRemote app = (TransmissionRemote) getActivity().getApplicationContext();
-                                downloadLocationText.setText(Strings.nullToEmpty(app.getDefaultDownloadDir()));
-                            }
-                        });
-                        ((AlertDialog) getDialog()).getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(false);
+                    DownloadLocationDialogFragment.this.freeSpace = freeSpace;
+                    AlertDialog dialog = (AlertDialog) getDialog();
+                    if (dialog != null) {
+                        dialog.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(true);
+                        if (freeSpace.getSizeInBytes() >= 0) {
+                            freeSpaceText.setText(getString(
+                                    R.string.free_space, TextUtils.displayableSize(freeSpace.getSizeInBytes())));
+                        } else {
+                            String useDefaultText = getString(R.string.use_default_directory);
+                            freeSpaceText.setText(getString(R.string.no_directory) + ". " + useDefaultText);
+                            clickify(freeSpaceText, useDefaultText, new ClickSpan.OnClickListener() {
+                                @Override
+                                public void onClick() {
+                                    TransmissionRemote app = (TransmissionRemote) getActivity().getApplicationContext();
+                                    downloadLocationText.setText(Strings.nullToEmpty(app.getDefaultDownloadDir()));
+                                }
+                            });
+                        }
+                        freeSpaceProgressbar.setVisibility(View.INVISIBLE);
+                        freeSpaceText.setVisibility(View.VISIBLE);
                     }
-                    freeSpaceProgressbar.setVisibility(View.INVISIBLE);
-                    freeSpaceText.setVisibility(View.VISIBLE);
                     currentRequest = null;
                 }
             });
@@ -197,7 +236,7 @@ public class DownloadLocationDialogFragment extends DialogFragment {
 
         private OnClickListener mListener;
 
-        public ClickSpan(OnClickListener listener) {
+        ClickSpan(OnClickListener listener) {
             mListener = listener;
         }
 
@@ -206,7 +245,7 @@ public class DownloadLocationDialogFragment extends DialogFragment {
             if (mListener != null) mListener.onClick();
         }
 
-        public interface OnClickListener {
+        interface OnClickListener {
             void onClick();
         }
     }
