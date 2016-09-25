@@ -186,4 +186,11 @@
     <string name="torrent_finished_notification_summary">Проверять торренты в фоновом режиме</string>
     <string name="torrent_finished_notification_title">Включить оповещение о завершенных раздачах</string>
     <string name="drawer_sort_by_queue_position">Порядку в очереди</string>
+    <string name="advanced_pref_title">Расширенные параметры</string>
+    <string name="disable_free_space_check_title">Отключить проверку свободного места</string>
+    <string name="disable_free_space_check_summary">Разрешить добавление торрента без проверки свободного места</string>
+    <string name="drawer_sort_by_upload_ratio">Рейтингу</string>
+    <string name="unknown_free_space_confirmation">Директория не найдена. Добавить торрент?</string>
+    <string name="preferences_advanced_summary">Расширенные параметры</string>
+    <string name="preferences_advanced_title">Расширенные</string>
 </resources>
