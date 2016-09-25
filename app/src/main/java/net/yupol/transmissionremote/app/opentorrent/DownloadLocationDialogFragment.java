@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.text.Editable;
@@ -53,6 +54,7 @@ public class DownloadLocationDialogFragment extends DialogFragment {
     private FreeSpace freeSpace;
     private CheckBox startWhenAddedCheckbox;
 
+    @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -98,7 +100,8 @@ public class DownloadLocationDialogFragment extends DialogFragment {
             addButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if (freeSpace != null && freeSpace.getSizeInBytes() >= 0) {
+                    if (freeSpace != null && freeSpace.getSizeInBytes() >= 0
+                            || TransmissionRemote.getInstance().isFreeSpaceCheckDisabled()) {
                         notifyListener();
                         dialog.dismiss();
                     } else {
