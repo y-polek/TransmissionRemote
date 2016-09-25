@@ -659,7 +659,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
                 return;
             }
             try {
-                openTorrentByLocalFile(getContentResolver().openInputStream(openTorrentUri)); // TODO: is it correct to try opening same URI?
+                openTorrentByLocalFile(getContentResolver().openInputStream(Uri.parse(fileName)));
             } catch (FileNotFoundException e) {
                 String msg = getResources().getString(R.string.error_file_does_not_exists_msg, fileName);
                 Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
