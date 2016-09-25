@@ -56,6 +56,13 @@ public enum SortedBy {
         public int compare(Torrent t1, Torrent t2) {
             return Ints.compare(t1.getQueuePosition(), t2.getQueuePosition());
         }
+    }),
+
+    UPLOAD_RATIO(new Comparator<Torrent>() {
+        @Override
+        public int compare(Torrent t1, Torrent t2) {
+            return Double.compare(t1.getUploadRatio(), t2.getUploadRatio());
+        }
     });
 
     private Comparator<Torrent> comparator;
