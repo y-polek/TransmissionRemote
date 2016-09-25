@@ -155,7 +155,9 @@ public class DownloadLocationDialogFragment extends DialogFragment {
 
         freeSpaceText.setVisibility(View.INVISIBLE);
         freeSpaceProgressbar.setVisibility(View.VISIBLE);
-        ((AlertDialog) getDialog()).getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(false);
+        if (!TransmissionRemote.getInstance().isFreeSpaceCheckDisabled()) {
+            ((AlertDialog) getDialog()).getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(false);
+        }
 
         final String path = downloadLocationText.getText().toString();
         currentRequest = new FreeSpaceRequest(path);

@@ -115,6 +115,14 @@
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
+        <activity android:name=".preferences.AdvancedPreferencesActivity"
+            android:label="@string/advanced_pref_title">
+            <intent-filter>
+                <action android:name=".preferences.AdvancedPreferencesActivity" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+            <meta-data android:name="android.support.PARENT_ACTIVITY" android:value=".preferences.PreferencesActivity"/>
+        </activity>
 
         <service android:name=".transport.NoCacheGoogleHttpClientSpiceService"
             android:exported="false" />

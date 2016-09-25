@@ -19,4 +19,9 @@
         android:summary="@string/preferences_notifications_summary">
         <intent android:action=".preferences.NotificationsPreferencesActivity"/>
     </PreferenceScreen>
+    <PreferenceScreen
+        android:title="@string/preferences_advanced_title"
+        android:summary="@string/preferences_advanced_summary">
+        <intent android:action=".preferences.AdvancedPreferencesActivity" />
+    </PreferenceScreen>
 </PreferenceScreen>
