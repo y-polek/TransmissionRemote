@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="pref_update_interval_entries">
+        <item>1 secondo</item>
+        <item>2 secondi</item>
+        <item>5 secondi</item>
+        <item>10 secondi</item>
+        <item>15 secondi</item>
+        <item>30 secondi</item>
+        <item>60 secondi</item>
+    </array>
+
+    <string-array name="pref_update_interval_entry_values">
+        <item>1</item>
+        <item>2</item>
+        <item>5</item>
+        <item>10</item>
+        <item>15</item>
+        <item>30</item>
+        <item>60</item>
+    </string-array>
+
+    <array name="pref_background_update_interval_entries">
+        <item>2 minuti</item>
+        <item>5 minuti</item>
+        <item>10 minuti</item>
+        <item>30 minuti</item>
+        <item>1 ora</item>
+        <item>3 ore</item>
+        <item>12 ore</item>
+        <item>1 giorno</item>
+    </array>
+
+    <string-array name="pref_background_update_interval_entry_values">
+        <item>2</item>
+        <item>5</item>
+        <item>10</item>
+        <item>30</item>
+        <item>60</item>
+        <item>180</item>
+        <item>720</item>
+        <item>1440</item>
+    </string-array>
+
+    <string-array name="open_torrent_by_entries">
+        <item>File</item>
+        <item>Indirizzo</item>
+    </string-array>
+    <string-array name="remove_torrents_entries">
+        <item>Rimuovi dalla lista…</item>
+        <item>Cancella dati e rimuovi dalla lista…</item>
+    </string-array>
+</resources>
