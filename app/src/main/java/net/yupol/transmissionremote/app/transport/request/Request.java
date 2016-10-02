@@ -80,7 +80,6 @@ public abstract class Request<RESULT> extends GoogleHttpClientSpiceRequest<RESUL
         request.setNumberOfRetries(0);
 
         HttpHeaders headers = new HttpHeaders()
-                .setContentType("json")
                 .set(HEADER_SESSION_ID, Strings.emptyToNull(server.getLastSessionId()));
         if (server.isAuthenticationEnabled()) {
             headers.setBasicAuthentication(server.getUserName(), server.getPassword());
