@@ -1,13 +1,16 @@
 package net.yupol.transmissionremote.app.torrentlist;
 
 
+import android.app.Activity;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.text.Editable;
 import android.view.LayoutInflater;
@@ -33,13 +36,17 @@ public class ChooseLocationDialogFragment extends DialogFragment {
     private FreeSpaceRequest runningFreeSpaceRequest;
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        try {
-            listener = (OnLocationSelectedListener) getTargetFragment();
-        } catch (ClassCastException e) {
-            throw new ClassCastException("Target fragment must implement "
-                    + OnLocationSelectedListener.class.getName());
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        Fragment targetFragment = getTargetFragment();
+        if (targetFragment instanceof OnLocationSelectedListener) {
+            listener = (OnLocationSelectedListener) targetFragment;
+        } else {
+            Activity activity = getActivity();
+            if (activity instanceof OnLocationSelectedListener) {
+                listener = (OnLocationSelectedListener) activity;
+            }
         }
     }
 
@@ -62,8 +69,10 @@ public class ChooseLocationDialogFragment extends DialogFragment {
         builder.setPositiveButton(R.string.apply, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    listener.onLocationSelected(binding.locationEdit.getText().toString(),
-                            binding.moveDataCheckbox.isChecked());
+                    if (listener != null) {
+                        listener.onLocationSelected(binding.locationEdit.getText().toString(),
+                                binding.moveDataCheckbox.isChecked());
+                    }
                 }
             });
         builder.setNegativeButton(android.R.string.cancel, null);

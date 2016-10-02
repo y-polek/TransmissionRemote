@@ -274,13 +274,11 @@ public class TorrentListFragment extends Fragment implements ChooseLocationDialo
         actionMode.finish();
         transportManager.doRequest(new SetLocationRequest(path, moveData, torrentIds), new RequestListener<Void>() {
             @Override
-            public void onRequestSuccess(Void aVoid) {
-                Log.d(TAG, "torrents moved");
-            }
+            public void onRequestSuccess(Void aVoid) {}
 
             @Override
             public void onRequestFailure(SpiceException spiceException) {
-                Log.e(TAG, "error: ", spiceException);
+                Log.e(TAG, "Failed to set location", spiceException);
             }
         });
     }

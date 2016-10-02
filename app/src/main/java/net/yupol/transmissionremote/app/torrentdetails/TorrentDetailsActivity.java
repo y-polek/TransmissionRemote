@@ -17,9 +17,11 @@ import com.octo.android.robospice.request.listener.RequestListener;
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.model.json.Torrent;
 import net.yupol.transmissionremote.app.model.json.TorrentInfo;
+import net.yupol.transmissionremote.app.torrentlist.ChooseLocationDialogFragment;
 import net.yupol.transmissionremote.app.torrentlist.RemoveTorrentsDialogFragment;
 import net.yupol.transmissionremote.app.transport.BaseSpiceActivity;
 import net.yupol.transmissionremote.app.transport.request.ReannounceTorrentRequest;
+import net.yupol.transmissionremote.app.transport.request.SetLocationRequest;
 import net.yupol.transmissionremote.app.transport.request.StartTorrentRequest;
 import net.yupol.transmissionremote.app.transport.request.StopTorrentRequest;
 import net.yupol.transmissionremote.app.transport.request.TorrentInfoGetRequest;
@@ -31,13 +33,14 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveChangesDialogFragment.SaveDiscardListener,
-        RemoveTorrentsDialogFragment.OnRemoveTorrentSelectionListener {
+        RemoveTorrentsDialogFragment.OnRemoveTorrentSelectionListener, ChooseLocationDialogFragment.OnLocationSelectedListener {
 
     private static final String TAG = TorrentDetailsActivity.class.getSimpleName();
 
     public static final String EXTRA_NAME_TORRENT = "extra_key_torrent";
 
     private static final String TAG_SAVE_CHANGES_DIALOG = "tag_save_changes_dialog";
+    private static final String TAG_CHOOSE_LOCATION_DIALOG = "tag_choose_location_dialog";
 
     private static final String KEY_OPTIONS_CHANGE_REQUEST = "key_options_request";
     private static final String KEY_TORRENT_INFO = "key_torrent_info";
@@ -207,6 +210,9 @@ public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveCha
             case R.id.action_start_now:
                 getTransportManager().doRequest(new StartTorrentRequest(new int[] { torrent.getId() }, true), null);
                 return true;
+            case R.id.action_set_location:
+                new ChooseLocationDialogFragment().show(getSupportFragmentManager(), TAG_CHOOSE_LOCATION_DIALOG);
+                return true;
             case R.id.action_verify:
                 getTransportManager().doRequest(new VerifyTorrentRequest(torrent.getId()), null);
                 return true;
@@ -243,6 +249,19 @@ public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveCha
             @Override
             public void onRequestSuccess(Void aVoid) {
                 TorrentDetailsActivity.super.onBackPressed();
+            }
+        });
+    }
+
+    @Override
+    public void onLocationSelected(String path, boolean moveData) {
+        getTransportManager().doRequest(new SetLocationRequest(path, moveData, torrent.getId()), new RequestListener<Void>() {
+            @Override
+            public void onRequestSuccess(Void aVoid) {}
+
+            @Override
+            public void onRequestFailure(SpiceException spiceException) {
+                Log.e(TAG, "Failed to set location", spiceException);
             }
         });
     }
