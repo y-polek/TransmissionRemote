@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+    <data>
+        <import type="android.view.View" />
+        <variable name="loadingInProgress" type="boolean" />
+    </data>
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="@dimen/default_padding">
+        <EditText android:id="@+id/location_edit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textUri"
+            android:paddingBottom="@dimen/default_padding"/>
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingBottom="@dimen/default_padding">
+            <TextView android:id="@+id/free_space_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/free_space_text_size"
+                android:visibility="@{loadingInProgress ? View.INVISIBLE : View.VISIBLE}"/>
+            <ProgressBar android:id="@+id/free_space_progress_bar"
+                android:layout_width="@dimen/free_space_progress_bar_size"
+                android:layout_height="@dimen/free_space_progress_bar_size"
+                android:visibility="@{loadingInProgress ? View.VISIBLE : View.INVISIBLE}"/>
+        </FrameLayout>
+        <CheckBox android:id="@+id/move_data_checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/move_data"
+            android:checked="true"/>
+    </LinearLayout>
+</layout>
