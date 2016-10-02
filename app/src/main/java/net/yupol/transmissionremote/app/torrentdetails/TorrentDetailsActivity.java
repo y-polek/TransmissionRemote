@@ -51,6 +51,7 @@ public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveCha
     private TorrentInfoGetRequest lastTorrentInfoRequest;
     private List<OnDataAvailableListener<TorrentInfo>> torrentInfoListeners = new LinkedList<>();
     private List<OnActivityExitingListener<TorrentSetRequest.Builder>> activityExitingListeners = new LinkedList<>();
+    private TorrentDetailsPagerAdapter pagerAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,40 +59,13 @@ public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveCha
         setContentView(R.layout.torrent_details_layout);
 
         torrent = getIntent().getParcelableExtra(EXTRA_NAME_TORRENT);
-        final TorrentDetailsPagerAdapter pagerAdapter = new TorrentDetailsPagerAdapter(this, getSupportFragmentManager(), torrent);
+        pagerAdapter = new TorrentDetailsPagerAdapter(this, getSupportFragmentManager(), torrent);
 
         if (savedInstanceState != null) {
             torrentInfo = savedInstanceState.getParcelable(KEY_TORRENT_INFO);
         }
         if (torrentInfo == null) {
-            lastTorrentInfoRequest = new TorrentInfoGetRequest(torrent.getId());
-            getTransportManager().doRequest(lastTorrentInfoRequest, new RequestListener<TorrentInfo>() {
-                @Override
-                public void onRequestFailure(SpiceException spiceException) {
-                    if (spiceException instanceof RequestCancelledException) return;
-                    Log.e(TAG, "Failed to get torrent info", spiceException);
-                    showErrorAndExit();
-                }
-
-                @Override
-                public void onRequestSuccess(TorrentInfo torrentInfo) {
-                    // TorrentInfo may be empty if torrent is removed after request was sent.
-                    // Show content only if TorrentInfo contain files data.
-                    if (torrentInfo.getFiles() != null) {
-                        TorrentDetailsActivity.this.torrentInfo = torrentInfo;
-                        pagerAdapter.setTorrentInfo(torrentInfo);
-                        notifyTorrentInfoListeners();
-                    } else {
-                        Log.e(TAG, "Empty TorrentInfo");
-                        showErrorAndExit();
-                    }
-                }
-
-                private void showErrorAndExit() {
-                    Toast.makeText(TorrentDetailsActivity.this, R.string.error_retrieve_torrent_details, Toast.LENGTH_LONG).show();
-                    onBackPressed();
-                }
-            });
+            updateTorrentInfo();
         } else {
             pagerAdapter.setTorrentInfo(torrentInfo);
         }
@@ -148,6 +122,37 @@ public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveCha
 
     public void addSaveChangesRequest(TorrentSetRequest.Builder requestBuilder) {
         saveChangesRequests.put(requestBuilder.getTorrentId(), requestBuilder.build());
+    }
+
+    private void updateTorrentInfo() {
+        lastTorrentInfoRequest = new TorrentInfoGetRequest(torrent.getId());
+        getTransportManager().doRequest(lastTorrentInfoRequest, new RequestListener<TorrentInfo>() {
+            @Override
+            public void onRequestSuccess(TorrentInfo torrentInfo) {
+                // TorrentInfo may be empty if torrent is removed after request was sent.
+                // Show content only if TorrentInfo contain files data.
+                if (torrentInfo.getFiles() != null) {
+                    TorrentDetailsActivity.this.torrentInfo = torrentInfo;
+                    pagerAdapter.setTorrentInfo(torrentInfo);
+                    notifyTorrentInfoListeners();
+                } else {
+                    Log.e(TAG, "Empty TorrentInfo");
+                    showErrorAndExit();
+                }
+            }
+
+            @Override
+            public void onRequestFailure(SpiceException spiceException) {
+                if (spiceException instanceof RequestCancelledException) return;
+                Log.e(TAG, "Failed to get torrent info", spiceException);
+                showErrorAndExit();
+            }
+
+            private void showErrorAndExit() {
+                Toast.makeText(TorrentDetailsActivity.this, R.string.error_retrieve_torrent_details, Toast.LENGTH_LONG).show();
+                onBackPressed();
+            }
+        });
     }
 
     private void setupActionBar() {
@@ -257,7 +262,9 @@ public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveCha
     public void onLocationSelected(String path, boolean moveData) {
         getTransportManager().doRequest(new SetLocationRequest(path, moveData, torrent.getId()), new RequestListener<Void>() {
             @Override
-            public void onRequestSuccess(Void aVoid) {}
+            public void onRequestSuccess(Void aVoid) {
+                updateTorrentInfo();
+            }
 
             @Override
             public void onRequestFailure(SpiceException spiceException) {
