@@ -16,6 +16,7 @@
     <string name="action_start_now">Start now (no queue)</string>
     <string name="action_verify">Verify local data</string>
     <string name="action_request_more_peers">Ask for more peers</string>
+    <string name="action_set_location">Set location</string>
 
     <!-- Filters -->
     <string name="filters">Filters</string>
@@ -216,6 +217,10 @@
 
     <string name="welcome">Welcome!</string>
     <string name="error_msg_open_torrent_no_server">You have to set up server before adding torrent</string>
+
+    <string name="apply">Apply</string>
+    <string name="choose_location">Choose location</string>
+    <string name="move_data">Move data</string>
 
     <plurals name="torrents">
         <item quantity="zero">%d torrents</item>
