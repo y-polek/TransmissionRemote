@@ -52,6 +52,7 @@ public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveCha
     private List<OnDataAvailableListener<TorrentInfo>> torrentInfoListeners = new LinkedList<>();
     private List<OnActivityExitingListener<TorrentSetRequest.Builder>> activityExitingListeners = new LinkedList<>();
     private TorrentDetailsPagerAdapter pagerAdapter;
+    private MenuItem setLocationMenuItem;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,6 +76,10 @@ public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveCha
         ViewPager pager = (ViewPager) findViewById(R.id.pager);
         assert pager != null;
         pager.setAdapter(pagerAdapter);
+
+        if (setLocationMenuItem != null) {
+            setLocationMenuItem.setEnabled(torrentInfo != null);
+        }
     }
 
     @Override
@@ -135,6 +140,9 @@ public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveCha
                     TorrentDetailsActivity.this.torrentInfo = torrentInfo;
                     pagerAdapter.setTorrentInfo(torrentInfo);
                     notifyTorrentInfoListeners();
+                    if (setLocationMenuItem != null) {
+                        setLocationMenuItem.setEnabled(true);
+                    }
                 } else {
                     Log.e(TAG, "Empty TorrentInfo");
                     showErrorAndExit();
@@ -193,6 +201,8 @@ public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveCha
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.torrent_details_actions_menu, menu);
+        setLocationMenuItem = menu.findItem(R.id.action_set_location);
+        setLocationMenuItem.setEnabled(torrentInfo != null);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -216,7 +226,11 @@ public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveCha
                 getTransportManager().doRequest(new StartTorrentRequest(new int[] { torrent.getId() }, true), null);
                 return true;
             case R.id.action_set_location:
-                new ChooseLocationDialogFragment().show(getSupportFragmentManager(), TAG_CHOOSE_LOCATION_DIALOG);
+                ChooseLocationDialogFragment dialog = new ChooseLocationDialogFragment();
+                Bundle args = new Bundle();
+                args.putString(ChooseLocationDialogFragment.ARG_INITIAL_LOCATION, torrentInfo.getDownloadDir());
+                dialog.setArguments(args);
+                dialog.show(getSupportFragmentManager(), TAG_CHOOSE_LOCATION_DIALOG);
                 return true;
             case R.id.action_verify:
                 getTransportManager().doRequest(new VerifyTorrentRequest(torrent.getId()), null);

@@ -31,9 +31,12 @@ import net.yupol.transmissionremote.app.utils.TextUtils;
 
 public class ChooseLocationDialogFragment extends DialogFragment {
 
+    public static final String ARG_INITIAL_LOCATION = "arg_initial_location";
+
     private OnLocationSelectedListener listener;
     private SetLocationDialogBinding binding;
     private FreeSpaceRequest runningFreeSpaceRequest;
+    private String initialLocation;
 
     @Override
     public void onAttach(Context context) {
@@ -50,6 +53,18 @@ public class ChooseLocationDialogFragment extends DialogFragment {
         }
     }
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Bundle args = getArguments();
+        if (args != null) {
+            initialLocation = args.getString(ARG_INITIAL_LOCATION);
+        }
+        if (initialLocation == null) {
+            initialLocation = TransmissionRemote.getInstance().getDefaultDownloadDir();
+        }
+    }
+
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -61,7 +76,7 @@ public class ChooseLocationDialogFragment extends DialogFragment {
                 updateFreeSpace(s.toString());
             }
         });
-        binding.locationEdit.setText(TransmissionRemote.getInstance().getDefaultDownloadDir());
+        binding.locationEdit.setText(initialLocation);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setTitle(R.string.choose_location);
