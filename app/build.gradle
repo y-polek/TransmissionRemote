@@ -1,11 +1,11 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 24
-    buildToolsVersion '23.0.3'
+    compileSdkVersion 25
+    buildToolsVersion '25.0.0'
     defaultConfig {
         minSdkVersion 14
-        targetSdkVersion 24
+        targetSdkVersion 25
         versionCode 5
         versionName '0.9.3'
         applicationId 'net.yupol.transmissionremote.app'
@@ -41,9 +41,9 @@ android {
 }
 
 dependencies {
-    compile 'com.android.support:appcompat-v7:24.2.1'
-    compile 'com.android.support:support-v4:24.2.1'
-    compile 'com.android.support:recyclerview-v7:24.2.1'
+    compile 'com.android.support:appcompat-v7:25.0.0'
+    compile 'com.android.support:support-v4:25.0.0'
+    compile 'com.android.support:recyclerview-v7:25.0.0'
     compile 'com.google.guava:guava:19.0'
     compile('com.octo.android.robospice:robospice:1.4.14') {
         exclude (group: 'commons-io', module: 'commons-io')
