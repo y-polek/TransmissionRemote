@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    
+    <dimen name="default_layout_margin">16dp</dimen>
+    <dimen name="default_text_margin">8dp</dimen>
+    <dimen name="default_text_margin_small">4dp</dimen>
+    <dimen name="default_edit_text_height">48dp</dimen>
+    <dimen name="default_edit_text_padding">4dp</dimen>
+    <dimen name="default_padding">8dp</dimen>
+    <dimen name="default_padding_big">16dp</dimen>
+    <dimen name="default_padding_small">4dp</dimen>
+    <dimen name="default_button_icon_size">22dp</dimen>
+    <dimen name="default_button_with_icon_width">200dp</dimen>
+
+                <!-- Drawer -->
+    <dimen name="header_settings_size">48dp</dimen>
+    <dimen name="header_settings_padding">16dp</dimen>
+    <dimen name="header_server_current_size">64dp</dimen>
+    <dimen name="header_server_secondary_size">40dp</dimen>
+    <dimen name="header_server_margin_left">16dp</dimen>
+    <dimen name="header_server_margin_top">40dp</dimen>
+    <dimen name="header_text_padding_left">16dp</dimen>
+    <dimen name="header_text_padding_top">16dp</dimen>
+    <dimen name="header_text_padding_bottom">16dp</dimen>
+
+                <!-- Servers -->
+    <dimen name="add_server_group_margin">16dp</dimen>
+    <dimen name="add_server_buttons_width">128dp</dimen>
+    <dimen name="add_server_buttons_margin">16dp</dimen>
+
+                <!-- Torrent list -->
+    <dimen name="torrent_list_name_text_size">18sp</dimen>
+    <dimen name="torrent_list_status_text_size">14sp</dimen>
+    <dimen name="torrent_list_error_icon_size">21dp</dimen>
+    <dimen name="torrent_list_progressbar_height">3dp</dimen>
+    <dimen name="torrent_list_down_up_icon_size">15dp</dimen>
+    <dimen name="torrent_list_vertical_padding">8dp</dimen>
+    <dimen name="torrent_list_start_button_size">40dp</dimen>
+    <dimen name="torrent_list_start_button_padding">8dp</dimen>
+    <dimen name="transfer_priority_icon_size">13dp</dimen>
+
+                <!-- Preferences -->
+    <dimen name="pref_title_size">20sp</dimen>
+    <dimen name="pref_text_size">17sp</dimen>
+    <dimen name="pref_description_text_size">14sp</dimen>
+    <dimen name="server_pref_edittext_width">80dp</dimen>
+
+                <!-- Toolbar -->
+    <dimen name="toolbar_text_size">20sp</dimen>
+
+                <!-- Open torrent -->
+    <dimen name="free_space_text_size">16sp</dimen>
+    <dimen name="free_space_progress_bar_size">22sp</dimen>
+
+                <!-- Action Bar -->
+    <dimen name="spinner_text_margin_horizontal">16dp</dimen>
+    <dimen name="spinner_text_margin_vertical">8dp</dimen>
+    <dimen name="spinner_server_name_text_size">18sp</dimen>
+    <dimen name="spinner_filter_name_text_size">14sp</dimen>
+    <dimen name="actionbar_title_text_size">18sp</dimen>
+    <dimen name="actionbar_subtitle_text_size">14sp</dimen>
+    <dimen name="speed_text_size">15sp</dimen>
+    <dimen name="menu_item_icon_size">18dp</dimen>
+
+</resources>

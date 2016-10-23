@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="default_port">9091</integer>
+    <string name="default_rpc_url" translatable="false">transmission/rpc</string>
+</resources>
