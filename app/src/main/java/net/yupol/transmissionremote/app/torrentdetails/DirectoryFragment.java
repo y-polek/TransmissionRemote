@@ -92,7 +92,7 @@ public class DirectoryFragment extends BasePageFragment implements DirectoryAdap
 
     private void setupAdapter() {
         TorrentInfo torrentInfo = getTorrentInfo();
-        adapter = new DirectoryAdapter(torrentInfo.getFiles(), torrentInfo.getFileStats(), this);
+        adapter = new DirectoryAdapter(getContext(), torrentInfo.getFiles(), torrentInfo.getFileStats(), this);
         recyclerView.setAdapter(adapter);
     }
 

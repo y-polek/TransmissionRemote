@@ -20,8 +20,10 @@
             android:layout_marginLeft="@dimen/default_text_margin"
             android:checked="@{dir != null ? FilesPageBindingUtils.isDirChecked(dir, fileStats) : FilesPageBindingUtils.isFileChecked(fileStat)}"/>
         <ImageView android:id="@+id/icon"
-            android:layout_width="48dp"
-            android:layout_height="48dp" />
+            android:layout_width="@dimen/file_type_icon_size"
+            android:layout_height="@dimen/file_type_icon_size"
+            android:layout_marginRight="@dimen/default_text_margin"
+            android:src="@drawable/ic_turtle_black"/>
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="0dp"
