@@ -1,7 +1,10 @@
 package net.yupol.transmissionremote.app.torrentdetails;
 
+import android.content.Context;
 import android.databinding.DataBindingUtil;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,9 +14,13 @@ import android.view.animation.AnimationUtils;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 
+import com.mikepenz.fontawesome_typeface_library.FontAwesome;
+import com.mikepenz.iconics.IconicsDrawable;
+
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.databinding.FileItemBinding;
 import net.yupol.transmissionremote.app.model.Dir;
+import net.yupol.transmissionremote.app.model.FileType;
 import net.yupol.transmissionremote.app.model.json.File;
 import net.yupol.transmissionremote.app.model.json.FileStat;
 
@@ -21,13 +28,15 @@ import java.util.List;
 
 public class DirectoryAdapter extends RecyclerView.Adapter<DirectoryAdapter.ViewHolder> {
 
+    private Context context;
     private File[] files;
     private FileStat[] fileStats;
     private Dir dir = Dir.emptyDir();
     private OnItemSelectedListener listener;
     private int lastPosition = -1;
 
-    public DirectoryAdapter(File[] files, FileStat[] fileStats, OnItemSelectedListener listener) {
+    public DirectoryAdapter(Context context, File[] files, FileStat[] fileStats, OnItemSelectedListener listener) {
+        this.context = context;
         this.files = files;
         this.fileStats = fileStats;
         this.listener = listener;
@@ -49,18 +58,25 @@ public class DirectoryAdapter extends RecyclerView.Adapter<DirectoryAdapter.View
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         final int viewType = getItemViewType(position);
+        Drawable icon = null;
         switch (viewType) {
             case R.id.view_type_directory:
                 Dir dir = getDir(position);
                 holder.binding.setDir(dir);
+                icon = new IconicsDrawable(context, FontAwesome.Icon.faw_folder_o)
+                        .color(ContextCompat.getColor(context, R.color.text_color_primary));
                 break;
             case R.id.view_type_file:
-                holder.binding.setFile(getFile(position));
+                File file = getFile(position);
+                holder.binding.setFile(file);
                 holder.binding.setFileStat(getFileStat(position));
+                icon = new IconicsDrawable(context, FileType.iconFromName(file.getName()))
+                        .color(ContextCompat.getColor(context, R.color.text_color_secondary));
                 break;
         }
         holder.binding.setFileStats(fileStats);
         holder.binding.executePendingBindings();
+        holder.binding.icon.setImageDrawable(icon);
         setAnimation(holder.binding.getRoot(), position);
     }
 

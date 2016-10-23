@@ -62,4 +62,6 @@
     <dimen name="speed_text_size">15sp</dimen>
     <dimen name="menu_item_icon_size">18dp</dimen>
 
+    <dimen name="file_type_icon_size">18dp</dimen>
+
 </resources>
