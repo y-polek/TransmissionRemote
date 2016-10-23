@@ -220,6 +220,10 @@ public class TransmissionRemote extends Application implements SharedPreferences
         return uri.isEmpty() ? null : Uri.parse(uri);
     }
 
+    public boolean isFreeSpaceCheckDisabled() {
+        return sharedPreferences.getBoolean(getString(R.string.disable_free_space_check_key), false);
+    }
+
     public void setSpeedLimitEnabled(boolean isEnabled) {
         speedLimitEnabled = isEnabled;
         speedLimitsCache.put(activeServer, isEnabled);

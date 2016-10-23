@@ -28,6 +28,7 @@ public class Torrent implements ID, Parcelable {
     @Key private int peersGettingFromUs;
     @Key private int peersSendingToUs;
     @Key private int webseedsSendingToUs;
+    @Key private int queuePosition;
 
     public Torrent() {}
 
@@ -51,6 +52,7 @@ public class Torrent implements ID, Parcelable {
         peersGettingFromUs = in.readInt();
         peersSendingToUs = in.readInt();
         webseedsSendingToUs = in.readInt();
+        queuePosition = in.readInt();
     }
 
     public int getId() {
@@ -95,6 +97,10 @@ public class Torrent implements ID, Parcelable {
 
     public double getUploadRatio() {
         return uploadRatio;
+    }
+
+    public int getQueuePosition() {
+        return queuePosition;
     }
 
     public int getErrorId() {
@@ -175,6 +181,7 @@ public class Torrent implements ID, Parcelable {
         out.writeInt(peersGettingFromUs);
         out.writeInt(peersSendingToUs);
         out.writeInt(webseedsSendingToUs);
+        out.writeInt(queuePosition);
     }
 
     public static final Creator<Torrent> CREATOR = new Creator<Torrent>() {

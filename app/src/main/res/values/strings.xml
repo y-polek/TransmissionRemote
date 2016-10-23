@@ -16,6 +16,7 @@
     <string name="action_start_now">Start now (no queue)</string>
     <string name="action_verify">Verify local data</string>
     <string name="action_request_more_peers">Ask for more peers</string>
+    <string name="action_set_location">Set location</string>
 
     <!-- Filters -->
     <string name="filters">Filters</string>
@@ -43,11 +44,14 @@
     <string name="drawer_sort_by_time_remaining">Time remaining</string>
     <string name="drawer_sort_by_date_added">Date added</string>
     <string name="drawer_sort_by_progress">Progress</string>
+    <string name="drawer_sort_by_queue_position">Queue order</string>
+    <string name="drawer_sort_by_upload_ratio">Ratio</string>
 
     <!-- Preferences -->
     <string name="action_settings">Settings</string>
     <string name="notifications_pref_title">Notifications</string>
     <string name="notification_settings">Notification settings</string>
+    <string name="advanced_pref_title">Advanced preferences</string>
 
     <!-- Servers -->
     <string name="add_new_server_title">Add new server</string>
@@ -98,6 +102,10 @@
     <string name="preferences_update_failed">Failed to update server preferences</string>
     <string name="preferences_notifications_title">Notifications</string>
     <string name="preferences_notifications_summary">Torrent finished notifications</string>
+    <string name="preferences_advanced_title">Advanced</string>
+    <string name="preferences_advanced_summary">Advanced options</string>
+    <string name="disable_free_space_check_title">Disable free space check</string>
+    <string name="disable_free_space_check_summary">Allows to add torrent without verifying free space availability</string>
 
     <!-- Torrent List -->
     <string name="unknown_error_message">Unknown error</string>
@@ -133,6 +141,7 @@
     <string name="free_space_unknown">Free space unknown</string>
     <string name="no_directory">There is no such directory</string>
     <string name="use_default_directory">Use default directory</string>
+    <string name="unknown_free_space_confirmation">There is no such directory. \nAre you sure you want to add torrent?</string>
 
     <!-- Torrent details -->
     <string name="torrent_details">Torrent details</string>
@@ -208,6 +217,10 @@
 
     <string name="welcome">Welcome!</string>
     <string name="error_msg_open_torrent_no_server">You have to set up server before adding torrent</string>
+
+    <string name="apply">Apply</string>
+    <string name="choose_location">Choose location</string>
+    <string name="move_data">Move data</string>
 
     <plurals name="torrents">
         <item quantity="zero">%d torrents</item>
