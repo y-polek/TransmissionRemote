@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Transmission Remote</string>
+    <string name="search_hing">Cerca torrent</string>
+
+    <!-- Actions -->
+    <string name="action_open_torrent">Aggiungi torrent</string>
+    <string name="action_start_all_torrents">Avvia tutti i torrent</string>
+    <string name="action_pause_all_torrents">Ferma tutti i torrent</string>
+    <string name="action_remove_torrents">Rimuovi i torrent selezionati</string>
+    <string name="action_remove_torrent">Rimuovi torrent</string>
+    <string name="action_select_all">Seleziona tutto</string>
+    <string name="action_pause">Pausa</string>
+    <string name="action_start">Avvia</string>
+    <string name="action_start_now">Avvia ora (senza coda)</string>
+    <string name="action_verify">Verifica i dati</string>
+    <string name="action_request_more_peers">Chiedi per più peers</string>
+
+    <!-- Filters -->
+    <string name="filters">Filtri</string>
+    <string name="filter_all">Tutti</string>
+    <string name="filter_active">Attivi</string>
+    <string name="filter_downloading">In download</string>
+    <string name="filter_seeding">Seeding</string>
+    <string name="filter_paused">In pausa</string>
+    <string name="filter_download_completed">Scaricati</string>
+    <string name="filter_finished">Completati</string>
+    <string name="filter_name">Nome</string>
+    <string name="filter_empty_all">Nessun torrent</string>
+    <string name="filter_empty_active">Nessun torrent attivo</string>
+    <string name="filter_empty_downloading">Nessun torrent in download</string>
+    <string name="filter_empty_seeding">Nessun torrent in seeding</string>
+    <string name="filter_empty_paused">Nessun torrent in pausa</string>
+    <string name="filter_empty_download_completed">Nessun torrent scaricato</string>
+    <string name="filter_empty_finished">Nessun torrent completato</string>
+    <string name="filter_empty_name">Nessun torrent trovato</string>
+
+    <!-- Sort by -->
+    <string name="drawer_sort_by">Ordina per</string>
+    <string name="drawer_sort_by_name">Nome</string>
+    <string name="drawer_sort_by_size">Dimensione</string>
+    <string name="drawer_sort_by_time_remaining">Tempo rimanente</string>
+    <string name="drawer_sort_by_date_added">Data di aggiunta</string>
+    <string name="drawer_sort_by_progress">Avanzamento</string>
+    <string name="drawer_sort_by_queue_position">Ordine in coda</string>
+    <string name="drawer_sort_by_upload_ratio">Ratio</string>
+
+    <!-- Preferences -->
+    <string name="action_settings">Impostazioni</string>
+    <string name="notifications_pref_title">Notifiche</string>
+    <string name="notification_settings">Configurazioni notifiche</string>
+    <string name="advanced_pref_title">Impostazioni avanzate</string>
+
+    <!-- Servers -->
+    <string name="add_new_server_title">Aggiungi nuovo server</string>
+    <string name="server_parameters">Parametri del server</string>
+    <string name="server_name_hint">Nome del server</string>
+    <string name="server_host_hint">Host name o indirizzo IP</string>
+    <string name="server_port_hint">Porta</string>
+    <string name="server_rpc_url_hint">RPC URL</string>
+    <string name="trust_self_signed_ssl_cert">Accetta certificati SSL self signed</string>
+    <string name="authentication">Autenticazione</string>
+    <string name="rpc_url">RPC URL:</string>
+    <string name="default_url">Default</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="server_name_error_message">Il nome non può esser vuoto</string>
+    <string name="host_name_error_message">Inserisci l\'indirizzo IP o il nome host del computer su cui Trasmission è in esecuzione</string>
+    <string name="port_number_error_message">Inserisci la porta. Deve esser la stessa che è stata specificata nel campo \'Porta d\'ascolto\' del tab \'Remote\' della configurazione di Transmission</string>
+    <string name="servers">Server</string>
+    <string name="add_remove_servers">Aggiungi o rimuovi server</string>
+    <string name="remove_server">Server remoto</string>
+    <string name="save_server">Salva</string>
+    <string name="remove_server_confirmation">Server remoto?</string>
+    <string name="remove_server_positive">Rimuovi</string>
+    <string name="saved">Salvato</string>
+    <string name="save_changes_question">Salvare i cambiamenti?</string>
+    <string name="save_changes_save">Salva</string>
+    <string name="save_changes_discard">Scarta</string>
+    <string name="enter_server_parameters">Per iniziare, aggiungi il tuo primo server.</string>
+    <string name="add_server">Aggiungi Server</string>
+    <string name="manage_servers">Gestisci server</string>
+    <string name="servers_empty_text">Nessun server</string>
+
+    <!-- Preferences -->
+    <string name="update_interval_title">Intervallo di aggiornamento</string>
+    <string name="update_interval_summary">Intervallo di aggiornamento della lista torrent</string>
+    <string name="background_update_interval_title">Aggiornamento in background</string>
+    <string name="background_update_interval_summary">Frequenza di aggiornamento dei torrent in background</string>
+    <string name="torrent_finished_notification_title">Notifica download completato</string>
+    <string name="torrent_finished_notification_summary">Controlla il completamento dei torrent in background</string>
+    <string name="torrent_finished_notification_vibrate_title">Vibrazione</string>
+    <string name="torrent_finished_notification_sound_title">Suono</string>
+    <string name="server_preferences">Configurazione server</string>
+    <string name="remote_preferences">Impostazioni</string>
+    <string name="global_bandwidth_limits">Limitazione globale di banda</string>
+    <string name="kbps">KB/s</string>
+    <string name="turtle_speed_limits">Modalità \'Limite velocità\'</string>
+    <string name="turtle_speed_limits_description">Quando abilitata, la modalità \'Limite velocità\' annulla la limitazione globale di banda</string>
+    <string name="preferences_update_failed">Impossibile aggiornare la configurazione del server</string>
+    <string name="preferences_notifications_title">Notifiche</string>
+    <string name="preferences_notifications_summary">Notifiche di completamento torrent</string>
+    <string name="preferences_advanced_title">Avanzate</string>
+    <string name="preferences_advanced_summary">Impostazioni avanzate</string>
+    <string name="disable_free_space_check_title">Disabilita controllo spazio libero</string>
+    <string name="disable_free_space_check_summary">Permetti di aggiungere nuovi torrent senza verificare lo spazio libero su disco</string>
+
+    <!-- Torrent List -->
+    <string name="unknown_error_message">Errore sconosciuto</string>
+    <string name="downloaded_text">%1$s di %2$s</string>
+    <string name="uploaded_text">%1$s (Ratio: %2$.2f)</string>
+    <string name="speed_limit">Limite velocità</string>
+    <string name="download_speed">Velocità download</string>
+    <string name="upload_speed">Velocità upload</string>
+    <string name="remove_selected_torrents">Rimuovi torrent selezionati…</string>
+    <string name="remove_from_list">Rimuovi dalla lista</string>
+    <string name="remove_data">Rimuovi dati</string>
+    <string name="search">Cerca</string>
+    <string name="eta_unknown">Tempo rimanente sconosciuto</string>
+    <string name="eta_infinite">~ \u221e</string>
+    <string name="eta">~ %1$s</string>
+
+    <!-- Open torrent -->
+    <string name="error_install_file_manager_msg">Per piacere, installa un file manater</string>
+    <string name="error_file_does_not_exists_msg">Il file \'%1$s\' non esiste</string>
+    <string name="error_wrong_file_extension_msg">Impossibile aprire il file \'.%1$s\'. Selezionare un file con estensione \'.torrent\'</string>
+    <string name="error_cannot_read_file_msg">Impossibile leggere il contenuto del file</string>
+    <string name="error_failed_to_open_torrent">Impossibile aprire il torrent. Riprova</string>
+    <string name="error_duplicate_torrent">Torrent duplicato già esistente</string>
+    <string name="torrent_added_successfully">Torrent aggiunto con successo</string>
+    <string name="select_torrent_file">Seleziona il file torrent</string>
+    <string name="open_torrent">Aggiungi torrent…</string>
+    <string name="address_of_torrent_file">Indirizzo internet del file torrent</string>
+    <string name="open">Apri</string>
+    <string name="download_to">Scarica in:</string>
+    <string name="start_when_added">Avvia subito</string>
+    <string name="add">Aggiungi</string>
+    <string name="free_space">%1$s liberi</string>
+    <string name="free_space_unknown">Spazio libero sconosciuto</string>
+    <string name="no_directory">Directory non esistente</string>
+    <string name="use_default_directory">Usa la directory di default</string>
+    <string name="unknown_free_space_confirmation">Directory non esistente. \nSei sicurp di voler aggiungere il torrent?</string>
+
+    <!-- Torrent details -->
+    <string name="torrent_details">Dettagli torrent</string>
+    <string name="info">Info</string>
+    <string name="files">Files</string>
+    <string name="options">Opzioni</string>
+    <string name="priority">Priorità</string>
+    <string name="transfer_priority">Priorità trasferimento:</string>
+    <string name="transfer_bandwidth">Banda di trasferimento</string>
+    <string name="limit_download">Limite download:</string>
+    <string name="limit_upload">Limite upload:</string>
+    <string name="stay_within_global_bandwidth">Rimani all\'interno dei limiti di banda globali</string>
+    <string name="ratio_limit">Limite ratio</string>
+    <string name="inactivity_limit">Limite inattività</string>
+    <string name="mode">Modo:</string>
+    <string name="value">Valore:</string>
+    <string name="value_in_minutes">Valore (minuti):</string>
+    <string name="priority_high">Alta</string>
+    <string name="priority_normal">Normale</string>
+    <string name="priority_low">Bassa</string>
+    <string name="global_settings">Impostazioni globali</string>
+    <string name="unlimited">Illimitato</string>
+    <string name="stop_at_ratio">Ferma con ratio</string>
+    <string name="stop_when_inactive">Ferma quando inattivo</string>
+    <string name="save_torrent_options">Salva</string>
+    <string name="options_update_failed">Impossibile aggiornare le opzioni del torrent</string>
+    <string name="three_dots">&#8230;</string>
+    <string name="disabled">disabilitato</string>
+    <string name="total_size_text">%1$s (%2$d sezioni di %3$s)</string>
+    <string name="have_size_text">%1$s di %2$s (%3$.1f%%)</string>
+    <string name="have_size_100p_text">%1$s (100%%)</string>
+    <string name="have_unverified_size_text">, %1$s non verificati</string>
+    <string name="available_text">%1$.1f%%</string>
+    <string name="privacy_public_torrent">Torrent publico</string>
+    <string name="privacy_private_torrent">Private Torrent, non-tracker peer discovery disabled</string>
+    <string name="downloaded_ever_text">%1$s (%2$s corrotto)</string>
+    <string name="uploaded_ever_text">%1$s (Ratio: %2$.2f)</string>
+    <string name="today_time">Oggi alle %1$s</string>
+    <string name="yesterday_time">Ieri alle %1$s</string>
+    <string name="date_time">%1$s alle %2$s</string>
+    <string name="torrent_information">Informazioni torrent</string>
+    <string name="total_size">Dimensione totale:</string>
+    <string name="location">Posizione:</string>
+    <string name="privacy">Privacy:</string>
+    <string name="creator">Creatore:</string>
+    <string name="created_on">Creato il:</string>
+    <string name="comment">Commenti:</string>
+    <string name="transfer">Informazioni trasferimeto</string>
+    <string name="have">Totale:</string>
+    <string name="available">Disponibile:</string>
+    <string name="downloaded">Scaricato:</string>
+    <string name="uploaded">Inviato:</string>
+    <string name="dates">Attività</string>
+    <string name="added">Aggiunto:</string>
+    <string name="completed">Completato:</string>
+    <string name="last_activity">Ultima attività:</string>
+    <string name="time_elapsed">Tempo trascorso</string>
+    <string name="downloading">In download:</string>
+    <string name="seeding">In seeding:</string>
+    <string name="remove_failed">Impossibile rimuovere il torrent. Riprova.</string>
+
+    <string name="retry">Riprova</string>
+    <string name="server_settings">Impostazioni server</string>
+    <string name="network_settings">Impostazioni rete</string>
+    <string name="network_error_message_no_network">Impossibile connettersi al server. Controlla le impostazioni di rete.</string>
+    <string name="network_error_message_connection_error">Impossibile connettersi al server. Controlla le impostazioni del server.</string>
+    <string name="network_error_message_unauthorized">Accesso non autorizzato. Controlla username e password.</string>
+    <string name="error_retrieve_torrent_details">Impossibile recuperare i dettagli del torrent. Riprova</string>
+
+    <string name="tooltip_turtle_mode">Modalità \'Limite velocità\'</string>
+    <string name="tooltip_total_download_speed">Velocità di download totale</string>
+    <string name="tooltip_total_upload_speed">Velocità di upload totale</string>
+
+    <string name="welcome">Benvenuto!</string>
+    <string name="error_msg_open_torrent_no_server">Devi configurare almeno un server prima di poter iniziare</string>
+
+    <plurals name="torrents">
+        <item quantity="zero">%d torrent</item>
+        <item quantity="one">%d torrent</item>
+        <item quantity="other">%d torrent</item>
+    </plurals>
+
+    <plurals name="torrents_finished">
+        <item quantity="one">Torrent è completato</item>
+        <item quantity="other">%d torrent sono completati</item>
+    </plurals>
+
+</resources>

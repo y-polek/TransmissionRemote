@@ -1,7 +1,6 @@
 package net.yupol.transmissionremote.app;
 
 import android.app.AlertDialog;
-import android.app.DialogFragment;
 import android.app.SearchManager;
 import android.content.ActivityNotFoundException;
 import android.content.ContentResolver;
@@ -16,6 +15,7 @@ import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.provider.OpenableColumns;
 import android.support.annotation.Nullable;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.LayoutInflaterCompat;
@@ -76,6 +76,7 @@ import net.yupol.transmissionremote.app.transport.TorrentUpdater;
 import net.yupol.transmissionremote.app.transport.TransportManager;
 import net.yupol.transmissionremote.app.transport.request.AddTorrentByFileRequest;
 import net.yupol.transmissionremote.app.transport.request.AddTorrentByUrlRequest;
+import net.yupol.transmissionremote.app.transport.request.ResponseFailureException;
 import net.yupol.transmissionremote.app.transport.request.SessionGetRequest;
 import net.yupol.transmissionremote.app.transport.request.SessionSetRequest;
 import net.yupol.transmissionremote.app.transport.request.StartTorrentRequest;
@@ -155,15 +156,21 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
     private RequestListener<AddTorrentResult> addTorrentResultListener = new RequestListener<AddTorrentResult>() {
         @Override
         public void onRequestFailure(SpiceException spiceException) {
-            Toast.makeText(MainActivity.this, getString(R.string.error_failed_to_open_torrent), Toast.LENGTH_LONG).show();
+            String message;
+            if (spiceException.getCause() instanceof ResponseFailureException) {
+                message = ((ResponseFailureException) spiceException.getCause()).getFailureMessage();
+            } else {
+                message = getString(R.string.error_failed_to_open_torrent);
+            }
+            Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG).show();
         }
 
         @Override
         public void onRequestSuccess(AddTorrentResult addTorrentResult) {
             if (addTorrentResult.torrentDuplicate != null) {
-                Toast.makeText(MainActivity.this, getString(R.string.error_duplicate_torrent), Toast.LENGTH_LONG).show();
+                Toast.makeText(MainActivity.this, R.string.error_duplicate_torrent, Toast.LENGTH_LONG).show();
             } else {
-                Toast.makeText(MainActivity.this, getString(R.string.torrent_added_successfully), Toast.LENGTH_LONG).show();
+                Toast.makeText(MainActivity.this, R.string.torrent_added_successfully, Toast.LENGTH_LONG).show();
             }
         }
     };
@@ -180,6 +187,9 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
     private String currentSearchQuery;
 
     private boolean hasTorrentList = false;
+
+    private Uri openTorrentUri;
+    private boolean openTorrentUriOnResume = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -290,7 +300,9 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
                 new SortDrawerItem(SortedBy.DATE_ADDED).withName(R.string.drawer_sort_by_date_added),
                 new SortDrawerItem(SortedBy.SIZE).withName(R.string.drawer_sort_by_size),
                 new SortDrawerItem(SortedBy.TIME_REMAINING).withName(R.string.drawer_sort_by_time_remaining),
-                new SortDrawerItem(SortedBy.PROGRESS).withName(R.string.drawer_sort_by_progress)
+                new SortDrawerItem(SortedBy.PROGRESS).withName(R.string.drawer_sort_by_progress),
+                new SortDrawerItem(SortedBy.QUEUE_POSITION).withName(R.string.drawer_sort_by_queue_position),
+                new SortDrawerItem(SortedBy.UPLOAD_RATIO).withName(R.string.drawer_sort_by_upload_ratio)
         };
 
         drawer = new DrawerBuilder()
@@ -613,33 +625,44 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
             }
         } else if (requestCode == REQUEST_CODE_CHOOSE_TORRENT) {
             if (resultCode == RESULT_OK) {
-                Uri uri = data.getData();
-                try {
-                    openTorrentByLocalFile(getContentResolver().openInputStream(uri));
-                } catch (IOException ex) {
-                    Cursor cursor = getContentResolver().query(uri, null, null, null, null);
-                    if (cursor == null) {
-                        String msg = getString(R.string.error_file_does_not_exists_msg, uri.toString());
-                        Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
-                        return;
-                    }
-                    int nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
-                    cursor.moveToFirst();
-                    String fileName = cursor.getString(nameIndex);
-                    cursor.close();
-                    String extension = FilenameUtils.getExtension(fileName);
-                    if (!"torrent".equals(extension)) {
-                        String msg = getResources().getString(R.string.error_wrong_file_extension_msg, extension);
-                        Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
-                        return;
-                    }
-                    try {
-                        openTorrentByLocalFile(getContentResolver().openInputStream(uri));
-                    } catch (FileNotFoundException e) {
-                        String msg = getResources().getString(R.string.error_file_does_not_exists_msg, fileName);
-                        Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
-                    }
-                }
+                openTorrentUri = data.getData();
+                openTorrentUriOnResume = true;
+            }
+        }
+    }
+
+    @Override
+    protected void onResumeFragments() {
+        super.onResumeFragments();
+
+        if (!openTorrentUriOnResume) return;
+
+        openTorrentUriOnResume = false;
+
+        try {
+            openTorrentByLocalFile(getContentResolver().openInputStream(openTorrentUri));
+        } catch (IOException ex) {
+            Cursor cursor = getContentResolver().query(openTorrentUri, null, null, null, null);
+            if (cursor == null) {
+                String msg = getString(R.string.error_file_does_not_exists_msg, openTorrentUri.toString());
+                Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
+                return;
+            }
+            int nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+            cursor.moveToFirst();
+            String fileName = cursor.getString(nameIndex);
+            cursor.close();
+            String extension = FilenameUtils.getExtension(fileName);
+            if (!"torrent".equals(extension)) {
+                String msg = getResources().getString(R.string.error_wrong_file_extension_msg, extension);
+                Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
+                return;
+            }
+            try {
+                openTorrentByLocalFile(getContentResolver().openInputStream(Uri.parse(fileName)));
+            } catch (FileNotFoundException e) {
+                String msg = getResources().getString(R.string.error_file_does_not_exists_msg, fileName);
+                Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
             }
         }
     }
@@ -975,7 +998,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
             }
         }
         dialog.setArguments(args);
-        dialog.show(getFragmentManager(), TAG_DOWNLOAD_LOCATION_DIALOG);
+        dialog.show(getSupportFragmentManager(), TAG_DOWNLOAD_LOCATION_DIALOG);
     }
 
     private void openTorrentByRemoteFile(final Uri fileUri) {
@@ -984,7 +1007,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
         args.putInt(DownloadLocationDialogFragment.KEY_REQUEST_CODE, DownloadLocationDialogFragment.REQUEST_CODE_BY_REMOTE_FILE);
         args.putParcelable(DownloadLocationDialogFragment.KEY_FILE_URI, fileUri);
         dialog.setArguments(args);
-        dialog.show(getFragmentManager(), TAG_DOWNLOAD_LOCATION_DIALOG);
+        dialog.show(getSupportFragmentManager(), TAG_DOWNLOAD_LOCATION_DIALOG);
     }
 
     private void openTorrentByMagnet(final String magnetUri) {
@@ -993,7 +1016,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
         bundle.putInt(DownloadLocationDialogFragment.KEY_REQUEST_CODE, DownloadLocationDialogFragment.REQUEST_CODE_BY_MAGNET);
         bundle.putString(DownloadLocationDialogFragment.KEY_MAGNET_URI, magnetUri);
         dialog.setArguments(bundle);
-        dialog.show(getFragmentManager(), TAG_DOWNLOAD_LOCATION_DIALOG);
+        dialog.show(getSupportFragmentManager(), TAG_DOWNLOAD_LOCATION_DIALOG);
     }
 
     private void startAllTorrents() {

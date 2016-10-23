@@ -20,7 +20,7 @@ import net.yupol.transmissionremote.app.server.Server;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.Collections;
+import java.io.StringReader;
 import java.util.Locale;
 
 import javax.annotation.Nonnull;
@@ -30,6 +30,8 @@ public abstract class Request<RESULT> extends GoogleHttpClientSpiceRequest<RESUL
     private static final String TAG = Request.class.getSimpleName();
 
     private static final String HEADER_SESSION_ID = "X-Transmission-Session-Id";
+
+    private static final JsonObjectParser JSON_PARSER = new JsonObjectParser.Builder(new JacksonFactory()).build();
 
     private Server server;
     private String responseSessionId;
@@ -78,16 +80,12 @@ public abstract class Request<RESULT> extends GoogleHttpClientSpiceRequest<RESUL
         request.setNumberOfRetries(0);
 
         HttpHeaders headers = new HttpHeaders()
-                .setContentType("json")
                 .set(HEADER_SESSION_ID, Strings.emptyToNull(server.getLastSessionId()));
         if (server.isAuthenticationEnabled()) {
             headers.setBasicAuthentication(server.getUserName(), server.getPassword());
         }
         request.setHeaders(headers);
-
-        JsonObjectParser jsonParser = new JsonObjectParser.Builder(new JacksonFactory())
-                .setWrapperKeys(Collections.singletonList("arguments")).build();
-        request.setParser(jsonParser);
+        request.setParser(JSON_PARSER);
 
         HttpResponse response = request.execute();
 
@@ -96,10 +94,19 @@ public abstract class Request<RESULT> extends GoogleHttpClientSpiceRequest<RESUL
 
         RESULT result;
         try {
-            result = response.parseAs(getResultType());
-            /*String responseBody = response.parseAsString();
-            Log.d(TAG + "SpiceTransportManager", getClass().getSimpleName() + " responseBody: " + responseBody);
-            result = request.getParser().parseAndClose(new StringReader(responseBody), getResultType());*/
+            //result = response.parseAs(getResultType());
+            String responseBody = response.parseAsString();
+
+            JSONObject responseBodyJson = new JSONObject(responseBody);
+
+            String resultStatus = responseBodyJson.getString("result");
+            if (!"success".equalsIgnoreCase(resultStatus)) {
+                throw new ResponseFailureException(resultStatus);
+            }
+
+            result = request.getParser().parseAndClose(
+                    new StringReader(responseBodyJson.getString("arguments")),
+                    getResultType());
         } catch (Exception e) {
             Log.e(TAG, "Failed to parse response. SC: " + statusCode, e);
             throw e;

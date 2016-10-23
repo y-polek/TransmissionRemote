@@ -1,28 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="@dimen/default_padding">
-    <EditText android:id="@+id/download_location"
+<layout>
+    <data>
+        <import type="android.view.View" />
+        <variable name="loadingInProgress" type="boolean" />
+    </data>
+    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingBottom="@dimen/default_padding"/>
-    <FrameLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingBottom="@dimen/default_padding">
-        <TextView android:id="@+id/free_space_text"
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="@dimen/default_padding"
+            android:visibility="@{loadingInProgress ? View.GONE : View.VISIBLE}">
+            <EditText android:id="@+id/download_location_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="@dimen/default_padding"
+                android:inputType="textUri"/>
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingBottom="@dimen/default_padding">
+                <TextView android:id="@+id/free_space_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/free_space_text_size"/>
+                <ProgressBar android:id="@+id/free_space_progress_bar"
+                    android:layout_width="@dimen/free_space_progress_bar_size"
+                    android:layout_height="@dimen/free_space_progress_bar_size" />
+            </FrameLayout>
+            <CheckBox android:id="@+id/start_when_added_checkbox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/start_when_added"
+                android:checked="true"/>
+        </LinearLayout>
+        <ProgressBar
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="@dimen/free_space_text_size"/>
-        <ProgressBar android:id="@+id/free_space_progress_bar"
-            android:layout_width="@dimen/free_space_progress_bar_size"
-            android:layout_height="@dimen/free_space_progress_bar_size" />
+            android:layout_gravity="center"
+            android:visibility="@{loadingInProgress ? View.VISIBLE : View.GONE}"/>
     </FrameLayout>
-    <CheckBox android:id="@+id/start_when_added"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/start_when_added"
-        android:checked="true"/>
-</LinearLayout>
+</layout>

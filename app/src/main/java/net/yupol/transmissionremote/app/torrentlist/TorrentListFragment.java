@@ -47,6 +47,7 @@ import net.yupol.transmissionremote.app.transport.BaseSpiceActivity;
 import net.yupol.transmissionremote.app.transport.TransportManager;
 import net.yupol.transmissionremote.app.transport.request.ReannounceTorrentRequest;
 import net.yupol.transmissionremote.app.transport.request.Request;
+import net.yupol.transmissionremote.app.transport.request.SetLocationRequest;
 import net.yupol.transmissionremote.app.transport.request.StartTorrentRequest;
 import net.yupol.transmissionremote.app.transport.request.StopTorrentRequest;
 import net.yupol.transmissionremote.app.transport.request.TorrentGetRequest;
@@ -69,9 +70,10 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-public class TorrentListFragment extends Fragment {
+public class TorrentListFragment extends Fragment implements ChooseLocationDialogFragment.OnLocationSelectedListener {
 
     private static final String TAG = TorrentListFragment.class.getSimpleName();
+    private static final String CHOOSE_LOCATION_FRAGMENT_TAG = "choose_location_fragment_tag";
 
     private static final String MAX_STRING = "999.9 MB/s";
     private static final Equals<Torrent> DISPLAYED_FIELDS_EQUALS_IMPL = new DisplayedFieldsEquals();
@@ -166,6 +168,9 @@ public class TorrentListFragment extends Fragment {
                 case R.id.action_start_now:
                     sendStartTorrentsRequest(adapter.getSelectedItemsIds(), true);
                     mode.finish();
+                    return true;
+                case R.id.action_set_location:
+                    showChooseLocationDialog();
                     return true;
                 case R.id.action_verify:
                     transportManager.doRequest(new VerifyTorrentRequest(adapter.getSelectedItemsIds()), null);
@@ -263,6 +268,21 @@ public class TorrentListFragment extends Fragment {
         super.onDetach();
     }
 
+    @Override
+    public void onLocationSelected(String path, boolean moveData) {
+        int[] torrentIds = adapter.getSelectedItemsIds();
+        actionMode.finish();
+        transportManager.doRequest(new SetLocationRequest(path, moveData, torrentIds), new RequestListener<Void>() {
+            @Override
+            public void onRequestSuccess(Void aVoid) {}
+
+            @Override
+            public void onRequestFailure(SpiceException spiceException) {
+                Log.e(TAG, "Failed to set location", spiceException);
+            }
+        });
+    }
+
     public void search(String query) {
         searchQuery = query;
         inSearchMode = !query.isEmpty();
@@ -317,6 +337,12 @@ public class TorrentListFragment extends Fragment {
 
     private void updateEmptyTextVisibility() {
         emptyText.setVisibility(adapter.getItemCount() > 0 ? View.GONE : View.VISIBLE);
+    }
+
+    private void showChooseLocationDialog() {
+        ChooseLocationDialogFragment dialog = new ChooseLocationDialogFragment();
+        dialog.setTargetFragment(this, 0);
+        dialog.show(getFragmentManager(), CHOOSE_LOCATION_FRAGMENT_TAG);
     }
 
     private class TorrentsAdapter extends RecyclerView.Adapter<ViewHolder> {
