@@ -104,7 +104,7 @@
     <string name="preferences_notifications_summary">Kész torrent értesítések</string>
     <string name="preferences_advanced_title">Haladó</string>
     <string name="preferences_advanced_summary">Haladó opciók</string>
-    <string name="disable_free_space_check_title">Szabad hely ellenőrzés kikapcsolása/string>
+    <string name="disable_free_space_check_title">Szabad hely ellenőrzés kikapcsolása</string>
     <string name="disable_free_space_check_summary">Engedélyezi, hogy szabadhely ellenőrzés nélkül is hozzáadja a torrentet</string>
 
     <!-- Torrent List -->
