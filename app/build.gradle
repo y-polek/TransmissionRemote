@@ -4,7 +4,7 @@ android {
     compileSdkVersion 25
     buildToolsVersion '25.0.0'
     defaultConfig {
-        minSdkVersion 14
+        minSdkVersion 15
         targetSdkVersion 25
         versionCode 5
         versionName '0.9.3'
@@ -69,4 +69,5 @@ dependencies {
     compile 'com.mikepenz:google-material-typeface:2.2.0.1.original@aar'
     compile 'com.mikepenz:fontawesome-typeface:4.6.0.1@aar'
     compile 'com.mikepenz:community-material-typeface:1.5.54.1@aar'
+    compile 'com.github.sevar83:indeterminate-checkbox:1.0.5@aar'
 }

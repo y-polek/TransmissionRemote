@@ -33,7 +33,6 @@ public class DirectoryFragment extends Fragment implements DirectoryAdapter.OnIt
 
     private int torrentId;
     private Dir dir;
-    private File[] files;
     private FileStat[] fileStats;
     private DirectoryAdapter adapter;
 
@@ -45,7 +44,7 @@ public class DirectoryFragment extends Fragment implements DirectoryAdapter.OnIt
         Bundle args = getArguments();
         torrentId = args.getInt(ARG_TORRENT_ID, -1);
         dir = args.getParcelable(ARG_DIRECTORY);
-        files = (File[]) args.getParcelableArray(ARG_FILES);
+        File[] files = (File[]) args.getParcelableArray(ARG_FILES);
         fileStats = (FileStat[]) args.getParcelableArray(ARG_FILE_STATS);
         if (torrentId < 0 || dir == null || files == null || fileStats == null) {
             throw new IllegalArgumentException("Torrent ID, directory, files and file stats must be passed as arguments");
@@ -84,11 +83,6 @@ public class DirectoryFragment extends Fragment implements DirectoryAdapter.OnIt
         if (parentFragment instanceof OnDirectorySelectedListener) {
             ((OnDirectorySelectedListener) parentFragment).onDirectorySelected(selectedDir);
         }
-    }
-
-    @Override
-    public void onFileSelected(int position) {
-
     }
 
     @Override
