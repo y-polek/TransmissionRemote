@@ -32,6 +32,7 @@
                 android:layout_marginRight="@dimen/default_text_margin_small"
                 android:layout_marginBottom="@dimen/default_text_margin_small"
                 android:textSize="@dimen/tr_abc_text_size_body_1_material"
+                android:textColor="@{dir != null ? @color/text_primary : @color/text_secondary}"
                 android:textStyle="bold"
                 android:text="@{dir != null ? dir.name : file.name}"/>
             <TextView android:id="@+id/stats_text"
@@ -40,7 +41,7 @@
                 android:layout_marginRight="@dimen/default_text_margin_small"
                 android:layout_marginBottom="@dimen/default_text_margin_small"
                 android:textSize="@dimen/tr_abc_text_size_body_2_material"
-                android:text="1.93 MB of 1.93 MB (100%)"/>
+                android:textColor="?android:attr/textColorSecondary"/>
         </LinearLayout>
         <ImageButton android:id="@+id/priority_button"
             android:layout_width="wrap_content"
