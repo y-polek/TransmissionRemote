@@ -1,11 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout>
     <data>
-        <import type="net.yupol.transmissionremote.app.torrentdetails.FilesPageBindingUtils"/>
         <variable name="dir" type="net.yupol.transmissionremote.app.model.Dir" />
         <variable name="file" type="net.yupol.transmissionremote.app.model.json.File" />
-        <variable name="fileStat" type="net.yupol.transmissionremote.app.model.json.FileStat" />
-        <variable name="fileStats" type="net.yupol.transmissionremote.app.model.json.FileStat[]" />
     </data>
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:orientation="horizontal"
@@ -13,12 +10,11 @@
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
         android:background="?android:attr/selectableItemBackground">
-        <CheckBox android:id="@+id/checkbox"
+        <com.buildware.widget.indeterm.IndeterminateCheckBox android:id="@+id/checkbox"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="@dimen/default_padding_small"
-            android:layout_marginLeft="@dimen/default_text_margin"
-            android:checked="@{dir != null ? FilesPageBindingUtils.isDirChecked(dir, fileStats) : FilesPageBindingUtils.isFileChecked(fileStat)}"/>
+            android:layout_marginLeft="@dimen/default_text_margin"/>
         <ImageView android:id="@+id/icon"
             android:layout_width="@dimen/file_type_icon_size"
             android:layout_height="@dimen/file_type_icon_size"
