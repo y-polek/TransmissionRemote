@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -15,31 +16,41 @@ import com.google.common.primitives.Ints;
 
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.model.Dir;
+import net.yupol.transmissionremote.app.model.json.File;
 import net.yupol.transmissionremote.app.model.json.FileStat;
-import net.yupol.transmissionremote.app.model.json.TorrentInfo;
 import net.yupol.transmissionremote.app.transport.BaseSpiceActivity;
 import net.yupol.transmissionremote.app.transport.TransportManager;
 import net.yupol.transmissionremote.app.transport.request.TorrentSetRequest;
 import net.yupol.transmissionremote.app.utils.DividerItemDecoration;
 
-import java.util.ArrayList;
-import java.util.Stack;
-
-public class DirectoryFragment extends BasePageFragment implements DirectoryAdapter.OnItemSelectedListener {
+public class DirectoryFragment extends Fragment implements DirectoryAdapter.OnItemSelectedListener {
 
     private static final String TAG = DirectoryFragment.class.getSimpleName();
-    private static final String KEY_PATH = "key_path";
+    private static final String ARG_TORRENT_ID = "arg_torrent_id";
+    private static final String ARG_DIRECTORY = "arg_directory";
+    private static final String ARG_FILES = "arg_files";
+    private static final String ARG_FILE_STATS = "arg_file_stats";
 
+    private int torrentId;
+    private Dir dir;
+    private File[] files;
+    private FileStat[] fileStats;
     private DirectoryAdapter adapter;
-    private boolean viewCreated;
-    private Stack<Dir> path = new Stack<>();
-    private RecyclerView recyclerView;
 
     private TransportManager transportManager;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Bundle args = getArguments();
+        torrentId = args.getInt(ARG_TORRENT_ID, -1);
+        dir = args.getParcelable(ARG_DIRECTORY);
+        files = (File[]) args.getParcelableArray(ARG_FILES);
+        fileStats = (FileStat[]) args.getParcelableArray(ARG_FILE_STATS);
+        if (torrentId < 0 || dir == null || files == null || fileStats == null) {
+            throw new IllegalArgumentException("Torrent ID, directory, files and file stats must be passed as arguments");
+        }
+        adapter = new DirectoryAdapter(getContext(), dir, files, fileStats, this);
     }
 
     @Override
@@ -47,24 +58,10 @@ public class DirectoryFragment extends BasePageFragment implements DirectoryAdap
         super.onCreateView(inflater, container, savedInstanceState);
 
         View view = inflater.inflate(R.layout.directory_fragment, container, false);
-        recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
+        RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.addItemDecoration(new DividerItemDecoration(getContext()));
         recyclerView.setAdapter(adapter);
-
-        path.clear();
-        TorrentInfo torrentInfo = getTorrentInfo();
-        if (savedInstanceState != null) {
-            ArrayList<Dir> dirs = savedInstanceState.getParcelableArrayList(KEY_PATH);
-            path.addAll(dirs);
-        } else if (torrentInfo != null) {
-            path.push(Dir.createFileTree(torrentInfo.getFiles()));
-        }
-
-        if (torrentInfo != null) {
-            setupAdapter();
-            showTopDir();
-        }
 
         return view;
     }
@@ -81,45 +78,12 @@ public class DirectoryFragment extends BasePageFragment implements DirectoryAdap
     }
 
     @Override
-    public void setTorrentInfo(TorrentInfo torrentInfo) {
-        super.setTorrentInfo(torrentInfo);
-        if (viewCreated) {
-            setupAdapter();
-            path.push(Dir.createFileTree(torrentInfo.getFiles()));
-            showTopDir();
-        }
-    }
-
-    private void setupAdapter() {
-        TorrentInfo torrentInfo = getTorrentInfo();
-        adapter = new DirectoryAdapter(getContext(), torrentInfo.getFiles(), torrentInfo.getFileStats(), this);
-        recyclerView.setAdapter(adapter);
-    }
-
-    @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        viewCreated = true;
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        viewCreated = false;
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putParcelableArrayList(KEY_PATH, new ArrayList<>(path));
-    }
-
-    @Override
     public void onDirectorySelected(int position) {
-        Dir currentDir = path.peek();
-        Dir newDir = currentDir.getDirs().get(position);
-        path.push(newDir);
-        showTopDir();
+        Dir selectedDir = dir.getDirs().get(position);
+        Fragment parentFragment = getParentFragment();
+        if (parentFragment instanceof OnDirectorySelectedListener) {
+            ((OnDirectorySelectedListener) parentFragment).onDirectorySelected(selectedDir);
+        }
     }
 
     @Override
@@ -129,14 +93,13 @@ public class DirectoryFragment extends BasePageFragment implements DirectoryAdap
 
     @Override
     public void onDirectoryChecked(int position, boolean isChecked) {
-        Dir dir = path.peek().getDirs().get(position);
-        int[] fileIndices = Ints.toArray(Dir.filesInDirRecursively(dir));
-        FileStat[] fileStats = getTorrentInfo().getFileStats();
+        Dir checkedDir = dir.getDirs().get(position);
+        int[] fileIndices = Ints.toArray(Dir.filesInDirRecursively(checkedDir));
         for (int fileIndex : fileIndices) {
             fileStats[fileIndex].setWanted(isChecked);
         }
 
-        TorrentSetRequest.Builder requestBuilder = TorrentSetRequest.builder(getTorrent().getId());
+        TorrentSetRequest.Builder requestBuilder = TorrentSetRequest.builder(torrentId);
         if (isChecked) {
             requestBuilder.filesWanted(fileIndices);
         } else {
@@ -147,10 +110,10 @@ public class DirectoryFragment extends BasePageFragment implements DirectoryAdap
 
     @Override
     public void onFileChecked(int fileIndex, boolean isChecked) {
-        FileStat fileStat = getTorrentInfo().getFileStats()[fileIndex];
+        FileStat fileStat = fileStats[fileIndex];
         fileStat.setWanted(isChecked);
 
-        TorrentSetRequest.Builder requestBuilder = TorrentSetRequest.builder(getTorrent().getId());
+        TorrentSetRequest.Builder requestBuilder = TorrentSetRequest.builder(torrentId);
         if (fileStat.isWanted()) {
             requestBuilder.filesWanted(fileIndex);
         } else {
@@ -159,19 +122,18 @@ public class DirectoryFragment extends BasePageFragment implements DirectoryAdap
         transportManager.doRequest(requestBuilder.build(), null);
     }
 
-    @Override
-    public boolean onBackPressed() {
-        if (path.size() <= 1) return false;
-        showPrevDir();
-        return true;
+    public static DirectoryFragment newInstance(int torrentId, Dir dir, File[] files, FileStat[] fileStats) {
+        DirectoryFragment fragment = new DirectoryFragment();
+        Bundle args = new Bundle();
+        args.putInt(ARG_TORRENT_ID, torrentId);
+        args.putParcelable(ARG_DIRECTORY, dir);
+        args.putParcelableArray(ARG_FILES, files);
+        args.putParcelableArray(ARG_FILE_STATS, fileStats);
+        fragment.setArguments(args);
+        return fragment;
     }
 
-    private void showTopDir() {
-        adapter.setDirectory(path.peek());
-    }
-
-    private void showPrevDir() {
-        path.pop();
-        adapter.setDirectory(path.peek());
+    public interface OnDirectorySelectedListener {
+        void onDirectorySelected(Dir dir);
     }
 }
