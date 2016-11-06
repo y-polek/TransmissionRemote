@@ -20,8 +20,10 @@ import net.yupol.transmissionremote.app.model.Dir;
 import net.yupol.transmissionremote.app.model.FileType;
 import net.yupol.transmissionremote.app.model.json.File;
 import net.yupol.transmissionremote.app.model.json.FileStat;
+import net.yupol.transmissionremote.app.utils.TextUtils;
 
 import java.util.List;
+import java.util.Locale;
 
 public class DirectoryAdapter extends RecyclerView.Adapter<DirectoryAdapter.ViewHolder> {
 
@@ -51,6 +53,8 @@ public class DirectoryAdapter extends RecyclerView.Adapter<DirectoryAdapter.View
     public void onBindViewHolder(ViewHolder holder, int position) {
         final int viewType = getItemViewType(position);
         Drawable icon = null;
+        long bytesCompleted = 0;
+        long filesLength = 0;
         switch (viewType) {
             case R.id.view_type_directory:
                 Dir dir = getDir(position);
@@ -58,6 +62,9 @@ public class DirectoryAdapter extends RecyclerView.Adapter<DirectoryAdapter.View
 
                 holder.binding.checkbox.setState(isDirectoryChecked(dir));
                 holder.binding.checkbox.setEnabled(!isDirectoryCompleted(dir));
+
+                bytesCompleted = calculateBytesCompletedInDir(dir);
+                filesLength = calculateFilesLengthInDir(dir);
 
                 icon = new IconicsDrawable(context, FontAwesome.Icon.faw_folder_o)
                         .color(ContextCompat.getColor(context, R.color.text_color_primary));
@@ -69,10 +76,20 @@ public class DirectoryAdapter extends RecyclerView.Adapter<DirectoryAdapter.View
                 holder.binding.checkbox.setChecked(isFileChecked(position));
                 holder.binding.checkbox.setEnabled(!isFileCompleted(position));
 
+                bytesCompleted = file.getBytesCompleted();
+                filesLength = file.getLength();
+
                 icon = new IconicsDrawable(context, FileType.iconFromName(file.getName()))
                         .color(ContextCompat.getColor(context, R.color.text_color_secondary));
                 break;
         }
+
+        String stats = String.format(Locale.getDefault(), "%s of %s (%d%%)",
+                TextUtils.displayableSize(bytesCompleted),
+                TextUtils.displayableSize(filesLength),
+                (int) (100 * bytesCompleted/(double) filesLength));
+        holder.binding.statsText.setText(stats);
+
         holder.binding.icon.setImageDrawable(icon);
         holder.binding.executePendingBindings();
     }
@@ -97,20 +114,60 @@ public class DirectoryAdapter extends RecyclerView.Adapter<DirectoryAdapter.View
     private Boolean isDirectoryChecked(Dir dir) {
         boolean hasCheckedFiles = false;
         boolean hasUncheckedFiles = false;
+
+        for (Dir subDir : dir.getDirs()) {
+            Boolean isSubDirChecked = isDirectoryChecked(subDir);
+            if (isSubDirChecked == null) return null;
+            hasCheckedFiles |= isSubDirChecked;
+            hasUncheckedFiles |= !isSubDirChecked;
+        }
+
         for (Integer fileIndex : dir.getFileIndices()) {
             boolean isFileChecked = isFileChecked(files[fileIndex], fileStats[fileIndex]);
             hasCheckedFiles |= isFileChecked;
             hasUncheckedFiles |= !isFileChecked;
             if (hasCheckedFiles && hasUncheckedFiles) return null;
         }
+
         return hasCheckedFiles;
     }
 
     private boolean isDirectoryCompleted(Dir dir) {
+        for (Dir subDir : dir.getDirs()) {
+            if (!isDirectoryCompleted(subDir)) return false;
+        }
         for (Integer fileIndex : dir.getFileIndices()) {
             if (!isFileCompleted(files[fileIndex])) return false;
         }
         return true;
+    }
+
+    private long calculateBytesCompletedInDir(Dir dir) {
+        long bytesCompleted = 0;
+
+        for (Dir subDir : dir.getDirs()) {
+            bytesCompleted += calculateBytesCompletedInDir(subDir);
+        }
+
+        for (Integer fileIndex : dir.getFileIndices()) {
+            bytesCompleted += files[fileIndex].getBytesCompleted();
+        }
+
+        return bytesCompleted;
+    }
+
+    private long calculateFilesLengthInDir(Dir dir) {
+        long length = 0;
+
+        for (Dir subDir : dir.getDirs()) {
+            length += calculateFilesLengthInDir(subDir);
+        }
+
+        for (Integer fileIndex : dir.getFileIndices()) {
+            length += files[fileIndex].getLength();
+        }
+
+        return length;
     }
 
     @Override
