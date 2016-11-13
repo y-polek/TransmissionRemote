@@ -62,6 +62,11 @@
     <dimen name="speed_text_size">15sp</dimen>
     <dimen name="menu_item_icon_size">18dp</dimen>
 
+                <!-- Files details tab -->
     <dimen name="file_type_icon_size">18dp</dimen>
+    <dimen name="home_button_size">42dp</dimen>
+    <dimen name="home_button_text_size">28dp</dimen>
+    <dimen name="arrow_icon_size">14dp</dimen>
+    <dimen name="text_padding_horizontal">6dp</dimen>
 
 </resources>
