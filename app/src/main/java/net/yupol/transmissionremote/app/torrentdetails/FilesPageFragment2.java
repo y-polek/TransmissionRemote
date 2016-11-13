@@ -29,22 +29,31 @@ public class FilesPageFragment2 extends BasePageFragment implements DirectoryFra
 
     private boolean viewCreated;
     private Stack<Dir> path = new Stack<>();
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        if (savedInstanceState != null) {
-            ArrayList<Dir> dirs = savedInstanceState.getParcelableArrayList(KEY_PATH);
-            path.addAll(dirs);
-        }
-    }
+    private BreadcrumbView breadcrumbView;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
 
         View view = inflater.inflate(R.layout.torrent_details_file_page_fragment2, container, false);
+        breadcrumbView = (BreadcrumbView) view.findViewById(R.id.breadcrumb_view);
+        breadcrumbView.setOnNodeSelectedListener(new BreadcrumbView.OnNodeSelectedListener() {
+            @Override
+            public void onNodeSelected(int position) {
+                if (position >= path.size() - 1) return;
+                for (int i=path.size()-1; i>position; i--) {
+                    path.remove(i);
+                }
+                breadcrumbView.setPath(path);
+                showDirectory(path.peek(), AnimationDirection.LEFT_TO_RIGHT);
+            }
+        });
+
+        if (savedInstanceState != null) {
+            ArrayList<Dir> dirs = savedInstanceState.getParcelableArrayList(KEY_PATH);
+            path.addAll(dirs);
+            breadcrumbView.setPath(path);
+        }
 
         if (getTorrentInfo() != null) {
             if (path.isEmpty()) {
@@ -57,6 +66,7 @@ public class FilesPageFragment2 extends BasePageFragment implements DirectoryFra
         }
 
         viewCreated = true;
+
 
         return view;
     }
@@ -93,6 +103,7 @@ public class FilesPageFragment2 extends BasePageFragment implements DirectoryFra
     @Override
     public void onDirectorySelected(Dir dir) {
         path.push(dir);
+        breadcrumbView.setPath(path);
         showDirectory(dir, AnimationDirection.RIGHT_TO_LEFT);
     }
 
@@ -100,6 +111,7 @@ public class FilesPageFragment2 extends BasePageFragment implements DirectoryFra
     public boolean onBackPressed() {
         if (path.size() > 1) {
             path.pop();
+            breadcrumbView.setPath(path);
             showDirectory(path.peek(), AnimationDirection.LEFT_TO_RIGHT);
             return true;
         }
@@ -111,6 +123,7 @@ public class FilesPageFragment2 extends BasePageFragment implements DirectoryFra
         showDirectory(rootDir, null);
         path.clear();
         path.push(rootDir);
+        breadcrumbView.setPath(path);
     }
 
     private void showProgressbarFragment() {
