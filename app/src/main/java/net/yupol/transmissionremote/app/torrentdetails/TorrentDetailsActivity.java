@@ -214,9 +214,6 @@ public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveCha
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case android.R.id.home:
-                onBackPressed();
-                return true;
             case R.id.action_remove_torrents:
                 RemoveTorrentsDialogFragment.newInstance(torrent.getId())
                         .show(getSupportFragmentManager(), RemoveTorrentsDialogFragment.TAG_REMOVE_TORRENTS_DIALOG);
