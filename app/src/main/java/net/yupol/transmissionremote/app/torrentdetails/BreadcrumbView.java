@@ -13,13 +13,15 @@ import android.view.ViewGroup;
 import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.mikepenz.iconics.view.IconicsButton;
 import com.mikepenz.iconics.view.IconicsImageView;
 import com.mikepenz.ionicons_typeface_library.Ionicons;
 
 import net.yupol.transmissionremote.app.R;
+import net.yupol.transmissionremote.app.model.Dir;
+
+import java.util.Stack;
 
 public class BreadcrumbView extends LinearLayout {
 
@@ -30,6 +32,10 @@ public class BreadcrumbView extends LinearLayout {
     @ColorInt private int primaryColor;
     @ColorInt private int secondaryColor;
     private int textPadding;
+
+    private Stack<Dir> path = new Stack<>();
+    private OnNodeSelectedListener listener;
+    private final HorizontalScrollView scrollView;
 
     public BreadcrumbView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -56,8 +62,14 @@ public class BreadcrumbView extends LinearLayout {
         LayoutParams homeLayoutParams = new LayoutParams(homeButtonSize, homeButtonSize);
         homeLayoutParams.gravity = Gravity.CENTER_VERTICAL;
         addView(homeButton, homeLayoutParams);
+        homeButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (listener != null) listener.onNodeSelected(0);
+            }
+        });
 
-        HorizontalScrollView scrollView = new HorizontalScrollView(context);
+        scrollView = new HorizontalScrollView(context);
         scrollView.setHorizontalScrollBarEnabled(false);
         LayoutParams scrollLayoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
         addView(scrollView, scrollLayoutParams);
@@ -66,17 +78,30 @@ public class BreadcrumbView extends LinearLayout {
         pathLayout.setOrientation(HORIZONTAL);
         ViewGroup.LayoutParams pathLayoutParams = new ViewGroup.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
         scrollView.addView(pathLayout, pathLayoutParams);
-
-        addNode("Hello");
-        addNode("World");
-        addNode("One");
-        addNode("Two");
-        addNode("Three");
-        addNode("Four");
-        addNode("Five");
     }
 
-    private void addNode(final String text) {
+    public void setPath(Stack<Dir> path) {
+        this.path.clear();
+        this.path.addAll(path);
+
+        pathLayout.removeAllViews();
+        for (int i=1; i<path.size(); i++) { // skip root dir
+            addNode(i);
+        }
+        scrollView.post(new Runnable() {
+            @Override
+            public void run() {
+                scrollView.fullScroll(FOCUS_RIGHT);
+            }
+        });
+    }
+
+    public void setOnNodeSelectedListener(OnNodeSelectedListener listener) {
+        this.listener = listener;
+    }
+
+    private void addNode(final int position) {
+        Dir dir = path.get(position);
         IconicsImageView dividerView = new IconicsImageView(getContext());
         dividerView.setIcon(Ionicons.Icon.ion_ios_arrow_right);
         dividerView.setColor(secondaryColor);
@@ -85,7 +110,7 @@ public class BreadcrumbView extends LinearLayout {
         pathLayout.addView(dividerView, dividerLayoutParams);
 
         TextView textView = new TextView(getContext());
-        textView.setText(text);
+        textView.setText(dir.getName());
         textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
         textView.setBackgroundResource(buttonBackground);
         textView.setTextColor(primaryColor);
@@ -98,8 +123,12 @@ public class BreadcrumbView extends LinearLayout {
         textView.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getContext(), text, Toast.LENGTH_SHORT).show();
+                if (listener != null) listener.onNodeSelected(position);
             }
         });
+    }
+
+    public interface OnNodeSelectedListener {
+        void onNodeSelected(int position);
     }
 }

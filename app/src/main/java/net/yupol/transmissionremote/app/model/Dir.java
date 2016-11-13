@@ -50,10 +50,6 @@ public final class Dir implements Parcelable {
         return root;
     }
 
-    public static Dir emptyDir() {
-        return new Dir("/");
-    }
-
     public static List<Integer> filesInDirRecursively(Dir dir) {
         List<Integer> fileIndices = new LinkedList<>();
         collectFilesInDir(dir, fileIndices);

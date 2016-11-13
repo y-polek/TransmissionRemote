@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
-    <net.yupol.transmissionremote.app.torrentdetails.BreadcrumbView
+    <net.yupol.transmissionremote.app.torrentdetails.BreadcrumbView android:id="@+id/breadcrumb_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
     <FrameLayout
