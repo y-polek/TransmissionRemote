@@ -85,7 +85,9 @@ public class BreadcrumbView extends LinearLayout {
         this.path.addAll(path);
 
         pathLayout.removeAllViews();
+        addSeparator();
         for (int i=1; i<path.size(); i++) { // skip root dir
+            if (i != 1) addSeparator();
             addNode(i);
         }
         scrollView.post(new Runnable() {
@@ -102,12 +104,6 @@ public class BreadcrumbView extends LinearLayout {
 
     private void addNode(final int position) {
         Dir dir = path.get(position);
-        IconicsImageView dividerView = new IconicsImageView(getContext());
-        dividerView.setIcon(Ionicons.Icon.ion_ios_arrow_right);
-        dividerView.setColor(secondaryColor);
-        LayoutParams dividerLayoutParams = new LayoutParams(arrowIconSize, arrowIconSize);
-        dividerLayoutParams.gravity = Gravity.CENTER_VERTICAL;
-        pathLayout.addView(dividerView, dividerLayoutParams);
 
         TextView textView = new TextView(getContext());
         textView.setText(dir.getName());
@@ -126,6 +122,15 @@ public class BreadcrumbView extends LinearLayout {
                 if (listener != null) listener.onNodeSelected(position);
             }
         });
+    }
+
+    private void addSeparator() {
+        IconicsImageView dividerView = new IconicsImageView(getContext());
+        dividerView.setIcon(Ionicons.Icon.ion_ios_arrow_right);
+        dividerView.setColor(secondaryColor);
+        LayoutParams dividerLayoutParams = new LayoutParams(arrowIconSize, arrowIconSize);
+        dividerLayoutParams.gravity = Gravity.CENTER_VERTICAL;
+        pathLayout.addView(dividerView, dividerLayoutParams);
     }
 
     public interface OnNodeSelectedListener {
