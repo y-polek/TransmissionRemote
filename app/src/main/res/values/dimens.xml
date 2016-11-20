@@ -68,5 +68,8 @@
     <dimen name="home_button_text_size">28dp</dimen>
     <dimen name="arrow_icon_size">14dp</dimen>
     <dimen name="text_padding_horizontal">6dp</dimen>
+    <dimen name="priority_icon_size">12dp</dimen>
+    <dimen name="priority_icon_text_size">18dp</dimen>
+    <dimen name="priority_popup_offset">8dp</dimen>
 
 </resources>

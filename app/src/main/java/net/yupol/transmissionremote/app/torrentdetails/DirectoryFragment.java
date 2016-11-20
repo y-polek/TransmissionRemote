@@ -13,9 +13,12 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.google.common.primitives.Ints;
+import com.octo.android.robospice.persistence.exception.SpiceException;
+import com.octo.android.robospice.request.listener.RequestListener;
 
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.model.Dir;
+import net.yupol.transmissionremote.app.model.Priority;
 import net.yupol.transmissionremote.app.model.json.File;
 import net.yupol.transmissionremote.app.model.json.FileStat;
 import net.yupol.transmissionremote.app.transport.BaseSpiceActivity;
@@ -34,8 +37,8 @@ public class DirectoryFragment extends Fragment implements DirectoryAdapter.OnIt
     private int torrentId;
     private Dir dir;
     private FileStat[] fileStats;
-    private DirectoryAdapter adapter;
 
+    private DirectoryAdapter adapter;
     private TransportManager transportManager;
 
     @Override
@@ -114,6 +117,29 @@ public class DirectoryFragment extends Fragment implements DirectoryAdapter.OnIt
             requestBuilder.filesUnwanted(fileIndex);
         }
         transportManager.doRequest(requestBuilder.build(), null);
+    }
+
+    @Override
+    public void onDirectoryPriorityChanged(int position, Priority priority) {
+        Dir changedDir = dir.getDirs().get(position);
+        transportManager.doRequest(TorrentSetRequest.builder(torrentId)
+                .filesWithPriority(priority, Dir.filesInDirRecursively(changedDir)).build(), null);
+    }
+
+    @Override
+    public void onFilePriorityChanged(int fileIndex, Priority priority) {
+        transportManager.doRequest(TorrentSetRequest.builder(torrentId)
+                .filesWithPriority(priority, fileIndex).build(), new RequestListener<Void>() {
+            @Override
+            public void onRequestFailure(SpiceException spiceException) {
+                Log.d(TAG, "failed to change priority");
+            }
+
+            @Override
+            public void onRequestSuccess(Void aVoid) {
+                Log.d(TAG, "success");
+            }
+        });
     }
 
     public static DirectoryFragment newInstance(int torrentId, Dir dir, File[] files, FileStat[] fileStats) {

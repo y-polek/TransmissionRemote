@@ -30,6 +30,10 @@ public class FileStat implements Parcelable {
         return priority;
     }
 
+    public void setPriority(int priority) {
+        this.priority = priority;
+    }
+
     public long getBytesCompleted() {
         return bytesCompleted;
     }
