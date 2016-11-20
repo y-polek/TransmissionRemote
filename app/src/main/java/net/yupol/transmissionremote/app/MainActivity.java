@@ -733,8 +733,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
     public void onTorrentSelected(Torrent torrent) {
         Intent intent = new Intent(this, TorrentDetailsActivity.class);
         intent.putExtra(TorrentDetailsActivity.EXTRA_NAME_TORRENT, torrent);
-        //startActivity(intent);
-        throw new RuntimeException("Test crash!!!");
+        startActivity(intent);
     }
 
     @Override
