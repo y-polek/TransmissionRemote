@@ -34,6 +34,7 @@ import android.widget.SearchView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
 import com.mikepenz.fontawesome_typeface_library.FontAwesome;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.iconics.context.IconicsLayoutInflater;
@@ -101,6 +102,8 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
+
+import io.fabric.sdk.android.Fabric;
 
 public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.TorrentUpdateListener,
         SharedPreferences.OnSharedPreferenceChangeListener, TransmissionRemote.OnSpeedLimitChangedListener,
@@ -195,6 +198,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
     protected void onCreate(Bundle savedInstanceState) {
         LayoutInflaterCompat.setFactory(getLayoutInflater(), new IconicsLayoutInflater(getDelegate()));
         super.onCreate(savedInstanceState);
+        Fabric.with(this, new Crashlytics());
         setContentView(R.layout.main_activity);
 
         application = TransmissionRemote.getApplication(this);
@@ -729,7 +733,8 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
     public void onTorrentSelected(Torrent torrent) {
         Intent intent = new Intent(this, TorrentDetailsActivity.class);
         intent.putExtra(TorrentDetailsActivity.EXTRA_NAME_TORRENT, torrent);
-        startActivity(intent);
+        //startActivity(intent);
+        throw new RuntimeException("Test crash!!!");
     }
 
     @Override

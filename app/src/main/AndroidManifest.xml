@@ -15,6 +15,11 @@
         android:icon="@drawable/transmission"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
+
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="ba13427352989dfb887d1cdd807feac6e4bffcaa" />
+
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
