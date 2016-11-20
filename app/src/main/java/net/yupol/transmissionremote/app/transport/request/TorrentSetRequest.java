@@ -4,8 +4,11 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
 
-import net.yupol.transmissionremote.app.model.limitmode.LimitMode;
+import com.google.common.primitives.Ints;
+
+import net.yupol.transmissionremote.app.model.Priority;
 import net.yupol.transmissionremote.app.model.json.TransferPriority;
+import net.yupol.transmissionremote.app.model.limitmode.LimitMode;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.json.JSONArray;
@@ -13,6 +16,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 
 public class TorrentSetRequest extends Request<Void> implements Parcelable {
@@ -83,6 +87,9 @@ public class TorrentSetRequest extends Request<Void> implements Parcelable {
         private Double seedRatioLimit;
         private LimitMode seedIdleMode;
         private Double seedIdleLimit;
+        private int[] priorityHight;
+        private int[] priorityNormal;
+        private int[] priorityLow;
 
         private boolean changed = false;
 
@@ -154,6 +161,25 @@ public class TorrentSetRequest extends Request<Void> implements Parcelable {
             return changedBuilder();
         }
 
+        public Builder filesWithPriority(Priority priority, int... fileIndices) {
+            switch (priority) {
+                case HIGH:
+                    priorityHight = fileIndices;
+                    break;
+                case NORMAL:
+                    priorityNormal = fileIndices;
+                    break;
+                case LOW:
+                    priorityLow = fileIndices;
+                    break;
+            }
+            return changedBuilder();
+        }
+
+        public Builder filesWithPriority(Priority priority, Collection<Integer> fileIndices) {
+            return filesWithPriority(priority, Ints.toArray(fileIndices));
+        }
+
         private Builder changedBuilder() {
             changed = true;
             return this;
@@ -176,6 +202,9 @@ public class TorrentSetRequest extends Request<Void> implements Parcelable {
             seedRatioLimit = null;
             seedIdleMode = null;
             seedIdleLimit = null;
+            priorityHight = null;
+            priorityNormal = null;
+            priorityLow = null;
 
             changed = false;
 
@@ -187,11 +216,11 @@ public class TorrentSetRequest extends Request<Void> implements Parcelable {
             JSONObject args = new JSONObject();
             try {
                 args.put("ids", new JSONArray(Collections.singleton(torrentId)));
-                if (filesWantedIndices != null && filesWantedIndices.length > 0) {
-                    args.put("files-wanted", new JSONArray(Arrays.asList(ArrayUtils.toObject(filesWantedIndices))));
+                if (ArrayUtils.isNotEmpty(filesWantedIndices)) {
+                    args.put("files-wanted", intArray(filesWantedIndices));
                 }
-                if (filesUnwantedIndices != null && filesUnwantedIndices.length > 0) {
-                    args.put("files-unwanted", new JSONArray(Arrays.asList(ArrayUtils.toObject(filesUnwantedIndices))));
+                if (ArrayUtils.isNotEmpty(filesUnwantedIndices)) {
+                    args.put("files-unwanted", intArray(filesUnwantedIndices));
                 }
                 if (transferPriority != null) {
                     args.put("bandwidthPriority", transferPriority.getModelValue());
@@ -223,10 +252,23 @@ public class TorrentSetRequest extends Request<Void> implements Parcelable {
                 if (seedIdleLimit != null) {
                     args.put("seedIdleLimit", seedIdleLimit);
                 }
+                if (ArrayUtils.isNotEmpty(priorityHight)) {
+                    args.put("priority-high", intArray(priorityHight));
+                }
+                if (ArrayUtils.isNotEmpty(priorityNormal)) {
+                    args.put("priority-normal", intArray(priorityNormal));
+                }
+                if (ArrayUtils.isNotEmpty(priorityLow)) {
+                    args.put("priority-low", intArray(priorityLow));
+                }
             } catch (JSONException e) {
                 Log.e(TAG, "Error while creating JSON object");
             }
             return new TorrentSetRequest(args);
+        }
+
+        private static JSONArray intArray(int[] array) {
+            return new JSONArray(Arrays.asList(ArrayUtils.toObject(array)));
         }
     }
 }

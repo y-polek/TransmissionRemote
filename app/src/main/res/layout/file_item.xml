@@ -43,14 +43,14 @@
                 android:textSize="@dimen/tr_abc_text_size_body_2_material"
                 android:textColor="?android:attr/textColorSecondary"/>
         </LinearLayout>
-        <ImageButton android:id="@+id/priority_button"
+        <com.mikepenz.iconics.view.IconicsTextView android:id="@+id/priority_button"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:paddingLeft="@dimen/default_padding"
-            android:paddingRight="@dimen/default_padding"
-            android:layout_marginRight="@dimen/default_text_margin"
-            android:background="@null"
-            android:src="@drawable/priority_normal"
+            android:paddingLeft="@dimen/default_padding_big"
+            android:paddingRight="@dimen/default_padding_big"
+            android:gravity="center"
+            android:background="?android:selectableItemBackground"
+            android:textSize="@dimen/priority_icon_text_size"
             android:contentDescription="@string/priority"/>
     </LinearLayout>
 </layout>

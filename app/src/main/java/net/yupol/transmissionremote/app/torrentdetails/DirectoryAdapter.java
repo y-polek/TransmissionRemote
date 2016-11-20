@@ -5,10 +5,14 @@ import android.databinding.DataBindingUtil;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.ListPopupWindow;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.FrameLayout;
+import android.widget.ListAdapter;
 
 import com.buildware.widget.indeterm.IndeterminateCheckBox;
 import com.mikepenz.fontawesome_typeface_library.FontAwesome;
@@ -18,12 +22,16 @@ import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.databinding.FileItemBinding;
 import net.yupol.transmissionremote.app.model.Dir;
 import net.yupol.transmissionremote.app.model.FileType;
+import net.yupol.transmissionremote.app.model.Priority;
 import net.yupol.transmissionremote.app.model.json.File;
 import net.yupol.transmissionremote.app.model.json.FileStat;
 import net.yupol.transmissionremote.app.utils.TextUtils;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 public class DirectoryAdapter extends RecyclerView.Adapter<DirectoryAdapter.ViewHolder> {
 
@@ -39,6 +47,7 @@ public class DirectoryAdapter extends RecyclerView.Adapter<DirectoryAdapter.View
         this.files = files;
         this.fileStats = fileStats;
         this.listener = listener;
+        setHasStableIds(true);
     }
 
     @Override
@@ -60,8 +69,13 @@ public class DirectoryAdapter extends RecyclerView.Adapter<DirectoryAdapter.View
                 Dir dir = getDir(position);
                 holder.binding.setDir(dir);
 
+                boolean isDirectoryCompleted = isDirectoryCompleted(dir);
                 holder.binding.checkbox.setState(isDirectoryChecked(dir));
-                holder.binding.checkbox.setEnabled(!isDirectoryCompleted(dir));
+                holder.binding.checkbox.setEnabled(!isDirectoryCompleted);
+
+                Set<Integer> priorities = dirPriorities(dir);
+                holder.binding.priorityButton.setText(formatDirPriorities(priorities));
+                holder.binding.priorityButton.setEnabled(!isDirectoryCompleted);
 
                 bytesCompleted = calculateBytesCompletedInDir(dir);
                 filesLength = calculateFilesLengthInDir(dir);
@@ -73,8 +87,13 @@ public class DirectoryAdapter extends RecyclerView.Adapter<DirectoryAdapter.View
                 File file = getFile(position);
                 holder.binding.setFile(file);
 
+                boolean isFileCompleted = isFileCompleted(position);
                 holder.binding.checkbox.setChecked(isFileChecked(position));
-                holder.binding.checkbox.setEnabled(!isFileCompleted(position));
+                holder.binding.checkbox.setEnabled(!isFileCompleted);
+
+                Priority priority = filePriority(position);
+                holder.binding.priorityButton.setText(priority.icon.getFormattedName());
+                holder.binding.priorityButton.setEnabled(!isFileCompleted);
 
                 bytesCompleted = file.getBytesCompleted();
                 filesLength = file.getLength();
@@ -170,6 +189,36 @@ public class DirectoryAdapter extends RecyclerView.Adapter<DirectoryAdapter.View
         return length;
     }
 
+    private Priority filePriority(int position) {
+        return Priority.fromValue(getFileStat(position).getPriority(), Priority.NORMAL);
+    }
+
+    private Set<Integer> dirPriorities(Dir dir) {
+        Set<Integer> priorities = new HashSet<>();
+
+        for (Dir subDir : dir.getDirs()) {
+            priorities.addAll(dirPriorities(subDir));
+        }
+
+        for (Integer fileIndex : dir.getFileIndices()) {
+            if (!isFileCompleted(files[fileIndex])) {
+                priorities.add(fileStats[fileIndex].getPriority());
+            }
+        }
+
+        return priorities;
+    }
+
+    private String formatDirPriorities(Set<Integer> prioritiesSet) {
+        Integer[] priorities = prioritiesSet.toArray(new Integer[prioritiesSet.size()]);
+        Arrays.sort(priorities);
+        StringBuilder b = new StringBuilder();
+        for (Integer priority : priorities) {
+            b.append(Priority.fromValue(priority, Priority.NORMAL).icon.getFormattedName());
+        }
+        return b.toString();
+    }
+
     @Override
     public int getItemCount() {
         return currentDir.getDirs().size() + currentDir.getFileIndices().size();
@@ -189,6 +238,11 @@ public class DirectoryAdapter extends RecyclerView.Adapter<DirectoryAdapter.View
             Integer fileIndex = currentDir.getFileIndices().get(position - dirs.size());
             return (T) fileIndex;
         }
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return position;
     }
 
     private Dir getDir(int position) {
@@ -225,7 +279,6 @@ public class DirectoryAdapter extends RecyclerView.Adapter<DirectoryAdapter.View
                             binding.checkbox.setChecked(!binding.checkbox.isChecked());
                         }
                     }
-
                 }
             });
             binding.checkbox.setOnStateChangedListener(new IndeterminateCheckBox.OnStateChangedListener() {
@@ -240,12 +293,95 @@ public class DirectoryAdapter extends RecyclerView.Adapter<DirectoryAdapter.View
                     }
                 }
             });
+            binding.priorityButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    final ListPopupWindow popup = new ListPopupWindow(context);
+                    PriorityListAdapter adapter = new PriorityListAdapter(context);
+                    popup.setAdapter(adapter);
+                    popup.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> parent, View view, int priorityPosition, long id) {
+                            Priority priority = (Priority) parent.getItemAtPosition(priorityPosition);
+
+                            int position = getAdapterPosition();
+                            if (getItemViewType() == R.id.view_type_directory) {
+                                listener.onDirectoryPriorityChanged(position, priority);
+                                setDirPriority(getDir(position), priority);
+                            } else {
+                                Integer fileIndex = getItem(position);
+                                listener.onFilePriorityChanged(fileIndex, priority);
+                                setFilePriority(fileIndex, priority);
+                            }
+                            notifyDataSetChanged();
+
+                            popup.dismiss();
+                        }
+                    });
+                    popup.setAnchorView(view);
+                    int contentWidth = measurePriorityPopupWidth(context, adapter);
+                    popup.setContentWidth(contentWidth);
+                    popup.setHorizontalOffset(
+                            view.getWidth() - contentWidth - context.getResources().getDimensionPixelOffset(R.dimen.priority_popup_offset));
+                    popup.show();
+                }
+            });
         }
+    }
+
+    private void setFilePriority(Integer fileIndex, Priority priority) {
+        fileStats[fileIndex].setPriority(priority.value);
+    }
+
+    private void setDirPriority(Dir dir, Priority priority) {
+        for (Dir subDir : dir.getDirs()) {
+            setDirPriority(subDir, priority);
+        }
+        for (Integer fileIndex : dir.getFileIndices()) {
+            if (!isFileCompleted(files[fileIndex])) {
+                setFilePriority(fileIndex, priority);
+            }
+        }
+    }
+
+    private static int measurePriorityPopupWidth(Context context, ListAdapter adapter) {
+        ViewGroup mMeasureParent = null;
+        int maxWidth = 0;
+        View itemView = null;
+        int itemType = 0;
+
+        final int widthMeasureSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
+        final int heightMeasureSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
+        final int count = adapter.getCount();
+        for (int i=0; i<count; i++) {
+            final int positionType = adapter.getItemViewType(i);
+            if (positionType != itemType) {
+                itemType = positionType;
+                itemView = null;
+            }
+
+            if (mMeasureParent == null) {
+                mMeasureParent = new FrameLayout(context);
+            }
+
+            itemView = adapter.getView(i, itemView, mMeasureParent);
+            itemView.measure(widthMeasureSpec, heightMeasureSpec);
+
+            int itemWidth = itemView.getMeasuredWidth();
+
+            if (itemWidth > maxWidth) {
+                maxWidth = itemWidth;
+            }
+        }
+
+        return maxWidth;
     }
 
     public interface OnItemSelectedListener {
         void onDirectorySelected(int position);
         void onDirectoryChecked(int position, boolean isChecked);
         void onFileChecked(int fileIndex, boolean isChecked);
+        void onDirectoryPriorityChanged(int position, Priority priority);
+        void onFilePriorityChanged(int fileIndex, Priority priority);
     }
 }
