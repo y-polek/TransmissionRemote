@@ -193,4 +193,8 @@
     <string name="unknown_free_space_confirmation">Директория не найдена. Добавить торрент?</string>
     <string name="preferences_advanced_summary">Расширенные параметры</string>
     <string name="preferences_advanced_title">Расширенные</string>
+    <string name="action_set_location">Выбрать размещение</string>
+    <string name="choose_location">Выберите новую папку</string>
+    <string name="move_data">Переместить данные</string>
+    <string name="apply">Применить</string>
 </resources>
