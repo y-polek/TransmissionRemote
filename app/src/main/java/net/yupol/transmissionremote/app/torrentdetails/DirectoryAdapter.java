@@ -297,6 +297,7 @@ public class DirectoryAdapter extends RecyclerView.Adapter<DirectoryAdapter.View
                 @Override
                 public void onClick(View view) {
                     final ListPopupWindow popup = new ListPopupWindow(context);
+                    popup.setModal(true);
                     PriorityListAdapter adapter = new PriorityListAdapter(context);
                     popup.setAdapter(adapter);
                     popup.setOnItemClickListener(new AdapterView.OnItemClickListener() {
