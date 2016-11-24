@@ -91,13 +91,15 @@ public class DownloadLocationDialogFragment extends DialogFragment {
                 public void onRequestSuccess(ServerSettings serverSettings) {
                     binding.setLoadingInProgress(false);
                     binding.downloadLocationText.setText(Strings.nullToEmpty(serverSettings.getDownloadDir()));
-                    ((AlertDialog) getDialog()).getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(true);
+                    AlertDialog dialog = (AlertDialog) getDialog();
+                    if (dialog != null) dialog.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(true);
                 }
 
                 @Override
                 public void onRequestFailure(SpiceException spiceException) {
                     binding.setLoadingInProgress(false);
-                    ((AlertDialog) getDialog()).getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(true);
+                    AlertDialog dialog = (AlertDialog) getDialog();
+                    if (dialog != null) dialog.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(true);
                 }
             });
         }
