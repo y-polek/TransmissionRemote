@@ -74,6 +74,8 @@ public class TorrentListFragment extends Fragment implements ChooseLocationDialo
 
     private static final String TAG = TorrentListFragment.class.getSimpleName();
     private static final String CHOOSE_LOCATION_FRAGMENT_TAG = "choose_location_fragment_tag";
+    private static final String KEY_ACTION_MODE = "key_action_mode";
+    private static final String KEY_SELECTION = "key_selection";
 
     private static final String MAX_STRING = "999.9 MB/s";
     private static final Equals<Torrent> DISPLAYED_FIELDS_EQUALS_IMPL = new DisplayedFieldsEquals();
@@ -196,6 +198,7 @@ public class TorrentListFragment extends Fragment implements ChooseLocationDialo
         }
     };
     private ActionMode actionMode;
+    private int[] restoredSelection;
 
     @Override
     public void onAttach(Context context) {
@@ -240,6 +243,13 @@ public class TorrentListFragment extends Fragment implements ChooseLocationDialo
 
         emptyText = (TextView) view.findViewById(R.id.torrent_list_empty_text);
 
+        if (savedInstanceState != null) {
+            if (savedInstanceState.getBoolean(KEY_ACTION_MODE, false)) {
+                actionMode = getActivity().startActionMode(actionModeCallback);
+            }
+            restoredSelection = savedInstanceState.getIntArray(KEY_SELECTION);
+        }
+
         return view;
     }
 
@@ -250,6 +260,10 @@ public class TorrentListFragment extends Fragment implements ChooseLocationDialo
         allTorrents = app.getTorrents();
 
         updateTorrentList();
+        if (restoredSelection != null) {
+            adapter.setSelectedItemsPositions(restoredSelection);
+            restoredSelection = null;
+        }
     }
 
     @Override
@@ -266,6 +280,13 @@ public class TorrentListFragment extends Fragment implements ChooseLocationDialo
         app.removeOnFilterSelectedListener(filterListener);
         app.removeOnSortingChangedListener(sortingListener);
         super.onDetach();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(KEY_ACTION_MODE, actionMode != null);
+        outState.putIntArray(KEY_SELECTION, adapter.getSelectedItemsPositions());
     }
 
     @Override
@@ -527,6 +548,14 @@ public class TorrentListFragment extends Fragment implements ChooseLocationDialo
                 positions[i] = getPositionByTorrentId(selectedItemsIds.keyAt(i));
             }
             return positions;
+        }
+
+        public void setSelectedItemsPositions(int[] positions) {
+            for (int position : positions) {
+                int id = getItemAtPosition(position).getId();
+                selectedItemsIds.put(id, true);
+            }
+            notifyDataSetChanged();
         }
 
         public int[] getSelectedItemsIds() {
