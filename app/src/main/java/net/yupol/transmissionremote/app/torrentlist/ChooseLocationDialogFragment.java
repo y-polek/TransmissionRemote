@@ -15,6 +15,7 @@ import android.support.v7.app.AlertDialog;
 import android.text.Editable;
 import android.view.LayoutInflater;
 
+import com.octo.android.robospice.exception.RequestCancelledException;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
 
@@ -122,7 +123,7 @@ public class ChooseLocationDialogFragment extends DialogFragment {
                     binding.setLoadingInProgress(false);
                     String failureMessage = ((ResponseFailureException) spiceException.getCause()).getFailureMessage();
                     binding.freeSpaceText.setText(failureMessage);
-                } else { // Retry
+                } else if (!(spiceException instanceof RequestCancelledException)) { // Retry if not canceled
                     getTransportManager().doRequest(runningFreeSpaceRequest, this);
                 }
             }
