@@ -271,7 +271,9 @@ public class TorrentListFragment extends Fragment implements ChooseLocationDialo
     @Override
     public void onLocationSelected(String path, boolean moveData) {
         int[] torrentIds = adapter.getSelectedItemsIds();
-        actionMode.finish();
+        if (actionMode != null) {
+            actionMode.finish();
+        }
         transportManager.doRequest(new SetLocationRequest(path, moveData, torrentIds), new RequestListener<Void>() {
             @Override
             public void onRequestSuccess(Void aVoid) {}
