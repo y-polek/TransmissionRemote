@@ -3,6 +3,7 @@ package net.yupol.transmissionremote.app.torrentdetails;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -41,17 +42,23 @@ public class DirectoryFragment extends Fragment implements DirectoryAdapter.OnIt
     private DirectoryAdapter adapter;
     private TransportManager transportManager;
 
+    @SuppressWarnings("SuspiciousSystemArraycopy")
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Bundle args = getArguments();
         torrentId = args.getInt(ARG_TORRENT_ID, -1);
         dir = args.getParcelable(ARG_DIRECTORY);
-        File[] files = (File[]) args.getParcelableArray(ARG_FILES);
-        fileStats = (FileStat[]) args.getParcelableArray(ARG_FILE_STATS);
-        if (torrentId < 0 || dir == null || files == null || fileStats == null) {
+        Parcelable[] filesArray = args.getParcelableArray(ARG_FILES);
+        Parcelable[] fileStatsArray = args.getParcelableArray(ARG_FILE_STATS);
+        if (torrentId < 0 || dir == null || filesArray == null || fileStatsArray == null) {
             throw new IllegalArgumentException("Torrent ID, directory, files and file stats must be passed as arguments");
         }
+        File[] files = new File[filesArray.length];
+        System.arraycopy(filesArray, 0, files, 0, files.length);
+        fileStats = new FileStat[fileStatsArray.length];
+        System.arraycopy(fileStatsArray, 0, fileStats, 0, fileStats.length);
+
         adapter = new DirectoryAdapter(getContext(), dir, files, fileStats, this);
     }
 

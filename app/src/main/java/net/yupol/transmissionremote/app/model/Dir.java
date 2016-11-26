@@ -23,6 +23,7 @@ public final class Dir implements Parcelable {
     protected Dir(Parcel in) {
         name = in.readString();
         dirs = in.createTypedArrayList(Dir.CREATOR);
+        in.readList(fileIndices = new LinkedList<>(), Integer.class.getClassLoader());
     }
 
     public String getName() {
@@ -94,6 +95,7 @@ public final class Dir implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(name);
         dest.writeTypedList(dirs);
+        dest.writeList(fileIndices);
     }
 
     public static final Creator<Dir> CREATOR = new Creator<Dir>() {
