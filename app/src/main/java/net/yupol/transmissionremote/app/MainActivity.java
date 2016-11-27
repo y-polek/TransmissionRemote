@@ -525,6 +525,10 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
         // iconifiedByDefault must be false to avoid closing SearchView by close button (close button only clears text)
         searchView.setIconifiedByDefault(false);
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+
+        // Workaround issue #47. Setting query hint in code to avoid crash in SearchView#updateQueryHint
+        searchView.setQueryHint(getString(R.string.search_hing));
+
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
 
         MenuItemCompat.setOnActionExpandListener(searchMenuItem, new MenuItemCompat.OnActionExpandListener() {
