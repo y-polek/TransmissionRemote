@@ -55,26 +55,26 @@ public class DirTest extends TestCase {
 
         assertEquals("/", dir.getName());
         assertEquals(1, dir.getDirs().size());
-        assertEquals(0, dir.getFiles().size());
+        assertEquals(0, dir.getFileIndices().size());
 
         Dir d0 = dir.getDirs().get(0);
         assertEquals("Test Tree", d0.getName());
         assertEquals(3, d0.getDirs().size());
-        assertEquals(1, d0.getFiles().size());
-        assertEquals("r1.txt", d0.getFiles().get(0).getName());
+        assertEquals(1, d0.getFileIndices().size());
+        assertEquals("r1.txt", nestedFiles[d0.getFileIndices().get(0)].getName());
 
         Dir d01 = d0.getDirs().get(0);
         assertEquals("d1", d01.getName());
         assertEquals(3, d01.getDirs().size());
-        assertEquals(0, d01.getFiles().size());
+        assertEquals(0, d01.getFileIndices().size());
 
         Dir d011 = d01.getDirs().get(0);
         assertEquals("d1-1", d011.getName());
         assertEquals(0, d011.getDirs().size());
-        assertEquals(3, d011.getFiles().size());
-        assertEquals("f1-1-1", d011.getFiles().get(0).getName());
-        assertEquals("f1-1-2", d011.getFiles().get(1).getName());
-        assertEquals("f1-1-3", d011.getFiles().get(2).getName());
+        assertEquals(3, d011.getFileIndices().size());
+        assertEquals("f1-1-1", nestedFiles[d011.getFileIndices().get(0)].getName());
+        assertEquals("f1-1-2", nestedFiles[d011.getFileIndices().get(1)].getName());
+        assertEquals("f1-1-3", nestedFiles[d011.getFileIndices().get(2)].getName());
     }
 
     public void testCreateFileTreeSingleFile() {
@@ -82,8 +82,8 @@ public class DirTest extends TestCase {
 
         assertEquals("/", dir.getName());
         assertEquals(0, dir.getDirs().size());
-        assertEquals(1, dir.getFiles().size());
-        assertEquals("r1.txt", dir.getFiles().get(0).getName());
+        assertEquals(1, dir.getFileIndices().size());
+        assertEquals("r1.txt", nestedFiles[dir.getFileIndices().get(0)].getName());
     }
 
     public void testFileIndices() {

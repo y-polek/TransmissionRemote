@@ -1,5 +1,7 @@
 package net.yupol.transmissionremote.app;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.SearchManager;
 import android.content.ActivityNotFoundException;
@@ -14,6 +16,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.provider.OpenableColumns;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
@@ -104,7 +107,10 @@ import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
 import io.fabric.sdk.android.Fabric;
+import permissions.dispatcher.NeedsPermission;
+import permissions.dispatcher.RuntimePermissions;
 
+@RuntimePermissions
 public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.TorrentUpdateListener,
         SharedPreferences.OnSharedPreferenceChangeListener, TransmissionRemote.OnSpeedLimitChangedListener,
         TorrentListFragment.OnTorrentSelectedListener, TorrentListFragment.ContextualActionBarListener,
@@ -404,18 +410,28 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
         String scheme = data.getScheme();
         if (SCHEME_MAGNET.equals(scheme)) {
             openTorrentByMagnet(data.toString());
-        } else if (ContentResolver.SCHEME_FILE.equals(scheme)) {
+        } else if (ContentResolver.SCHEME_FILE.equals(scheme) || ContentResolver.SCHEME_CONTENT.equals(scheme)) {
+            MainActivityPermissionsDispatcher.openTorrentFileByUriWithSchemeWithCheck(this, data, scheme);
+        } else if (SCHEME_HTTP.equals(scheme) || SCHEME_HTTPS.equals(scheme)) {
+            openTorrentByRemoteFile(data);
+        }
+    }
+
+    @SuppressLint("InlinedApi")
+    @NeedsPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
+    public void openTorrentFileByUriWithScheme(Uri uri, String scheme) {
+        if (ContentResolver.SCHEME_FILE.equals(scheme)) {
             try {
-                openTorrentByLocalFile(getContentResolver().openInputStream(data));
+                openTorrentByLocalFile(getContentResolver().openInputStream(uri));
             } catch (FileNotFoundException e) {
                 Toast.makeText(MainActivity.this, getString(R.string.error_cannot_read_file_msg), Toast.LENGTH_LONG).show();
-                Log.e(TAG, "Can't open stream for '" + data + "'", e);
+                Log.e(TAG, "Can't open stream for '" + uri + "'", e);
             }
         } else if (ContentResolver.SCHEME_CONTENT.equals(scheme)) {
             try {
-                openTorrentByLocalFile(getContentResolver().openInputStream(data));
+                openTorrentByLocalFile(getContentResolver().openInputStream(uri));
             } catch (IOException ex) {
-                Cursor cursor = getContentResolver().query(data, null, null, null, null);
+                Cursor cursor = getContentResolver().query(uri, null, null, null, null);
                 if (cursor != null && cursor.moveToFirst()) {
                     int dataColumn = cursor.getColumnIndex(MediaStore.MediaColumns.DATA);
                     String path = cursor.getString(dataColumn);
@@ -430,9 +446,13 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
                     }
                 }
             }
-        } else if (SCHEME_HTTP.equals(scheme) || SCHEME_HTTPS.equals(scheme)) {
-            openTorrentByRemoteFile(data);
         }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        MainActivityPermissionsDispatcher.onRequestPermissionsResult(this, requestCode, grantResults);
     }
 
     @Override
@@ -996,6 +1016,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
         try {
             args.putByteArray(DownloadLocationDialogFragment.KEY_FILE_BYTES, IOUtils.toByteArray(fileStream));
         } catch (IOException e) {
+            Log.e(TAG, "Failed to read file stream", e);
             Toast.makeText(MainActivity.this, getString(R.string.error_cannot_read_file_msg), Toast.LENGTH_SHORT).show();
             return;
         } finally {
