@@ -314,7 +314,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
                 .withToolbar(toolbar)
                 .withHeader(headerView)
                 .addDrawerItems(new SectionDrawerItem().withName(R.string.drawer_sort_by).withDivider(false))
-                .addDrawerItems(sortItems)
+                .addDrawerItems((IDrawerItem[]) sortItems)
                 .addStickyDrawerItems(
                         settingsItem
                 ).withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
