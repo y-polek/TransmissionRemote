@@ -142,6 +142,11 @@
     <string name="no_directory">There is no such directory</string>
     <string name="use_default_directory">Use default directory</string>
     <string name="unknown_free_space_confirmation">There is no such directory. \nAre you sure you want to add torrent?</string>
+    <string name="storage_permission_rationale">Transmission Remote requires \"Storage\" permission in order to open local torrent files.</string>
+    <string name="storage_permission_allow">Allow</string>
+    <string name="storage_permission_deny">Deny</string>
+    <string name="storage_permission_never_ask_again_message">Transmission Remote requires \"Storage\" permission in order to open local torrent files.\nYou can grant the permission in Application Settings.</string>
+    <string name="app_settings">App Settings</string>
 
     <!-- Torrent details -->
     <string name="torrent_details">Torrent details</string>
