@@ -186,4 +186,5 @@
     <string name="error_msg_open_torrent_no_server">Debes configurar el servidor antes de añadir torrents</string>
     <string name="drawer_sort_by_progress">Progreso</string>
     <string name="action_remove_torrent">Quitar torrent</string>
+    <string name="drawer_sort_by_queue_position">Cola</string>
 </resources>
