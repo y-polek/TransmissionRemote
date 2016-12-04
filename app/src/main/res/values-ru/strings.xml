@@ -32,7 +32,7 @@
     <string name="default_url">По умолчанию</string>
     <string name="disabled">отсутствуют</string>
     <string name="download_speed">Скорость скачивания</string>
-    <string name="download_to">Скорость раздачи</string>
+    <string name="download_to">Скачивать в:</string>
     <string name="action_request_more_peers">Запросить больше участников</string>
     <string name="eta_infinite">~ ∞</string>
     <string name="filter_all">Все</string>
