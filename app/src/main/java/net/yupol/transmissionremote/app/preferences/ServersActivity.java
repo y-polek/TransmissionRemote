@@ -37,24 +37,22 @@ public class ServersActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.servers_activity_layout);
 
+        app = TransmissionRemote.getApplication(this);
+
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setElevation(0);
         }
 
-        if (savedInstanceState != null) {
-            return;
-        }
-
-        android.support.v4.app.FragmentManager fm = getSupportFragmentManager();
+        FragmentManager fm = getSupportFragmentManager();
         ServersFragment serversFragment = (ServersFragment) fm.findFragmentByTag(TAG_SERVERS);
         if (serversFragment == null) {
             serversFragment = new ServersFragment();
+            FragmentTransaction ft = fm.beginTransaction();
+            ft.replace(R.id.fragment_container, serversFragment, TAG_SERVERS);
+            ft.commit();
         }
-        FragmentTransaction ft = fm.beginTransaction();
-        ft.replace(R.id.fragment_container, serversFragment, TAG_SERVERS);
-        ft.commit();
         invalidateOptionsMenu();
 
         serversFragment.setOnServerSelectedListener(new ServersFragment.OnServerSelectedListener() {
@@ -70,8 +68,6 @@ public class ServersActivity extends AppCompatActivity {
                 invalidateOptionsMenu();
             }
         });
-
-        app = TransmissionRemote.getApplication(this);
 
         if (getIntent().hasExtra(KEY_SERVER_UUID)) {
             String id = getIntent().getStringExtra(KEY_SERVER_UUID);
