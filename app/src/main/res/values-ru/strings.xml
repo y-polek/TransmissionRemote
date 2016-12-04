@@ -197,4 +197,9 @@
     <string name="choose_location">Выберите новую папку</string>
     <string name="move_data">Переместить данные</string>
     <string name="apply">Применить</string>
+    <string name="app_settings">Настройки</string>
+    <string name="storage_permission_allow">Разрешить</string>
+    <string name="storage_permission_deny">Отклонить</string>
+    <string name="storage_permission_never_ask_again_message">Разрешение \"Память\" необходимо для открытия локальных торрент файлов.\nВы можете дать разрешение в настройках приложения.</string>
+    <string name="storage_permission_rationale">Разрешение \"Память\" необходимо для открытия локальных торрент файлов.</string>
 </resources>
