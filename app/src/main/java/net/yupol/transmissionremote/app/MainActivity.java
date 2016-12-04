@@ -218,7 +218,9 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
     protected void onCreate(Bundle savedInstanceState) {
         LayoutInflaterCompat.setFactory(getLayoutInflater(), new IconicsLayoutInflater(getDelegate()));
         super.onCreate(savedInstanceState);
-        Fabric.with(this, new Crashlytics());
+        if (!BuildConfig.DEBUG) {
+            Fabric.with(this, new Crashlytics());
+        }
         setContentView(R.layout.main_activity);
 
         application = TransmissionRemote.getApplication(this);
