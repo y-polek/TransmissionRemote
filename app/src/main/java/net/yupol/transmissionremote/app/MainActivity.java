@@ -458,7 +458,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
             try {
                 openTorrentByLocalFile(getContentResolver().openInputStream(uri));
             } catch (FileNotFoundException e) {
-                Toast.makeText(MainActivity.this, getString(R.string.error_cannot_read_file_msg), Toast.LENGTH_LONG).show();
+                Toast.makeText(this, getString(R.string.error_cannot_read_file_msg), Toast.LENGTH_LONG).show();
                 Log.e(TAG, "Can't open stream for '" + uri + "'", e);
             }
         } else if (ContentResolver.SCHEME_CONTENT.equals(scheme)) {
@@ -475,10 +475,14 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
                     try {
                         openTorrentByLocalFile(FileUtils.openInputStream(file));
                     } catch (IOException e) {
-                        Toast.makeText(MainActivity.this, getString(R.string.error_cannot_read_file_msg), Toast.LENGTH_LONG).show();
+                        Toast.makeText(this, getString(R.string.error_cannot_read_file_msg), Toast.LENGTH_LONG).show();
                         Log.e(TAG, "Can't open stream for '" + path + "'", e);
                     }
                 }
+            } catch (SecurityException e) {
+                Toast.makeText(this, R.string.error_failed_to_open_downloaded_torrent, Toast.LENGTH_LONG).show();
+                Log.e(TAG, "Can't open torrent file", e);
+                Crashlytics.logException(e);
             }
         }
     }

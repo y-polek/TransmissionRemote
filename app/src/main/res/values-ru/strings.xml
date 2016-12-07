@@ -202,4 +202,5 @@
     <string name="storage_permission_deny">Отклонить</string>
     <string name="storage_permission_never_ask_again_message">Разрешение \"Память\" необходимо для открытия локальных торрент файлов.\nВы можете дать разрешение в настройках приложения.</string>
     <string name="storage_permission_rationale">Разрешение \"Память\" необходимо для открытия локальных торрент файлов.</string>
+    <string name="error_failed_to_open_downloaded_torrent">Не удалось открыть файл. Попробуйте использовать меню \"Открыть торрент\"</string>
 </resources>
