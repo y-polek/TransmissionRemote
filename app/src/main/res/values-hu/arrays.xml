@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="pref_update_interval_entries">
+        <item>1 mp</item>
+        <item>2 mp</item>
+        <item>5 mp</item>
+        <item>10 mp</item>
+        <item>15 mp</item>
+        <item>30 mp</item>
+        <item>60 mp</item>
+    </array>
+
+    <string-array name="pref_update_interval_entry_values">
+        <item>1</item>
+        <item>2</item>
+        <item>5</item>
+        <item>10</item>
+        <item>15</item>
+        <item>30</item>
+        <item>60</item>
+    </string-array>
+
+    <array name="pref_background_update_interval_entries">
+        <item>2 perc</item>
+        <item>5 perc</item>
+        <item>10 perc</item>
+        <item>30 perc</item>
+        <item>1 óra</item>
+        <item>3 óra</item>
+        <item>12 óra</item>
+        <item>1 nap</item>
+    </array>
+
+    <string-array name="pref_background_update_interval_entry_values">
+        <item>2</item>
+        <item>5</item>
+        <item>10</item>
+        <item>30</item>
+        <item>60</item>
+        <item>180</item>
+        <item>720</item>
+        <item>1440</item>
+    </string-array>
+
+    <string-array name="open_torrent_by_entries">
+        <item>Fájl</item>
+        <item>Cím</item>
+    </string-array>
+    <string-array name="remove_torrents_entries">
+        <item>Törlés a listából…</item>
+        <item>Adat és torrent törlése…</item>
+    </string-array>
+</resources>
