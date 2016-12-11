@@ -89,6 +89,7 @@ import net.yupol.transmissionremote.app.transport.request.SessionSetRequest;
 import net.yupol.transmissionremote.app.transport.request.StartTorrentRequest;
 import net.yupol.transmissionremote.app.transport.request.StopTorrentRequest;
 import net.yupol.transmissionremote.app.transport.request.TorrentRemoveRequest;
+import net.yupol.transmissionremote.app.utils.DialogUtils;
 import net.yupol.transmissionremote.app.utils.IconUtils;
 
 import org.apache.commons.io.FileUtils;
@@ -520,8 +521,9 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
     @SuppressLint("InlinedApi")
     @OnNeverAskAgain(Manifest.permission.READ_EXTERNAL_STORAGE)
     public void onStoragePermissionNeverAskAgain() {
-        new StoragePermissionNeverAskAgainDialog().show(getSupportFragmentManager(),
-                TAG_STORAGE_PERMISSION_NEVER_ASK_AGAIN_DIALOG);
+        DialogUtils.showDialogAllowingStateLoss(
+                new StoragePermissionNeverAskAgainDialog(),
+                getSupportFragmentManager(), TAG_STORAGE_PERMISSION_NEVER_ASK_AGAIN_DIALOG);
     }
 
     @Override
