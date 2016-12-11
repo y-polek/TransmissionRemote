@@ -1,6 +1,8 @@
 package net.yupol.transmissionremote.app.torrentdetails;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
@@ -44,6 +46,7 @@ public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveCha
 
     private static final String KEY_OPTIONS_CHANGE_REQUEST = "key_options_request";
     private static final String KEY_TORRENT_INFO = "key_torrent_info";
+    private static final String KEY_LAST_PAGE_POSITION = "key_last_position";
 
     private Torrent torrent;
     private TorrentInfo torrentInfo;
@@ -77,6 +80,22 @@ public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveCha
         pager = (ViewPager) findViewById(R.id.pager);
         assert pager != null;
         pager.setAdapter(pagerAdapter);
+
+        final SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(TorrentDetailsActivity.this);
+        int lastPagePosition = sp.getInt(KEY_LAST_PAGE_POSITION, 0);
+        pager.setCurrentItem(lastPagePosition < pagerAdapter.getCount() ? lastPagePosition : 0);
+        pager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageSelected(int position) {
+                sp.edit().putInt(KEY_LAST_PAGE_POSITION, position).apply();
+            }
+
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {}
+
+            @Override
+            public void onPageScrollStateChanged(int state) {}
+        });
 
         if (setLocationMenuItem != null) {
             setLocationMenuItem.setEnabled(torrentInfo != null);
