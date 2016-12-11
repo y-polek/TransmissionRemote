@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Transmission Remote</string>
+    <string name="search_hing">Torrent keresés</string>
+
+    <!-- Actions -->
+    <string name="action_open_torrent">Torrent megnyitás</string>
+    <string name="action_start_all_torrents">Összes torrent indítása</string>
+    <string name="action_pause_all_torrents">Összes torrent szüneteltetés</string>
+    <string name="action_remove_torrents">Kiválasztottak törlése</string>
+    <string name="action_remove_torrent">Torrent törlése</string>
+    <string name="action_select_all">Összes kiválasztása</string>
+    <string name="action_pause">Szünet</string>
+    <string name="action_start">Indít</string>
+    <string name="action_start_now">Indítás most (sorkezelés kihagyása)</string>
+    <string name="action_verify">Helyi adatok ellenőrzése</string>
+    <string name="action_request_more_peers">Több peer kérése</string>
+    <string name="action_set_location">Hely megadása</string>
+
+    <!-- Filters -->
+    <string name="filters">Szűrők</string>
+    <string name="filter_all">Összes</string>
+    <string name="filter_active">Aktív</string>
+    <string name="filter_downloading">Letöltés</string>
+    <string name="filter_seeding">Feltöltés</string>
+    <string name="filter_paused">Szünetel</string>
+    <string name="filter_download_completed">Letöltve</string>
+    <string name="filter_finished">Kész</string>
+    <string name="filter_name">Név</string>
+    <string name="filter_empty_all">Nincsenek torrentek</string>
+    <string name="filter_empty_active">Nincsenek aktívak</string>
+    <string name="filter_empty_downloading">Nincsenek letöltés alatt</string>
+    <string name="filter_empty_seeding">Nincsenek feltöltés alatt</string>
+    <string name="filter_empty_paused">Nincsenek megállítva</string>
+    <string name="filter_empty_download_completed">Nincsenek letöltöttek</string>
+    <string name="filter_empty_finished">Nincsenek befejezettek</string>
+    <string name="filter_empty_name">Nincsenek ilyen torrentek</string>
+
+    <!-- Sort by -->
+    <string name="drawer_sort_by">Rendezés e szerint</string>
+    <string name="drawer_sort_by_name">Név</string>
+    <string name="drawer_sort_by_size">Méret</string>
+    <string name="drawer_sort_by_time_remaining">Hátralévő idp</string>
+    <string name="drawer_sort_by_date_added">Hozzáadás ideje</string>
+    <string name="drawer_sort_by_progress">Folyamat</string>
+    <string name="drawer_sort_by_queue_position">Sorkezelés</string>
+    <string name="drawer_sort_by_upload_ratio">Arány</string>
+
+    <!-- Preferences -->
+    <string name="action_settings">Beállítások</string>
+    <string name="notifications_pref_title">Értesítések</string>
+    <string name="notification_settings">Értesítés beállítások</string>
+    <string name="advanced_pref_title">Haladó beállítások</string>
+
+    <!-- Servers -->
+    <string name="add_new_server_title">Új szerver</string>
+    <string name="server_parameters">Szerver paraméterei</string>
+    <string name="server_name_hint">Szerver neve</string>
+    <string name="server_host_hint">Hosztnév vagy IP</string>
+    <string name="server_port_hint">Port</string>
+    <string name="server_rpc_url_hint">RPC URL</string>
+    <string name="trust_self_signed_ssl_cert">Bízzon meg minden SSL-be</string>
+    <string name="authentication">Azonosítás</string>
+    <string name="rpc_url">RPC URL:</string>
+    <string name="default_url">Alapértelmezett</string>
+    <string name="username">Felhasználónév</string>
+    <string name="password">Jelszó</string>
+    <string name="server_name_error_message">A név nem lehet üres</string>
+    <string name="host_name_error_message">Add meg az IP-t, vagy a hosztnevét annak a gépnek, ahol a Transmission fut</string>
+    <string name="port_number_error_message">Kérlek add meg a port számát. Azonosnak kell lennie azzal, amelyet a \'Listening Port\' mezőben adtál meg a \'Remote\' fülön a Transmission beállítások ablakában</string>
+    <string name="servers">Szerverek</string>
+    <string name="add_remove_servers">Új szerver hozzáadása, vagy régi törlése</string>
+    <string name="remove_server">Szerver eltávolítása</string>
+    <string name="save_server">Mentés</string>
+    <string name="remove_server_confirmation">Szerver tötlése?</string>
+    <string name="remove_server_positive">Törlése</string>
+    <string name="saved">Mentve</string>
+    <string name="save_changes_question">Mentsük a változásokat?</string>
+    <string name="save_changes_save">Mentés</string>
+    <string name="save_changes_discard">Mégse</string>
+    <string name="enter_server_parameters">Szerver paraméterek megadása a kezdéshez.</string>
+    <string name="add_server">Új szerver</string>
+    <string name="manage_servers">Szerverek kezelése</string>
+    <string name="servers_empty_text">Nincsenek szerverek</string>
+
+    <!-- Preferences -->
+    <string name="update_interval_title">Frissítési időköz</string>
+    <string name="update_interval_summary">Torrent lista frissítési időköze</string>
+    <string name="background_update_interval_title">Frissítés időköze a háttérben</string>
+    <string name="background_update_interval_summary">A háttérben, milyen időközönként ellenőrizzem a torrentek állapotát</string>
+    <string name="torrent_finished_notification_title">Kész torrentekről az értesítés bekapcsolása</string>
+    <string name="torrent_finished_notification_summary">Torrentek ellenőrzése a háttérben</string>
+    <string name="torrent_finished_notification_vibrate_title">Rezgés</string>
+    <string name="torrent_finished_notification_sound_title">Hang</string>
+    <string name="server_preferences">Szerver beállítások</string>
+    <string name="remote_preferences">Beállítások</string>
+    <string name="global_bandwidth_limits">Globális sávszélesség korlátok</string>
+    <string name="kbps">KB/s</string>
+    <string name="turtle_speed_limits">Sebesség korlát opciók</string>
+    <string name="turtle_speed_limits_description">Ha bekapcsolod, felülvágja a globális sebesség korlátokat</string>
+    <string name="preferences_update_failed">Nem sikerült a szerver preferenciáit betölteni</string>
+    <string name="preferences_notifications_title">Értesítések</string>
+    <string name="preferences_notifications_summary">Kész torrent értesítések</string>
+    <string name="preferences_advanced_title">Haladó</string>
+    <string name="preferences_advanced_summary">Haladó opciók</string>
+    <string name="disable_free_space_check_title">Szabad hely ellenőrzés kikapcsolása</string>
+    <string name="disable_free_space_check_summary">Engedélyezi, hogy szabadhely ellenőrzés nélkül is hozzáadja a torrentet</string>
+
+    <!-- Torrent List -->
+    <string name="unknown_error_message">Ismeretlen hiba</string>
+    <string name="downloaded_text">%1$s/%2$s</string>
+    <string name="uploaded_text">%1$s (Arány: %2$.2f)</string>
+    <string name="speed_limit">Sebesség korlát</string>
+    <string name="download_speed">Letöltési sebesség</string>
+    <string name="upload_speed">Feltöltési sebesség</string>
+    <string name="remove_selected_torrents">Kiválasztott torrentek törlése…</string>
+    <string name="remove_from_list">Törlés a listából</string>
+    <string name="remove_data">Adat törlése</string>
+    <string name="search">Keresés</string>
+    <string name="eta_unknown">Ismeretlen hátlalévő idő</string>
+    <string name="eta_infinite">~ \u221e</string>
+    <string name="eta">~ %1$s</string>
+
+    <!-- Open torrent -->
+    <string name="error_install_file_manager_msg">Légyszi telepíts egy fájlmenedzser appot.</string>
+    <string name="error_file_does_not_exists_msg">A fájl nem létezik: \'%1$s\'</string>
+    <string name="error_wrong_file_extension_msg">Nem tudom megnyitni ezt a gájlt: \'.%1$s\'. Légyszi válassz egy \'.torrent\' fájlt.</string>
+    <string name="error_cannot_read_file_msg">Nem tudom beolvasni a fájl tartalmát</string>
+    <string name="error_failed_to_open_torrent">Nem sikerült megnyitni a torrentet. Próbáld újra.</string>
+    <string name="error_duplicate_torrent">A torrent már létezik</string>
+    <string name="torrent_added_successfully">A torrentet sikeresen hozzáadtam</string>
+    <string name="select_torrent_file">Torrent fájl kiválasztása</string>
+    <string name="open_torrent">Torrent megnyitása…</string>
+    <string name="address_of_torrent_file">A torrent fájl internet címe</string>
+    <string name="open">Megnyitás</string>
+    <string name="download_to">Ide töltse:</string>
+    <string name="start_when_added">Indítás hozzáadás után</string>
+    <string name="add">Hozzáadás</string>
+    <string name="free_space">%1$s szabad</string>
+    <string name="free_space_unknown">Szabad hely ismeretlen</string>
+    <string name="no_directory">Nincs ilyen mappa</string>
+    <string name="use_default_directory">Használja az alapértelmezett mappát</string>
+    <string name="unknown_free_space_confirmation">Nincs ilyen mappa. \nTutibiztos, hogy mégia hozzáadod a torrentet?</string>
+
+    <!-- Torrent details -->
+    <string name="torrent_details">Torrent részletei</string>
+    <string name="info">Infó</string>
+    <string name="files">Fájlok</string>
+    <string name="options">Opciók</string>
+    <string name="priority">Prioritás</string>
+    <string name="transfer_priority">Átvitel prioritása:</string>
+    <string name="transfer_bandwidth">Átviteli sávszélesség</string>
+    <string name="limit_download">Letöltési korlát:</string>
+    <string name="limit_upload">Feltöltési korlát:</string>
+    <string name="stay_within_global_bandwidth">Maradjon a globális sávszélesség korlátoknál</string>
+    <string name="ratio_limit">Arány korlát</string>
+    <string name="inactivity_limit">Inaktivitási korlát</string>
+    <string name="mode">Mód:</string>
+    <string name="value">Érték:</string>
+    <string name="value_in_minutes">Érték (perc):</string>
+    <string name="priority_high">Magas</string>
+    <string name="priority_normal">Normál</string>
+    <string name="priority_low">Alacsony</string>
+    <string name="global_settings">Globális beállítások</string>
+    <string name="unlimited">Korlátlan</string>
+    <string name="stop_at_ratio">Stop, ha eléri az arányt</string>
+    <string name="stop_when_inactive">Ájjl, ha inaktív</string>
+    <string name="save_torrent_options">Mentés</string>
+    <string name="options_update_failed">Nem sikerült a torrent opciók frissítése</string>
+    <string name="three_dots">&#8230;</string>
+    <string name="disabled">kikapcsolva</string>
+    <string name="total_size_text">%1$s (%2$d csomag, ennyiből: %3$s)</string>
+    <string name="have_size_text">%1$s of %2$s (%3$.1f%%)</string>
+    <string name="have_size_100p_text">%1$s (100%%)</string>
+    <string name="have_unverified_size_text">, %1$s Ellenőrizetlen</string>
+    <string name="available_text">%1$.1f%%</string>
+    <string name="privacy_public_torrent">Nyílvános Torrent</string>
+    <string name="privacy_private_torrent">Privát Torrent, trackeren kívüli peerek keresése kikapcsolva.</string>
+    <string name="downloaded_ever_text">%1$s (%2$s hibás)</string>
+    <string name="uploaded_ever_text">%1$s (Arány: %2$.2f)</string>
+    <string name="today_time">Ma, ekkor %1$s</string>
+    <string name="yesterday_time">Tegnap, ekkor %1$s</string>
+    <string name="date_time">%1$s  %2$s</string>
+    <string name="torrent_information">Torrent Információk</string>
+    <string name="total_size">Teljes méret:</string>
+    <string name="location">Hely:</string>
+    <string name="privacy">Titoktartás:</string>
+    <string name="creator">Létrehozta:</string>
+    <string name="created_on">Létrehozva:</string>
+    <string name="comment">Megjegyzés:</string>
+    <string name="transfer">Forgalom</string>
+    <string name="have">Megvan:</string>
+    <string name="available">Elérhető:</string>
+    <string name="downloaded">Letöltve:</string>
+    <string name="uploaded">Feltöltve:</string>
+    <string name="dates">Időpontok</string>
+    <string name="added">Hozzáadva:</string>
+    <string name="completed">Kész:</string>
+    <string name="last_activity">Utolsó aktivitás:</string>
+    <string name="time_elapsed">Eltelt idő:</string>
+    <string name="downloading">Letöltés:</string>
+    <string name="seeding">Megosztás:</string>
+    <string name="remove_failed">Nem sikerült törölni. Próbáld újra.</string>
+
+    <string name="retry">Na mégegyszer</string>
+    <string name="server_settings">Szerver beállítások</string>
+    <string name="network_settings">Hálózati beállítások</string>
+    <string name="network_error_message_no_network">Nem sikerült a szerverhez csatlakozni. Ellenőrizd, hogy van-e net.</string>
+    <string name="network_error_message_connection_error">Nem sikerült a szerverhez csatlakozni. Ellenőrizd a beállításokat.</string>
+    <string name="network_error_message_unauthorized">Jogosulatlan hozzáférés. Ellenőrizd a felhasz. név és jelszó párost.</string>
+    <string name="error_retrieve_torrent_details">Nem tudom lekézni a torrent részleteket. Próbáld újra</string>
+
+    <string name="tooltip_turtle_mode">Sebesség korlát</string>
+    <string name="tooltip_total_download_speed">Teljes letöltési sebesség</string>
+    <string name="tooltip_total_upload_speed">Teljes feltöltési sebesség</string>
+
+    <string name="welcome">Üdvözöllek!</string>
+    <string name="error_msg_open_torrent_no_server">Be kell állítani egy szervert, mielőtt torrentet adnál hozzá</string>
+
+    <string name="apply">Apply</string>
+    <string name="choose_location">Hely megadása</string>
+    <string name="move_data">Adat áthelyezés</string>
+
+    <plurals name="torrents">
+        <item quantity="zero">%d torrent</item>
+        <item quantity="one">%d torrent</item>
+        <item quantity="other">%d torrent</item>
+    </plurals>
+
+    <plurals name="torrents_finished">
+        <item quantity="one">Torrent kész</item>
+        <item quantity="other">%d torrent befejezve</item>
+    </plurals>
+
+</resources>
