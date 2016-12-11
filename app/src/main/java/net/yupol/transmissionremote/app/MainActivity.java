@@ -1071,8 +1071,8 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
             totalDownloadRate += torrent.getDownloadRate();
             totalUploadRate += torrent.getUploadRate();
         }
-        downloadSpeedView.setSpeed(totalDownloadRate);
-        uploadSpeedView.setSpeed(totalUploadRate);
+        if (downloadSpeedView != null) downloadSpeedView.setSpeed(totalDownloadRate);
+        if (uploadSpeedView != null) uploadSpeedView.setSpeed(totalUploadRate);
     }
 
     private void showFileChooser() {
