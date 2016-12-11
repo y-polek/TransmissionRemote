@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="pref_update_interval_entries">
+        <item>1초</item>
+        <item>2초</item>
+        <item>5초</item>
+        <item>10초</item>
+        <item>15초</item>
+        <item>30초</item>
+        <item>60초</item>
+    </array>
+
+    <string-array name="pref_update_interval_entry_values">
+        <item>1</item>
+        <item>2</item>
+        <item>5</item>
+        <item>10</item>
+        <item>15</item>
+        <item>30</item>
+        <item>60</item>
+    </string-array>
+
+    <array name="pref_background_update_interval_entries">
+        <item>2분</item>
+        <item>5분</item>
+        <item>10분</item>
+        <item>30분</item>
+        <item>1시간</item>
+        <item>3시간</item>
+        <item>12시간</item>
+        <item>1일</item>
+    </array>
+
+    <string-array name="pref_background_update_interval_entry_values">
+        <item>2</item>
+        <item>5</item>
+        <item>10</item>
+        <item>30</item>
+        <item>60</item>
+        <item>180</item>
+        <item>720</item>
+        <item>1440</item>
+    </string-array>
+
+    <string-array name="open_torrent_by_entries">
+        <item>파일</item>
+        <item>URL 주소</item>
+    </string-array>
+    <string-array name="remove_torrents_entries">
+        <item>리스트에서 삭제</item>
+        <item>파일을 지운 후 리스트에서 삭제</item>
+    </string-array>
+</resources>

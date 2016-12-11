@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Transmission Remote</string>
+    <string name="search_hing">토렌트 찾기</string>
+
+    <!-- Actions -->
+    <string name="action_open_torrent">토렌트 열기</string>
+    <string name="action_start_all_torrents">모든 토렌트 재개</string>
+    <string name="action_pause_all_torrents">모든 토렌트 일시정지</string>
+    <string name="action_remove_torrents">선택한 토렌트 삭제</string>
+    <string name="action_remove_torrent">토렌트 삭제</string>
+    <string name="action_select_all">모두 선택</string>
+    <string name="action_pause">일시정지</string>
+    <string name="action_start">재개</string>
+    <string name="action_start_now">바로 재개 (대기열 무시)</string>
+    <string name="action_verify">저장된 데이터 검토</string>
+    <string name="action_request_more_peers">추가 피어 확인</string>
+    <string name="action_set_location">위치 지정</string>
+
+    <!-- Filters -->
+    <string name="filters">필터</string>
+    <string name="filter_all">모두</string>
+    <string name="filter_active">활성</string>
+    <string name="filter_downloading">다운로드 중</string>
+    <string name="filter_seeding">배포 중</string>
+    <string name="filter_paused">일시정지</string>
+    <string name="filter_download_completed">다운로드 완료</string>
+    <string name="filter_finished">종료</string>
+    <string name="filter_name">이름</string>
+    <string name="filter_empty_all">토렌트가 없습니다</string>
+    <string name="filter_empty_active">활성화된 토렌트가 없습니다</string>
+    <string name="filter_empty_downloading">다운로드 중인 토렌트가 없습니다</string>
+    <string name="filter_empty_seeding">배포 중인 토렌트가 없습니다</string>
+    <string name="filter_empty_paused">일시정지된 토렌트가 없습니다</string>
+    <string name="filter_empty_download_completed">다운로드 완료된 토렌트가 없습니다</string>
+    <string name="filter_empty_finished">종료된 토렌트가 없습니다</string>
+    <string name="filter_empty_name">일치하는 토렌트가 없습니다</string>
+
+    <!-- Sort by -->
+    <string name="drawer_sort_by">다음으로 정렬</string>
+    <string name="drawer_sort_by_name">이름</string>
+    <string name="drawer_sort_by_size">크기</string>
+    <string name="drawer_sort_by_time_remaining">남은 시간</string>
+    <string name="drawer_sort_by_date_added">추가된 날짜</string>
+    <string name="drawer_sort_by_progress">진행률</string>
+    <string name="drawer_sort_by_queue_position">대기열 순</string>
+    <string name="drawer_sort_by_upload_ratio">배포 비율</string>
+
+    <!-- Preferences -->
+    <string name="action_settings">설정</string>
+    <string name="notifications_pref_title">알림</string>
+    <string name="notification_settings">알림 설정</string>
+    <string name="advanced_pref_title">고급 설정</string>
+
+    <!-- Servers -->
+    <string name="add_new_server_title">새 서버 추가</string>
+    <string name="server_parameters">서버 매개변수</string>
+    <string name="server_name_hint">서버 이름</string>
+    <string name="server_host_hint">호스트 이름 또는 IP 주소</string>
+    <string name="server_port_hint">포트</string>
+    <string name="server_rpc_url_hint">RPC URL</string>
+    <string name="trust_self_signed_ssl_cert">자가서명된 SSL 인증서 신뢰</string>
+    <string name="authentication">인증</string>
+    <string name="rpc_url">RPC URL:</string>
+    <string name="default_url">기본값</string>
+    <string name="username">ID</string>
+    <string name="password">암호</string>
+    <string name="server_name_error_message">이름은 비울 수 없습니다.</string>
+    <string name="host_name_error_message">트랜스미션이 실행 중인 컴퓨터의 IP 주소 또는 호스트 이름을 입력하세요.</string>
+    <string name="port_number_error_message">포트를 입력해주세요. 트랜스미션 설정 화면 \'Remote\' 탭의 \'Listening port\' 값과 같아야합니다.</string>
+    <string name="servers">서버</string>
+    <string name="add_remove_servers">서버를 추가하거나 제거</string>
+    <string name="remove_server">서버 제거</string>
+    <string name="save_server">저장</string>
+    <string name="remove_server_confirmation">서버를 제거하시겠습니까?</string>
+    <string name="remove_server_positive">제거</string>
+    <string name="saved">저장되었습니다</string>
+    <string name="save_changes_question">변경사항을 저장하시겠습니까?</string>
+    <string name="save_changes_save">저장</string>
+    <string name="save_changes_discard">저장 안 함</string>
+    <string name="enter_server_parameters">시작하기 위해 서버 매개변수를 입력해주세요.</string>
+    <string name="add_server">서버 추가</string>
+    <string name="manage_servers">서버 관리</string>
+    <string name="servers_empty_text">서버가 없습니다</string>
+
+    <!-- Preferences -->
+    <string name="update_interval_title">업데이트 간격</string>
+    <string name="update_interval_summary">토렌트 목록 업데이트 간격</string>
+    <string name="background_update_interval_title">백그라운드 시 업데이트 간격</string>
+    <string name="background_update_interval_summary">백그라운드에 있을 때 토렌트를 확인할 시간 간격</string>
+    <string name="torrent_finished_notification_title">토렌트 완료 알림 활성화</string>
+    <string name="torrent_finished_notification_summary">백그라운드에서 토렌트 확인</string>
+    <string name="torrent_finished_notification_vibrate_title">진동</string>
+    <string name="torrent_finished_notification_sound_title">소리</string>
+    <string name="server_preferences">서버 환경설정</string>
+    <string name="remote_preferences">환경설정</string>
+    <string name="global_bandwidth_limits">전역 대역폭 제한</string>
+    <string name="kbps">KB/s</string>
+    <string name="turtle_speed_limits">속도 제한 모드</string>
+    <string name="turtle_speed_limits_description">활성화 시 전역 대역폭 제한보다 우선시됩니다.</string>
+    <string name="preferences_update_failed">서버 환경설정 업데이트를 실패했습니다</string>
+    <string name="preferences_notifications_title">알림</string>
+    <string name="preferences_notifications_summary">토렌트 완료 시 알림</string>
+    <string name="preferences_advanced_title">고급</string>
+    <string name="preferences_advanced_summary">고급 옵션</string>
+    <string name="disable_free_space_check_title">여유 공간 확인 비활성화</string>
+    <string name="disable_free_space_check_summary">사용 가능한 여유공간을 확인하지 않고 토렌트를 추가하는 것을 허용</string>
+
+    <!-- Torrent List -->
+    <string name="unknown_error_message">알 수 없는 오류</string>
+    <string name="downloaded_text">%1$s (전체: %2$s)</string>
+    <string name="uploaded_text">%1$s (비율: %2$.2f)</string>
+    <string name="speed_limit">속도 제한</string>
+    <string name="download_speed">다운로드 속도</string>
+    <string name="upload_speed">업로드 속도</string>
+    <string name="remove_selected_torrents">선택한 토렌트 삭제…</string>
+    <string name="remove_from_list">목록에서 삭제</string>
+    <string name="remove_data">데이터 삭제</string>
+    <string name="search">검색</string>
+    <string name="eta_unknown">남은 시간 알 수 없음</string>
+    <string name="eta_infinite">~ \u221e</string>
+    <string name="eta">~ %1$s</string>
+
+    <!-- Open torrent -->
+    <string name="error_install_file_manager_msg">파일 관리자를 설치해주세요.</string>
+    <string name="error_file_does_not_exists_msg">\'%1$s\' 파일이 사용 가능하지 않습니다.</string>
+    <string name="error_wrong_file_extension_msg">\'.%1$s\' 파일을 열 수 없습니다. \'.torrent\' 형식의 파일을 선택해주세요.</string>
+    <string name="error_cannot_read_file_msg">파일을 읽을 수 없습니다.</string>
+    <string name="error_failed_to_open_torrent">토렌트 열기를 실패했습니다. 다시 시도해주세요.</string>
+    <string name="error_duplicate_torrent">중복된 토렌트가 이미 있습니다.</string>
+    <string name="torrent_added_successfully">토렌트가 추가되었습니다.</string>
+    <string name="select_torrent_file">토렌트 파일 선택</string>
+    <string name="open_torrent">토렌트 열기…</string>
+    <string name="address_of_torrent_file">토렌트 파일의 인터넷 주소</string>
+    <string name="open">열기</string>
+    <string name="download_to">저장 위치:</string>
+    <string name="start_when_added">추가 후 시작</string>
+    <string name="add">추가</string>
+    <string name="free_space">%1$s 남음</string>
+    <string name="free_space_unknown">남은 용량 알 수 없음</string>
+    <string name="no_directory">해당 경로가 없습니다.</string>
+    <string name="use_default_directory">기본 경로 사용</string>
+    <string name="unknown_free_space_confirmation">해당 경로가 존재하지 않습니다. \n그래도 토렌트를 추가하시겠습니까?</string>
+
+    <!-- Torrent details -->
+    <string name="torrent_details">토렌트 상세 정보</string>
+    <string name="info">정보</string>
+    <string name="files">파일</string>
+    <string name="options">옵션</string>
+    <string name="priority">우선도</string>
+    <string name="transfer_priority">전송 우선도:</string>
+    <string name="transfer_bandwidth">전송 대역폭</string>
+    <string name="limit_download">다운로드 제한:</string>
+    <string name="limit_upload">업로드 제한:</string>
+    <string name="stay_within_global_bandwidth">전역 대역폭 제한 내에서 적용</string>
+    <string name="ratio_limit">배포 비율 제한</string>
+    <string name="inactivity_limit">비활성화 제한</string>
+    <string name="mode">모드:</string>
+    <string name="value">설정값:</string>
+    <string name="value_in_minutes">설정값 (분):</string>
+    <string name="priority_high">높음</string>
+    <string name="priority_normal">보통</string>
+    <string name="priority_low">낮음</string>
+    <string name="global_settings">전역 설정</string>
+    <string name="unlimited">제한 없음</string>
+    <string name="stop_at_ratio">특정 배포 비율에서 멈춤</string>
+    <string name="stop_when_inactive">비활성화 시 멈춤</string>
+    <string name="save_torrent_options">저장</string>
+    <string name="options_update_failed">토렌트 옵션 업데이트에 실패했습니다.</string>
+    <string name="three_dots">&#8230;</string>
+    <string name="disabled">비활성화</string>
+    <string name="total_size_text">%1$s (%3$s 단위 %2$d 조각)</string>
+    <string name="have_size_text">%2$s 중 %1$s (%3$.1f%%)</string>
+    <string name="have_size_100p_text">%1$s (100%%)</string>
+    <string name="have_unverified_size_text">, %1$s 확인되지 않음</string>
+    <string name="available_text">%1$.1f%%</string>
+    <string name="privacy_public_torrent">공개 토렌트</string>
+    <string name="privacy_private_torrent">비공개 토렌트, 트래커 제외한 피어 탐색 비활성화</string>
+    <string name="downloaded_ever_text">%1$s (%2$s 오염됨)</string>
+    <string name="uploaded_ever_text">%1$s (비율: %2$.2f)</string>
+    <string name="today_time">오늘 %1$s</string>
+    <string name="yesterday_time">어제 %1$s</string>
+    <string name="date_time">%1$s %2$s</string>
+    <string name="torrent_information">토렌트 정보</string>
+    <string name="total_size">총 크기:</string>
+    <string name="location">위치:</string>
+    <string name="privacy">공개 여부:</string>
+    <string name="creator">제작 도구:</string>
+    <string name="created_on">제작 시간:</string>
+    <string name="comment">주석:</string>
+    <string name="transfer">전송</string>
+    <string name="have">받음:</string>
+    <string name="available">사용 가능:</string>
+    <string name="downloaded">다운로드 양:</string>
+    <string name="uploaded">업로드 양:</string>
+    <string name="dates">날짜</string>
+    <string name="added">추가됨:</string>
+    <string name="completed">완료:</string>
+    <string name="last_activity">최근 활성 시각:</string>
+    <string name="time_elapsed">걸린 시간</string>
+    <string name="downloading">다운로드:</string>
+    <string name="seeding">배포:</string>
+    <string name="remove_failed">토렌트 삭제에 실패했습니다. 다시 시도해주세요.</string>
+
+    <string name="retry">재시도</string>
+    <string name="server_settings">서버 설정</string>
+    <string name="network_settings">네트워크 설정</string>
+    <string name="network_error_message_no_network">서버 접속에 실패했습니다. 네트워크 설정을 확인하세요.</string>
+    <string name="network_error_message_connection_error">서버 접속에 실패했습니다. 서버 설정을 확인하세요.</string>
+    <string name="network_error_message_unauthorized">인증에 실패했습니다. 서버 설정에서 ID와 암호를 확인하세요.</string>
+    <string name="error_retrieve_torrent_details">상세 정보를 받아오지 못했습니다. 다시 시도해주세요.</string>
+
+    <string name="tooltip_turtle_mode">속도 제한 모드</string>
+    <string name="tooltip_total_download_speed">총 다운로드 속도</string>
+    <string name="tooltip_total_upload_speed">총 업로드 속도</string>
+
+    <string name="welcome">환영합니다!</string>
+    <string name="error_msg_open_torrent_no_server">토렌트를 추가하기 전에 서버를 설정해야 합니다.</string>
+
+    <string name="apply">적용</string>
+    <string name="choose_location">위치 선택</string>
+    <string name="move_data">데이터 이동</string>
+
+    <plurals name="torrents">
+        <item quantity="zero">%d개의 토렌트</item>
+        <item quantity="one">%d개의 토렌트</item>
+        <item quantity="other">%d개의 토렌트</item>
+    </plurals>
+
+    <plurals name="torrents_finished">
+        <item quantity="one">토렌트가 완료되었습니다</item>
+        <item quantity="other">%d개의 토렌트가 완료되었습니다</item>
+    </plurals>
+
+</resources>
