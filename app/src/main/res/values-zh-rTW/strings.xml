@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Transmission Remote</string>
+    <string name="search_hing">查詢種子</string>
+
+    <!-- Actions -->
+    <string name="action_open_torrent">開啟種子</string>
+    <string name="action_start_all_torrents">開始所有種子</string>
+    <string name="action_pause_all_torrents">暫停所有種子</string>
+    <string name="action_remove_torrents">刪除選中的種子</string>
+    <string name="action_remove_torrent">刪除種子</string>
+    <string name="action_select_all">全選</string>
+    <string name="action_pause">暫停</string>
+    <string name="action_start">開始</string>
+    <string name="action_start_now">現在開始（不排隊）</string>
+    <string name="action_verify">校驗本地資料</string>
+    <string name="action_request_more_peers">尋求更多節點</string>
+    <string name="action_set_location">設定儲存位置</string>
+
+    <!-- Filters -->
+    <string name="filters">篩選</string>
+    <string name="filter_all">全部</string>
+    <string name="filter_active">活躍</string>
+    <string name="filter_downloading">下載中</string>
+    <string name="filter_seeding">做種中</string>
+    <string name="filter_paused">已暫停</string>
+    <string name="filter_download_completed">已下載</string>
+    <string name="filter_finished">已完成</string>
+    <string name="filter_name">名稱</string>
+    <string name="filter_empty_all">無種子</string>
+    <string name="filter_empty_active">無活躍種子</string>
+    <string name="filter_empty_downloading">沒有正在下載的種子</string>
+    <string name="filter_empty_seeding">沒有正在做種的種子</string>
+    <string name="filter_empty_paused">沒有暫停的種子</string>
+    <string name="filter_empty_download_completed">沒有下載完成的種子</string>
+    <string name="filter_empty_finished">沒有已完成的種子</string>
+    <string name="filter_empty_name">沒有匹配的種子</string>
+
+    <!-- Sort by -->
+    <string name="drawer_sort_by">排序方式</string>
+    <string name="drawer_sort_by_size">大小</string>
+    <string name="drawer_sort_by_time_remaining">剩餘時間</string>
+    <string name="drawer_sort_by_date_added">新增日期</string>
+    <string name="drawer_sort_by_progress">進度</string>
+    <string name="drawer_sort_by_queue_position">優先順序</string>
+
+    <!-- Preferences -->
+    <string name="action_settings">設定</string>
+    <string name="notifications_pref_title">通知</string>
+    <string name="notification_settings">通知設定</string>
+    <string name="advanced_pref_title">高階選項</string>
+
+    <!-- Servers -->
+    <string name="add_new_server_title">新增新伺服器</string>
+    <string name="server_parameters">伺服器參數</string>
+    <string name="server_name_hint">伺服器名稱</string>
+    <string name="server_host_hint">主機名或 IP 位址</string>
+    <string name="server_port_hint">埠</string>
+    <string name="server_rpc_url_hint">RPC 地址</string>
+    <string name="trust_self_signed_ssl_cert">信任自簽 SSL 證書</string>
+    <string name="authentication">認證</string>
+    <string name="rpc_url">RPC 地址：</string>
+    <string name="default_url">預設</string>
+    <string name="username">使用者名稱</string>
+    <string name="password">密碼</string>
+    <string name="server_name_error_message">名稱不能為空</string>
+    <string name="host_name_error_message">輸入執行 Transmission 的計算機的 IP 或主機名</string>
+    <string name="port_number_error_message">請輸入埠號碼，必須與 Transmission 選項對話方塊「遠端」選項卡中的「監聽埠」一致。</string>
+    <string name="servers">伺服器</string>
+    <string name="add_remove_servers">新增或刪除伺服器</string>
+    <string name="remove_server">刪除伺服器</string>
+    <string name="save_server">儲存</string>
+    <string name="remove_server_confirmation">刪除伺服器？</string>
+    <string name="remove_server_positive">刪除</string>
+    <string name="saved">已儲存</string>
+    <string name="save_changes_question">儲存更改？</string>
+    <string name="save_changes_save">儲存</string>
+    <string name="save_changes_discard">取消</string>
+    <string name="enter_server_parameters">請先輸入伺服器參數。</string>
+    <string name="add_server">新增伺服器</string>
+    <string name="manage_servers">管理伺服器</string>
+    <string name="servers_empty_text">沒有伺服器</string>
+
+    <!-- Preferences -->
+    <string name="update_interval_title">更新間隔</string>
+    <string name="update_interval_summary">種子列表更新間隔</string>
+    <string name="background_update_interval_title">後台更新間隔</string>
+    <string name="background_update_interval_summary">後台重新整理種子狀態的頻率</string>
+    <string name="torrent_finished_notification_title">開啟種子完成提醒</string>
+    <string name="torrent_finished_notification_summary">在後台重新整理種子</string>
+    <string name="torrent_finished_notification_vibrate_title">震動</string>
+    <string name="torrent_finished_notification_sound_title">聲音</string>
+    <string name="server_preferences">伺服器選項</string>
+    <string name="remote_preferences">選項</string>
+    <string name="global_bandwidth_limits">全域性頻寬限制</string>
+    <string name="kbps">KB/s</string>
+    <string name="turtle_speed_limits">速度限制模式</string>
+    <string name="turtle_speed_limits_description">啟用時，此速度限制會覆蓋全域性頻寬限制</string>
+    <string name="preferences_update_failed">更新伺服器選項失敗</string>
+    <string name="preferences_notifications_title">通知</string>
+    <string name="preferences_notifications_summary">種子完成通知</string>
+    <string name="preferences_advanced_title">高階</string>
+    <string name="preferences_advanced_summary">高階選項</string>
+    <string name="disable_free_space_check_title">禁用剩餘空間檢查</string>
+    <string name="disable_free_space_check_summary">允許不檢查剩餘空間就新增種子</string>
+
+    <!-- Torrent List -->
+    <string name="unknown_error_message">未知錯誤</string>
+    <string name="downloaded_text">%1$s，共 %2$s</string>
+    <string name="uploaded_text">%1$s（比率：%2$.2f）</string>
+    <string name="speed_limit">速度限制</string>
+    <string name="download_speed">下載速度</string>
+    <string name="upload_speed">上傳速度</string>
+    <string name="remove_selected_torrents">刪除選中的種子…</string>
+    <string name="remove_from_list">從列表中刪除</string>
+    <string name="remove_data">刪除資料</string>
+    <string name="search">搜尋</string>
+    <string name="eta_unknown">剩餘時間未知</string>
+    <string name="eta_infinite">~ \u221e</string>
+    <string name="eta">~ %1$s</string>
+
+    <!-- Open torrent -->
+    <string name="error_install_file_manager_msg">請先安裝一個檔案管理器</string>
+    <string name="error_file_does_not_exists_msg">檔案「%1$s」不存在</string>
+    <string name="error_wrong_file_extension_msg">無法開啟 .%1$s 檔案。請選擇一個「.torrent」檔案。</string>
+    <string name="error_cannot_read_file_msg">無法讀取檔案內容</string>
+    <string name="error_failed_to_open_downloaded_torrent">無法開啟檔案。嘗試使用「開啟種子」選單開啟檔案。</string>
+    <string name="error_duplicate_torrent">已存在相同種子</string>
+    <string name="torrent_added_successfully">成功新增種子</string>
+    <string name="select_torrent_file">選擇種子檔案</string>
+    <string name="open_torrent">開啟種子…</string>
+    <string name="address_of_torrent_file">種子檔案的網址</string>
+    <string name="open">開啟</string>
+    <string name="download_to">下載到：</string>
+    <string name="start_when_added">新增後立即開始</string>
+    <string name="add">新增</string>
+    <string name="free_space">%1$s 可用</string>
+    <string name="free_space_unknown">可用空間未知</string>
+    <string name="use_default_directory">使用預設目錄</string>
+    <string name="unknown_free_space_confirmation">沒有此目錄。\n確定要新增種子嗎？</string>
+    <string name="storage_permission_rationale">Transmission Remote 需要「儲存」許可權來開啟本地種子檔案。</string>
+    <string name="storage_permission_deny">拒絕</string>
+    <string name="storage_permission_never_ask_again_message">Transmission Remote 需要「儲存」許可權來開啟本地種子檔案。\n你可以在應用程式設定中授予該許可權。</string>
+
+    <!-- Torrent details -->
+    <string name="torrent_details">種子詳情</string>
+    <string name="info">資訊</string>
+    <string name="files">檔案</string>
+    <string name="options">選項</string>
+    <string name="priority">優先順序</string>
+    <string name="transfer_priority">傳輸優先順序：</string>
+    <string name="transfer_bandwidth">傳輸頻寬</string>
+    <string name="stay_within_global_bandwidth">服從全域性頻寬限制</string>
+    <string name="ratio_limit">比率限制</string>
+    <string name="mode">模式：</string>
+    <string name="value">值：</string>
+    <string name="value_in_minutes">值（分鐘）:</string>
+    <string name="priority_high">高</string>
+    <string name="priority_normal">中</string>
+    <string name="priority_low">低</string>
+    <string name="global_settings">全域性設定</string>
+    <string name="unlimited">無限制</string>
+    <string name="stop_at_ratio">達到比率後停止</string>
+    <string name="stop_when_inactive">不活躍時停止</string>
+    <string name="save_torrent_options">儲存</string>
+    <string name="options_update_failed">無法更新種子選項</string>
+    <string name="three_dots">&#8230;</string>
+    <string name="disabled">已禁用</string>
+    <string name="total_size_text">%1$s（%2$d 個 %3$s 的塊）</string>
+    <string name="have_size_text">%1$s，共 %2$s（%3$.1f%%）</string>
+    <string name="have_size_100p_text">%1$s（100%%）</string>
+    <string name="have_unverified_size_text">，%1$s 未驗證</string>
+    <string name="available_text">%1$.1f%%</string>
+    <string name="privacy_public_torrent">公開種子</string>
+    <string name="privacy_private_torrent">私有種子，已禁用 DHT 和 PeX 種子交換</string>
+    <string name="downloaded_ever_text">%1$s（損壞 %2$s）</string>
+    <string name="uploaded_ever_text">%1$s（比率：%2$.2f）</string>
+    <string name="today_time">今天 %1$s</string>
+    <string name="yesterday_time">昨天 %1$s</string>
+    <string name="date_time">%1$s %2$s</string>
+    <string name="torrent_information">種子資訊</string>
+    <string name="total_size">總計大小：</string>
+    <string name="location">儲存位置：</string>
+    <string name="privacy">隱私：</string>
+    <string name="creator">建立者：</string>
+    <string name="created_on">建立時間：</string>
+    <string name="comment">備註：</string>
+    <string name="transfer">傳輸</string>
+    <string name="downloaded">已下載：</string>
+    <string name="uploaded">已上傳：</string>
+    <string name="dates">時間</string>
+    <string name="added">已新增：</string>
+    <string name="completed">完成時間：</string>
+    <string name="last_activity">最後活動：</string>
+    <string name="time_elapsed">執行時間</string>
+    <string name="downloading">下載：</string>
+    <string name="seeding">做種：</string>
+    <string name="remove_failed">無法刪除種子。請再試一次。</string>
+
+    <string name="retry">重試</string>
+    <string name="server_settings">伺服器設定</string>
+    <string name="network_settings">網路設定</string>
+    <string name="network_error_message_no_network">無法連線到伺服器。請檢查網路設定。</string>
+    <string name="network_error_message_connection_error">無法連線到伺服器。請檢查伺服器設定。</string>
+    <string name="network_error_message_unauthorized">操作未授權。請檢查伺服器設定中的使用者名稱和密碼。</string>
+    <string name="error_retrieve_torrent_details">無法獲取種子詳情。請再試一次。</string>
+
+    <string name="tooltip_turtle_mode">限速模式</string>
+    <string name="tooltip_total_download_speed">總下載速度</string>
+    <string name="tooltip_total_upload_speed">總上傳速度</string>
+
+    <string name="welcome">歡迎！</string>
+    <string name="error_msg_open_torrent_no_server">新增種子前需要先設定伺服器</string>
+
+    <string name="apply">應用</string>
+    <string name="move_data">移動資料</string>
+
+    <plurals name="torrents">
+        <item quantity="zero">%d 個種子</item>
+        <item quantity="one">%d 個種子</item>
+        <item quantity="other">%d 個種子</item>
+    </plurals>
+
+    <plurals name="torrents_finished">
+        <item quantity="one">種子已完成</item>
+        <item quantity="other">%d 個種子已完成</item>
+    </plurals>
+    <string name="app_settings">程式設定</string>
+    <string name="available">可用：</string>
+    <string name="choose_location">選擇位置</string>
+    <string name="have">總計下載：</string>
+    <string name="drawer_sort_by_name">名稱</string>
+    <string name="drawer_sort_by_upload_ratio">比率</string>
+    <string name="error_failed_to_open_torrent">無法開啟種子。請再試一次。</string>
+    <string name="inactivity_limit">不活躍限制</string>
+    <string name="limit_download">下載限制：</string>
+    <string name="limit_upload">上傳限制：</string>
+    <string name="storage_permission_allow">允許</string>
+    <string name="no_directory">沒有此目錄</string>
+
+</resources>
