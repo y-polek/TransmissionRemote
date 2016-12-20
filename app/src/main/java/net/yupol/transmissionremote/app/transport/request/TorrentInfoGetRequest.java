@@ -50,7 +50,8 @@ public class TorrentInfoGetRequest extends Request<TorrentInfo> {
             TorrentMetadata.DONE_DATE,
             TorrentMetadata.ACTIVITY_DATE,
             TorrentMetadata.SECONDS_DOWNLOADING,
-            TorrentMetadata.SECONDS_SEEDING
+            TorrentMetadata.SECONDS_SEEDING,
+            TorrentMetadata.PEERS
     );
 
     private int id;
