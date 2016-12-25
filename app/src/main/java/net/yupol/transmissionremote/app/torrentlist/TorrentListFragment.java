@@ -27,7 +27,6 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.google.common.base.Strings;
 import com.google.common.collect.FluentIterable;
 import com.mikepenz.fontawesome_typeface_library.FontAwesome;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
@@ -498,8 +497,8 @@ public class TorrentListFragment extends Fragment implements ChooseLocationDialo
             }
             holder.progressBar.setProgressDrawable(context.getResources().getDrawable(progressbarDrawable));
 
-            holder.downloadRateText.setText(speedText(torrent.getDownloadRate()));
-            holder.uploadRateText.setText(speedText(torrent.getUploadRate()));
+            holder.downloadRateText.setText(TextUtils.speedText(torrent.getDownloadRate()));
+            holder.uploadRateText.setText(TextUtils.speedText(torrent.getUploadRate()));
 
             holder.percentDoneText.setVisibility(isCompleted ? View.GONE : View.VISIBLE);
             holder.remainingTimeText.setVisibility(isCompleted ? View.GONE : View.VISIBLE);
@@ -621,10 +620,6 @@ public class TorrentListFragment extends Fragment implements ChooseLocationDialo
             int count = adapter.getSelectedItemsCount();
             String text = getResources().getQuantityString(R.plurals.torrents, count, count);
             actionMode.setTitle(text);
-        }
-
-        private String speedText(long bytes) {
-            return Strings.padStart(TextUtils.displayableSize(bytes), 5, ' ') + "/s";
         }
 
         private void updateTorrent(Torrent torrent) {

@@ -24,7 +24,9 @@ public class Peer implements Parcelable {
     @Key public long rateToClient;
     @Key public long rateToPeer;
 
-    public Peer() {}
+    public Peer() {
+        // required by GSON
+    }
 
     protected Peer(Parcel in) {
         address = in.readString();

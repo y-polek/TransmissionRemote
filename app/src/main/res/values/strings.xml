@@ -153,6 +153,7 @@
     <string name="torrent_details">Torrent details</string>
     <string name="info">Info</string>
     <string name="files">Files</string>
+    <string name="peers">Peers</string>
     <string name="options">Options</string>
     <string name="priority">Priority</string>
     <string name="transfer_priority">Transfer Priority:</string>
@@ -208,6 +209,7 @@
     <string name="downloading">Downloading:</string>
     <string name="seeding">Seeding:</string>
     <string name="remove_failed">Failed to remove torrent. Try again.</string>
+    <string name="client_on_port">%1$s on port %2$d</string>
 
     <string name="retry">Retry</string>
     <string name="server_settings">Server settings</string>

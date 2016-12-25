@@ -71,5 +71,10 @@
     <dimen name="priority_icon_size">12dp</dimen>
     <dimen name="priority_icon_text_size">18dp</dimen>
     <dimen name="priority_popup_offset">8dp</dimen>
+    
+                <!-- Peers tab -->
+    <dimen name="encryption_icon_size">12dp</dimen>
+    <dimen name="speed_icon_size">18dp</dimen>
+    <dimen name="speed_text_margin">32dp</dimen>
 
 </resources>

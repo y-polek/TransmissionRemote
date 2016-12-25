@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <data>
+        <import type="android.view.View" />
+        <import type="net.yupol.transmissionremote.app.utils.TextUtils" />
+        <variable name="peer" type="net.yupol.transmissionremote.app.model.json.Peer" />
+    </data>
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="@dimen/default_padding"
+        android:paddingBottom="@dimen/default_padding"
+        android:background="?android:selectableItemBackground">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="@dimen/default_padding_big"
+            android:paddingRight="@dimen/default_padding_big"
+            android:orientation="horizontal">
+            <com.mikepenz.iconics.view.IconicsImageView
+                android:layout_width="@dimen/encryption_icon_size"
+                android:layout_height="@dimen/encryption_icon_size"
+                android:layout_marginRight="@dimen/default_text_margin"
+                android:layout_gravity="center_vertical"
+                app:iiv_color="?android:attr/textColorPrimary"
+                app:iiv_icon="faw_lock"
+                android:visibility="@{peer.isEncrypted ? View.VISIBLE : View.GONE}"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:textSize="@dimen/tr_abc_text_size_body_1_material"
+                android:textColor="?android:attr/textColorPrimary"
+                android:textStyle="bold"
+                android:text="@{peer.address}"/>
+            <View
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:textSize="@dimen/tr_abc_text_size_body_1_material"
+                android:textColor="?android:attr/textColorPrimary"
+                android:text='@{(int) ((double) 100.0 * peer.progress) + "%"}'/>
+        </LinearLayout>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="@dimen/default_padding_big"
+            android:paddingRight="@dimen/default_padding_big"
+            android:textSize="@dimen/tr_abc_text_size_body_1_material"
+            android:textColor="?android:attr/textColorPrimary"
+            android:text="@{@string/client_on_port(peer.clientName, peer.port)}"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="@dimen/default_padding_big"
+            android:paddingRight="@dimen/default_padding_big">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="@dimen/default_text_margin_small"
+                android:textSize="@dimen/tr_abc_text_size_caption_material"
+                android:textColor="?android:textColorSecondary"
+                android:text="@{TextUtils.speedText(peer.rateToClient)}"/>
+            <com.mikepenz.iconics.view.IconicsImageView
+                android:layout_width="@dimen/speed_icon_size"
+                android:layout_height="@dimen/speed_icon_size"
+                android:paddingTop="@dimen/default_padding_small"
+                android:paddingBottom="@dimen/default_padding_small"
+                app:iiv_color="@color/md_green_700"
+                app:iiv_icon="faw_arrow_down" />
+
+            <TextView android:id="@+id/upload_rate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/speed_text_margin"
+                android:layout_marginRight="@dimen/default_text_margin_small"
+                android:textSize="@dimen/tr_abc_text_size_caption_material"
+                android:textColor="?android:textColorSecondary"
+                android:text="@{TextUtils.speedText(peer.rateToPeer)}"/>
+            <com.mikepenz.iconics.view.IconicsImageView android:id="@+id/upload_icon"
+                android:layout_width="@dimen/speed_icon_size"
+                android:layout_height="@dimen/speed_icon_size"
+                android:paddingTop="@dimen/default_padding_small"
+                android:paddingBottom="@dimen/default_padding_small"
+                app:iiv_padding="0dp"
+                app:iiv_color="@color/md_red_700"
+                app:iiv_size="@dimen/speed_icon_size"
+                app:iiv_icon="faw_arrow_up" />
+        </LinearLayout>
+    </LinearLayout>
+</layout>
