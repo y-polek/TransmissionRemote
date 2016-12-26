@@ -19,6 +19,7 @@ import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
 
 import net.yupol.transmissionremote.app.R;
+import net.yupol.transmissionremote.app.TransmissionRemote;
 import net.yupol.transmissionremote.app.model.json.Torrent;
 import net.yupol.transmissionremote.app.model.json.TorrentInfo;
 import net.yupol.transmissionremote.app.torrentlist.ChooseLocationDialogFragment;
@@ -37,7 +38,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveChangesDialogFragment.SaveDiscardListener,
-        RemoveTorrentsDialogFragment.OnRemoveTorrentSelectionListener, ChooseLocationDialogFragment.OnLocationSelectedListener {
+        RemoveTorrentsDialogFragment.OnRemoveTorrentSelectionListener, ChooseLocationDialogFragment.OnLocationSelectedListener,
+        TorrentInfoUpdater.OnTorrentInfoUpdatedListener {
 
     private static final String TAG = TorrentDetailsActivity.class.getSimpleName();
 
@@ -59,6 +61,7 @@ public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveCha
     private TorrentDetailsPagerAdapter pagerAdapter;
     private ViewPager pager;
     private MenuItem setLocationMenuItem;
+    private TorrentInfoUpdater torrentInfoUpdater;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,6 +106,26 @@ public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveCha
         if (setLocationMenuItem != null) {
             setLocationMenuItem.setEnabled(torrentInfo != null);
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        torrentInfoUpdater = new TorrentInfoUpdater(getTransportManager(), torrent.getId(),
+                1000 * TransmissionRemote.getInstance().getUpdateInterval());
+        torrentInfoUpdater.start(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        torrentInfoUpdater.stop();
+    }
+
+    @Override
+    public void onTorrentInfoUpdated(TorrentInfo torrentInfo) {
+
     }
 
     @Override
