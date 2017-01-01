@@ -94,10 +94,21 @@ public class FilesPageFragment extends BasePageFragment implements DirectoryFrag
 
     @Override
     public void setTorrentInfo(TorrentInfo torrentInfo) {
+        boolean isUpdate = getTorrentInfo() != null;
         super.setTorrentInfo(torrentInfo);
         if (viewCreated) {
-            showRootDir();
+            if (!isUpdate) {
+                showRootDir();
+            } else {
+                updateFileStats();
+            }
         }
+    }
+
+    public void updateFileStats() {
+        DirectoryFragment directoryFragment = (DirectoryFragment)
+                getChildFragmentManager().findFragmentByTag(TAG_DIRECTORY_FRAGMENT);
+        directoryFragment.setFileStats(getTorrentInfo().getFileStats());
     }
 
     @Override

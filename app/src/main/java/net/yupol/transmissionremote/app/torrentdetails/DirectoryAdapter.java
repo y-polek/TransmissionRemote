@@ -50,6 +50,11 @@ public class DirectoryAdapter extends RecyclerView.Adapter<DirectoryAdapter.View
         setHasStableIds(true);
     }
 
+    public void setFileStats(FileStat[] fileStats) {
+        this.fileStats = fileStats;
+        notifyItemRangeChanged(0, getItemCount());
+    }
+
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         FileItemBinding binding = DataBindingUtil.inflate(
@@ -85,6 +90,7 @@ public class DirectoryAdapter extends RecyclerView.Adapter<DirectoryAdapter.View
                 break;
             case R.id.view_type_file:
                 File file = getFile(position);
+                FileStat fileStat = getFileStat(position);
                 holder.binding.setFile(file);
 
                 boolean isFileCompleted = isFileCompleted(position);
@@ -95,7 +101,7 @@ public class DirectoryAdapter extends RecyclerView.Adapter<DirectoryAdapter.View
                 holder.binding.priorityButton.setText(priority.icon.getFormattedName());
                 holder.binding.priorityButton.setEnabled(!isFileCompleted);
 
-                bytesCompleted = file.getBytesCompleted();
+                bytesCompleted = fileStat.getBytesCompleted();
                 filesLength = file.getLength();
 
                 icon = new IconicsDrawable(context, FileType.iconFromName(file.getName()))
@@ -118,15 +124,15 @@ public class DirectoryAdapter extends RecyclerView.Adapter<DirectoryAdapter.View
     }
 
     private boolean isFileChecked(File file, FileStat fileStat) {
-        return fileStat.isWanted() || isFileCompleted(file);
+        return fileStat.isWanted() || isFileCompleted(file, fileStat);
     }
 
     private boolean isFileCompleted(int position) {
-        return isFileCompleted(getFile(position));
+        return isFileCompleted(getFile(position), getFileStat(position));
     }
 
-    private boolean isFileCompleted(File file) {
-        return file.getBytesCompleted() >= file.getLength();
+    private boolean isFileCompleted(File file, FileStat fileStat) {
+        return fileStat.getBytesCompleted() >= file.getLength();
     }
 
     @Nullable
@@ -156,7 +162,7 @@ public class DirectoryAdapter extends RecyclerView.Adapter<DirectoryAdapter.View
             if (!isDirectoryCompleted(subDir)) return false;
         }
         for (Integer fileIndex : dir.getFileIndices()) {
-            if (!isFileCompleted(files[fileIndex])) return false;
+            if (!isFileCompleted(files[fileIndex], fileStats[fileIndex])) return false;
         }
         return true;
     }
@@ -169,7 +175,7 @@ public class DirectoryAdapter extends RecyclerView.Adapter<DirectoryAdapter.View
         }
 
         for (Integer fileIndex : dir.getFileIndices()) {
-            bytesCompleted += files[fileIndex].getBytesCompleted();
+            bytesCompleted += fileStats[fileIndex].getBytesCompleted();
         }
 
         return bytesCompleted;
@@ -201,7 +207,7 @@ public class DirectoryAdapter extends RecyclerView.Adapter<DirectoryAdapter.View
         }
 
         for (Integer fileIndex : dir.getFileIndices()) {
-            if (!isFileCompleted(files[fileIndex])) {
+            if (!isFileCompleted(files[fileIndex], fileStats[fileIndex])) {
                 priorities.add(fileStats[fileIndex].getPriority());
             }
         }
@@ -339,7 +345,7 @@ public class DirectoryAdapter extends RecyclerView.Adapter<DirectoryAdapter.View
             setDirPriority(subDir, priority);
         }
         for (Integer fileIndex : dir.getFileIndices()) {
-            if (!isFileCompleted(files[fileIndex])) {
+            if (!isFileCompleted(files[fileIndex], fileStats[fileIndex])) {
                 setFilePriority(fileIndex, priority);
             }
         }

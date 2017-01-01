@@ -3,7 +3,6 @@ package net.yupol.transmissionremote.app.torrentdetails;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -26,6 +25,7 @@ import net.yupol.transmissionremote.app.transport.BaseSpiceActivity;
 import net.yupol.transmissionremote.app.transport.TransportManager;
 import net.yupol.transmissionremote.app.transport.request.TorrentSetRequest;
 import net.yupol.transmissionremote.app.utils.DividerItemDecoration;
+import net.yupol.transmissionremote.app.utils.ParcelableUtils;
 
 public class DirectoryFragment extends Fragment implements DirectoryAdapter.OnItemSelectedListener {
 
@@ -49,15 +49,17 @@ public class DirectoryFragment extends Fragment implements DirectoryAdapter.OnIt
         Bundle args = getArguments();
         torrentId = args.getInt(ARG_TORRENT_ID, -1);
         dir = args.getParcelable(ARG_DIRECTORY);
-        Parcelable[] filesArray = args.getParcelableArray(ARG_FILES);
-        Parcelable[] fileStatsArray = args.getParcelableArray(ARG_FILE_STATS);
-        if (torrentId < 0 || dir == null || filesArray == null || fileStatsArray == null) {
+        File[] files = ParcelableUtils.toArrayOfType(File.class, args.getParcelableArray(ARG_FILES));
+
+        if (savedInstanceState == null) {
+            fileStats = ParcelableUtils.toArrayOfType(FileStat.class, args.getParcelableArray(ARG_FILE_STATS));
+        } else {
+            fileStats = ParcelableUtils.toArrayOfType(FileStat.class, savedInstanceState.getParcelableArray(ARG_FILE_STATS));
+        }
+
+        if (torrentId < 0 || dir == null || files == null || fileStats == null) {
             throw new IllegalArgumentException("Torrent ID, directory, files and file stats must be passed as arguments");
         }
-        File[] files = new File[filesArray.length];
-        System.arraycopy(filesArray, 0, files, 0, files.length);
-        fileStats = new FileStat[fileStatsArray.length];
-        System.arraycopy(fileStatsArray, 0, fileStats, 0, fileStats.length);
 
         adapter = new DirectoryAdapter(getContext(), dir, files, fileStats, this);
     }
@@ -70,6 +72,7 @@ public class DirectoryFragment extends Fragment implements DirectoryAdapter.OnIt
         RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.addItemDecoration(new DividerItemDecoration(getContext()));
+        recyclerView.setItemAnimator(null);
         recyclerView.setAdapter(adapter);
 
         return view;
@@ -84,6 +87,12 @@ public class DirectoryFragment extends Fragment implements DirectoryAdapter.OnIt
             return;
         }
         transportManager = ((BaseSpiceActivity) activity).getTransportManager();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelableArray(ARG_FILE_STATS, fileStats);
     }
 
     @Override
@@ -147,6 +156,11 @@ public class DirectoryFragment extends Fragment implements DirectoryAdapter.OnIt
                 Log.d(TAG, "success");
             }
         });
+    }
+
+    public void setFileStats(FileStat[] fileStats) {
+        this.fileStats = fileStats;
+        adapter.setFileStats(fileStats);
     }
 
     public static DirectoryFragment newInstance(int torrentId, Dir dir, File[] files, FileStat[] fileStats) {
