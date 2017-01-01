@@ -15,6 +15,10 @@ public class PeersAdapter extends RecyclerView.Adapter<PeersAdapter.ViewHolder> 
 
     private Peer[] peers = {};
 
+    public PeersAdapter() {
+        setHasStableIds(true);
+    }
+
     public void setPeers(@NonNull Peer[] peers) {
         this.peers = peers;
         notifyDataSetChanged();
@@ -35,6 +39,11 @@ public class PeersAdapter extends RecyclerView.Adapter<PeersAdapter.ViewHolder> 
     @Override
     public int getItemCount() {
         return peers.length;
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return peers[position].address.hashCode();
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {

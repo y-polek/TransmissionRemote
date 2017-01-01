@@ -27,6 +27,7 @@ public class PeersPageFragment extends BasePageFragment {
                 inflater, R.layout.torrent_details_peers_page_fragment, container, false);
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         binding.recyclerView.addItemDecoration(new DividerItemDecoration(container.getContext()));
+        binding.recyclerView.setItemAnimator(null);
         binding.recyclerView.setAdapter(adapter);
 
         if (getActivity() instanceof SwipeRefreshLayout.OnRefreshListener) {
