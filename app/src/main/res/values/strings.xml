@@ -210,6 +210,7 @@
     <string name="seeding">Seeding:</string>
     <string name="remove_failed">Failed to remove torrent. Try again.</string>
     <string name="client_on_port">%1$s on port %2$d</string>
+    <string name="peers_empty_message">No connected peers</string>
 
     <string name="retry">Retry</string>
     <string name="server_settings">Server settings</string>

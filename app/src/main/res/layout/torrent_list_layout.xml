@@ -13,6 +13,6 @@
         android:layout_gravity="center"
         android:gravity="center"
         android:visibility="gone"
-        android:textSize="@dimen/abc_text_size_subhead_material"
+        android:textSize="@dimen/tr_abc_text_size_subhead_material"
         android:textColor="?android:textColorSecondary"/>
 </FrameLayout>

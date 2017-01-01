@@ -1,6 +1,5 @@
 package net.yupol.transmissionremote.app.torrentdetails;
 
-
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -11,6 +10,7 @@ import android.view.ViewGroup;
 
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.databinding.TorrentDetailsPeersPageFragmentBinding;
+import net.yupol.transmissionremote.app.model.json.Peer;
 import net.yupol.transmissionremote.app.model.json.TorrentInfo;
 import net.yupol.transmissionremote.app.utils.DividerItemDecoration;
 
@@ -29,16 +29,15 @@ public class PeersPageFragment extends BasePageFragment {
         binding.recyclerView.addItemDecoration(new DividerItemDecoration(container.getContext()));
         binding.recyclerView.setAdapter(adapter);
 
-        binding.swiperefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-
-            }
-        });
+        if (getActivity() instanceof SwipeRefreshLayout.OnRefreshListener) {
+            binding.swiperefresh.setOnRefreshListener((SwipeRefreshLayout.OnRefreshListener) getActivity());
+        }
 
         TorrentInfo torrentInfo = getTorrentInfo();
         if (torrentInfo != null) {
-            adapter.setPeers(torrentInfo.getPeers());
+            Peer[] peers = torrentInfo.getPeers();
+            adapter.setPeers(peers);
+            binding.emptyText.setVisibility(peers.length > 0 ? View.GONE : View.VISIBLE);
         } else {
             binding.swiperefresh.setRefreshing(true);
         }
@@ -58,7 +57,9 @@ public class PeersPageFragment extends BasePageFragment {
     public void setTorrentInfo(TorrentInfo torrentInfo) {
         super.setTorrentInfo(torrentInfo);
         if (viewCreated) {
-            adapter.setPeers(torrentInfo.getPeers());
+            Peer[] peers = torrentInfo.getPeers();
+            adapter.setPeers(peers);
+            binding.emptyText.setVisibility(peers.length > 0 ? View.GONE : View.VISIBLE);
             binding.swiperefresh.setRefreshing(false);
         }
     }

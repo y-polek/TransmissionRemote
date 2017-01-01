@@ -17,6 +17,7 @@ import java.util.TimerTask;
 public class TorrentInfoUpdater implements RequestListener<TorrentInfo> {
 
     private static final String TAG = TorrentInfoUpdater.class.getSimpleName();
+    private static final String TIMER_NAME = TorrentInfoUpdater.class.getSimpleName();
 
     private TransportManager transportManager;
     private int torrentId;
@@ -33,7 +34,7 @@ public class TorrentInfoUpdater implements RequestListener<TorrentInfo> {
 
     public void start(OnTorrentInfoUpdatedListener listener) {
         this.listener = listener;
-        timer = new Timer("TorrentInfoUpdater timer");
+        timer = new Timer(TIMER_NAME);
         request = new TorrentInfoGetRequest(torrentId);
         transportManager.doRequest(request, this);
     }
@@ -46,8 +47,9 @@ public class TorrentInfoUpdater implements RequestListener<TorrentInfo> {
         request.cancel();
     }
 
-    public void updateNow() {
-        // TODO: implement
+    public void updateNow(OnTorrentInfoUpdatedListener listener) {
+        stop();
+        start(listener);
     }
 
     @Override

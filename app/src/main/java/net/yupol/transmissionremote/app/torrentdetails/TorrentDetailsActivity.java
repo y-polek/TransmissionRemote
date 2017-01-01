@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.view.LayoutInflaterCompat;
 import android.support.v4.view.ViewPager;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -14,7 +15,6 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.mikepenz.iconics.context.IconicsLayoutInflater;
-import com.octo.android.robospice.exception.RequestCancelledException;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
 
@@ -29,7 +29,6 @@ import net.yupol.transmissionremote.app.transport.request.ReannounceTorrentReque
 import net.yupol.transmissionremote.app.transport.request.SetLocationRequest;
 import net.yupol.transmissionremote.app.transport.request.StartTorrentRequest;
 import net.yupol.transmissionremote.app.transport.request.StopTorrentRequest;
-import net.yupol.transmissionremote.app.transport.request.TorrentInfoGetRequest;
 import net.yupol.transmissionremote.app.transport.request.TorrentRemoveRequest;
 import net.yupol.transmissionremote.app.transport.request.TorrentSetRequest;
 import net.yupol.transmissionremote.app.transport.request.VerifyTorrentRequest;
@@ -39,7 +38,7 @@ import java.util.List;
 
 public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveChangesDialogFragment.SaveDiscardListener,
         RemoveTorrentsDialogFragment.OnRemoveTorrentSelectionListener, ChooseLocationDialogFragment.OnLocationSelectedListener,
-        TorrentInfoUpdater.OnTorrentInfoUpdatedListener {
+        TorrentInfoUpdater.OnTorrentInfoUpdatedListener, SwipeRefreshLayout.OnRefreshListener {
 
     private static final String TAG = TorrentDetailsActivity.class.getSimpleName();
 
@@ -55,7 +54,6 @@ public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveCha
     private Torrent torrent;
     private TorrentInfo torrentInfo;
     private SparseArray<TorrentSetRequest> saveChangesRequests = new SparseArray<>();
-    private TorrentInfoGetRequest lastTorrentInfoRequest;
     private List<OnDataAvailableListener<TorrentInfo>> torrentInfoListeners = new LinkedList<>();
     private List<OnActivityExitingListener<TorrentSetRequest.Builder>> activityExitingListeners = new LinkedList<>();
     private TorrentDetailsPagerAdapter pagerAdapter;
@@ -72,13 +70,12 @@ public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveCha
         torrent = getIntent().getParcelableExtra(EXTRA_NAME_TORRENT);
         pagerAdapter = new TorrentDetailsPagerAdapter(this, getSupportFragmentManager(), torrent);
 
+        torrentInfoUpdater = new TorrentInfoUpdater(getTransportManager(), torrent.getId(),
+                1000 * TransmissionRemote.getInstance().getUpdateInterval());
+
         if (savedInstanceState != null) {
             torrentInfo = savedInstanceState.getParcelable(KEY_TORRENT_INFO);
-        }
-        if (torrentInfo == null) {
-            updateTorrentInfo();
-        } else {
-            pagerAdapter.setTorrentInfo(torrentInfo);
+            if (torrentInfo != null) pagerAdapter.setTorrentInfo(torrentInfo);
         }
 
         setupActionBar();
@@ -111,9 +108,6 @@ public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveCha
     @Override
     protected void onResume() {
         super.onResume();
-
-        torrentInfoUpdater = new TorrentInfoUpdater(getTransportManager(), torrent.getId(),
-                1000 * TransmissionRemote.getInstance().getUpdateInterval());
         torrentInfoUpdater.start(this);
     }
 
@@ -125,7 +119,26 @@ public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveCha
 
     @Override
     public void onTorrentInfoUpdated(TorrentInfo torrentInfo) {
+        Toast.makeText(this, "peers count: " + torrentInfo.getPeers().length, Toast.LENGTH_SHORT).show();
 
+        // TorrentInfo may be empty if torrent is removed after request was sent.
+        // Show content only if TorrentInfo contain files data.
+        if (torrentInfo.getFiles() != null) {
+            TorrentDetailsActivity.this.torrentInfo = torrentInfo;
+            pagerAdapter.setTorrentInfo(torrentInfo);
+            notifyTorrentInfoListeners();
+            if (setLocationMenuItem != null) {
+                setLocationMenuItem.setEnabled(true);
+            }
+        } else {
+            Log.e(TAG, "Empty TorrentInfo");
+            showErrorAndExit();
+        }
+    }
+
+    private void showErrorAndExit() {
+        Toast.makeText(TorrentDetailsActivity.this, R.string.error_retrieve_torrent_details, Toast.LENGTH_LONG).show();
+        onBackPressed();
     }
 
     @Override
@@ -175,40 +188,6 @@ public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveCha
         saveChangesRequests.put(requestBuilder.getTorrentId(), requestBuilder.build());
     }
 
-    private void updateTorrentInfo() {
-        lastTorrentInfoRequest = new TorrentInfoGetRequest(torrent.getId());
-        getTransportManager().doRequest(lastTorrentInfoRequest, new RequestListener<TorrentInfo>() {
-            @Override
-            public void onRequestSuccess(TorrentInfo torrentInfo) {
-                // TorrentInfo may be empty if torrent is removed after request was sent.
-                // Show content only if TorrentInfo contain files data.
-                if (torrentInfo.getFiles() != null) {
-                    TorrentDetailsActivity.this.torrentInfo = torrentInfo;
-                    pagerAdapter.setTorrentInfo(torrentInfo);
-                    notifyTorrentInfoListeners();
-                    if (setLocationMenuItem != null) {
-                        setLocationMenuItem.setEnabled(true);
-                    }
-                } else {
-                    Log.e(TAG, "Empty TorrentInfo");
-                    showErrorAndExit();
-                }
-            }
-
-            @Override
-            public void onRequestFailure(SpiceException spiceException) {
-                if (spiceException instanceof RequestCancelledException) return;
-                Log.e(TAG, "Failed to get torrent info", spiceException);
-                showErrorAndExit();
-            }
-
-            private void showErrorAndExit() {
-                Toast.makeText(TorrentDetailsActivity.this, R.string.error_retrieve_torrent_details, Toast.LENGTH_LONG).show();
-                onBackPressed();
-            }
-        });
-    }
-
     private void setupActionBar() {
         Toolbar toolbar = (Toolbar) findViewById(R.id.actionbar_toolbar);
         assert toolbar != null;
@@ -229,7 +208,6 @@ public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveCha
         if (handled) return;
 
         if (torrentInfo == null) {
-            if (lastTorrentInfoRequest != null) lastTorrentInfoRequest.cancel();
             super.onBackPressed();
             return;
         }
@@ -324,7 +302,7 @@ public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveCha
         getTransportManager().doRequest(new SetLocationRequest(path, moveData, torrent.getId()), new RequestListener<Void>() {
             @Override
             public void onRequestSuccess(Void aVoid) {
-                updateTorrentInfo();
+                torrentInfoUpdater.updateNow(TorrentDetailsActivity.this);
             }
 
             @Override
@@ -332,5 +310,10 @@ public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveCha
                 Log.e(TAG, "Failed to set location", spiceException);
             }
         });
+    }
+
+    @Override
+    public void onRefresh() {
+        torrentInfoUpdater.updateNow(this);
     }
 }
