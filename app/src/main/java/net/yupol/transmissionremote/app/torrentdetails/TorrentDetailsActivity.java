@@ -57,7 +57,6 @@ public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveCha
     private List<OnDataAvailableListener<TorrentInfo>> torrentInfoListeners = new LinkedList<>();
     private List<OnActivityExitingListener<TorrentSetRequest.Builder>> activityExitingListeners = new LinkedList<>();
     private TorrentDetailsPagerAdapter pagerAdapter;
-    private ViewPager pager;
     private MenuItem setLocationMenuItem;
     private TorrentInfoUpdater torrentInfoUpdater;
 
@@ -80,7 +79,7 @@ public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveCha
 
         setupActionBar();
 
-        pager = (ViewPager) findViewById(R.id.pager);
+        ViewPager pager = (ViewPager) findViewById(R.id.pager);
         assert pager != null;
         pager.setAdapter(pagerAdapter);
 
@@ -201,15 +200,21 @@ public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveCha
     }
 
     @Override
+    public boolean onSupportNavigateUp() {
+        return handleExit();
+    }
+
+    @Override
     public void onBackPressed() {
-
-        BasePageFragment currentFragment = pagerAdapter.findFragment(getSupportFragmentManager(), pager.getCurrentItem());
-        boolean handled = currentFragment.onBackPressed();
+        boolean handled = handleBackPressByFragments();
         if (handled) return;
+        handleExit();
+    }
 
+    private boolean handleExit() {
         if (torrentInfo == null) {
-            super.onBackPressed();
-            return;
+            finish();
+            return true;
         }
 
         for (OnActivityExitingListener<TorrentSetRequest.Builder> listener : activityExitingListeners) {
@@ -222,8 +227,10 @@ public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveCha
         if (saveChangesRequests.size() > 0) {
             new SaveChangesDialogFragment().show(getFragmentManager(), TAG_SAVE_CHANGES_DIALOG);
         } else {
-            super.onBackPressed();
+            finish();
+            return true;
         }
+        return false;
     }
 
     @Override
