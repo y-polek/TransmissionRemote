@@ -151,10 +151,15 @@ public class OptionsPageFragment extends BasePageFragment implements AdapterView
 
     @Override
     public void setTorrentInfo(TorrentInfo torrentInfo) {
+        boolean isUpdate = getTorrentInfo() != null;
         super.setTorrentInfo(torrentInfo);
         if (viewCreated) {
             showContent();
-            updateUi(true);
+            if (!isUpdate) {
+                updateUi(true);
+            } else {
+                // TODO: implement UI updates
+            }
         }
         if (saveMenuItem != null) {
             saveMenuItem.setEnabled(true);
