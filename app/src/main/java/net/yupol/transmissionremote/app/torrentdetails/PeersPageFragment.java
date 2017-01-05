@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.ListPopupWindow;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -77,10 +78,18 @@ public class PeersPageFragment extends BasePageFragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_sort_peers:
-
+                showSortingList();
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void showSortingList() {
+        ListPopupWindow popup = new ListPopupWindow(getContext());
+        PeersSortingListAdapter adapter = new PeersSortingListAdapter();
+        popup.setAdapter(adapter);
+        popup.setAnchorView(binding.getRoot());
+        popup.show();
     }
 
     @Override
