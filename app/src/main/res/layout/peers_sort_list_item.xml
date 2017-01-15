@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:tools="http://schemas.android.com/tools">
     <data>
+        <import type="net.yupol.transmissionremote.app.sorting.SortOrder" />
+        <import type="android.view.View" />
         <variable name="sortedBy" type="net.yupol.transmissionremote.app.sorting.PeersSortedBy" />
         <variable name="sortOrder" type="net.yupol.transmissionremote.app.sorting.SortOrder" />
     </data>
@@ -26,7 +28,8 @@
             android:paddingRight="@dimen/default_padding_big"
             android:textSize="@dimen/tr_abc_text_size_subhead_material"
             android:textColor="?android:attr/textColorPrimary"
-            android:text="@{sortOrder.symbol}"
+            android:text="@{sortOrder != null ? sortOrder.symbol : SortOrder.ASCENDING.symbol}"
+            android:visibility="@{sortOrder != null ? View.VISIBLE : View.INVISIBLE}"
             tools:ignore="RtlSymmetry" />
 
     </LinearLayout>

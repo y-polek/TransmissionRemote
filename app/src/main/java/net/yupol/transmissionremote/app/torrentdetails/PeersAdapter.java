@@ -10,10 +10,20 @@ import android.view.ViewGroup;
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.databinding.PeerItemLayoutBinding;
 import net.yupol.transmissionremote.app.model.json.Peer;
+import net.yupol.transmissionremote.app.sorting.PeersSortedBy;
+import net.yupol.transmissionremote.app.sorting.SortOrder;
+
+import org.apache.commons.lang3.ArrayUtils;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class PeersAdapter extends RecyclerView.Adapter<PeersAdapter.ViewHolder> {
 
     private Peer[] peers = {};
+    private Comparator<Peer> comparator;
+    private SortOrder order;
 
     public PeersAdapter() {
         setHasStableIds(true);
@@ -21,7 +31,20 @@ public class PeersAdapter extends RecyclerView.Adapter<PeersAdapter.ViewHolder> 
 
     public void setPeers(@NonNull Peer[] peers) {
         this.peers = peers;
+        sort();
         notifyDataSetChanged();
+    }
+
+    public void setSorting(PeersSortedBy sorting, SortOrder order) {
+        comparator = sorting.comparator;
+        this.order = order;
+        sort();
+        notifyDataSetChanged();
+    }
+
+    private void sort() {
+        if (ArrayUtils.isEmpty(peers) || comparator == null) return;
+        Arrays.sort(peers, order == SortOrder.ASCENDING ? comparator : Collections.reverseOrder(comparator));
     }
 
     @Override
@@ -34,6 +57,7 @@ public class PeersAdapter extends RecyclerView.Adapter<PeersAdapter.ViewHolder> 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         holder.binding.setPeer(peers[position]);
+        holder.binding.executePendingBindings();
     }
 
     @Override

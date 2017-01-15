@@ -11,8 +11,16 @@ import net.yupol.transmissionremote.app.databinding.PeersSortListItemBinding;
 import net.yupol.transmissionremote.app.sorting.PeersSortedBy;
 import net.yupol.transmissionremote.app.sorting.SortOrder;
 
-
 public class PeersSortingListAdapter extends BaseAdapter {
+
+    private PeersSortedBy currentSorting;
+    private SortOrder sortOrder;
+
+    public void setCurrentSorting(PeersSortedBy sortedBy, SortOrder sortOrder) {
+        this.currentSorting = sortedBy;
+        this.sortOrder = sortOrder;
+        this.notifyDataSetChanged();
+    }
 
     @Override
     public int getCount() {
@@ -40,8 +48,10 @@ public class PeersSortingListAdapter extends BaseAdapter {
         }
 
         PeersSortListItemBinding binding = (PeersSortListItemBinding) view.getTag();
-        binding.setSortedBy(getItem(position));
-        binding.setSortOrder(SortOrder.ASCENDING);
+
+        PeersSortedBy sorting = getItem(position);
+        binding.setSortedBy(sorting);
+        binding.setSortOrder(sorting == currentSorting ? sortOrder : null);
         binding.executePendingBindings();
 
         return view;

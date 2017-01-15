@@ -20,4 +20,8 @@ public enum SortOrder {
     public <T> Comparator<T> comparator(Comparator<T> comparator) {
         return this == ASCENDING ? comparator : Collections.reverseOrder(comparator);
     }
+
+    public SortOrder reversed() {
+        return this == ASCENDING ? DESCENDING : ASCENDING;
+    }
 }

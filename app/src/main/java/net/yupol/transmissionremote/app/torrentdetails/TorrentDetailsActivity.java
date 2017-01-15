@@ -118,8 +118,6 @@ public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveCha
 
     @Override
     public void onTorrentInfoUpdated(TorrentInfo torrentInfo) {
-        Toast.makeText(this, "peers count: " + torrentInfo.getPeers().length, Toast.LENGTH_SHORT).show();
-
         // TorrentInfo may be empty if torrent is removed after request was sent.
         // Show content only if TorrentInfo contain files data.
         if (torrentInfo.getFiles() != null) {
