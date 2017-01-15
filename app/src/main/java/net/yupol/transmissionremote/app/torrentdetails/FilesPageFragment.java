@@ -35,7 +35,7 @@ public class FilesPageFragment extends BasePageFragment implements DirectoryFrag
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
 
-        View view = inflater.inflate(R.layout.torrent_details_file_page_fragment2, container, false);
+        View view = inflater.inflate(R.layout.torrent_details_file_page_fragment, container, false);
         breadcrumbView = (BreadcrumbView) view.findViewById(R.id.breadcrumb_view);
         breadcrumbView.setOnNodeSelectedListener(new BreadcrumbView.OnNodeSelectedListener() {
             @Override
@@ -94,10 +94,21 @@ public class FilesPageFragment extends BasePageFragment implements DirectoryFrag
 
     @Override
     public void setTorrentInfo(TorrentInfo torrentInfo) {
+        boolean isUpdate = getTorrentInfo() != null;
         super.setTorrentInfo(torrentInfo);
         if (viewCreated) {
-            showRootDir();
+            if (!isUpdate) {
+                showRootDir();
+            } else {
+                updateFileStats();
+            }
         }
+    }
+
+    public void updateFileStats() {
+        DirectoryFragment directoryFragment = (DirectoryFragment)
+                getChildFragmentManager().findFragmentByTag(TAG_DIRECTORY_FRAGMENT);
+        directoryFragment.setFileStats(getTorrentInfo().getFileStats());
     }
 
     @Override

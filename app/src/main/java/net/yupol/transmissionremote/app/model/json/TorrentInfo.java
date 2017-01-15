@@ -52,6 +52,13 @@ public class TorrentInfo implements Parcelable {
         i.activityDate = in.readLong();
         i.secondsDownloading = in.readLong();
         i.secondsSeeding = in.readLong();
+        Parcelable[] parcelablePeers = in.readParcelableArray(Peer.class.getClassLoader());
+        if (parcelablePeers != null) {
+            i.peers = new Peer[parcelablePeers.length];
+            for (int j=0; j<parcelablePeers.length; j++) {
+                i.peers[j] = (Peer) parcelablePeers[j];
+            }
+        }
     }
 
     public TransferPriority getTransferPriority() {
@@ -204,6 +211,10 @@ public class TorrentInfo implements Parcelable {
         return items[0].secondsSeeding;
     }
 
+    public Peer[] getPeers() {
+        return items[0].peers;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -245,6 +256,7 @@ public class TorrentInfo implements Parcelable {
         out.writeLong(i.activityDate);
         out.writeLong(i.secondsDownloading);
         out.writeLong(i.secondsSeeding);
+        out.writeParcelableArray(i.peers, flags);
     }
 
     public static final Creator<TorrentInfo> CREATOR = new Creator<TorrentInfo>() {
@@ -297,5 +309,6 @@ public class TorrentInfo implements Parcelable {
         @Key private long activityDate;
         @Key private long secondsDownloading;
         @Key private long secondsSeeding;
+        @Key private Peer[] peers;
     }
 }

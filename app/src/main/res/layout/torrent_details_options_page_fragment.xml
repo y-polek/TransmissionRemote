@@ -1,137 +1,139 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
-    <ScrollView android:id="@+id/content"
+<layout>
+    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-        <LinearLayout
-            android:orientation="vertical"
+        <ScrollView android:id="@+id/content_view"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="@dimen/default_padding_big">
-
+            android:layout_height="match_parent">
             <LinearLayout
-                android:orientation="horizontal"
-                android:layout_width="wrap_content"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/default_layout_margin">
+                android:padding="@dimen/default_padding_big">
+    
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/default_layout_margin">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="@dimen/tr_abc_text_size_subhead_material"
+                        android:textStyle="bold"
+                        android:text="@string/transfer_priority"/>
+                    <Spinner android:id="@+id/priority_spinner"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+                </LinearLayout>
+    
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/default_text_margin"
                     android:textSize="@dimen/tr_abc_text_size_subhead_material"
                     android:textStyle="bold"
-                    android:text="@string/transfer_priority"/>
-                <Spinner android:id="@+id/priority_spinner"
+                    android:text="@string/transfer_bandwidth"/>
+                <CheckBox android:id="@+id/stay_with_global_bandwidth_checkbox"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/tr_abc_text_size_body_1_material"
+                    android:text="@string/stay_within_global_bandwidth"/>
+                <fragment android:name="net.yupol.transmissionremote.app.torrentdetails.BandwidthLimitFragment"
+                    android:id="@+id/bandwidth_limit_fragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/default_text_margin"
+                    tools:layout="@layout/bandwidth_limit_fragment" />
+    
+                <TableLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:stretchColumns="1">
+                    <TableRow>
+                        <TextView
+                            android:layout_marginTop="@dimen/default_layout_margin"
+                            android:layout_marginBottom="@dimen/default_text_margin"
+                            android:layout_span="2"
+                            android:textSize="@dimen/tr_abc_text_size_subhead_material"
+                            android:textStyle="bold"
+                            android:text="@string/ratio_limit"/>
+                    </TableRow>
+                    <TableRow
+                        android:layout_marginLeft="@dimen/default_text_margin">
+                        <TextView android:id="@+id/ratio_mode_text"
+                            android:textSize="@dimen/tr_abc_text_size_body_1_material"
+                            android:text="@string/mode"/>
+                        <Spinner android:id="@+id/ratio_limit_spinner"
+                            android:layout_marginRight="@dimen/default_text_margin_small"/>
+                    </TableRow>
+                    <TableRow
+                        android:layout_marginLeft="@dimen/default_text_margin">
+                        <TextView android:id="@+id/ratio_value_text"
+                            android:layout_gravity="center_vertical"
+                            android:textSize="@dimen/tr_abc_text_size_body_1_material"
+                            android:text="@string/value"/>
+                        <RelativeLayout>
+                            <EditText android:id="@+id/ratio_limit_edit"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:inputType="numberDecimal"
+                                android:textSize="@dimen/tr_abc_text_size_body_1_material"/>
+                            <TextView android:id="@+id/ratio_limit_global_text"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_alignLeft="@id/ratio_limit_edit"
+                                android:layout_alignBaseline="@id/ratio_limit_edit"
+                                android:paddingLeft="4dp"
+                                android:textSize="@dimen/tr_abc_text_size_body_1_material"/>
+                        </RelativeLayout>
+                    </TableRow>
+                    <TableRow>
+                        <TextView
+                            android:layout_marginTop="@dimen/default_layout_margin"
+                            android:layout_marginBottom="@dimen/default_text_margin"
+                            android:layout_span="2"
+                            android:textSize="@dimen/tr_abc_text_size_subhead_material"
+                            android:textStyle="bold"
+                            android:text="@string/inactivity_limit"/>
+                    </TableRow>
+                    <TableRow
+                        android:layout_marginLeft="@dimen/default_text_margin">
+                        <TextView android:id="@+id/idle_mode_text"
+                            android:textSize="@dimen/tr_abc_text_size_body_1_material"
+                            android:text="@string/mode"/>
+                        <Spinner android:id="@+id/idle_limit_spinner"
+                            android:layout_marginRight="@dimen/default_text_margin_small"/>
+                    </TableRow>
+                    <TableRow
+                        android:layout_marginLeft="@dimen/default_text_margin">
+                        <TextView android:id="@+id/idle_value_text"
+                            android:layout_gravity="center_vertical"
+                            android:textSize="@dimen/tr_abc_text_size_body_1_material"
+                            android:text="@string/value_in_minutes"/>
+                        <RelativeLayout>
+                            <EditText android:id="@+id/idle_limit_edit"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:inputType="number"
+                                android:textSize="@dimen/tr_abc_text_size_body_1_material"/>
+                            <TextView android:id="@+id/idle_limit_global_text"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_alignLeft="@id/idle_limit_edit"
+                                android:layout_alignBaseline="@id/idle_limit_edit"
+                                android:paddingLeft="4dp"
+                                android:textSize="@dimen/tr_abc_text_size_body_1_material"/>
+                        </RelativeLayout>
+                    </TableRow>
+                </TableLayout>
             </LinearLayout>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/default_text_margin"
-                android:textSize="@dimen/tr_abc_text_size_subhead_material"
-                android:textStyle="bold"
-                android:text="@string/transfer_bandwidth"/>
-            <CheckBox android:id="@+id/stay_with_global_bandwidth_checkbox"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="@dimen/tr_abc_text_size_body_1_material"
-                android:text="@string/stay_within_global_bandwidth"/>
-            <fragment android:name="net.yupol.transmissionremote.app.torrentdetails.BandwidthLimitFragment"
-                android:id="@+id/torrent_bandwidth_limit_fragment"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/default_text_margin"
-                tools:layout="@layout/bandwidth_limit_fragment" />
-
-            <TableLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:stretchColumns="1">
-                <TableRow>
-                    <TextView
-                        android:layout_marginTop="@dimen/default_layout_margin"
-                        android:layout_marginBottom="@dimen/default_text_margin"
-                        android:layout_span="2"
-                        android:textSize="@dimen/tr_abc_text_size_subhead_material"
-                        android:textStyle="bold"
-                        android:text="@string/ratio_limit"/>
-                </TableRow>
-                <TableRow
-                    android:layout_marginLeft="@dimen/default_text_margin">
-                    <TextView android:id="@+id/ratio_mode_text"
-                        android:textSize="@dimen/tr_abc_text_size_body_1_material"
-                        android:text="@string/mode"/>
-                    <Spinner android:id="@+id/ratio_limit_mode_spinner"
-                        android:layout_marginRight="@dimen/default_text_margin_small"/>
-                </TableRow>
-                <TableRow
-                    android:layout_marginLeft="@dimen/default_text_margin">
-                    <TextView android:id="@+id/ratio_value_text"
-                        android:layout_gravity="center_vertical"
-                        android:textSize="@dimen/tr_abc_text_size_body_1_material"
-                        android:text="@string/value"/>
-                    <RelativeLayout>
-                        <EditText android:id="@+id/ratio_limit_value"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:inputType="numberDecimal"
-                            android:textSize="@dimen/tr_abc_text_size_body_1_material"/>
-                        <TextView android:id="@+id/ratio_limit_global_value"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_alignLeft="@id/ratio_limit_value"
-                            android:layout_alignBaseline="@id/ratio_limit_value"
-                            android:paddingLeft="4dp"
-                            android:textSize="@dimen/tr_abc_text_size_body_1_material"/>
-                    </RelativeLayout>
-                </TableRow>
-                <TableRow>
-                    <TextView
-                        android:layout_marginTop="@dimen/default_layout_margin"
-                        android:layout_marginBottom="@dimen/default_text_margin"
-                        android:layout_span="2"
-                        android:textSize="@dimen/tr_abc_text_size_subhead_material"
-                        android:textStyle="bold"
-                        android:text="@string/inactivity_limit"/>
-                </TableRow>
-                <TableRow
-                    android:layout_marginLeft="@dimen/default_text_margin">
-                    <TextView android:id="@+id/idle_mode_text"
-                        android:textSize="@dimen/tr_abc_text_size_body_1_material"
-                        android:text="@string/mode"/>
-                    <Spinner android:id="@+id/idle_limit_mode_spinner"
-                        android:layout_marginRight="@dimen/default_text_margin_small"/>
-                </TableRow>
-                <TableRow
-                    android:layout_marginLeft="@dimen/default_text_margin">
-                    <TextView android:id="@+id/idle_value_text"
-                        android:layout_gravity="center_vertical"
-                        android:textSize="@dimen/tr_abc_text_size_body_1_material"
-                        android:text="@string/value_in_minutes"/>
-                    <RelativeLayout>
-                        <EditText android:id="@+id/idle_limit_value"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:inputType="number"
-                            android:textSize="@dimen/tr_abc_text_size_body_1_material"/>
-                        <TextView android:id="@+id/idle_limit_global_value"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_alignLeft="@id/idle_limit_value"
-                            android:layout_alignBaseline="@id/idle_limit_value"
-                            android:paddingLeft="4dp"
-                            android:textSize="@dimen/tr_abc_text_size_body_1_material"/>
-                    </RelativeLayout>
-                </TableRow>
-            </TableLayout>
-        </LinearLayout>
-    </ScrollView>
-    <ProgressBar android:id="@+id/progress_bar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"/>
-</FrameLayout>
+        </ScrollView>
+        <ProgressBar android:id="@+id/progress_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"/>
+    </FrameLayout>
+</layout>

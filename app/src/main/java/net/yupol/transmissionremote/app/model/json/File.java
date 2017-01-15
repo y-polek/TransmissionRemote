@@ -8,14 +8,12 @@ import com.google.api.client.util.Key;
 public class File implements Parcelable {
     @Key("name") private String path;
     private String name;
-    @Key private long bytesCompleted;
     @Key private long length;
 
     public File() {}
 
     public File(Parcel in) {
         path = in.readString();
-        bytesCompleted = in.readLong();
         length = in.readLong();
     }
 
@@ -31,10 +29,6 @@ public class File implements Parcelable {
         return name;
     }
 
-    public long getBytesCompleted() {
-        return bytesCompleted;
-    }
-
     public long getLength() {
         return length;
     }
@@ -47,7 +41,6 @@ public class File implements Parcelable {
     @Override
     public void writeToParcel(Parcel out, int flags) {
         out.writeString(path);
-        out.writeLong(bytesCompleted);
         out.writeLong(length);
     }
 

@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-    <ListView android:id="@+id/file_list"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+    <net.yupol.transmissionremote.app.torrentdetails.BreadcrumbView android:id="@+id/breadcrumb_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
-    <ProgressBar android:id="@+id/progress_bar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"/>
-</FrameLayout>
+        android:layout_height="wrap_content"/>
+    <FrameLayout
+        android:id="@+id/content"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+    </FrameLayout>
+</LinearLayout>

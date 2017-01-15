@@ -15,13 +15,14 @@ public class TorrentDetailsPagerAdapter extends FragmentStatePagerAdapter {
     private Class<?>[] fragmentsClasses = {
             TorrentInfoPageFragment.class,
             FilesPageFragment.class,
+            PeersPageFragment.class,
             OptionsPageFragment.class,
     };
 
     private int[] pageTitles = {
             R.string.info,
             R.string.files,
-            R.string.torrent_details,
+            R.string.peers,
             R.string.options
     };
 

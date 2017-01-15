@@ -2,6 +2,7 @@ package net.yupol.transmissionremote.app.torrentdetails;
 
 import android.app.Activity;
 import android.content.Context;
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.text.InputFilter;
 import android.util.Log;
@@ -12,11 +13,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.CheckBox;
-import android.widget.EditText;
-import android.widget.ProgressBar;
-import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
@@ -24,6 +20,7 @@ import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
 
 import net.yupol.transmissionremote.app.R;
+import net.yupol.transmissionremote.app.databinding.TorrentDetailsOptionsPageFragmentBinding;
 import net.yupol.transmissionremote.app.model.json.ServerSettings;
 import net.yupol.transmissionremote.app.model.json.TorrentInfo;
 import net.yupol.transmissionremote.app.model.json.TransferPriority;
@@ -45,24 +42,14 @@ public class OptionsPageFragment extends BasePageFragment implements AdapterView
 
     private TransportManager transportManager;
 
-    private Spinner prioritySpinner;
-    private BandwidthLimitFragment bandwidthLimitFragment;
-    private CheckBox stayWithGlobalCheckbox;
-    private Spinner ratioLimitSpinner;
-    private Spinner idleLimitSpinner;
-    private EditText ratioLimitEdit;
-    private TextView ratioLimitGlobalText;
-    private EditText idleLimitEdit;
-    private TextView idleLimitGlobalText;
-
     private ServerSettings serverSettings;
 
-    private View contentView;
-    private ProgressBar progressBar;
+    private BandwidthLimitFragment bandwidthLimitFragment;
     private MenuItem saveMenuItem;
 
     private boolean viewCreated;
     private SessionGetRequest sessionGetRequest;
+    private TorrentDetailsOptionsPageFragmentBinding binding;
 
     @Override
     public void onAttach(Context context) {
@@ -120,34 +107,22 @@ public class OptionsPageFragment extends BasePageFragment implements AdapterView
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
 
-        View view = inflater.inflate(R.layout.torrent_details_options_page_fragment, container, false);
-
-        prioritySpinner = (Spinner) view.findViewById(R.id.priority_spinner);
-        prioritySpinner.setAdapter(new TransferPrioritySpinnerAdapter());
-
-        stayWithGlobalCheckbox = (CheckBox) view.findViewById(R.id.stay_with_global_bandwidth_checkbox);
-
+        binding = DataBindingUtil.inflate(inflater, R.layout.torrent_details_options_page_fragment, container, false);
         bandwidthLimitFragment = (BandwidthLimitFragment)
-                getChildFragmentManager().findFragmentById(R.id.torrent_bandwidth_limit_fragment);
+                getChildFragmentManager().findFragmentById(R.id.bandwidth_limit_fragment);
 
-        ratioLimitSpinner = (Spinner) view.findViewById(R.id.ratio_limit_mode_spinner);
-        ratioLimitSpinner.setAdapter(new RatioLimitModeAdapter());
-        ratioLimitEdit = (EditText) view.findViewById(R.id.ratio_limit_value);
-        ratioLimitEdit.setFilters(new InputFilter[] { new InputFilter.LengthFilter(10)} );
-        ratioLimitGlobalText = (TextView) view.findViewById(R.id.ratio_limit_global_value);
+        binding.prioritySpinner.setAdapter(new TransferPrioritySpinnerAdapter());
 
-        idleLimitSpinner = (Spinner) view.findViewById(R.id.idle_limit_mode_spinner);
-        idleLimitSpinner.setAdapter(new IdleLimitModeAdapter());
-        idleLimitEdit = (EditText) view.findViewById(R.id.idle_limit_value);
-        idleLimitEdit.setFilters(new InputFilter[]{ new InputFilter.LengthFilter(5)} );
-        idleLimitEdit.addTextChangedListener(new MinMaxTextWatcher(1, 0xFFFF));
-        idleLimitGlobalText = (TextView) view.findViewById(R.id.idle_limit_global_value);
+        binding.ratioLimitSpinner.setAdapter(new RatioLimitModeAdapter());
+        binding.ratioLimitEdit.setFilters(new InputFilter[] { new InputFilter.LengthFilter(10)} );
 
-        contentView = view.findViewById(R.id.content);
-        progressBar = (ProgressBar) view.findViewById(R.id.progress_bar);
+        binding.idleLimitSpinner.setAdapter(new IdleLimitModeAdapter());
+        binding.idleLimitEdit.setFilters(new InputFilter[]{ new InputFilter.LengthFilter(5)} );
+        binding.idleLimitEdit.addTextChangedListener(new MinMaxTextWatcher(1, 0xFFFF));
+
         if (getTorrentInfo() == null) {
-            contentView.setVisibility(View.GONE);
-            progressBar.setVisibility(View.VISIBLE);
+            binding.contentView.setVisibility(View.GONE);
+            binding.progressBar.setVisibility(View.VISIBLE);
         } else {
             showContent();
             updateUi(true);
@@ -155,17 +130,17 @@ public class OptionsPageFragment extends BasePageFragment implements AdapterView
 
         // Postpone listeners registration to avoid notifying listeners on layout.
         // http://stackoverflow.com/questions/2562248/how-to-keep-onitemselected-from-firing-off-on-a-newly-instantiated-spinner
-        view.post(new Runnable() {
+        binding.getRoot().post(new Runnable() {
             @Override
             public void run() {
-                ratioLimitSpinner.setOnItemSelectedListener(OptionsPageFragment.this);
-                idleLimitSpinner.setOnItemSelectedListener(OptionsPageFragment.this);
+                binding.ratioLimitSpinner.setOnItemSelectedListener(OptionsPageFragment.this);
+                binding.idleLimitSpinner.setOnItemSelectedListener(OptionsPageFragment.this);
             }
         });
 
         viewCreated = true;
 
-        return view;
+        return binding.getRoot();
     }
 
     @Override
@@ -176,10 +151,15 @@ public class OptionsPageFragment extends BasePageFragment implements AdapterView
 
     @Override
     public void setTorrentInfo(TorrentInfo torrentInfo) {
+        boolean isUpdate = getTorrentInfo() != null;
         super.setTorrentInfo(torrentInfo);
         if (viewCreated) {
             showContent();
-            updateUi(true);
+            if (!isUpdate) {
+                updateUi(true);
+            } else {
+                // TODO: implement UI updates
+            }
         }
         if (saveMenuItem != null) {
             saveMenuItem.setEnabled(true);
@@ -192,24 +172,24 @@ public class OptionsPageFragment extends BasePageFragment implements AdapterView
     }
 
     private void showContent() {
-        contentView.setVisibility(View.VISIBLE);
-        progressBar.setVisibility(View.GONE);
+        binding.contentView.setVisibility(View.VISIBLE);
+        binding.progressBar.setVisibility(View.GONE);
     }
 
     private void updateUi(boolean syncWithModel) {
         TorrentInfo torrentInfo = getTorrentInfo();
 
-        prioritySpinner.setSelection(torrentInfo.getTransferPriority().ordinal());
+        binding.prioritySpinner.setSelection(torrentInfo.getTransferPriority().ordinal());
 
-        stayWithGlobalCheckbox.setChecked(torrentInfo.isSessionLimitsHonored());
+        binding.stayWithGlobalBandwidthCheckbox.setChecked(torrentInfo.isSessionLimitsHonored());
 
         bandwidthLimitFragment.setDownloadLimited(torrentInfo.isDownloadLimited());
         bandwidthLimitFragment.setDownloadLimit(torrentInfo.getDownloadLimit());
         bandwidthLimitFragment.setUploadLimited(torrentInfo.isUploadLimited());
         bandwidthLimitFragment.setUploadLimit(torrentInfo.getUploadLimit());
 
-        ratioLimitSpinner.setSelection(torrentInfo.getSeedRatioMode().ordinal());
-        idleLimitSpinner.setSelection(torrentInfo.getSeedIdleMode().ordinal());
+        binding.ratioLimitSpinner.setSelection(torrentInfo.getSeedRatioMode().ordinal());
+        binding.idleLimitSpinner.setSelection(torrentInfo.getSeedIdleMode().ordinal());
         updateSeedingLimitsUi(syncWithModel);
     }
 
@@ -218,84 +198,84 @@ public class OptionsPageFragment extends BasePageFragment implements AdapterView
 
         switch (getRatioLimitMode()) {
             case STOP_AT_RATIO:
-                if (syncWithModel || ratioLimitEdit.getText().length() == 0) {
-                    ratioLimitEdit.setText(String.valueOf(torrentInfo.getSeedRatioLimit()));
+                if (syncWithModel || binding.ratioLimitEdit.getText().length() == 0) {
+                    binding.ratioLimitEdit.setText(String.valueOf(torrentInfo.getSeedRatioLimit()));
                 }
-                ratioLimitEdit.setVisibility(View.VISIBLE);
-                ratioLimitEdit.setEnabled(true);
-                ratioLimitGlobalText.setVisibility(View.INVISIBLE);
+                binding.ratioLimitEdit.setVisibility(View.VISIBLE);
+                binding.ratioLimitEdit.setEnabled(true);
+                binding.ratioLimitGlobalText.setVisibility(View.INVISIBLE);
                 break;
             case GLOBAL_SETTINGS:
                 if (serverSettings != null) {
                     String text = serverSettings.isSeedRatioLimited()
                             ? String.valueOf(serverSettings.getSeedRatioLimit())
                             : getString(R.string.disabled);
-                    ratioLimitGlobalText.setText(text);
+                    binding.ratioLimitGlobalText.setText(text);
                 } else {
-                    ratioLimitGlobalText.setText(R.string.three_dots);
+                    binding.ratioLimitGlobalText.setText(R.string.three_dots);
                 }
-                ratioLimitEdit.setVisibility(View.INVISIBLE);
-                ratioLimitGlobalText.setVisibility(View.VISIBLE);
+                binding.ratioLimitEdit.setVisibility(View.INVISIBLE);
+                binding.ratioLimitGlobalText.setVisibility(View.VISIBLE);
                 break;
             case UNLIMITED:
-                if (syncWithModel || ratioLimitEdit.getText().length() == 0) {
-                    ratioLimitEdit.setText(String.valueOf(torrentInfo.getSeedRatioLimit()));
+                if (syncWithModel || binding.ratioLimitEdit.getText().length() == 0) {
+                    binding.ratioLimitEdit.setText(String.valueOf(torrentInfo.getSeedRatioLimit()));
                 }
-                ratioLimitEdit.setVisibility(View.VISIBLE);
-                ratioLimitEdit.setEnabled(false);
-                ratioLimitGlobalText.setVisibility(View.INVISIBLE);
+                binding.ratioLimitEdit.setVisibility(View.VISIBLE);
+                binding.ratioLimitEdit.setEnabled(false);
+                binding.ratioLimitGlobalText.setVisibility(View.INVISIBLE);
                 break;
         }
 
         switch (getIdleLimitMode()) {
             case STOP_WHEN_INACTIVE:
-                if (syncWithModel || idleLimitEdit.getText().length() == 0) {
-                    idleLimitEdit.setText(String.valueOf(torrentInfo.getSeedIdleLimit()));
+                if (syncWithModel || binding.idleLimitEdit.getText().length() == 0) {
+                    binding.idleLimitEdit.setText(String.valueOf(torrentInfo.getSeedIdleLimit()));
                 }
-                idleLimitEdit.setVisibility(View.VISIBLE);
-                idleLimitEdit.setEnabled(true);
-                idleLimitGlobalText.setVisibility(View.INVISIBLE);
+                binding.idleLimitEdit.setVisibility(View.VISIBLE);
+                binding.idleLimitEdit.setEnabled(true);
+                binding.idleLimitGlobalText.setVisibility(View.INVISIBLE);
                 break;
             case GLOBAL_SETTINGS:
                 if (serverSettings != null) {
                     String text = serverSettings.isSeedIdleLimited()
                             ? String.valueOf(serverSettings.getSeedIdleLimit())
                             : getString(R.string.disabled);
-                    idleLimitGlobalText.setText(text);
+                    binding.idleLimitGlobalText.setText(text);
                 }
-                idleLimitEdit.setVisibility(View.INVISIBLE);
-                idleLimitGlobalText.setVisibility(View.VISIBLE);
+                binding.idleLimitEdit.setVisibility(View.INVISIBLE);
+                binding.idleLimitGlobalText.setVisibility(View.VISIBLE);
                 break;
             case UNLIMITED:
-                if (syncWithModel || idleLimitEdit.getText().length() == 0) {
-                    idleLimitEdit.setText(String.valueOf(torrentInfo.getSeedIdleLimit()));
+                if (syncWithModel || binding.idleLimitEdit.getText().length() == 0) {
+                    binding.idleLimitEdit.setText(String.valueOf(torrentInfo.getSeedIdleLimit()));
                 }
-                idleLimitEdit.setVisibility(View.VISIBLE);
-                idleLimitEdit.setEnabled(false);
-                idleLimitGlobalText.setVisibility(View.INVISIBLE);
+                binding.idleLimitEdit.setVisibility(View.VISIBLE);
+                binding.idleLimitEdit.setEnabled(false);
+                binding.idleLimitGlobalText.setVisibility(View.INVISIBLE);
                 break;
         }
     }
 
     private RatioLimitMode getRatioLimitMode() {
-        return (RatioLimitMode) ratioLimitSpinner.getSelectedItem();
+        return (RatioLimitMode) binding.ratioLimitSpinner.getSelectedItem();
     }
 
     private double getRatioLimit() {
         try {
-            return Double.parseDouble(ratioLimitEdit.getText().toString());
+            return Double.parseDouble(binding.ratioLimitEdit.getText().toString());
         } catch (NumberFormatException e) {
             return getTorrentInfo().getSeedRatioLimit();
         }
     }
 
     private IdleLimitMode getIdleLimitMode() {
-        return (IdleLimitMode) idleLimitSpinner.getSelectedItem();
+        return (IdleLimitMode) binding.idleLimitSpinner.getSelectedItem();
     }
 
     private int getIdleLimit() {
         try {
-            return Integer.parseInt(idleLimitEdit.getText().toString());
+            return Integer.parseInt(binding.idleLimitEdit.getText().toString());
         } catch (NumberFormatException e) {
             return getTorrentInfo().getSeedIdleLimit();
         }
@@ -338,12 +318,12 @@ public class OptionsPageFragment extends BasePageFragment implements AdapterView
         TorrentInfo torrentInfo = getTorrentInfo();
         TorrentSetRequest.Builder saveChangesRequestBuilder = TorrentSetRequest.builder(torrentInfo.getId());
 
-        TransferPriority priority = (TransferPriority) prioritySpinner.getSelectedItem();
+        TransferPriority priority = (TransferPriority) binding.prioritySpinner.getSelectedItem();
         if (priority != torrentInfo.getTransferPriority()) {
             saveChangesRequestBuilder.transferPriority(priority);
         }
 
-        boolean honorsSessionLimits = stayWithGlobalCheckbox.isChecked();
+        boolean honorsSessionLimits = binding.stayWithGlobalBandwidthCheckbox.isChecked();
         if (honorsSessionLimits != torrentInfo.isSessionLimitsHonored()) {
             saveChangesRequestBuilder.honorsSessionLimits(honorsSessionLimits);
         }

@@ -11,8 +11,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.FrameLayout;
-import android.widget.ListAdapter;
 
 import com.buildware.widget.indeterm.IndeterminateCheckBox;
 import com.mikepenz.fontawesome_typeface_library.FontAwesome;
@@ -25,6 +23,7 @@ import net.yupol.transmissionremote.app.model.FileType;
 import net.yupol.transmissionremote.app.model.Priority;
 import net.yupol.transmissionremote.app.model.json.File;
 import net.yupol.transmissionremote.app.model.json.FileStat;
+import net.yupol.transmissionremote.app.utils.MetricsUtils;
 import net.yupol.transmissionremote.app.utils.TextUtils;
 
 import java.util.Arrays;
@@ -48,6 +47,11 @@ public class DirectoryAdapter extends RecyclerView.Adapter<DirectoryAdapter.View
         this.fileStats = fileStats;
         this.listener = listener;
         setHasStableIds(true);
+    }
+
+    public void setFileStats(FileStat[] fileStats) {
+        this.fileStats = fileStats;
+        notifyItemRangeChanged(0, getItemCount());
     }
 
     @Override
@@ -85,6 +89,7 @@ public class DirectoryAdapter extends RecyclerView.Adapter<DirectoryAdapter.View
                 break;
             case R.id.view_type_file:
                 File file = getFile(position);
+                FileStat fileStat = getFileStat(position);
                 holder.binding.setFile(file);
 
                 boolean isFileCompleted = isFileCompleted(position);
@@ -95,7 +100,7 @@ public class DirectoryAdapter extends RecyclerView.Adapter<DirectoryAdapter.View
                 holder.binding.priorityButton.setText(priority.icon.getFormattedName());
                 holder.binding.priorityButton.setEnabled(!isFileCompleted);
 
-                bytesCompleted = file.getBytesCompleted();
+                bytesCompleted = fileStat.getBytesCompleted();
                 filesLength = file.getLength();
 
                 icon = new IconicsDrawable(context, FileType.iconFromName(file.getName()))
@@ -118,15 +123,15 @@ public class DirectoryAdapter extends RecyclerView.Adapter<DirectoryAdapter.View
     }
 
     private boolean isFileChecked(File file, FileStat fileStat) {
-        return fileStat.isWanted() || isFileCompleted(file);
+        return fileStat.isWanted() || isFileCompleted(file, fileStat);
     }
 
     private boolean isFileCompleted(int position) {
-        return isFileCompleted(getFile(position));
+        return isFileCompleted(getFile(position), getFileStat(position));
     }
 
-    private boolean isFileCompleted(File file) {
-        return file.getBytesCompleted() >= file.getLength();
+    private boolean isFileCompleted(File file, FileStat fileStat) {
+        return fileStat.getBytesCompleted() >= file.getLength();
     }
 
     @Nullable
@@ -156,7 +161,7 @@ public class DirectoryAdapter extends RecyclerView.Adapter<DirectoryAdapter.View
             if (!isDirectoryCompleted(subDir)) return false;
         }
         for (Integer fileIndex : dir.getFileIndices()) {
-            if (!isFileCompleted(files[fileIndex])) return false;
+            if (!isFileCompleted(files[fileIndex], fileStats[fileIndex])) return false;
         }
         return true;
     }
@@ -169,7 +174,7 @@ public class DirectoryAdapter extends RecyclerView.Adapter<DirectoryAdapter.View
         }
 
         for (Integer fileIndex : dir.getFileIndices()) {
-            bytesCompleted += files[fileIndex].getBytesCompleted();
+            bytesCompleted += fileStats[fileIndex].getBytesCompleted();
         }
 
         return bytesCompleted;
@@ -201,7 +206,7 @@ public class DirectoryAdapter extends RecyclerView.Adapter<DirectoryAdapter.View
         }
 
         for (Integer fileIndex : dir.getFileIndices()) {
-            if (!isFileCompleted(files[fileIndex])) {
+            if (!isFileCompleted(files[fileIndex], fileStats[fileIndex])) {
                 priorities.add(fileStats[fileIndex].getPriority());
             }
         }
@@ -320,7 +325,7 @@ public class DirectoryAdapter extends RecyclerView.Adapter<DirectoryAdapter.View
                         }
                     });
                     popup.setAnchorView(view);
-                    int contentWidth = measurePriorityPopupWidth(context, adapter);
+                    int contentWidth = MetricsUtils.measurePopupSize(context, adapter).width;
                     popup.setContentWidth(contentWidth);
                     popup.setHorizontalOffset(
                             view.getWidth() - contentWidth - context.getResources().getDimensionPixelOffset(R.dimen.priority_popup_offset));
@@ -339,43 +344,10 @@ public class DirectoryAdapter extends RecyclerView.Adapter<DirectoryAdapter.View
             setDirPriority(subDir, priority);
         }
         for (Integer fileIndex : dir.getFileIndices()) {
-            if (!isFileCompleted(files[fileIndex])) {
+            if (!isFileCompleted(files[fileIndex], fileStats[fileIndex])) {
                 setFilePriority(fileIndex, priority);
             }
         }
-    }
-
-    private static int measurePriorityPopupWidth(Context context, ListAdapter adapter) {
-        ViewGroup mMeasureParent = null;
-        int maxWidth = 0;
-        View itemView = null;
-        int itemType = 0;
-
-        final int widthMeasureSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
-        final int heightMeasureSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
-        final int count = adapter.getCount();
-        for (int i=0; i<count; i++) {
-            final int positionType = adapter.getItemViewType(i);
-            if (positionType != itemType) {
-                itemType = positionType;
-                itemView = null;
-            }
-
-            if (mMeasureParent == null) {
-                mMeasureParent = new FrameLayout(context);
-            }
-
-            itemView = adapter.getView(i, itemView, mMeasureParent);
-            itemView.measure(widthMeasureSpec, heightMeasureSpec);
-
-            int itemWidth = itemView.getMeasuredWidth();
-
-            if (itemWidth > maxWidth) {
-                maxWidth = itemWidth;
-            }
-        }
-
-        return maxWidth;
     }
 
     public interface OnItemSelectedListener {

@@ -83,7 +83,7 @@ public class DirTest extends TestCase {
         assertEquals("/", dir.getName());
         assertEquals(0, dir.getDirs().size());
         assertEquals(1, dir.getFileIndices().size());
-        assertEquals("r1.txt", nestedFiles[dir.getFileIndices().get(0)].getName());
+        assertEquals("r1.txt", singleFile[dir.getFileIndices().get(0)].getName());
     }
 
     public void testFileIndices() {

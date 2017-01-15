@@ -1,5 +1,7 @@
 package net.yupol.transmissionremote.app.utils;
 
+import com.google.common.base.Strings;
+
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.TransmissionRemote;
 
@@ -85,5 +87,9 @@ public class TextUtils {
         }
 
         return TransmissionRemote.getInstance().getString(R.string.date_time, DATE_FORMAT.format(date), formattedTime);
+    }
+
+    public static String speedText(long bytes) {
+        return Strings.padStart(TextUtils.displayableSize(bytes), 5, ' ') + "/s";
     }
 }
