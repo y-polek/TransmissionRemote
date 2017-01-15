@@ -42,7 +42,7 @@ public class PeersSortingListAdapter extends BaseAdapter {
         PeersSortListItemBinding binding = (PeersSortListItemBinding) view.getTag();
         binding.setSortedBy(getItem(position));
         binding.setSortOrder(SortOrder.ASCENDING);
-
+        binding.executePendingBindings();
 
         return view;
     }

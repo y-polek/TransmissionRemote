@@ -21,6 +21,8 @@ import net.yupol.transmissionremote.app.model.json.Peer;
 import net.yupol.transmissionremote.app.model.json.TorrentInfo;
 import net.yupol.transmissionremote.app.utils.DividerItemDecoration;
 import net.yupol.transmissionremote.app.utils.IconUtils;
+import net.yupol.transmissionremote.app.utils.MetricsUtils;
+import net.yupol.transmissionremote.app.utils.Size;
 
 public class PeersPageFragment extends BasePageFragment {
 
@@ -86,9 +88,20 @@ public class PeersPageFragment extends BasePageFragment {
 
     private void showSortingList() {
         ListPopupWindow popup = new ListPopupWindow(getContext());
+        popup.setModal(true);
+
         PeersSortingListAdapter adapter = new PeersSortingListAdapter();
         popup.setAdapter(adapter);
+
         popup.setAnchorView(binding.getRoot());
+
+        Size popupSize = MetricsUtils.measurePopupSize(getContext(), adapter);
+        popup.setContentWidth(popupSize.width);
+        popup.setHeight(popupSize.height);
+
+        popup.setHorizontalOffset(binding.getRoot().getWidth() - popupSize.width
+                - getResources().getDimensionPixelOffset(R.dimen.sort_popup_offset_horizontal));
+        popup.setVerticalOffset(-getResources().getDimensionPixelOffset(R.dimen.sort_popup_offset_vertical));
         popup.show();
     }
 

@@ -11,8 +11,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.FrameLayout;
-import android.widget.ListAdapter;
 
 import com.buildware.widget.indeterm.IndeterminateCheckBox;
 import com.mikepenz.fontawesome_typeface_library.FontAwesome;
@@ -25,6 +23,7 @@ import net.yupol.transmissionremote.app.model.FileType;
 import net.yupol.transmissionremote.app.model.Priority;
 import net.yupol.transmissionremote.app.model.json.File;
 import net.yupol.transmissionremote.app.model.json.FileStat;
+import net.yupol.transmissionremote.app.utils.MetricsUtils;
 import net.yupol.transmissionremote.app.utils.TextUtils;
 
 import java.util.Arrays;
@@ -326,7 +325,7 @@ public class DirectoryAdapter extends RecyclerView.Adapter<DirectoryAdapter.View
                         }
                     });
                     popup.setAnchorView(view);
-                    int contentWidth = measurePriorityPopupWidth(context, adapter);
+                    int contentWidth = MetricsUtils.measurePopupSize(context, adapter).width;
                     popup.setContentWidth(contentWidth);
                     popup.setHorizontalOffset(
                             view.getWidth() - contentWidth - context.getResources().getDimensionPixelOffset(R.dimen.priority_popup_offset));
@@ -349,39 +348,6 @@ public class DirectoryAdapter extends RecyclerView.Adapter<DirectoryAdapter.View
                 setFilePriority(fileIndex, priority);
             }
         }
-    }
-
-    private static int measurePriorityPopupWidth(Context context, ListAdapter adapter) {
-        ViewGroup mMeasureParent = null;
-        int maxWidth = 0;
-        View itemView = null;
-        int itemType = 0;
-
-        final int widthMeasureSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
-        final int heightMeasureSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
-        final int count = adapter.getCount();
-        for (int i=0; i<count; i++) {
-            final int positionType = adapter.getItemViewType(i);
-            if (positionType != itemType) {
-                itemType = positionType;
-                itemView = null;
-            }
-
-            if (mMeasureParent == null) {
-                mMeasureParent = new FrameLayout(context);
-            }
-
-            itemView = adapter.getView(i, itemView, mMeasureParent);
-            itemView.measure(widthMeasureSpec, heightMeasureSpec);
-
-            int itemWidth = itemView.getMeasuredWidth();
-
-            if (itemWidth > maxWidth) {
-                maxWidth = itemWidth;
-            }
-        }
-
-        return maxWidth;
     }
 
     public interface OnItemSelectedListener {
