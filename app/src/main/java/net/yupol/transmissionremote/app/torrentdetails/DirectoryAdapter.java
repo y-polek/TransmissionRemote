@@ -290,11 +290,15 @@ public class DirectoryAdapter extends RecyclerView.Adapter<DirectoryAdapter.View
                 @Override
                 public void onStateChanged(IndeterminateCheckBox buttonView, @Nullable Boolean isChecked) {
                     if (getItemViewType() == R.id.view_type_directory) {
-                        if (isChecked != null) listener.onDirectoryChecked(getAdapterPosition(), isChecked);
+                        boolean changed = isChecked != isDirectoryChecked(getDir(getAdapterPosition()));
+                        if (isChecked != null && changed) listener.onDirectoryChecked(getAdapterPosition(), isChecked);
                     } else {
                         Integer fileIndex = getItem(getAdapterPosition());
                         assert isChecked != null;
-                        listener.onFileChecked(fileIndex, isChecked);
+                        boolean changed = isChecked != isFileChecked(getAdapterPosition());
+                        if (changed) {
+                            listener.onFileChecked(fileIndex, isChecked);
+                        }
                     }
                 }
             });
