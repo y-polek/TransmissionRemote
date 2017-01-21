@@ -1,5 +1,7 @@
 package net.yupol.transmissionremote.app.server;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
@@ -21,12 +23,13 @@ import android.widget.Spinner;
 import com.google.api.client.repackaged.com.google.common.base.Strings;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 
+import net.yupol.transmissionremote.app.OnBackPressedListener;
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.utils.IconUtils;
 
 import org.apache.commons.lang3.StringUtils;
 
-public class ServerDetailsFragment extends Fragment {
+public class ServerDetailsFragment extends Fragment implements OnBackPressedListener {
 
     public static final String ARGUMENT_SERVER = "argument_server";
 
@@ -150,6 +153,17 @@ public class ServerDetailsFragment extends Fragment {
         IconUtils.setMenuIcon(getActivity(), menu, R.id.action_save, GoogleMaterial.Icon.gmd_save);
     }
 
+    @Override
+    public boolean onBackPressed() {
+        if (hasChanges()) {
+            askForSave();
+            return true;
+        }
+        return false;
+    }
+
+
+
     public Server getNewServer() {
         if (!checkValidity())
             return null;
@@ -240,6 +254,24 @@ public class ServerDetailsFragment extends Fragment {
             passwordEdit.setText(server.getPassword());
             rpcUrlEdit.setText(server.getRpcUrl());
         }
+    }
+
+    private void askForSave() {
+        new AlertDialog.Builder(getContext())
+                .setMessage(R.string.save_changes_question)
+                .setPositiveButton(R.string.save_changes_save, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        saveServer();
+                        getActivity().onBackPressed();
+                    }
+                })
+                .setNegativeButton(R.string.save_changes_discard, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        getActivity().onBackPressed();
+                    }
+        }).create().show();
     }
 
     private String getUiName() {
