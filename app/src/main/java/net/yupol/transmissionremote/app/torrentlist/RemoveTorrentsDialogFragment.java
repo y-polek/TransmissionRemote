@@ -1,6 +1,5 @@
 package net.yupol.transmissionremote.app.torrentlist;
 
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -29,10 +28,27 @@ public class RemoveTorrentsDialogFragment extends DialogFragment {
             public void onClick(DialogInterface dialog, int which) {
                 int[] torrentsToRemove = getArguments().getIntArray(KEY_TORRENTS_TO_REMOVE);
                 boolean removeData = which == 1;
-                listener.onRemoveTorrentsSelected(torrentsToRemove, removeData);
+                if (removeData) {
+                    askRemoveDataConfirmation(torrentsToRemove);
+                } else {
+                    listener.onRemoveTorrentsSelected(torrentsToRemove, false);
+                }
             }
         });
         return builder.create();
+    }
+
+    private void askRemoveDataConfirmation(final int[] torrentsToRemove) {
+        new AlertDialog.Builder(getContext())
+                .setMessage(R.string.remove_data_confirmation)
+                .setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        listener.onRemoveTorrentsSelected(torrentsToRemove, true);
+                    }
+                })
+                .setNegativeButton(android.R.string.cancel, null)
+                .show();
     }
 
     @Override

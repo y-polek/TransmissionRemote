@@ -80,7 +80,7 @@
     <string name="remote_preferences">Preferencias</string>
     <string name="remove_data">Borrar datos</string>
     <string name="remove_from_list">Borrar de la lista</string>
-    <string name="remove_server_positive">Borrar</string>
+    <string name="remove">Borrar</string>
     <string name="retry">Reintentar</string>
     <string name="save_changes_discard">Descartar</string>
     <string name="save_changes_save">Guardar</string>

@@ -106,7 +106,7 @@ public class ServersActivity extends BaseActivity {
             case R.id.action_remove:
                 new AlertDialog.Builder(this)
                     .setMessage(R.string.remove_server_confirmation)
-                    .setPositiveButton(R.string.remove_server_positive, new DialogInterface.OnClickListener() {
+                    .setPositiveButton(R.string.remove, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             ServerDetailsFragment detailsFragment = (ServerDetailsFragment) getSupportFragmentManager().findFragmentByTag(TAG_SERVER_DETAILS);

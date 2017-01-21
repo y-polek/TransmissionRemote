@@ -74,7 +74,7 @@
     <string name="remove_server">서버 제거</string>
     <string name="save_server">저장</string>
     <string name="remove_server_confirmation">서버를 제거하시겠습니까?</string>
-    <string name="remove_server_positive">제거</string>
+    <string name="remove">제거</string>
     <string name="saved">저장되었습니다</string>
     <string name="save_changes_question">변경사항을 저장하시겠습니까?</string>
     <string name="save_changes_save">저장</string>

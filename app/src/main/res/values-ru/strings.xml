@@ -109,7 +109,7 @@
     <string name="remove_selected_torrents">Удалить выбранные торренты…</string>
     <string name="remove_server">Удалить сервер</string>
     <string name="remove_server_confirmation">Удалить сервер?</string>
-    <string name="remove_server_positive">Удалить</string>
+    <string name="remove">Удалить</string>
     <string name="retry">Повторить попытку</string>
     <string name="rpc_url">RPC URL:</string>
     <string name="save_changes_discard">Сбросить</string>
@@ -203,4 +203,6 @@
     <string name="storage_permission_never_ask_again_message">Разрешение \"Память\" необходимо для открытия локальных торрент файлов.\nВы можете дать разрешение в настройках приложения.</string>
     <string name="storage_permission_rationale">Разрешение \"Память\" необходимо для открытия локальных торрент файлов.</string>
     <string name="error_failed_to_open_downloaded_torrent">Не удалось открыть файл. Попробуйте использовать меню \"Открыть торрент\"</string>
+    <string name="remove_data_confirmation">Вы уверены что хотите удалить все данные?</string>
+    <string name="delete">Удалить</string>
 </resources>

@@ -74,7 +74,6 @@
     <string name="remove_server">Remove server</string>
     <string name="save_server">Save</string>
     <string name="remove_server_confirmation">Remove server?</string>
-    <string name="remove_server_positive">Remove</string>
     <string name="saved">Saved</string>
     <string name="save_changes_question">Save changes?</string>
     <string name="save_changes_save">Save</string>
@@ -117,6 +116,7 @@
     <string name="remove_selected_torrents">Remove selected torrents…</string>
     <string name="remove_from_list">Remove from list</string>
     <string name="remove_data">Remove data</string>
+    <string name="remove_data_confirmation">Are you sure you want to delete all data?</string>
     <string name="search">Search</string>
     <string name="eta_unknown">Remaining time unknown</string>
     <string name="eta_infinite">~ \u221e</string>
@@ -236,6 +236,9 @@
     <string name="apply">Apply</string>
     <string name="choose_location">Choose location</string>
     <string name="move_data">Move data</string>
+
+    <string name="remove">Remove</string>
+    <string name="delete">Delete</string>
 
     <plurals name="torrents">
         <item quantity="zero">%d torrents</item>

@@ -74,7 +74,7 @@
     <string name="remove_server">サーバを削除</string>
     <string name="save_server">保存</string>
     <string name="remove_server_confirmation">サーバを削除しますか?</string>
-    <string name="remove_server_positive">削除</string>
+    <string name="remove">削除</string>
     <string name="saved">保存しました</string>
     <string name="save_changes_question">変更を保存しますか?</string>
     <string name="save_changes_save">保存</string>

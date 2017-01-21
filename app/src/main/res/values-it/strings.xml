@@ -73,7 +73,7 @@
     <string name="remove_server">Server remoto</string>
     <string name="save_server">Salva</string>
     <string name="remove_server_confirmation">Server remoto?</string>
-    <string name="remove_server_positive">Rimuovi</string>
+    <string name="remove">Rimuovi</string>
     <string name="saved">Salvato</string>
     <string name="save_changes_question">Salvare i cambiamenti?</string>
     <string name="save_changes_save">Salva</string>

@@ -74,7 +74,7 @@
     <string name="remove_server">Supprimer un serveur</string>
     <string name="save_server">Sauvegarder</string>
     <string name="remove_server_confirmation">Supprimer le serveur?</string>
-    <string name="remove_server_positive">Supprimer</string>
+    <string name="remove">Supprimer</string>
     <string name="saved">Sauvegardé</string>
     <string name="save_changes_question">Sauvegarder les modifications?</string>
     <string name="save_changes_save">Sauvegarder</string>

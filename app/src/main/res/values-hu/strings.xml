@@ -74,7 +74,7 @@
     <string name="remove_server">Szerver eltávolítása</string>
     <string name="save_server">Mentés</string>
     <string name="remove_server_confirmation">Szerver tötlése?</string>
-    <string name="remove_server_positive">Törlése</string>
+    <string name="remove">Törlése</string>
     <string name="saved">Mentve</string>
     <string name="save_changes_question">Mentsük a változásokat?</string>
     <string name="save_changes_save">Mentés</string>

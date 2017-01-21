@@ -72,7 +72,7 @@
     <string name="remove_server">刪除伺服器</string>
     <string name="save_server">儲存</string>
     <string name="remove_server_confirmation">刪除伺服器？</string>
-    <string name="remove_server_positive">刪除</string>
+    <string name="remove">刪除</string>
     <string name="saved">已儲存</string>
     <string name="save_changes_question">儲存更改？</string>
     <string name="save_changes_save">儲存</string>
