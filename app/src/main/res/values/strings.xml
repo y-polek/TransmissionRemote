@@ -148,6 +148,7 @@
     <string name="storage_permission_deny">Deny</string>
     <string name="storage_permission_never_ask_again_message">Transmission Remote requires \"Storage\" permission in order to open local torrent files.\nYou can grant the permission in Application Settings.</string>
     <string name="app_settings">App Settings</string>
+    <string name="select_server_title">Server:</string>
 
     <!-- Torrent details -->
     <string name="torrent_details">Torrent details</string>

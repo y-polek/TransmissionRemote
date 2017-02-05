@@ -916,6 +916,11 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
     }
 
     @Override
+    public void onServerSelected(Server server) {
+        switchServer(server);
+    }
+
+    @Override
     public void onRemoveTorrentsSelected(int[] torrentsToRemove, boolean removeData) {
         getTransportManager().doRequest(new TorrentRemoveRequest(torrentsToRemove, removeData), null);
         torrentUpdater.scheduleUpdate(UPDATE_REQUEST_DELAY);

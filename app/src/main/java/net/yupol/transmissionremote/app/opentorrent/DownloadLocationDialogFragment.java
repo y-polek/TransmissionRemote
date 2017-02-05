@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.text.Editable;
@@ -18,6 +19,7 @@ import android.text.method.MovementMethod;
 import android.text.style.ClickableSpan;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -30,11 +32,14 @@ import net.yupol.transmissionremote.app.TransmissionRemote;
 import net.yupol.transmissionremote.app.databinding.DownloadLocationDialogBinding;
 import net.yupol.transmissionremote.app.model.json.FreeSpace;
 import net.yupol.transmissionremote.app.model.json.ServerSettings;
+import net.yupol.transmissionremote.app.server.Server;
 import net.yupol.transmissionremote.app.transport.BaseSpiceActivity;
 import net.yupol.transmissionremote.app.transport.TransportManager;
 import net.yupol.transmissionremote.app.transport.request.FreeSpaceRequest;
 import net.yupol.transmissionremote.app.transport.request.SessionGetRequest;
 import net.yupol.transmissionremote.app.utils.TextUtils;
+
+import java.util.List;
 
 public class DownloadLocationDialogFragment extends DialogFragment {
 
@@ -55,6 +60,13 @@ public class DownloadLocationDialogFragment extends DialogFragment {
     private FreeSpace freeSpace;
     private DownloadLocationDialogBinding binding;
     private SessionGetRequest sessionGetRequest;
+    private TransmissionRemote app;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        app = TransmissionRemote.getApplication(getContext());
+    }
 
     @NonNull
     @Override
@@ -64,7 +76,6 @@ public class DownloadLocationDialogFragment extends DialogFragment {
                 R.layout.download_location_dialog, null, false);
 
         AlertDialog dialog = new AlertDialog.Builder(getActivity())
-                .setTitle(R.string.download_to)
                 .setView(binding.getRoot())
                 .setPositiveButton(R.string.add, null)
                 .setNegativeButton(android.R.string.cancel, null)
@@ -117,6 +128,22 @@ public class DownloadLocationDialogFragment extends DialogFragment {
                     updateFreeSpaceInfo();
                 }
             }
+        });
+
+        List<Server> servers = app.getServers();
+        int activeServerIndex = servers.indexOf(app.getActiveServer());
+        final ServerSpinnerAdapter serverAdapter = new ServerSpinnerAdapter(getContext(), servers);
+        binding.serverSpinner.setAdapter(serverAdapter);
+        binding.serverSpinner.setSelection(activeServerIndex);
+        binding.serverSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                Server server = serverAdapter.getItem(position);
+                listener.onServerSelected(server);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {}
         });
 
         return dialog;
@@ -252,6 +279,7 @@ public class DownloadLocationDialogFragment extends DialogFragment {
 
     public interface OnDownloadLocationSelectedListener {
         void onDownloadLocationSelected(Bundle args, String downloadDir, boolean startWhenAdded);
+        void onServerSelected(Server server);
     }
 
     private static void clickify(TextView view, String clickableText,
