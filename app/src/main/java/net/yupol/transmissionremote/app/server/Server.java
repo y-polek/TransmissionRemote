@@ -7,6 +7,8 @@ import android.support.annotation.NonNull;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.UUID;
 
 import javax.annotation.Nonnull;
@@ -15,6 +17,8 @@ public class Server implements Parcelable {
 
     public static final String TAG = Server.class.getSimpleName();
     public static final String DEFAULT_RPC_URL = "transmission/rpc";
+
+    static int MAX_SAVED_DOWNLOAD_LOCATIONS = 5;
 
     private UUID id;
     private String idStr;
@@ -28,6 +32,7 @@ public class Server implements Parcelable {
     private String lastSessionId;
     private boolean useHttps;
     private boolean trustSelfSignedSslCert;
+    private List<String> savedDownloadLocations = new LinkedList<>();
 
     public Server(@Nonnull String name, @Nonnull String host, int port) {
         if (port <= 0 || port > 0xFFFF)
@@ -145,6 +150,20 @@ public class Server implements Parcelable {
 
     public static Server fromJson(String jsonObj) {
         return new Gson().fromJson(jsonObj, Server.class);
+    }
+
+    public List<String> getSavedDownloadLocations() {
+        return savedDownloadLocations;
+    }
+
+    public void addSavedDownloadLocations(String location) {
+        for (String l : savedDownloadLocations) {
+            if (l.equalsIgnoreCase(location)) return;
+        }
+        savedDownloadLocations.add(0, location);
+        if (savedDownloadLocations.size() > MAX_SAVED_DOWNLOAD_LOCATIONS) {
+            savedDownloadLocations.remove(savedDownloadLocations.size() - 1);
+        }
     }
 
     @Override

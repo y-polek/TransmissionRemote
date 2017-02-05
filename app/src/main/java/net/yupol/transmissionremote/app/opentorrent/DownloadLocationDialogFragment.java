@@ -157,10 +157,12 @@ public class DownloadLocationDialogFragment extends DialogFragment {
                 }
 
                 private void notifyListener() {
+                    String downloadDir = binding.downloadLocationText.getText().toString();
                     listener.onDownloadLocationSelected(
                             getArguments(),
-                            binding.downloadLocationText.getText().toString(),
+                            downloadDir,
                             binding.startWhenAddedCheckbox.isChecked());
+
                 }
             });
         }
