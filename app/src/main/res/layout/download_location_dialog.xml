@@ -13,22 +13,27 @@
             android:layout_height="match_parent"
             android:padding="@dimen/default_padding_big"
             android:visibility="@{loadingInProgress ? View.GONE : View.VISIBLE}">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="?android:attr/textColorPrimary"
-                android:textSize="@dimen/tr_abc_text_size_title_material"
-                android:textStyle="bold"
-                android:text="@string/select_server_title"/>
-            <Spinner android:id="@+id/server_spinner"
+            <LinearLayout android:id="@+id/server_spinner_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/default_text_margin"/>
+                android:orientation="vertical"
+                android:layout_marginBottom="@dimen/default_layout_margin">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="?android:attr/textColorPrimary"
+                    android:textSize="@dimen/tr_abc_text_size_title_material"
+                    android:textStyle="bold"
+                    android:text="@string/select_server_title"/>
+                <Spinner android:id="@+id/server_spinner"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/default_text_margin"/>
+            </LinearLayout>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/default_layout_margin"
                 android:textColor="?android:attr/textColorPrimary"
                 android:textSize="@dimen/tr_abc_text_size_title_material"
                 android:textStyle="bold"

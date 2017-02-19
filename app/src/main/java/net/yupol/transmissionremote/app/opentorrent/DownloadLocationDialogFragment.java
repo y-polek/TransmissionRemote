@@ -141,22 +141,27 @@ public class DownloadLocationDialogFragment extends DialogFragment {
         });
 
         List<Server> servers = app.getServers();
-        Server activeServer = app.getActiveServer();
-        final ServerSpinnerAdapter serverAdapter = new ServerSpinnerAdapter(getContext(), servers);
-        binding.serverSpinner.setAdapter(serverAdapter);
-        binding.serverSpinner.setSelection(servers.indexOf(activeServer));
-        binding.serverSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                Server server = serverAdapter.getItem(position);
-                if (server != null) {
-                    listener.onServerSelected(server);
+        if (servers.size() > 1) {
+            Server activeServer = app.getActiveServer();
+            final ServerSpinnerAdapter serverAdapter = new ServerSpinnerAdapter(getContext(), servers);
+            binding.serverSpinner.setAdapter(serverAdapter);
+            binding.serverSpinner.setSelection(servers.indexOf(activeServer));
+            binding.serverSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    Server server = serverAdapter.getItem(position);
+                    if (server != null) {
+                        listener.onServerSelected(server);
+                    }
                 }
-            }
 
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {}
-        });
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {
+                }
+            });
+        } else {
+            binding.serverSpinnerLayout.setVisibility(View.GONE);
+        }
 
         return dialog;
     }
@@ -167,7 +172,7 @@ public class DownloadLocationDialogFragment extends DialogFragment {
         downloadLocationsPopup.setModal(false);
 
         final ArrayAdapter<String> downloadLocationAdapter = new ArrayAdapter<>(getContext(),
-                android.R.layout.simple_dropdown_item_1line, server.getSavedDownloadLocations());
+                android.R.layout.simple_spinner_dropdown_item, server.getSavedDownloadLocations());
         downloadLocationsPopup.setAdapter(downloadLocationAdapter);
         downloadLocationsPopup.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
