@@ -152,6 +152,7 @@ public class DownloadLocationDialogFragment extends DialogFragment {
                     Server server = serverAdapter.getItem(position);
                     if (server != null) {
                         listener.onServerSelected(server);
+                        updateFreeSpaceInfo();
                     }
                 }
 
