@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout>
+<layout xmlns:tools="http://schemas.android.com/tools">
     <data>
         <import type="android.view.View" />
         <variable name="loadingInProgress" type="boolean" />
@@ -33,11 +33,27 @@
                 android:textSize="@dimen/tr_abc_text_size_title_material"
                 android:textStyle="bold"
                 android:text="@string/download_to"/>
-            <EditText android:id="@+id/download_location_text"
+            <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingBottom="@dimen/default_padding"
-                android:inputType="textUri"/>
+                android:layout_height="wrap_content">
+                <EditText android:id="@+id/download_location_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="@dimen/default_padding"
+                    android:paddingRight="@dimen/edit_text_with_icon_padding"
+                    android:inputType="textUri"
+                    tools:ignore="RtlSymmetry" />
+                <com.mikepenz.iconics.view.IconicsButton android:id="@+id/download_location_dropdown_button"
+                    android:layout_width="@dimen/edit_text_drop_down_icon_size"
+                    android:layout_height="@dimen/edit_text_drop_down_icon_size"
+                    android:layout_gravity="center_vertical|right"
+                    android:layout_marginRight="@dimen/edit_text_drop_down_icon_padding"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:textSize="@dimen/edit_text_drop_down_icon_text_size"
+                    android:textColor="?android:attr/textColorSecondary"
+                    android:text="{gmd_arrow_drop_down}"
+                    tools:ignore="HardcodedText,SpUsage" />
+            </FrameLayout>
 
             <FrameLayout
                 android:layout_width="wrap_content"

@@ -157,6 +157,9 @@ public class Server implements Parcelable {
     }
 
     public void addSavedDownloadLocations(String location) {
+        if (savedDownloadLocations == null) {
+            savedDownloadLocations = new LinkedList<>();
+        }
         for (String l : savedDownloadLocations) {
             if (l.equalsIgnoreCase(location)) return;
         }
@@ -234,6 +237,7 @@ public class Server implements Parcelable {
         dest.writeString(Strings.nullToEmpty(lastSessionId));
         dest.writeByte((byte) (useHttps ? 1 : 0));
         dest.writeByte((byte) (trustSelfSignedSslCert ? 1 : 0));
+        dest.writeStringList(savedDownloadLocations);
     }
 
     public static final Creator<Server> CREATOR = new Creator<Server>() {
@@ -259,6 +263,7 @@ public class Server implements Parcelable {
             server.setLastSessionId(sessionId);
             server.useHttps = parcel.readByte() != 0;
             server.trustSelfSignedSslCert = parcel.readByte() != 0;
+            parcel.readStringList(server.savedDownloadLocations);
             return server;
         }
 

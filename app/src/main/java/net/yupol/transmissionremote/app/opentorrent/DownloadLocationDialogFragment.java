@@ -9,17 +9,18 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.ListPopupWindow;
 import android.text.Editable;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.Spanned;
-import android.text.TextWatcher;
 import android.text.method.LinkMovementMethod;
 import android.text.method.MovementMethod;
 import android.text.style.ClickableSpan;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -37,6 +38,7 @@ import net.yupol.transmissionremote.app.transport.BaseSpiceActivity;
 import net.yupol.transmissionremote.app.transport.TransportManager;
 import net.yupol.transmissionremote.app.transport.request.FreeSpaceRequest;
 import net.yupol.transmissionremote.app.transport.request.SessionGetRequest;
+import net.yupol.transmissionremote.app.utils.SimpleTextWatcher;
 import net.yupol.transmissionremote.app.utils.TextUtils;
 
 import java.util.List;
@@ -62,6 +64,8 @@ public class DownloadLocationDialogFragment extends DialogFragment {
     private SessionGetRequest sessionGetRequest;
     private TransmissionRemote app;
 
+    private ListPopupWindow downloadLocationsPopup;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -80,6 +84,7 @@ public class DownloadLocationDialogFragment extends DialogFragment {
                 .setPositiveButton(R.string.add, null)
                 .setNegativeButton(android.R.string.cancel, null)
                 .create();
+        dialog.setCanceledOnTouchOutside(false);
 
         String defaultDownloadDir = TransmissionRemote.getInstance().getDefaultDownloadDir();
         boolean loadDefaultDownloadDir = defaultDownloadDir == null ||
@@ -115,13 +120,18 @@ public class DownloadLocationDialogFragment extends DialogFragment {
             });
         }
 
-        binding.downloadLocationText.addTextChangedListener(new TextWatcher() {
+        binding.downloadLocationDropdownButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            public void onClick(View v) {
+                if (!isDownloadLocationSuggestionsShown()) {
+                    showDownloadLocationSuggestions(app.getActiveServer());
+                } else {
+                    hideDownloadLocationSuggestions();
+                }
+            }
+        });
 
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {}
-
+        binding.downloadLocationText.addTextChangedListener(new SimpleTextWatcher() {
             @Override
             public void afterTextChanged(Editable s) {
                 if (!binding.getLoadingInProgress()) {
@@ -131,15 +141,17 @@ public class DownloadLocationDialogFragment extends DialogFragment {
         });
 
         List<Server> servers = app.getServers();
-        int activeServerIndex = servers.indexOf(app.getActiveServer());
+        Server activeServer = app.getActiveServer();
         final ServerSpinnerAdapter serverAdapter = new ServerSpinnerAdapter(getContext(), servers);
         binding.serverSpinner.setAdapter(serverAdapter);
-        binding.serverSpinner.setSelection(activeServerIndex);
+        binding.serverSpinner.setSelection(servers.indexOf(activeServer));
         binding.serverSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 Server server = serverAdapter.getItem(position);
-                listener.onServerSelected(server);
+                if (server != null) {
+                    listener.onServerSelected(server);
+                }
             }
 
             @Override
@@ -147,6 +159,37 @@ public class DownloadLocationDialogFragment extends DialogFragment {
         });
 
         return dialog;
+    }
+
+    private void showDownloadLocationSuggestions(Server server) {
+        if (downloadLocationsPopup != null && downloadLocationsPopup.isShowing()) return;
+        downloadLocationsPopup = new ListPopupWindow(getContext());
+        downloadLocationsPopup.setModal(false);
+
+        final ArrayAdapter<String> downloadLocationAdapter = new ArrayAdapter<>(getContext(),
+                android.R.layout.simple_dropdown_item_1line, server.getSavedDownloadLocations());
+        downloadLocationsPopup.setAdapter(downloadLocationAdapter);
+        downloadLocationsPopup.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String location = downloadLocationAdapter.getItem(position);
+                binding.downloadLocationText.setText(location);
+                downloadLocationsPopup.dismiss();
+            }
+        });
+
+        downloadLocationsPopup.setAnchorView(binding.downloadLocationText);
+        downloadLocationsPopup.show();
+    }
+
+    private boolean isDownloadLocationSuggestionsShown() {
+        return downloadLocationsPopup != null && downloadLocationsPopup.isShowing();
+    }
+
+    private void hideDownloadLocationSuggestions() {
+        if (isDownloadLocationSuggestionsShown()) {
+            downloadLocationsPopup.dismiss();
+        }
     }
 
     @Override
@@ -190,6 +233,8 @@ public class DownloadLocationDialogFragment extends DialogFragment {
                             downloadDir,
                             binding.startWhenAddedCheckbox.isChecked());
 
+                    Server activeServer = app.getActiveServer();
+                    activeServer.addSavedDownloadLocations(downloadDir);
                 }
             });
         }
