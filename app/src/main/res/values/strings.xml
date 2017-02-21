@@ -137,6 +137,7 @@
     <string name="open">Open</string>
     <string name="download_to">Download to:</string>
     <string name="start_when_added">Start when added</string>
+    <string name="remove_torrent_file_when_added">Remove torrent file when added</string>
     <string name="add">Add</string>
     <string name="free_space">%1$s Free</string>
     <string name="free_space_unknown">Free space unknown</string>

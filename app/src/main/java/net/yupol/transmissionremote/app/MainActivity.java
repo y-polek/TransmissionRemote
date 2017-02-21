@@ -879,7 +879,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
     }
 
     @Override
-    public void onDownloadLocationSelected(Bundle args, final String downloadDir, final boolean startWhenAdded) {
+    public void onDownloadLocationSelected(Bundle args, final String downloadDir, final boolean startWhenAdded, boolean removeWhenAdded) {
         switch (args.getInt(DownloadLocationDialogFragment.KEY_REQUEST_CODE)) {
             case DownloadLocationDialogFragment.REQUEST_CODE_BY_LOCAL_FILE:
                 getTransportManager().doRequest(

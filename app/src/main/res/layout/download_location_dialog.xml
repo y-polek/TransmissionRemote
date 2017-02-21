@@ -77,6 +77,10 @@
                 android:layout_height="wrap_content"
                 android:text="@string/start_when_added"
                 android:checked="true"/>
+            <CheckBox android:id="@+id/remove_when_added_checkbox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/remove_torrent_file_when_added"/>
         </LinearLayout>
         <ProgressBar
             android:layout_width="wrap_content"

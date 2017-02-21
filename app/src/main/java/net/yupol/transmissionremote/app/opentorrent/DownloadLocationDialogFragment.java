@@ -65,11 +65,13 @@ public class DownloadLocationDialogFragment extends DialogFragment {
     private TransmissionRemote app;
 
     private ListPopupWindow downloadLocationsPopup;
+    private boolean isLocalFile;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         app = TransmissionRemote.getApplication(getContext());
+        isLocalFile = getArguments().getByteArray(KEY_FILE_BYTES) != null;
     }
 
     @NonNull
@@ -164,6 +166,8 @@ public class DownloadLocationDialogFragment extends DialogFragment {
             binding.serverSpinnerLayout.setVisibility(View.GONE);
         }
 
+        binding.removeWhenAddedCheckbox.setVisibility(isLocalFile ? View.VISIBLE : View.GONE);
+
         return dialog;
     }
 
@@ -237,7 +241,8 @@ public class DownloadLocationDialogFragment extends DialogFragment {
                     listener.onDownloadLocationSelected(
                             getArguments(),
                             downloadDir,
-                            binding.startWhenAddedCheckbox.isChecked());
+                            binding.startWhenAddedCheckbox.isChecked(),
+                            binding.removeWhenAddedCheckbox.isChecked());
 
                     Server activeServer = app.getActiveServer();
                     activeServer.addSavedDownloadLocations(downloadDir);
@@ -329,7 +334,7 @@ public class DownloadLocationDialogFragment extends DialogFragment {
     }
 
     public interface OnDownloadLocationSelectedListener {
-        void onDownloadLocationSelected(Bundle args, String downloadDir, boolean startWhenAdded);
+        void onDownloadLocationSelected(Bundle args, String downloadDir, boolean startWhenAdded, boolean removeWhenAdded);
         void onServerSelected(Server server);
     }
 
