@@ -54,7 +54,7 @@ public class TorrentInfoUpdater implements RequestListener<TorrentInfo> {
 
     @Override
     public void onRequestSuccess(TorrentInfo torrentInfo) {
-        listener.onTorrentInfoUpdated(torrentInfo);
+        if (listener != null) listener.onTorrentInfoUpdated(torrentInfo);
         if (timer != null) scheduleNexUpdate();
     }
 
