@@ -26,7 +26,9 @@
             android:paddingBottom="@dimen/default_edit_text_padding"
             android:hint="@string/server_name_hint"
             android:maxLines="1"
+            android:singleLine="true"
             android:maxLength="20"
+            android:inputType="text"
             android:textSize="@dimen/tr_abc_text_size_body_1_material"/>
 
         <LinearLayout
@@ -122,6 +124,7 @@
             android:hint="@string/username"
             android:maxLines="1"
             android:singleLine="true"
+            android:inputType="text"
             android:textSize="@dimen/tr_abc_text_size_body_1_material"/>
 
         <EditText android:id="@+id/password_edit_text"
