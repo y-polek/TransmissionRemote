@@ -27,6 +27,7 @@ import net.yupol.transmissionremote.app.OnBackPressedListener;
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.utils.IconUtils;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
 public class ServerDetailsFragment extends Fragment implements OnBackPressedListener {
@@ -233,6 +234,39 @@ public class ServerDetailsFragment extends Fragment implements OnBackPressedList
         return false;
     }
 
+    private void discardChanges() {
+        Server server = getServerArgument();
+        if (server == null) return;
+        if (!getUiName().equals(server.getName())) {
+            serverNameEdit.setText(server.getName());
+        }
+        if (!getUiHost().equals(server.getHost())) {
+            hostNameEdit.setText(server.getHost());
+        }
+        if (getUiPort() != server.getPort()) {
+            portNumberEdit.setText(String.valueOf(server.getPort()));
+        }
+        if (isAuthEnabled != server.isAuthenticationEnabled()) {
+            isAuthEnabled = server.isAuthenticationEnabled();
+            authCheckBox.setChecked(isAuthEnabled);
+        }
+        if (!getUiUserName().equals(Strings.nullToEmpty(server.getUserName()))) {
+            userNameEdit.setText(Strings.nullToEmpty(server.getUserName()));
+        }
+        if (!getUiPassword().equals(Strings.nullToEmpty(server.getPassword()))) {
+            passwordEdit.setText(Strings.nullToEmpty(server.getPassword()));
+        }
+        if (!getUiRpcUrl().equals(server.getRpcUrl())) {
+            rpcUrlEdit.setText(server.getRpcUrl());
+        }
+        if (getUiUseHttps() != server.useHttps()) {
+            protocolSpinner.setSelection(ArrayUtils.indexOf(PROTOCOLS, server.useHttps() ? PROTOCOL_HTTPS : PROTOCOL_HTTP));
+        }
+        if (getUiTrustSelfSignedCert() != server.getTrustSelfSignedSslCert()) {
+            selfSignedSslCheckbox.setChecked(server.getTrustSelfSignedSslCert());
+        }
+    }
+
     private void updateUI(Server server) {
         if (server == null) {
             serverNameEdit.setText("");
@@ -269,6 +303,7 @@ public class ServerDetailsFragment extends Fragment implements OnBackPressedList
                 .setNegativeButton(R.string.save_changes_discard, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        discardChanges();
                         getActivity().onBackPressed();
                     }
         }).create().show();
