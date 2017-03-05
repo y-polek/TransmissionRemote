@@ -67,6 +67,11 @@ public class ActionBarNavigationAdapter extends BaseAdapter {
         return null;
     }
 
+    public int getServerPosition(Server server) {
+        int serverIndex = app.getServers().indexOf(server);
+        return serverIndex >= 0 ? 1 + serverIndex : -1;
+    }
+
     @Override
     public long getItemId(int position) {
         if (position == 0) return ID_SERVER_TITLE;

@@ -214,6 +214,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
     private boolean openTorrentUriOnResume = false;
     private boolean openTorrentUriWithSchemeOnResume = false;
     private boolean openTorrentPermissionRationaleOpen = false;
+    private Spinner toolbarSpinner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -250,10 +251,10 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
         View spinnerContainer = LayoutInflater.from(this).inflate(R.layout.toolbar_spinner, toolbar, false);
         Toolbar.LayoutParams lp = new Toolbar.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         toolbar.addView(spinnerContainer, lp);
-        Spinner spinner = (Spinner) spinnerContainer.findViewById(R.id.toolbar_spinner);
+        toolbarSpinner = (Spinner) spinnerContainer.findViewById(R.id.toolbar_spinner);
         toolbarSpinnerAdapter = new ActionBarNavigationAdapter(this);
-        spinner.setAdapter(toolbarSpinnerAdapter);
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        toolbarSpinner.setAdapter(toolbarSpinnerAdapter);
+        toolbarSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if (id == ActionBarNavigationAdapter.ID_SERVER) {
@@ -940,6 +941,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
             hasTorrentList = false;
         }
         application.setActiveServer(server);
+        toolbarSpinner.setSelection(toolbarSpinnerAdapter.getServerPosition(server));
 
         // Stop old server connections
         if (torrentUpdater != null) {
