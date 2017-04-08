@@ -36,18 +36,22 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
+import android.widget.CompoundButton;
 import android.widget.SearchView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
+import com.mikepenz.community_material_typeface_library.CommunityMaterial;
 import com.mikepenz.fontawesome_typeface_library.FontAwesome;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.iconics.context.IconicsLayoutInflater;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
+import com.mikepenz.materialdrawer.interfaces.OnCheckedChangeListener;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.SectionDrawerItem;
+import com.mikepenz.materialdrawer.model.SwitchDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.mikepenz.materialdrawer.util.KeyboardUtil;
 import com.octo.android.robospice.persistence.exception.SpiceException;
@@ -147,8 +151,6 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
     private static final String SCHEME_HTTPS = "https";
 
     private static final long UPDATE_REQUEST_DELAY = 500;
-
-    private static final int DRAWER_ITEM_ID_SETTINGS = 0;
 
     private static final String KEY_DRAWER_SERVER_LIST_EXPANDED = "key_drawer_server_list_expanded";
     private static final String KEY_SEARCH_ACTION_EXPANDED = "key_search_action_expanded";
@@ -304,7 +306,23 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
         PrimaryDrawerItem settingsItem = new PrimaryDrawerItem().withName(R.string.action_settings)
                 .withIcon(GoogleMaterial.Icon.gmd_settings)
                 .withSelectable(false)
-                .withIdentifier(DRAWER_ITEM_ID_SETTINGS);
+                .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+                    @Override
+                    public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
+                        startActivity(new Intent(MainActivity.this, PreferencesActivity.class));
+                        return true;
+                    }
+                });
+
+        SwitchDrawerItem nightModeItem = new SwitchDrawerItem().withName(R.string.night_mode)
+                .withIcon(CommunityMaterial.Icon.cmd_theme_light_dark)
+                .withSelectable(false)
+                .withOnCheckedChangeListener(new OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(IDrawerItem drawerItem, CompoundButton buttonView, boolean isChecked) {
+                        switchTheme(isChecked);
+                    }
+                });
 
         headerView = new HeaderView(this);
         headerView.setHeaderListener(new HeaderView.HeaderListener() {
@@ -346,16 +364,11 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
                 .addDrawerItems(new SectionDrawerItem().withName(R.string.drawer_sort_by).withDivider(false))
                 .addDrawerItems((IDrawerItem[]) sortItems)
                 .addStickyDrawerItems(
+                        nightModeItem,
                         settingsItem
                 ).withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                     @Override
                     public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
-                        switch (drawerItem.getIdentifier()) {
-                            case DRAWER_ITEM_ID_SETTINGS:
-                                startActivity(new Intent(MainActivity.this, PreferencesActivity.class));
-                                return true;
-                        }
-
                         if (drawerItem instanceof SortDrawerItem) {
                             handleSortItemClick((SortDrawerItem) drawerItem);
                             return true;
@@ -394,6 +407,10 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
                 break;
             }
         }
+    }
+
+    private void switchTheme(boolean nightMode) {
+        Toast.makeText(this, nightMode ? "night mode" : "day mode", Toast.LENGTH_SHORT).show();
     }
 
     @Override
