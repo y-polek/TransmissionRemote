@@ -1,6 +1,5 @@
 <resources>
 
-    <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light">
         <item name="colorPrimary">@color/primary</item>
         <item name="colorPrimaryDark">@color/primary_dark</item>
@@ -9,6 +8,8 @@
         <item name="android:textColorSecondary">@color/text_color_secondary</item>
         <item name="android:textColorPrimaryInverse">@color/text_primary_inverse</item>
 
+        <item name="android:listDivider">@color/divider</item>
+
         <item name="actionBarTheme">@style/ActionBarTheme</item>
         <item name="actionModeStyle">@style/ActionModeTheme</item>
         <item name="actionBarPopupTheme">@style/ThemeOverlay.AppCompat.Light</item>
@@ -16,6 +17,28 @@
     </style>
 
     <style name="AppTheme.NoActionBar" parent="AppTheme">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="AppThemeDark" parent="Theme.AppCompat">
+        <item name="colorPrimary">@color/primary_night</item>
+        <item name="colorPrimaryDark">@color/primary_dark_night</item>
+        <item name="colorAccent">@color/accent_night</item>
+        <item name="android:textColorPrimary">@color/text_color_primary_night</item>
+        <item name="android:textColorSecondary">@color/text_color_secondary_night</item>
+        <item name="android:textColorPrimaryInverse">@color/text_primary_inverse_night</item>
+
+        <item name="android:listDivider">@color/divider_night</item>
+        <item name="android:windowBackground">@color/window_background_night</item>
+
+        <item name="actionBarTheme">@style/ActionBarTheme</item>
+        <item name="actionModeStyle">@style/ActionModeTheme</item>
+        <item name="actionBarPopupTheme">@style/ThemeOverlay.AppCompat.Light</item>
+        <item name="windowActionModeOverlay">true</item>
+    </style>
+
+    <style name="AppThemeDark.NoActionBar" parent="AppThemeDark">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>

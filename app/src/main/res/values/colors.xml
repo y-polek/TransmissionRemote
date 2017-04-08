@@ -12,6 +12,17 @@
     <color name="text_primary_inverse">#FFFFFF</color>
     <color name="divider">#B6B6B6</color>
 
+    <color name="primary_night">#1c2837</color>
+    <color name="primary_dark_night">#161f29</color>
+    <color name="accent_night">#1d88e3</color>
+    <color name="text_primary_night">#f2f2f2</color>
+    <color name="text_primary_disabled_night">#727272</color>
+    <color name="text_secondary_night">#71828f</color>
+    <color name="text_secondary_disabled_night">#727272</color>
+    <color name="text_primary_inverse_night">#71828f</color>
+    <color name="divider_night">#040404</color>
+    <color name="window_background_night">#161f29</color>
+
                     <!-- Torrent list -->
     <color name="torrent_list_progressbar_background">#ffb9b9b9</color>
     <color name="torrent_list_progressbar_progress_color">@color/md_light_blue_A700</color>

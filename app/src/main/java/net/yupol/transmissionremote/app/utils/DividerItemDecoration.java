@@ -2,7 +2,9 @@ package net.yupol.transmissionremote.app.utils;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
@@ -12,7 +14,9 @@ public class DividerItemDecoration extends RecyclerView.ItemDecoration {
     private Drawable mDivider;
 
     public DividerItemDecoration(Context context) {
-        mDivider = context.getResources().getDrawable(R.drawable.line_divider);
+        mDivider = ContextCompat.getDrawable(context, R.drawable.line_divider);
+        int color = ColorUtils.resolveColor(context, android.R.attr.listDivider, android.R.color.holo_red_dark);
+        mDivider.setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
     }
 
     @Override

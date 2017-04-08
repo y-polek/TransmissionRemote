@@ -95,6 +95,7 @@ import net.yupol.transmissionremote.app.transport.request.StopTorrentRequest;
 import net.yupol.transmissionremote.app.transport.request.TorrentRemoveRequest;
 import net.yupol.transmissionremote.app.utils.DialogUtils;
 import net.yupol.transmissionremote.app.utils.IconUtils;
+import net.yupol.transmissionremote.app.utils.ThemeUtils;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -220,6 +221,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        setTheme(ThemeUtils.isInNightMode(this) ? R.style.AppThemeDark_NoActionBar : R.style.AppTheme_NoActionBar);
         LayoutInflaterCompat.setFactory(getLayoutInflater(), new IconicsLayoutInflater(getDelegate()));
         super.onCreate(savedInstanceState);
         if (!BuildConfig.DEBUG) {
@@ -317,6 +319,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
         SwitchDrawerItem nightModeItem = new SwitchDrawerItem().withName(R.string.night_mode)
                 .withIcon(CommunityMaterial.Icon.cmd_theme_light_dark)
                 .withSelectable(false)
+                .withChecked(ThemeUtils.isInNightMode(this))
                 .withOnCheckedChangeListener(new OnCheckedChangeListener() {
                     @Override
                     public void onCheckedChanged(IDrawerItem drawerItem, CompoundButton buttonView, boolean isChecked) {
@@ -410,7 +413,11 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
     }
 
     private void switchTheme(boolean nightMode) {
-        Toast.makeText(this, nightMode ? "night mode" : "day mode", Toast.LENGTH_SHORT).show();
+        ThemeUtils.setIsInNightMode(this, nightMode);
+
+        finish();
+        startActivity(new Intent(this, MainActivity.class));
+        overridePendingTransition(0, 0);
     }
 
     @Override
