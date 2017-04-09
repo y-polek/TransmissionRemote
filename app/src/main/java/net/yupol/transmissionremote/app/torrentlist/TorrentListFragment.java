@@ -4,11 +4,11 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Rect;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Spannable;
@@ -30,6 +30,7 @@ import android.widget.TextView;
 import com.google.common.collect.FluentIterable;
 import com.mikepenz.fontawesome_typeface_library.FontAwesome;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
+import com.mikepenz.iconics.IconicsDrawable;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
 
@@ -495,7 +496,7 @@ public class TorrentListFragment extends Fragment implements ChooseLocationDialo
             } else if (isCompleted) {
                 progressbarDrawable = R.drawable.torrent_progressbar_finished;
             }
-            holder.progressBar.setProgressDrawable(context.getResources().getDrawable(progressbarDrawable));
+            holder.progressBar.setProgressDrawable(ContextCompat.getDrawable(context, progressbarDrawable));
 
             holder.downloadRateText.setText(TextUtils.speedText(torrent.getDownloadRate()));
             holder.uploadRateText.setText(TextUtils.speedText(torrent.getUploadRate()));
@@ -524,10 +525,11 @@ public class TorrentListFragment extends Fragment implements ChooseLocationDialo
                 if (errorMsg != null && !errorMsg.trim().isEmpty()) {
                     holder.errorMsgView.setVisibility(View.VISIBLE);
                     holder.errorMsgView.setText(errorMsg);
-                    int msgIconResId = error.isWarning() ? R.drawable.ic_action_warning : R.drawable.ic_action_error;
-                    Drawable msgIcon = context.getResources().getDrawable(msgIconResId);
+                    IconicsDrawable msgIcon = new IconicsDrawable(getContext(),
+                            error.isWarning() ? GoogleMaterial.Icon.gmd_warning : GoogleMaterial.Icon.gmd_error);
+                    msgIcon.color(ColorUtils.resolveColor(context, android.R.attr.textColorSecondary, R.color.text_secondary));
                     int size = context.getResources().getDimensionPixelSize(R.dimen.torrent_list_error_icon_size);
-                    if (msgIcon != null) msgIcon.setBounds(0, 0, size, size);
+                    msgIcon.setBounds(0, 0, size, size);
                     holder.errorMsgView.setCompoundDrawables(msgIcon, null, null, null);
                 } else {
                     holder.errorMsgView.setVisibility(View.GONE);
@@ -722,7 +724,7 @@ public class TorrentListFragment extends Fragment implements ChooseLocationDialo
             uploadRateText.setWidth(maxWidth);
 
             percentDoneText = (TextView) itemView.findViewById(R.id.percent_done_text);
-            remainingTimeText = (TextView) itemView.findViewById(R.id.remainitn_time_text);
+            remainingTimeText = (TextView) itemView.findViewById(R.id.remaining_time_text);
 
             pauseResumeBtn = (PlayPauseButton) itemView.findViewById(R.id.pause_resume_button);
 

@@ -118,7 +118,7 @@
                     android:textColor="?android:textColorSecondary"
                     android:text="99.9%"/>
 
-                <TextView android:id="@+id/remainitn_time_text"
+                <TextView android:id="@+id/remaining_time_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
@@ -131,6 +131,7 @@
             <TextView android:id="@+id/error_message"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:drawablePadding="@dimen/default_padding_small"
                 android:textSize="@dimen/abc_text_size_caption_material"
                 android:textColor="?android:textColorSecondary"/>
 

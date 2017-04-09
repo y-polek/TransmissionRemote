@@ -31,7 +31,7 @@
                 <!-- Torrent list -->
     <dimen name="torrent_list_name_text_size">18sp</dimen>
     <dimen name="torrent_list_status_text_size">14sp</dimen>
-    <dimen name="torrent_list_error_icon_size">21dp</dimen>
+    <dimen name="torrent_list_error_icon_size">18dp</dimen>
     <dimen name="torrent_list_progressbar_height">3dp</dimen>
     <dimen name="torrent_list_down_up_icon_size">15dp</dimen>
     <dimen name="torrent_list_vertical_padding">8dp</dimen>
