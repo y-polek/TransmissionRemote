@@ -35,7 +35,7 @@
     <dimen name="torrent_list_progressbar_height">3dp</dimen>
     <dimen name="torrent_list_down_up_icon_size">15dp</dimen>
     <dimen name="torrent_list_vertical_padding">8dp</dimen>
-    <dimen name="torrent_list_start_button_size">40dp</dimen>
+    <dimen name="torrent_list_start_button_size">42dp</dimen>
     <dimen name="torrent_list_start_button_padding">8dp</dimen>
     <dimen name="transfer_priority_icon_size">13dp</dimen>
 

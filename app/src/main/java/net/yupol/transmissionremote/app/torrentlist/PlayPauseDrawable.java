@@ -14,11 +14,12 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Shader;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.NonNull;
 import android.util.Property;
 
 public class PlayPauseDrawable extends Drawable {
 
-    private static final float SHADOW_PADDING_RATIO = 0.1f;
+    private static final float SHADOW_PADDING_RATIO = 0.2f;
 
     private int borderColor;
     private Paint paint = new Paint();
@@ -83,7 +84,7 @@ public class PlayPauseDrawable extends Drawable {
     }
 
     @Override
-    public void draw(Canvas canvas) {
+    public void draw(@NonNull Canvas canvas) {
         float centerX = bounds.centerX();
         float centerY = bounds.centerY();
         float radius = bounds.width() / 2;

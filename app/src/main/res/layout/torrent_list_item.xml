@@ -22,7 +22,9 @@
             android:layout_height="@dimen/torrent_list_start_button_size"
             android:layout_gravity="center_vertical"
             android:focusable="false"
-            android:focusableInTouchMode="false"/>
+            android:focusableInTouchMode="false"
+            app:background_color="?android:attr/windowBackground"
+            app:border_color="?android:attr/textColorPrimary"/>
 
         <LinearLayout
             android:layout_width="match_parent"

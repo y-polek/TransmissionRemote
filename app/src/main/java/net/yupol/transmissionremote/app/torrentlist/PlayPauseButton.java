@@ -4,14 +4,14 @@ import android.animation.Animator;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Color;
+import android.support.v7.widget.AppCompatImageButton;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.ImageButton;
 
 import net.yupol.transmissionremote.app.R;
 
-public class PlayPauseButton extends ImageButton {
+public class PlayPauseButton extends AppCompatImageButton {
 
 
     private static final long ANIMATION_DURATION = 150;
