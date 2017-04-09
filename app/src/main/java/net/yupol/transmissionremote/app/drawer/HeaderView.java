@@ -2,9 +2,9 @@ package net.yupol.transmissionremote.app.drawer;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
@@ -244,7 +244,10 @@ public class HeaderView extends RelativeLayout implements View.OnClickListener {
 
     @NonNull
     private ServerDrawable serverDrawable(String name) {
-        return new ServerDrawable(name, Color.WHITE, secondaryTextColor, CIRCLE_TEXT_PADDING_RATIO);
+        return new ServerDrawable(name,
+                ContextCompat.getColor(getContext(), R.color.drawer_header_circle_background),
+                ContextCompat.getColor(getContext(), R.color.drawer_header_circle_foreground),
+                CIRCLE_TEXT_PADDING_RATIO);
     }
 
     private void buildServerSelectionDrawerItems() {

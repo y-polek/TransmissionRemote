@@ -9,9 +9,9 @@
     <color name="text_primary_disabled">#80000000</color>
     <color name="text_secondary">#727272</color>
     <color name="text_secondary_disabled">#80323232</color>
-    <color name="text_primary_inverse">#FFFFFF</color>
+    <color name="text_primary_inverse">@android:color/white</color>
     <color name="divider">#B6B6B6</color>
-    <color name="window_background">#ffffff</color>
+    <color name="window_background">@android:color/white</color>
 
                     <!-- Torrent list -->
     <color name="torrent_list_progressbar_background">#ffb9b9b9</color>
@@ -30,4 +30,6 @@
     <color name="drawer_selected">@color/material_drawer_selected</color>
     <color name="drawer_selected_text">@color/material_drawer_selected_text</color>
     <color name="drawer_header_selection_text">@color/material_drawer_header_selection_text</color>
+    <color name="drawer_header_circle_background">@android:color/white</color>
+    <color name="drawer_header_circle_foreground">@color/text_secondary</color>
 </resources>

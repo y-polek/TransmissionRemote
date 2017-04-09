@@ -21,4 +21,6 @@
     <color name="drawer_selected">#0a0e13</color>
     <color name="drawer_selected_text">@color/text_primary</color>
     <color name="drawer_header_selection_text">@color/material_drawer_dark_header_selection_text</color>
+    <color name="drawer_header_circle_background">#bbbbbb</color>
+    <color name="drawer_header_circle_foreground">#444444</color>
 </resources>
