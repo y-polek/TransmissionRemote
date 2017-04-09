@@ -161,6 +161,8 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
     private static final String KEY_OPEN_TORRENT_SCHEME = "key_open_torrent_scheme";
     private static final String KEY_OPEN_TORRENT_PERMISSION_RATIONALE_OPEN = "key_open_torrent_permission_rationale_open";
 
+    private static final int DRAWER_ITEM_ID_SETTINGS = 101;
+
     private TransmissionRemote application;
     private TorrentUpdater torrentUpdater;
 
@@ -305,15 +307,9 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
 
     private void setupDrawer() {
         PrimaryDrawerItem settingsItem = new PrimaryDrawerItem().withName(R.string.action_settings)
+                .withIdentifier(DRAWER_ITEM_ID_SETTINGS)
                 .withIcon(GoogleMaterial.Icon.gmd_settings)
-                .withSelectable(false)
-                .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
-                    @Override
-                    public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
-                        startActivity(new Intent(MainActivity.this, PreferencesActivity.class));
-                        return true;
-                    }
-                });
+                .withSelectable(false);
 
         SwitchDrawerItem nightModeItem = new SwitchDrawerItem().withName(R.string.night_mode)
                 .withIcon(CommunityMaterial.Icon.cmd_theme_light_dark)
@@ -374,6 +370,8 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
                         if (drawerItem instanceof SortDrawerItem) {
                             handleSortItemClick((SortDrawerItem) drawerItem);
                             return true;
+                        } else if (drawerItem.getIdentifier() == DRAWER_ITEM_ID_SETTINGS) {
+                            startActivity(new Intent(MainActivity.this, PreferencesActivity.class));
                         }
 
                         return false;
