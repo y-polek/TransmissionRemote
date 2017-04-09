@@ -29,4 +29,15 @@
     <color name="torrent_list_progressbar_progress_finished_color">@color/md_green_600</color>
     <color name="torrent_list_progressbar_progress_disabled_color">#ff737373</color>
     <color name="torrent_list_selected_overlay">#88646464</color>
+
+                    <!-- Material Drawer -->
+    <color name="material_drawer_background_dark">#161f29</color>
+    <color name="material_drawer_primary_text_dark">@color/material_drawer_dark_primary_text</color>
+    <color name="material_drawer_primary_icon_dark">@color/material_drawer_dark_primary_icon</color>
+    <color name="material_drawer_secondary_text_dark">@color/material_drawer_dark_secondary_text</color>
+    <color name="material_drawer_hint_text_dark">@color/material_drawer_dark_hint_text</color>
+    <color name="material_drawer_divider_dark">@color/material_drawer_dark_divider</color>
+    <color name="material_drawer_selected_dark">#141b25</color>
+    <color name="material_drawer_selected_text_dark">@color/material_drawer_dark_selected_text</color>
+    <color name="material_drawer_header_selection_text_dark">@color/material_drawer_dark_header_selection_text</color>
 </resources>
