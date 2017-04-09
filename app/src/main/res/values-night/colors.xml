@@ -7,7 +7,7 @@
     <color name="text_primary_disabled">#727272</color>
     <color name="text_secondary">#71828f</color>
     <color name="text_secondary_disabled">#727272</color>
-    <color name="text_primary_inverse">#71828f</color>
+    <color name="text_primary_inverse">#f2f2f2</color>
     <color name="divider">#040404</color>
     <color name="window_background">#161f29</color>
 
