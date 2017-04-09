@@ -414,10 +414,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
 
     private void switchTheme(boolean nightMode) {
         ThemeUtils.setIsInNightMode(this, nightMode);
-
-        finish();
-        startActivity(new Intent(this, MainActivity.class));
-        overridePendingTransition(0, 0);
+        recreate();
     }
 
     @Override

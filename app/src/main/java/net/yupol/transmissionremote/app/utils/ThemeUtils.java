@@ -2,6 +2,7 @@ package net.yupol.transmissionremote.app.utils;
 
 import android.content.Context;
 import android.preference.PreferenceManager;
+import android.support.v7.app.AppCompatDelegate;
 
 public class ThemeUtils {
 
@@ -13,5 +14,6 @@ public class ThemeUtils {
 
     public static void setIsInNightMode(Context context, boolean isInNightMode) {
         PreferenceManager.getDefaultSharedPreferences(context).edit().putBoolean(PREFERENCE_KEY_IN_NIGHT_MODE, isInNightMode).apply();
+        AppCompatDelegate.setDefaultNightMode(isInNightMode ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO);
     }
 }

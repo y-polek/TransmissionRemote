@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AppCompatDelegate;
 
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
@@ -21,6 +22,7 @@ import net.yupol.transmissionremote.app.notifications.BackgroundUpdateService;
 import net.yupol.transmissionremote.app.server.Server;
 import net.yupol.transmissionremote.app.sorting.SortOrder;
 import net.yupol.transmissionremote.app.sorting.SortedBy;
+import net.yupol.transmissionremote.app.utils.ThemeUtils;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -81,6 +83,9 @@ public class TransmissionRemote extends Application implements SharedPreferences
     @Override
     public void onCreate() {
         super.onCreate();
+
+        AppCompatDelegate.setDefaultNightMode(ThemeUtils.isInNightMode(this) ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO);
+
         instance = this;
         restore();
 
