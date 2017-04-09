@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="primary">#1c2837</color>
+    <color name="primary_dark">#161f29</color>
+    <color name="accent">#1d88e3</color>
+    <color name="text_primary">#f2f2f2</color>
+    <color name="text_primary_disabled">#727272</color>
+    <color name="text_secondary">#71828f</color>
+    <color name="text_secondary_disabled">#727272</color>
+    <color name="text_primary_inverse">#71828f</color>
+    <color name="divider">#040404</color>
+    <color name="window_background">#161f29</color>
+
+                    <!-- Material Drawer -->
+    <color name="drawer_background">#161f29</color>
+    <color name="drawer_primary_text">@color/material_drawer_dark_primary_text</color>
+    <color name="drawer_primary_icon">@color/material_drawer_dark_primary_icon</color>
+    <color name="drawer_secondary_text">@color/material_drawer_dark_secondary_text</color>
+    <color name="drawer_hint_text">@color/material_drawer_dark_hint_text</color>
+    <color name="drawer_divider">@color/material_drawer_dark_divider</color>
+    <color name="drawer_selected">#0a0e13</color>
+    <color name="drawer_selected_text">@color/text_primary</color>
+    <color name="drawer_header_selection_text">@color/material_drawer_dark_header_selection_text</color>
+</resources>

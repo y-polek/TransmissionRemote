@@ -221,7 +221,6 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        setTheme(ThemeUtils.isInNightMode(this) ? R.style.AppThemeDark_NoActionBar : R.style.AppTheme_NoActionBar);
         LayoutInflaterCompat.setFactory(getLayoutInflater(), new IconicsLayoutInflater(getDelegate()));
         super.onCreate(savedInstanceState);
         if (!BuildConfig.DEBUG) {

@@ -11,17 +11,7 @@
     <color name="text_secondary_disabled">#80323232</color>
     <color name="text_primary_inverse">#FFFFFF</color>
     <color name="divider">#B6B6B6</color>
-
-    <color name="primary_night">#1c2837</color>
-    <color name="primary_dark_night">#161f29</color>
-    <color name="accent_night">#1d88e3</color>
-    <color name="text_primary_night">#f2f2f2</color>
-    <color name="text_primary_disabled_night">#727272</color>
-    <color name="text_secondary_night">#71828f</color>
-    <color name="text_secondary_disabled_night">#727272</color>
-    <color name="text_primary_inverse_night">#71828f</color>
-    <color name="divider_night">#040404</color>
-    <color name="window_background_night">#161f29</color>
+    <color name="window_background">#ffffff</color>
 
                     <!-- Torrent list -->
     <color name="torrent_list_progressbar_background">#ffb9b9b9</color>
@@ -31,13 +21,13 @@
     <color name="torrent_list_selected_overlay">#88646464</color>
 
                     <!-- Material Drawer -->
-    <color name="material_drawer_background_dark">#161f29</color>
-    <color name="material_drawer_primary_text_dark">@color/material_drawer_dark_primary_text</color>
-    <color name="material_drawer_primary_icon_dark">@color/material_drawer_dark_primary_icon</color>
-    <color name="material_drawer_secondary_text_dark">@color/material_drawer_dark_secondary_text</color>
-    <color name="material_drawer_hint_text_dark">@color/material_drawer_dark_hint_text</color>
-    <color name="material_drawer_divider_dark">@color/material_drawer_dark_divider</color>
-    <color name="material_drawer_selected_dark">#141b25</color>
-    <color name="material_drawer_selected_text_dark">@color/material_drawer_dark_selected_text</color>
-    <color name="material_drawer_header_selection_text_dark">@color/material_drawer_dark_header_selection_text</color>
+    <color name="drawer_background">@color/material_drawer_background</color>
+    <color name="drawer_primary_text">@color/material_drawer_primary_text</color>
+    <color name="drawer_primary_icon">@color/material_drawer_primary_icon</color>
+    <color name="drawer_secondary_text">@color/material_drawer_secondary_text</color>
+    <color name="drawer_hint_text">@color/material_drawer_hint_text</color>
+    <color name="drawer_divider">@color/material_drawer_divider</color>
+    <color name="drawer_selected">@color/material_drawer_selected</color>
+    <color name="drawer_selected_text">@color/material_drawer_selected_text</color>
+    <color name="drawer_header_selection_text">@color/material_drawer_header_selection_text</color>
 </resources>
