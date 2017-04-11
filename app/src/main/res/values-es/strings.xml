@@ -187,4 +187,5 @@
     <string name="drawer_sort_by_progress">Progreso</string>
     <string name="action_remove_torrent">Quitar torrent</string>
     <string name="drawer_sort_by_queue_position">Cola</string>
+    <string name="night_mode">Modo nocturno</string>
 </resources>

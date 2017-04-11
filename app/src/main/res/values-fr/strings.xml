@@ -238,5 +238,6 @@
         <item quantity="one">Torrent est terminé</item>
         <item quantity="other">%d torrents sont terminés</item>
     </plurals>
+    <string name="night_mode">Mode nuit</string>
 
 </resources>

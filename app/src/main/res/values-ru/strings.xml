@@ -205,4 +205,5 @@
     <string name="error_failed_to_open_downloaded_torrent">Не удалось открыть файл. Попробуйте использовать меню \"Открыть торрент\"</string>
     <string name="remove_data_confirmation">Вы уверены что хотите удалить все данные?</string>
     <string name="delete">Удалить</string>
+    <string name="night_mode">Ночной режим</string>
 </resources>

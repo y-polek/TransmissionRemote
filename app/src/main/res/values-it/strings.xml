@@ -227,5 +227,6 @@
         <item quantity="one">Torrent è completato</item>
         <item quantity="other">%d torrent sono completati</item>
     </plurals>
+    <string name="night_mode">Modalità notturna</string>
 
 </resources>
