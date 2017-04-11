@@ -13,7 +13,8 @@
 
         <item name="actionBarTheme">@style/ActionBarTheme</item>
         <item name="actionModeStyle">@style/ActionModeTheme</item>
-        <item name="actionBarPopupTheme">@style/ThemeOverlay.AppCompat.Light</item>
+        <item name="actionBarPopupTheme">@style/ActionBarPopupTheme</item>
+
         <item name="windowActionModeOverlay">true</item>
 
         <!-- MaterialDrawer specific values -->
@@ -34,8 +35,12 @@
     </style>
 
     <style name="ActionBarTheme" parent="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
-        <item name="popupTheme">@style/ThemeOverlay.AppCompat.Light</item>
+        <item name="popupTheme">@style/ActionBarPopupTheme</item>
         <item name="android:windowContentOverlay">@null</item>
+    </style>
+
+    <style name="ActionBarPopupTheme" parent="Theme.AppCompat.DayNight">
+        <item name="android:popupBackground">@android:color/holo_red_dark</item>
     </style>
 
     <style name="ActionModeTheme" parent="@style/ActionBarTheme">
