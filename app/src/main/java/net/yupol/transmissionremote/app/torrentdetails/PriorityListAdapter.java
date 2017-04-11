@@ -12,6 +12,7 @@ import com.mikepenz.iconics.view.IconicsImageView;
 
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.model.Priority;
+import net.yupol.transmissionremote.app.utils.ColorUtils;
 
 public class PriorityListAdapter extends ArrayAdapter<Priority> {
 
@@ -29,6 +30,7 @@ public class PriorityListAdapter extends ArrayAdapter<Priority> {
         Priority priority = getItem(position);
         assert priority != null;
         IconicsImageView imageView = (IconicsImageView) view.findViewById(R.id.icon);
+        imageView.setColor(ColorUtils.resolveColor(getContext(), android.R.attr.textColorPrimary, R.color.text_color_primary));
         imageView.setIcon(priority.icon);
         TextView textView = (TextView) view.findViewById(R.id.text);
         textView.setText(priority.nameResId);
