@@ -416,6 +416,23 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
     }
 
     private void setupFloatingActionButton() {
+
+        binding.addTorrentByFileButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                binding.addTorrentButton.collapse();
+                onOpenTorrentByFile();
+            }
+        });
+
+        binding.addTorrentByMagnetButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                binding.addTorrentButton.collapse();
+                onOpenTorrentByAddress();
+            }
+        });
+
         binding.addTorrentByFileButton.setIconDrawable(
                 new IconicsDrawable(this, CommunityMaterial.Icon.cmd_file_outline)
                         .paddingRes(R.dimen.fab_icon_padding)
