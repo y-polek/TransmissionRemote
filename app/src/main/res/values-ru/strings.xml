@@ -206,4 +206,6 @@
     <string name="remove_data_confirmation">Вы уверены что хотите удалить все данные?</string>
     <string name="delete">Удалить</string>
     <string name="night_mode">Ночной режим</string>
+    <string name="add_torrent_by_file">Файл</string>
+    <string name="add_torrent_by_address">Адрес</string>
 </resources>

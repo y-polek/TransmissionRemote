@@ -83,4 +83,6 @@ dependencies {
 
     compile 'com.github.hotchemi:permissionsdispatcher:2.2.0'
     annotationProcessor 'com.github.hotchemi:permissionsdispatcher-processor:2.2.0'
+
+    compile 'com.getbase:floatingactionbutton:1.10.1'
 }

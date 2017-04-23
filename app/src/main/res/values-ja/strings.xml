@@ -233,4 +233,7 @@
         <item quantity="other">%d個のTorrentが完了しました</item>
     </plurals>
 
+    <string name="add_torrent_by_file">ファイル</string>
+    <string name="add_torrent_by_address">URL</string>
+
 </resources>

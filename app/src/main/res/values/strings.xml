@@ -243,6 +243,9 @@
 
     <string name="night_mode">Night Mode</string>
 
+    <string name="add_torrent_by_file">File</string>
+    <string name="add_torrent_by_address">Address</string>
+
     <plurals name="torrents">
         <item quantity="zero">%d torrents</item>
         <item quantity="one">%d torrent</item>

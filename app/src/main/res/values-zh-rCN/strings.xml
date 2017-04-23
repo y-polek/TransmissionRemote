@@ -238,5 +238,7 @@
     <string name="limit_upload">上传限制：</string>
     <string name="storage_permission_allow">允许</string>
     <string name="no_directory">没有此目录</string>
+    <string name="add_torrent_by_file">文件</string>
+    <string name="add_torrent_by_address">地址</string>
 
 </resources>

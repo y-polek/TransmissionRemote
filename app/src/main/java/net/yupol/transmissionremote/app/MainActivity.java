@@ -42,9 +42,11 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
+import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.mikepenz.community_material_typeface_library.CommunityMaterial;
 import com.mikepenz.fontawesome_typeface_library.FontAwesome;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
+import com.mikepenz.iconics.IconicsDrawable;
 import com.mikepenz.iconics.context.IconicsLayoutInflater;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
@@ -247,6 +249,18 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
             openTorrentScheme = savedInstanceState.getString(KEY_OPEN_TORRENT_SCHEME);
             openTorrentPermissionRationaleOpen = savedInstanceState.getBoolean(KEY_OPEN_TORRENT_PERMISSION_RATIONALE_OPEN);
         }
+
+        FloatingActionButton addTorrentByFileButton = (FloatingActionButton) findViewById(R.id.add_torrent_by_file_button);
+        addTorrentByFileButton.setIconDrawable(
+                new IconicsDrawable(this, CommunityMaterial.Icon.cmd_file_outline)
+                        .paddingRes(R.dimen.fab_icon_padding)
+                        .colorRes(R.color.text_primary_inverse));
+
+        FloatingActionButton addTorrentByMagnetButton = (FloatingActionButton) findViewById(R.id.add_torrent_by_magnet_button);
+        addTorrentByMagnetButton.setIconDrawable(
+                new IconicsDrawable(this, CommunityMaterial.Icon.cmd_magnet)
+                        .paddingRes(R.dimen.fab_icon_padding)
+                        .colorRes(R.color.text_primary_inverse));
     }
 
     private void setupActionBar() {

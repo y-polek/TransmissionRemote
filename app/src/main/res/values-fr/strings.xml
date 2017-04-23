@@ -239,5 +239,7 @@
         <item quantity="other">%d torrents sont terminés</item>
     </plurals>
     <string name="night_mode">Mode nuit</string>
+    <string name="add_torrent_by_file">Fichier</string>
+    <string name="add_torrent_by_address">Adresse</string>
 
 </resources>

@@ -233,4 +233,7 @@
         <item quantity="other">%d개의 토렌트가 완료되었습니다</item>
     </plurals>
 
+    <string name="add_torrent_by_file">파일</string>
+    <string name="add_torrent_by_address">URL 주소</string>
+
 </resources>

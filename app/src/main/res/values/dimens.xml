@@ -11,6 +11,7 @@
     <dimen name="default_padding_small">4dp</dimen>
     <dimen name="default_button_icon_size">22dp</dimen>
     <dimen name="default_button_with_icon_width">200dp</dimen>
+    <dimen name="fab_icon_padding">6dp</dimen>
 
                 <!-- Drawer -->
     <dimen name="header_settings_size">48dp</dimen>

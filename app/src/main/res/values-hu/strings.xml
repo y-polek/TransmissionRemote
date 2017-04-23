@@ -233,4 +233,7 @@
         <item quantity="other">%d torrent befejezve</item>
     </plurals>
 
+    <string name="add_torrent_by_file">Fájl</string>
+    <string name="add_torrent_by_address">Cím</string>
+
 </resources>
