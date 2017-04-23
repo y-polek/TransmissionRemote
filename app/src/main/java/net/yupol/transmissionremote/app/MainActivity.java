@@ -12,6 +12,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.databinding.DataBindingUtil;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -42,7 +43,7 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
-import com.getbase.floatingactionbutton.FloatingActionButton;
+import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.mikepenz.community_material_typeface_library.CommunityMaterial;
 import com.mikepenz.fontawesome_typeface_library.FontAwesome;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
@@ -62,6 +63,7 @@ import com.octo.android.robospice.request.listener.RequestListener;
 import net.yupol.transmissionremote.app.actionbar.ActionBarNavigationAdapter;
 import net.yupol.transmissionremote.app.actionbar.SpeedTextView;
 import net.yupol.transmissionremote.app.actionbar.TurtleModeButton;
+import net.yupol.transmissionremote.app.databinding.MainActivityBinding;
 import net.yupol.transmissionremote.app.drawer.HeaderView;
 import net.yupol.transmissionremote.app.drawer.SortDrawerItem;
 import net.yupol.transmissionremote.app.filtering.Filter;
@@ -162,6 +164,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
     private static final String KEY_OPEN_TORRENT_URI = "key_open_torrent_uri";
     private static final String KEY_OPEN_TORRENT_SCHEME = "key_open_torrent_scheme";
     private static final String KEY_OPEN_TORRENT_PERMISSION_RATIONALE_OPEN = "key_open_torrent_permission_rationale_open";
+    private static final String KEY_FAB_EXPANDED = "key_fab_expanded";
 
     private static final int DRAWER_ITEM_ID_SETTINGS = 101;
 
@@ -176,7 +179,6 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
     private SpeedTextView uploadSpeedView;
 
     private ActionBarNavigationAdapter toolbarSpinnerAdapter;
-    private Toolbar toolbar;
     private Toolbar bottomToolbar;
     private Drawer drawer;
     private HeaderView headerView;
@@ -222,6 +224,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
     private boolean openTorrentUriWithSchemeOnResume = false;
     private boolean openTorrentPermissionRationaleOpen = false;
     private Spinner toolbarSpinner;
+    private MainActivityBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -230,13 +233,15 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
         if (!BuildConfig.DEBUG) {
             Fabric.with(this, new Crashlytics());
         }
-        setContentView(R.layout.main_activity);
+
+        binding = DataBindingUtil.setContentView(this, R.layout.main_activity);
 
         application = TransmissionRemote.getApplication(this);
 
         setupActionBar();
         setupBottomToolbar();
         setupDrawer();
+        setupFloatingActionButton();
 
         application.addOnSpeedLimitEnabledChangedListener(this);
 
@@ -249,27 +254,14 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
             openTorrentScheme = savedInstanceState.getString(KEY_OPEN_TORRENT_SCHEME);
             openTorrentPermissionRationaleOpen = savedInstanceState.getBoolean(KEY_OPEN_TORRENT_PERMISSION_RATIONALE_OPEN);
         }
-
-        FloatingActionButton addTorrentByFileButton = (FloatingActionButton) findViewById(R.id.add_torrent_by_file_button);
-        addTorrentByFileButton.setIconDrawable(
-                new IconicsDrawable(this, CommunityMaterial.Icon.cmd_file_outline)
-                        .paddingRes(R.dimen.fab_icon_padding)
-                        .colorRes(R.color.text_primary_inverse));
-
-        FloatingActionButton addTorrentByMagnetButton = (FloatingActionButton) findViewById(R.id.add_torrent_by_magnet_button);
-        addTorrentByMagnetButton.setIconDrawable(
-                new IconicsDrawable(this, CommunityMaterial.Icon.cmd_magnet)
-                        .paddingRes(R.dimen.fab_icon_padding)
-                        .colorRes(R.color.text_primary_inverse));
     }
 
     private void setupActionBar() {
-        toolbar = (Toolbar) findViewById(R.id.actionbar_toolbar);
-        setSupportActionBar(toolbar);
+        setSupportActionBar(binding.toolbar);
 
-        View spinnerContainer = LayoutInflater.from(this).inflate(R.layout.toolbar_spinner, toolbar, false);
+        View spinnerContainer = LayoutInflater.from(this).inflate(R.layout.toolbar_spinner, binding.toolbar, false);
         Toolbar.LayoutParams lp = new Toolbar.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        toolbar.addView(spinnerContainer, lp);
+        binding.toolbar.addView(spinnerContainer, lp);
         toolbarSpinner = (Spinner) spinnerContainer.findViewById(R.id.toolbar_spinner);
         toolbarSpinnerAdapter = new ActionBarNavigationAdapter(this);
         toolbarSpinner.setAdapter(toolbarSpinnerAdapter);
@@ -371,7 +363,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
 
         drawer = new DrawerBuilder()
                 .withActivity(this)
-                .withToolbar(toolbar)
+                .withToolbar(binding.toolbar)
                 .withHeader(headerView)
                 .addDrawerItems(new SectionDrawerItem().withName(R.string.drawer_sort_by).withDivider(false))
                 .addDrawerItems((IDrawerItem[]) sortItems)
@@ -421,6 +413,39 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
                 break;
             }
         }
+    }
+
+    private void setupFloatingActionButton() {
+        binding.addTorrentByFileButton.setIconDrawable(
+                new IconicsDrawable(this, CommunityMaterial.Icon.cmd_file_outline)
+                        .paddingRes(R.dimen.fab_icon_padding)
+                        .colorRes(R.color.text_primary_inverse));
+
+        binding.addTorrentByMagnetButton.setIconDrawable(
+                new IconicsDrawable(this, CommunityMaterial.Icon.cmd_magnet)
+                        .paddingRes(R.dimen.fab_icon_padding)
+                        .colorRes(R.color.text_primary_inverse));
+
+        binding.addTorrentButton.setOnFloatingActionsMenuUpdateListener(new FloatingActionsMenu.OnFloatingActionsMenuUpdateListener() {
+            @Override
+            public void onMenuExpanded() {
+                binding.fabOverlay.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onMenuCollapsed() {
+                binding.fabOverlay.setVisibility(View.GONE);
+            }
+        });
+
+        binding.fabOverlay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                binding.addTorrentButton.collapse();
+            }
+        });
+
+        binding.fabOverlay.setVisibility(binding.addTorrentButton.isExpanded() ? View.VISIBLE : View.GONE);
     }
 
     private void switchTheme(boolean nightMode) {
@@ -569,12 +594,12 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
         if (servers.isEmpty()) {
             showEmptyServerFragment();
             drawer.getDrawerLayout().setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
-            toolbar.setVisibility(View.GONE);
+            binding.toolbar.setVisibility(View.GONE);
             if (bottomToolbar != null) bottomToolbar.setVisibility(View.GONE);
         } else {
             switchServer(application.getActiveServer());
             drawer.getDrawerLayout().setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
-            toolbar.setVisibility(View.VISIBLE);
+            binding.toolbar.setVisibility(View.VISIBLE);
             if (bottomToolbar != null) bottomToolbar.setVisibility(View.VISIBLE);
         }
     }
@@ -619,6 +644,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
         outState.putParcelable(KEY_OPEN_TORRENT_URI, openTorrentUri);
         outState.putString(KEY_OPEN_TORRENT_SCHEME, openTorrentScheme);
         outState.putBoolean(KEY_OPEN_TORRENT_PERMISSION_RATIONALE_OPEN, openTorrentPermissionRationaleOpen);
+        outState.putBoolean(KEY_FAB_EXPANDED, binding.addTorrentButton.isExpanded());
     }
 
     @Override
@@ -633,6 +659,14 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
         restoredSearchQuery = savedInstanceState.getCharSequence(KEY_SEARCH_QUERY, "");
 
         hasTorrentList = savedInstanceState.getBoolean(KEY_HAS_TORRENT_LIST, false);
+
+        boolean isFabExpanded = savedInstanceState.getBoolean(KEY_FAB_EXPANDED, false);
+        if (isFabExpanded) {
+            binding.addTorrentButton.expand();
+        } else {
+            binding.addTorrentButton.collapseImmediately();
+        }
+        binding.fabOverlay.setVisibility(isFabExpanded ? View.VISIBLE : View.GONE);
     }
 
     @Override
@@ -816,6 +850,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
     public void onBackPressed() {
         if (drawer.isDrawerOpen()) drawer.closeDrawer();
         else if (searchMenuItem.isActionViewExpanded()) searchMenuItem.collapseActionView();
+        else if (binding.addTorrentButton.isExpanded()) binding.addTorrentButton.collapse();
         else super.onBackPressed();
     }
 

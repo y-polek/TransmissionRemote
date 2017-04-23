@@ -35,4 +35,5 @@
 
                     <!-- FAB -->
     <color name="fab_title_background_color">#eb646464</color>
+    <color name="fab_overlay_color">#CCFFFFFF</color>
 </resources>
