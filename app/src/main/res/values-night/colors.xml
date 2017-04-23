@@ -23,4 +23,7 @@
     <color name="drawer_header_selection_text">@color/material_drawer_dark_header_selection_text</color>
     <color name="drawer_header_circle_background">#bbbbbb</color>
     <color name="drawer_header_circle_foreground">#444444</color>
+
+                    <!-- FAB -->
+    <color name="fab_overlay_color">#DD1c2837</color>
 </resources>

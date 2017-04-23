@@ -1069,6 +1069,8 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
             ft.replace(R.id.torrent_list_container, emptyServerFragment, TAG_EMPTY_SERVER);
             ft.commit();
         }
+
+        binding.addTorrentButton.setVisibility(View.GONE);
     }
 
     private void showProgressbarFragment() {
@@ -1080,6 +1082,8 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
             ft.replace(R.id.torrent_list_container, progressbarFragment, TAG_PROGRESSBAR);
             ft.commitAllowingStateLoss();
         }
+
+        binding.addTorrentButton.setVisibility(View.GONE);
     }
 
     private void showTorrentListFragment() {
@@ -1091,6 +1095,8 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
             ft.replace(R.id.torrent_list_container, torrentListFragment, TAG_TORRENT_LIST);
             ft.commit();
         }
+
+        binding.addTorrentButton.setVisibility(View.VISIBLE);
     }
 
     private void showNetworkErrorFragment(String message) {
@@ -1107,6 +1113,8 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
         } else {
             fragment.setErrorMessage(message);
         }
+
+        binding.addTorrentButton.setVisibility(View.GONE);
     }
 
     private void updateTurtleModeActionIcon() {
