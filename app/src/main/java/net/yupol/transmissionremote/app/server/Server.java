@@ -7,6 +7,7 @@ import android.support.annotation.NonNull;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
@@ -153,7 +154,7 @@ public class Server implements Parcelable {
     }
 
     public List<String> getSavedDownloadLocations() {
-        return savedDownloadLocations;
+        return savedDownloadLocations != null ? savedDownloadLocations : Collections.<String>emptyList();
     }
 
     public void addSavedDownloadLocations(String location) {
