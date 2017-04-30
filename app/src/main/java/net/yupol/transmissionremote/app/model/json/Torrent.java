@@ -29,6 +29,7 @@ public class Torrent implements ID, Parcelable {
     @Key private int peersSendingToUs;
     @Key private int webseedsSendingToUs;
     @Key private int queuePosition;
+    @Key private double recheckProgress;
 
     public Torrent() {}
 
@@ -38,6 +39,7 @@ public class Torrent implements ID, Parcelable {
         addedDate = in.readLong();
         totalSize = in.readLong();
         percentDone = in.readDouble();
+        recheckProgress = in.readDouble();
         status = in.readInt();
         downloadRate = in.readInt();
         uploadRate = in.readInt();
@@ -155,6 +157,10 @@ public class Torrent implements ID, Parcelable {
         return leftUntilDone;
     }
 
+    public double getRecheckProgress() {
+        return recheckProgress;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -167,6 +173,7 @@ public class Torrent implements ID, Parcelable {
         out.writeLong(addedDate);
         out.writeLong(totalSize);
         out.writeDouble(percentDone);
+        out.writeDouble(recheckProgress);
         out.writeInt(status);
         out.writeInt(downloadRate);
         out.writeInt(uploadRate);

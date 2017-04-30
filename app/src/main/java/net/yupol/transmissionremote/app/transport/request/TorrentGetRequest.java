@@ -36,7 +36,8 @@ public class TorrentGetRequest extends Request<Torrents> {
             TorrentMetadata.PEERS_GETTING_FROM_US,
             TorrentMetadata.PEERS_SENDING_TO_US,
             TorrentMetadata.WEBSEEDS_SENDING_TO_US,
-            TorrentMetadata.QUEUE_POSITION
+            TorrentMetadata.QUEUE_POSITION,
+            TorrentMetadata.RECHECK_PROGRESS
     );
 
     private JSONObject args = new JSONObject();

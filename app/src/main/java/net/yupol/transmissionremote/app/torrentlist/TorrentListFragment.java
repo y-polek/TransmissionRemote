@@ -488,11 +488,17 @@ public class TorrentListFragment extends Fragment implements ChooseLocationDialo
                     TextUtils.displayableSize(torrent.getUploadedSize()), uploadRatio);
             holder.uploadedTextView.setText(uploadedText);
 
-            holder.progressBar.setProgress((int) (torrent.getPercentDone() * holder.progressBar.getMax()));
+            boolean isRechecking = torrent.getRecheckProgress() > 0.0;
+            double progress = isRechecking ? torrent.getRecheckProgress() : torrent.getPercentDone();
+
+            holder.progressBar.setProgress((int) (progress * holder.progressBar.getMax()));
+
             boolean isPaused = torrent.isPaused();
             int progressbarDrawable = R.drawable.torrent_progressbar;
             if (isPaused) {
                 progressbarDrawable = R.drawable.torrent_progressbar_disabled;
+            } else if (isRechecking) {
+                progressbarDrawable = R.drawable.torrent_progressbar_rechecking;
             } else if (isCompleted) {
                 progressbarDrawable = R.drawable.torrent_progressbar_finished;
             }
@@ -501,11 +507,14 @@ public class TorrentListFragment extends Fragment implements ChooseLocationDialo
             holder.downloadRateText.setText(TextUtils.speedText(torrent.getDownloadRate()));
             holder.uploadRateText.setText(TextUtils.speedText(torrent.getUploadRate()));
 
-            holder.percentDoneText.setVisibility(isCompleted ? View.GONE : View.VISIBLE);
-            holder.remainingTimeText.setVisibility(isCompleted ? View.GONE : View.VISIBLE);
-            if (!isCompleted) {
-                String percentDone = String.format(Locale.getDefault(), "%.2f%%", 100 * torrent.getPercentDone());
-                holder.percentDoneText.setText(percentDone);
+            holder.percentDoneText.setVisibility(!isCompleted || isRechecking ? View.VISIBLE : View.GONE);
+            holder.remainingTimeText.setVisibility(isCompleted || isRechecking ? View.GONE : View.VISIBLE);
+            if (isRechecking) {
+                String progressText = getString(R.string.checking_progress_text, 100 * progress);
+                holder.percentDoneText.setText(progressText);
+            } else if (!isCompleted) {
+                String progressText = String.format(Locale.getDefault(), "%.2f%%", 100 * progress);
+                holder.percentDoneText.setText(progressText);
 
                 long eta = torrent.getEta();
                 String etaText;
@@ -746,6 +755,7 @@ public class TorrentListFragment extends Fragment implements ChooseLocationDialo
             if (t1.getId() != t2.getId()) return false;
             if (t1.getTotalSize() != t2.getTotalSize()) return false;
             if (Double.compare(t1.getPercentDone(), t2.getPercentDone()) != 0) return false;
+            if (Double.compare(t1.getRecheckProgress(), t2.getRecheckProgress()) != 0) return false;
             if (t1.getStatus() != t2.getStatus()) return false;
             if (t1.getDownloadRate() != t2.getDownloadRate()) return false;
             if (t1.getUploadRate() != t2.getUploadRate()) return false;

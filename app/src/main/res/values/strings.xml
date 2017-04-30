@@ -121,6 +121,7 @@
     <string name="eta_unknown">Remaining time unknown</string>
     <string name="eta_infinite">~ \u221e</string>
     <string name="eta">~ %1$s</string>
+    <string name="checking_progress_text">Checking existing data (%1$.2f%%)</string>
 
     <!-- Open torrent -->
     <string name="error_install_file_manager_msg">Please, install a file manager</string>

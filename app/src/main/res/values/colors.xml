@@ -18,6 +18,7 @@
     <color name="torrent_list_progressbar_progress_color">@color/md_light_blue_A700</color>
     <color name="torrent_list_progressbar_progress_finished_color">@color/md_green_600</color>
     <color name="torrent_list_progressbar_progress_disabled_color">#ff737373</color>
+    <color name="torrent_list_progressbar_progress_rechecking_color">@color/md_yellow_800</color>
     <color name="torrent_list_selected_overlay">#88646464</color>
 
                     <!-- Material Drawer -->
