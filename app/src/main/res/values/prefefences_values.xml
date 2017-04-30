@@ -17,4 +17,7 @@
     <string name="disable_free_space_check_key" translatable="false">disable_free_space_check_key</string>
     <string name="disable_free_space_check_default_value" translatable="false">false</string>
 
+    <string name="show_add_torrent_fab_key" translatable="false">show_add_torrent_fab_key</string>
+    <string name="show_add_torrent_fab_default_value" translatable="false">true</string>
+
 </resources>

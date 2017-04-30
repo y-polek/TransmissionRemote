@@ -19,6 +19,10 @@
         android:summary="@string/preferences_notifications_summary">
         <intent android:action=".preferences.NotificationsPreferencesActivity"/>
     </PreferenceScreen>
+    <CheckBoxPreference
+        android:title="@string/show_add_torrent_fab_title"
+        android:key="@string/show_add_torrent_fab_key"
+        android:defaultValue="@string/show_add_torrent_fab_default_value" />
     <PreferenceScreen
         android:title="@string/preferences_advanced_title"
         android:summary="@string/preferences_advanced_summary">

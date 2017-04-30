@@ -52,6 +52,7 @@
     <string name="notifications_pref_title">Notifications</string>
     <string name="notification_settings">Notification settings</string>
     <string name="advanced_pref_title">Advanced preferences</string>
+    <string name="show_add_torrent_fab_title">Show \"Add torrent\" floating button</string>
 
     <!-- Servers -->
     <string name="add_new_server_title">Add new server</string>

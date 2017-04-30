@@ -209,4 +209,5 @@
     <string name="add_torrent_by_file">Файл</string>
     <string name="add_torrent_by_address">Адрес</string>
     <string name="checking_progress_text">Проверка существующих данных (%1$.2f%%)</string>
+    <string name="show_add_torrent_fab_title">Показывать плавающую кнопку \"Добавить торрент\"</string>
 </resources>

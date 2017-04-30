@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -199,6 +200,7 @@ public class TorrentListFragment extends Fragment implements ChooseLocationDialo
     };
     private ActionMode actionMode;
     private int[] restoredSelection;
+    private RecyclerView recyclerView;
 
     @Override
     public void onAttach(Context context) {
@@ -228,7 +230,7 @@ public class TorrentListFragment extends Fragment implements ChooseLocationDialo
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.torrent_list_layout, container, false);
 
-        RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.torrent_list_recycler_view);
+        recyclerView = (RecyclerView) view.findViewById(R.id.torrent_list_recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.addItemDecoration(new DividerItemDecoration(container.getContext()));
         recyclerView.setItemAnimator(null);
@@ -273,6 +275,15 @@ public class TorrentListFragment extends Fragment implements ChooseLocationDialo
             actionMode.finish();
         }
         super.onStop();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        boolean showFab = PreferenceManager.getDefaultSharedPreferences(getContext())
+                .getBoolean(getString(R.string.show_add_torrent_fab_key), true);
+        recyclerView.setPadding(0, 0, 0, showFab ? getResources().getDimensionPixelOffset(R.dimen.fab_size_normal) : 0);
     }
 
     @Override

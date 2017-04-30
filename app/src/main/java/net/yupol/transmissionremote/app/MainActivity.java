@@ -126,6 +126,8 @@ import permissions.dispatcher.OnShowRationale;
 import permissions.dispatcher.PermissionRequest;
 import permissions.dispatcher.RuntimePermissions;
 
+import static android.preference.PreferenceManager.getDefaultSharedPreferences;
+
 @RuntimePermissions
 public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.TorrentUpdateListener,
         SharedPreferences.OnSharedPreferenceChangeListener, TransmissionRemote.OnSpeedLimitChangedListener,
@@ -225,6 +227,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
     private boolean openTorrentPermissionRationaleOpen = false;
     private Spinner toolbarSpinner;
     private MainActivityBinding binding;
+    private boolean showFab;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -605,7 +608,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
     protected void onResume() {
         super.onResume();
         isActivityResumed = true;
-        PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
+        getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
 
         List<Server> servers = application.getServers();
         if (servers.isEmpty()) {
@@ -619,6 +622,11 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
             binding.toolbar.setVisibility(View.VISIBLE);
             if (bottomToolbar != null) bottomToolbar.setVisibility(View.VISIBLE);
         }
+
+        showFab = PreferenceManager.getDefaultSharedPreferences(this)
+                .getBoolean(getString(R.string.show_add_torrent_fab_key), true);
+        binding.addTorrentButton.collapseImmediately();
+        binding.addTorrentButton.setVisibility(showFab ? View.VISIBLE : View.GONE);
     }
 
     @Override
@@ -641,7 +649,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
 
         stopPreferencesUpdateTimer();
 
-        PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(this);
+        getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(this);
         application.persist();
     }
 
@@ -1113,7 +1121,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
             ft.commit();
         }
 
-        binding.addTorrentButton.setVisibility(View.VISIBLE);
+        binding.addTorrentButton.setVisibility(showFab ? View.VISIBLE : View.GONE);
     }
 
     private void showNetworkErrorFragment(String message) {
