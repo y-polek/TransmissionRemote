@@ -623,10 +623,12 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
             if (bottomToolbar != null) bottomToolbar.setVisibility(View.VISIBLE);
         }
 
+        binding.addTorrentButton.collapseImmediately();
+
         showFab = PreferenceManager.getDefaultSharedPreferences(this)
                 .getBoolean(getString(R.string.show_add_torrent_fab_key), true);
-        binding.addTorrentButton.collapseImmediately();
-        binding.addTorrentButton.setVisibility(showFab ? View.VISIBLE : View.GONE);
+        boolean isListVisible = getTorrentListFragment() != null;
+        binding.addTorrentButton.setVisibility(showFab && isListVisible ? View.VISIBLE : View.GONE);
     }
 
     @Override
