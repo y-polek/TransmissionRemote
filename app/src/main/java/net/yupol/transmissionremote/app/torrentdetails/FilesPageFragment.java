@@ -108,6 +108,7 @@ public class FilesPageFragment extends BasePageFragment implements DirectoryFrag
     public void updateFileStats() {
         DirectoryFragment directoryFragment = (DirectoryFragment)
                 getChildFragmentManager().findFragmentByTag(TAG_DIRECTORY_FRAGMENT);
+        directoryFragment.setFiles(getTorrentInfo().getFiles());
         directoryFragment.setFileStats(getTorrentInfo().getFileStats());
     }
 

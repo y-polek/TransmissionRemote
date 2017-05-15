@@ -24,8 +24,10 @@ import net.yupol.transmissionremote.app.model.json.Torrent;
 import net.yupol.transmissionremote.app.model.json.TorrentInfo;
 import net.yupol.transmissionremote.app.torrentlist.ChooseLocationDialogFragment;
 import net.yupol.transmissionremote.app.torrentlist.RemoveTorrentsDialogFragment;
+import net.yupol.transmissionremote.app.torrentlist.RenameDialogFragment;
 import net.yupol.transmissionremote.app.transport.BaseSpiceActivity;
 import net.yupol.transmissionremote.app.transport.request.ReannounceTorrentRequest;
+import net.yupol.transmissionremote.app.transport.request.RenameRequest;
 import net.yupol.transmissionremote.app.transport.request.SetLocationRequest;
 import net.yupol.transmissionremote.app.transport.request.StartTorrentRequest;
 import net.yupol.transmissionremote.app.transport.request.StopTorrentRequest;
@@ -38,7 +40,7 @@ import java.util.List;
 
 public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveChangesDialogFragment.SaveDiscardListener,
         RemoveTorrentsDialogFragment.OnRemoveTorrentSelectionListener, ChooseLocationDialogFragment.OnLocationSelectedListener,
-        TorrentInfoUpdater.OnTorrentInfoUpdatedListener, SwipeRefreshLayout.OnRefreshListener {
+        TorrentInfoUpdater.OnTorrentInfoUpdatedListener, SwipeRefreshLayout.OnRefreshListener, RenameDialogFragment.OnNameSelectedListener {
 
     private static final String TAG = TorrentDetailsActivity.class.getSimpleName();
 
@@ -50,6 +52,8 @@ public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveCha
     private static final String KEY_OPTIONS_CHANGE_REQUEST = "key_options_request";
     private static final String KEY_TORRENT_INFO = "key_torrent_info";
     private static final String KEY_LAST_PAGE_POSITION = "key_last_position";
+
+    private static final String RENAME_TORRENT_FRAGMENT_TAG = "rename_torrent_fragment_tag";
 
     private Torrent torrent;
     private TorrentInfo torrentInfo;
@@ -255,6 +259,10 @@ public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveCha
             case R.id.action_start_now:
                 getTransportManager().doRequest(new StartTorrentRequest(new int[] { torrent.getId() }, true), null);
                 return true;
+            case R.id.action_rename:
+                RenameDialogFragment dialogFragment = RenameDialogFragment.newInstance(torrent.getId(), torrent.getName(), torrent.getName());
+                dialogFragment.show(getSupportFragmentManager(), RENAME_TORRENT_FRAGMENT_TAG);
+                return true;
             case R.id.action_set_location:
                 ChooseLocationDialogFragment dialog = new ChooseLocationDialogFragment();
                 Bundle args = new Bundle();
@@ -313,6 +321,21 @@ public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveCha
             @Override
             public void onRequestFailure(SpiceException spiceException) {
                 Log.e(TAG, "Failed to set location", spiceException);
+            }
+        });
+    }
+
+    @Override
+    public void onNameSelected(int torrentId, String path, String name) {
+        getTransportManager().doRequest(new RenameRequest(torrentId, path, name), new RequestListener<Void>() {
+            @Override
+            public void onRequestSuccess(Void aVoid) {
+                torrentInfoUpdater.updateNow(TorrentDetailsActivity.this);
+            }
+
+            @Override
+            public void onRequestFailure(SpiceException spiceException) {
+                Log.e(TAG, "Failed to rename torrent", spiceException);
             }
         });
     }

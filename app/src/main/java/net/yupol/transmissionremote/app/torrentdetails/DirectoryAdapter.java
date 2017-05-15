@@ -49,6 +49,11 @@ public class DirectoryAdapter extends RecyclerView.Adapter<DirectoryAdapter.View
         setHasStableIds(true);
     }
 
+    public void setFiles(File[] files) {
+        this.files = files;
+        notifyItemChanged(0, getItemCount());
+    }
+
     public void setFileStats(FileStat[] fileStats) {
         this.fileStats = fileStats;
         notifyItemRangeChanged(0, getItemCount());

@@ -17,7 +17,7 @@ public abstract class TorrentActionRequest extends Request<Void> {
     private String method;
     private int[] torrentIds;
 
-    public TorrentActionRequest(String method, int[] torrentIds) {
+    public TorrentActionRequest(String method, int... torrentIds) {
         super(Void.class);
         this.method = method;
         this.torrentIds = torrentIds;

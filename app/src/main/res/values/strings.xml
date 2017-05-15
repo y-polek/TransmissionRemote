@@ -17,6 +17,7 @@
     <string name="action_verify">Verify local data</string>
     <string name="action_request_more_peers">Ask for more peers</string>
     <string name="action_set_location">Set location</string>
+    <string name="action_rename">Rename</string>
 
     <!-- Filters -->
     <string name="filters">Filters</string>
@@ -123,6 +124,8 @@
     <string name="eta_infinite">~ \u221e</string>
     <string name="eta">~ %1$s</string>
     <string name="checking_progress_text">Checking existing data (%1$.2f%%)</string>
+    <string name="rename_file">Rename file</string>
+    <string name="rename">Rename</string>
 
     <!-- Open torrent -->
     <string name="error_install_file_manager_msg">Please, install a file manager</string>

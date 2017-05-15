@@ -37,6 +37,7 @@ public class DirectoryFragment extends Fragment implements DirectoryAdapter.OnIt
 
     private int torrentId;
     private Dir dir;
+    private File[] files;
     private FileStat[] fileStats;
 
     private DirectoryAdapter adapter;
@@ -49,7 +50,7 @@ public class DirectoryFragment extends Fragment implements DirectoryAdapter.OnIt
         Bundle args = getArguments();
         torrentId = args.getInt(ARG_TORRENT_ID, -1);
         dir = args.getParcelable(ARG_DIRECTORY);
-        File[] files = ParcelableUtils.toArrayOfType(File.class, args.getParcelableArray(ARG_FILES));
+        files = ParcelableUtils.toArrayOfType(File.class, args.getParcelableArray(ARG_FILES));
 
         if (savedInstanceState == null) {
             fileStats = ParcelableUtils.toArrayOfType(FileStat.class, args.getParcelableArray(ARG_FILE_STATS));
@@ -156,6 +157,11 @@ public class DirectoryFragment extends Fragment implements DirectoryAdapter.OnIt
                 Log.d(TAG, "success");
             }
         });
+    }
+
+    public void setFiles(File[] files) {
+        this.files = files;
+        adapter.setFiles(files);
     }
 
     public void setFileStats(FileStat[] fileStats) {

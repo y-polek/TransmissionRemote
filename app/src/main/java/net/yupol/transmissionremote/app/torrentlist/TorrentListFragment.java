@@ -47,6 +47,7 @@ import net.yupol.transmissionremote.app.model.json.Torrents;
 import net.yupol.transmissionremote.app.transport.BaseSpiceActivity;
 import net.yupol.transmissionremote.app.transport.TransportManager;
 import net.yupol.transmissionremote.app.transport.request.ReannounceTorrentRequest;
+import net.yupol.transmissionremote.app.transport.request.RenameRequest;
 import net.yupol.transmissionremote.app.transport.request.Request;
 import net.yupol.transmissionremote.app.transport.request.SetLocationRequest;
 import net.yupol.transmissionremote.app.transport.request.StartTorrentRequest;
@@ -71,10 +72,11 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-public class TorrentListFragment extends Fragment implements ChooseLocationDialogFragment.OnLocationSelectedListener {
+public class TorrentListFragment extends Fragment implements ChooseLocationDialogFragment.OnLocationSelectedListener, RenameDialogFragment.OnNameSelectedListener {
 
     private static final String TAG = TorrentListFragment.class.getSimpleName();
     private static final String CHOOSE_LOCATION_FRAGMENT_TAG = "choose_location_fragment_tag";
+    private static final String RENAME_TORRENT_FRAGMENT_TAG = "rename_torrent_fragment_tag";
     private static final String KEY_ACTION_MODE = "key_action_mode";
     private static final String KEY_SELECTION = "key_selection";
 
@@ -123,6 +125,15 @@ public class TorrentListFragment extends Fragment implements ChooseLocationDialo
     private boolean inSearchMode = false;
     private String searchQuery;
 
+    private MenuItem removeMenuItem;
+    private MenuItem pauseMenuItem;
+    private MenuItem startMenuItem;
+    private MenuItem startNowMenuItem;
+    private MenuItem renameMenuItem;
+    private MenuItem setLocationMenuItem;
+    private MenuItem verifyMenuItem;
+    private MenuItem reannonceMenuItem;
+
     private ActionMode.Callback actionModeCallback = new ActionMode.Callback() {
         @Override
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
@@ -141,6 +152,14 @@ public class TorrentListFragment extends Fragment implements ChooseLocationDialo
 
         @Override
         public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+            removeMenuItem = menu.findItem(R.id.action_remove_torrents);
+            pauseMenuItem = menu.findItem(R.id.action_pause);
+            startMenuItem = menu.findItem(R.id.action_start);
+            startNowMenuItem = menu.findItem(R.id.action_start_now);
+            renameMenuItem = menu.findItem(R.id.action_rename);
+            setLocationMenuItem = menu.findItem(R.id.action_set_location);
+            verifyMenuItem = menu.findItem(R.id.action_verify);
+            reannonceMenuItem = menu.findItem(R.id.action_reannounce);
             return false;
         }
 
@@ -170,6 +189,14 @@ public class TorrentListFragment extends Fragment implements ChooseLocationDialo
                     return true;
                 case R.id.action_start_now:
                     sendStartTorrentsRequest(adapter.getSelectedItemsIds(), true);
+                    mode.finish();
+                    return true;
+                case R.id.action_rename:
+                    int[] selectedPositions = adapter.getSelectedItemsPositions();
+                    if (selectedPositions.length == 1) {
+                        Torrent torrent = adapter.getItemAtPosition(selectedPositions[0]);
+                        renameTorrent(torrent);
+                    }
                     mode.finish();
                     return true;
                 case R.id.action_set_location:
@@ -313,6 +340,19 @@ public class TorrentListFragment extends Fragment implements ChooseLocationDialo
             @Override
             public void onRequestFailure(SpiceException spiceException) {
                 Log.e(TAG, "Failed to set location", spiceException);
+            }
+        });
+    }
+
+    @Override
+    public void onNameSelected(int torrentId, String path, String name) {
+        transportManager.doRequest(new RenameRequest(torrentId, path, name), new RequestListener<Void>() {
+            @Override
+            public void onRequestSuccess(Void aVoid) {}
+
+            @Override
+            public void onRequestFailure(SpiceException spiceException) {
+                Log.e(TAG, "Failed to rename torrent", spiceException);
             }
         });
     }
@@ -600,6 +640,7 @@ public class TorrentListFragment extends Fragment implements ChooseLocationDialo
             }
             notifyItemChanged(position);
             updateCABTitle();
+            updateOptionsMenu();
         }
 
         public void selectAll() {
@@ -608,6 +649,7 @@ public class TorrentListFragment extends Fragment implements ChooseLocationDialo
                 notifyItemChanged(i);
             }
             updateCABTitle();
+            updateOptionsMenu();
         }
 
         public void clearSelection() {
@@ -617,6 +659,7 @@ public class TorrentListFragment extends Fragment implements ChooseLocationDialo
                 notifyItemChanged(position);
             }
             updateCABTitle();
+            updateOptionsMenu();
         }
 
         public void updateSelection() {
@@ -636,12 +679,28 @@ public class TorrentListFragment extends Fragment implements ChooseLocationDialo
             }
 
             updateCABTitle();
+            updateOptionsMenu();
         }
 
         private void updateCABTitle() {
             int count = adapter.getSelectedItemsCount();
             String text = getResources().getQuantityString(R.plurals.torrents, count, count);
             actionMode.setTitle(text);
+        }
+
+        private void updateOptionsMenu() {
+            if (actionMode != null) {
+                int count = adapter.getSelectedItemsCount();
+
+                removeMenuItem.setEnabled(count > 0);
+                pauseMenuItem.setEnabled(count > 0);
+                startMenuItem.setEnabled(count > 0);
+                startNowMenuItem.setEnabled(count > 0);
+                renameMenuItem.setEnabled(count == 1);
+                setLocationMenuItem.setEnabled(count > 0);
+                verifyMenuItem.setEnabled(count > 0);
+                reannonceMenuItem.setEnabled(count > 0);
+            }
         }
 
         private void updateTorrent(Torrent torrent) {
@@ -701,7 +760,6 @@ public class TorrentListFragment extends Fragment implements ChooseLocationDialo
         transportManager.doRequest(request, new RequestListener<T>() {
             @Override
             public void onRequestFailure(SpiceException spiceException) {
-                Log.e(TAG, "Request failed", spiceException);
                 sendTorrentGetRequest(torrentIds);
             }
 
@@ -710,6 +768,12 @@ public class TorrentListFragment extends Fragment implements ChooseLocationDialo
                 sendTorrentGetRequest(torrentIds);
             }
         });
+    }
+
+    private void renameTorrent(Torrent torrent) {
+        RenameDialogFragment dialogFragment = RenameDialogFragment.newInstance(torrent.getId(), torrent.getName(), torrent.getName());
+        dialogFragment.setTargetFragment(this, 0);
+        dialogFragment.show(getChildFragmentManager(), RENAME_TORRENT_FRAGMENT_TAG);
     }
 
     private static class ViewHolder extends RecyclerView.ViewHolder {
