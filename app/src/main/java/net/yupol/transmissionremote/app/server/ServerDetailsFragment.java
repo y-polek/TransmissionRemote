@@ -206,6 +206,9 @@ public class ServerDetailsFragment extends Fragment implements OnBackPressedList
         server.setRpcUrl(getUiRpcUrl());
         server.setUseHttps(getUiUseHttps());
         server.setTrustSelfSignedSslCert(getUiTrustSelfSignedCert());
+
+        // clear redirect location after each sever settings change
+        server.setRedirectLocation(null);
     }
 
     public boolean hasChanges() {
