@@ -45,7 +45,7 @@ public class TransferPrioritySpinnerAdapter extends BaseAdapter {
 
         TransferPriority priority = getItem(position);
 
-        TextView text = (TextView) view.findViewById(android.R.id.text1);
+        TextView text = view.findViewById(android.R.id.text1);
 
         text.setText(getTextRes(priority));
         text.setTextSize(TypedValue.COMPLEX_UNIT_PX,
@@ -81,7 +81,7 @@ public class TransferPrioritySpinnerAdapter extends BaseAdapter {
             LayoutInflater li = (LayoutInflater) parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             view = li.inflate(android.R.layout.simple_spinner_item, parent, false);
         }
-        TextView text = (TextView) view.findViewById(android.R.id.text1);
+        TextView text = view.findViewById(android.R.id.text1);
         text.setText(getTextRes(getItem(position)));
         text.setTextSize(TypedValue.COMPLEX_UNIT_PX,
                 parent.getResources().getDimensionPixelSize(R.dimen.tr_abc_text_size_subhead_material));

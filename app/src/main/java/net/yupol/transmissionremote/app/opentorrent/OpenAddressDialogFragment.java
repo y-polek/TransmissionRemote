@@ -27,7 +27,7 @@ public class OpenAddressDialogFragment extends DialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
         View view = getActivity().getLayoutInflater().inflate(R.layout.open_address_dialog, null);
-        final EditText addressText = (EditText) view.findViewById(R.id.address_text);
+        final EditText addressText = view.findViewById(R.id.address_text);
 
         builder.setView(view)
                .setTitle(R.string.address_of_torrent_file)

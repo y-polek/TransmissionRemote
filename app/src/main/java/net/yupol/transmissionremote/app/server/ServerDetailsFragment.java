@@ -65,16 +65,16 @@ public class ServerDetailsFragment extends Fragment implements OnBackPressedList
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.server_details_fragment, container, false);
 
-        serverNameEdit = (EditText) view.findViewById(R.id.server_name_edit_text);
-        protocolSpinner = (Spinner) view.findViewById(R.id.protocol_spinner);
-        hostNameEdit = (EditText) view.findViewById(R.id.host_edit_text);
-        portNumberEdit = (EditText) view.findViewById(R.id.port_edit_text);
-        selfSignedSslCheckbox = (CheckBox) view.findViewById(R.id.self_signed_ssl_checkbox);
-        authCheckBox = (CheckBox) view.findViewById(R.id.aunthentication_checkbox);
-        userNameEdit = (EditText) view.findViewById(R.id.user_name_edit_text);
-        passwordEdit = (EditText) view.findViewById(R.id.password_edit_text);
-        rpcUrlEdit = (EditText) view.findViewById(R.id.rpc_url_edit_text);
-        Button defaultRpcUrlBtn = (Button) view.findViewById(R.id.default_rpc_url_button);
+        serverNameEdit = view.findViewById(R.id.server_name_edit_text);
+        protocolSpinner = view.findViewById(R.id.protocol_spinner);
+        hostNameEdit = view.findViewById(R.id.host_edit_text);
+        portNumberEdit = view.findViewById(R.id.port_edit_text);
+        selfSignedSslCheckbox = view.findViewById(R.id.self_signed_ssl_checkbox);
+        authCheckBox = view.findViewById(R.id.aunthentication_checkbox);
+        userNameEdit = view.findViewById(R.id.user_name_edit_text);
+        passwordEdit = view.findViewById(R.id.password_edit_text);
+        rpcUrlEdit = view.findViewById(R.id.rpc_url_edit_text);
+        Button defaultRpcUrlBtn = view.findViewById(R.id.default_rpc_url_button);
         defaultRpcUrlBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -232,9 +232,7 @@ public class ServerDetailsFragment extends Fragment implements OnBackPressedList
             return true;
         if (getUiUseHttps() != server.useHttps())
             return true;
-        if (getUiTrustSelfSignedCert() != server.getTrustSelfSignedSslCert())
-            return true;
-        return false;
+        return getUiTrustSelfSignedCert() != server.getTrustSelfSignedSslCert();
     }
 
     private void discardChanges() {

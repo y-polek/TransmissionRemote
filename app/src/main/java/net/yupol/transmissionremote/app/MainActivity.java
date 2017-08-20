@@ -26,7 +26,6 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.LayoutInflaterCompat;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -48,7 +47,6 @@ import com.mikepenz.community_material_typeface_library.CommunityMaterial;
 import com.mikepenz.fontawesome_typeface_library.FontAwesome;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.iconics.IconicsDrawable;
-import com.mikepenz.iconics.context.IconicsLayoutInflater;
 import com.mikepenz.iconics.context.IconicsLayoutInflater2;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
@@ -266,7 +264,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
         View spinnerContainer = LayoutInflater.from(this).inflate(R.layout.toolbar_spinner, binding.toolbar, false);
         Toolbar.LayoutParams lp = new Toolbar.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         binding.toolbar.addView(spinnerContainer, lp);
-        toolbarSpinner = (Spinner) spinnerContainer.findViewById(R.id.toolbar_spinner);
+        toolbarSpinner = spinnerContainer.findViewById(R.id.toolbar_spinner);
         toolbarSpinnerAdapter = new ActionBarNavigationAdapter(this);
         toolbarSpinner.setAdapter(toolbarSpinnerAdapter);
         toolbarSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -293,10 +291,10 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
     }
 
     private void setupBottomToolbar() {
-        bottomToolbar = (Toolbar) findViewById(R.id.bottom_toolbar);
+        bottomToolbar = findViewById(R.id.bottom_toolbar);
         if (bottomToolbar == null) return;
 
-        turtleModeButton = (TurtleModeButton) bottomToolbar.findViewById(R.id.turtle_mode_button);
+        turtleModeButton = bottomToolbar.findViewById(R.id.turtle_mode_button);
         turtleModeButton.setEnableChangedListener(new TurtleModeButton.OnEnableChangedListener() {
             @Override
             public void onEnableChanged(boolean isEnabled) {
@@ -311,8 +309,8 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
         Menu menu = bottomToolbar.getMenu();
         bottomBarDownSpeedMenuItem = menu.findItem(R.id.action_download_speed);
         bottomBarUpSpeedMenuItem = menu.findItem(R.id.action_upload_speed);
-        downloadSpeedView = (SpeedTextView) MenuItemCompat.getActionView(bottomBarDownSpeedMenuItem);
-        uploadSpeedView = (SpeedTextView) MenuItemCompat.getActionView(bottomBarUpSpeedMenuItem);
+        downloadSpeedView = (SpeedTextView) bottomBarDownSpeedMenuItem.getActionView();
+        uploadSpeedView = (SpeedTextView) bottomBarUpSpeedMenuItem.getActionView();
     }
 
     private void setupDrawer() {
@@ -709,11 +707,11 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
 
         final MenuItem downloadItem = menu.findItem(R.id.action_download_speed);
         if (downloadItem != null) {
-            downloadSpeedView = (SpeedTextView) MenuItemCompat.getActionView(downloadItem);
+            downloadSpeedView = (SpeedTextView) downloadItem.getActionView();
         }
         final MenuItem uploadItem = menu.findItem(R.id.action_upload_speed);
         if (uploadItem != null) {
-            uploadSpeedView = (SpeedTextView) MenuItemCompat.getActionView(uploadItem);
+            uploadSpeedView = (SpeedTextView) uploadItem.getActionView();
         }
 
         searchMenuItem = menu.findItem(R.id.action_search);
@@ -722,7 +720,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
         }
         IconUtils.setMenuIcon(this, searchMenuItem, FontAwesome.Icon.faw_search);
 
-        searchView = (SearchView) MenuItemCompat.getActionView(searchMenuItem);
+        searchView = (SearchView) searchMenuItem.getActionView();
         // iconifiedByDefault must be false to avoid closing SearchView by close button (close button only clears text)
         searchView.setIconifiedByDefault(false);
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
@@ -732,7 +730,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
 
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
 
-        MenuItemCompat.setOnActionExpandListener(searchMenuItem, new MenuItemCompat.OnActionExpandListener() {
+        searchMenuItem.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
             @Override
             public boolean onMenuItemActionExpand(MenuItem item) {
                 if (bottomBarDownSpeedMenuItem != null) bottomBarDownSpeedMenuItem.setVisible(false);

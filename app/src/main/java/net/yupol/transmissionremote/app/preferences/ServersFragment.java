@@ -53,13 +53,13 @@ public class ServersFragment extends ListFragment {
 
                 Server server = getItem(position);
 
-                TextView nameText = (TextView) itemView.findViewById(R.id.name);
+                TextView nameText = itemView.findViewById(R.id.name);
                 nameText.setText(server.getName());
 
-                TextView addressText = (TextView) itemView.findViewById(R.id.address);
+                TextView addressText = itemView.findViewById(R.id.address);
                 addressText.setText((server.useHttps() ? "https://" : "http://") + server.getHost() + ":" + server.getPort());
 
-                RadioButton radioButton = (RadioButton) itemView.findViewById(R.id.radio_button);
+                RadioButton radioButton = itemView.findViewById(R.id.radio_button);
                 radioButton.setChecked(server.equals(app.getActiveServer()));
 
                 return itemView;

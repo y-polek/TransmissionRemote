@@ -29,10 +29,10 @@ public class PriorityListAdapter extends ArrayAdapter<Priority> {
         }
         Priority priority = getItem(position);
         assert priority != null;
-        IconicsImageView imageView = (IconicsImageView) view.findViewById(R.id.icon);
+        IconicsImageView imageView = view.findViewById(R.id.icon);
         imageView.setColor(ColorUtils.resolveColor(getContext(), android.R.attr.textColorPrimary, R.color.text_color_primary));
         imageView.setIcon(priority.icon);
-        TextView textView = (TextView) view.findViewById(R.id.text);
+        TextView textView = view.findViewById(R.id.text);
         textView.setText(priority.nameResId);
         return view;
     }

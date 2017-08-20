@@ -230,7 +230,7 @@ public class TorrentListFragment extends Fragment implements ChooseLocationDialo
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.torrent_list_layout, container, false);
 
-        recyclerView = (RecyclerView) view.findViewById(R.id.torrent_list_recycler_view);
+        recyclerView = view.findViewById(R.id.torrent_list_recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.addItemDecoration(new DividerItemDecoration(container.getContext()));
         recyclerView.setItemAnimator(null);
@@ -243,7 +243,7 @@ public class TorrentListFragment extends Fragment implements ChooseLocationDialo
         });
         recyclerView.setAdapter(adapter);
 
-        emptyText = (TextView) view.findViewById(R.id.torrent_list_empty_text);
+        emptyText = view.findViewById(R.id.torrent_list_empty_text);
 
         if (savedInstanceState != null) {
             if (savedInstanceState.getBoolean(KEY_ACTION_MODE, false)) {
@@ -730,25 +730,25 @@ public class TorrentListFragment extends Fragment implements ChooseLocationDialo
 
         public ViewHolder(View itemView) {
             super(itemView);
-            nameText = (TextView) itemView.findViewById(R.id.name);
-            downloadedTextView = (TextView) itemView.findViewById(R.id.downloaded_text);
-            uploadedTextView = (TextView) itemView.findViewById(R.id.uploaded_text);
-            progressBar = (ProgressBar) itemView.findViewById(R.id.progress_bar);
+            nameText = itemView.findViewById(R.id.name);
+            downloadedTextView = itemView.findViewById(R.id.downloaded_text);
+            uploadedTextView = itemView.findViewById(R.id.uploaded_text);
+            progressBar = itemView.findViewById(R.id.progress_bar);
 
-            downloadRateText = (TextView) itemView.findViewById(R.id.download_rate);
-            uploadRateText = (TextView) itemView.findViewById(R.id.upload_rate);
+            downloadRateText = itemView.findViewById(R.id.download_rate);
+            uploadRateText = itemView.findViewById(R.id.upload_rate);
             Rect bounds = new Rect();
             downloadRateText.getPaint().getTextBounds(MAX_STRING, 0, MAX_STRING.length(), bounds);
             int maxWidth = bounds.width();
             downloadRateText.setWidth(maxWidth);
             uploadRateText.setWidth(maxWidth);
 
-            percentDoneText = (TextView) itemView.findViewById(R.id.percent_done_text);
-            remainingTimeText = (TextView) itemView.findViewById(R.id.remaining_time_text);
+            percentDoneText = itemView.findViewById(R.id.percent_done_text);
+            remainingTimeText = itemView.findViewById(R.id.remaining_time_text);
 
-            pauseResumeBtn = (PlayPauseButton) itemView.findViewById(R.id.pause_resume_button);
+            pauseResumeBtn = itemView.findViewById(R.id.pause_resume_button);
 
-            errorMsgView = (TextView) itemView.findViewById(R.id.error_message);
+            errorMsgView = itemView.findViewById(R.id.error_message);
 
             selectedOverlay = itemView.findViewById(R.id.selected_overlay);
         }
