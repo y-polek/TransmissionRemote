@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
     <data>
         <import type="android.view.View" />
         <import type="net.yupol.transmissionremote.app.utils.TextUtils" />
         <variable name="peer" type="net.yupol.transmissionremote.app.model.json.Peer" />
     </data>
-    <LinearLayout
+    <LinearLayout xmlns:app="http://schemas.android.com/apk/res-auto"
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

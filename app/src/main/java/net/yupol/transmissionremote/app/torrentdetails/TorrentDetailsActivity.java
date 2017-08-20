@@ -15,6 +15,7 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.mikepenz.iconics.context.IconicsLayoutInflater;
+import com.mikepenz.iconics.context.IconicsLayoutInflater2;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
 
@@ -62,7 +63,7 @@ public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveCha
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        LayoutInflaterCompat.setFactory(getLayoutInflater(), new IconicsLayoutInflater(getDelegate()));
+        LayoutInflaterCompat.setFactory2(getLayoutInflater(), new IconicsLayoutInflater2(getDelegate()));
         super.onCreate(savedInstanceState);
         setContentView(R.layout.torrent_details_layout);
 

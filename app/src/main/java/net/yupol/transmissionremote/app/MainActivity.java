@@ -49,6 +49,7 @@ import com.mikepenz.fontawesome_typeface_library.FontAwesome;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.iconics.IconicsDrawable;
 import com.mikepenz.iconics.context.IconicsLayoutInflater;
+import com.mikepenz.iconics.context.IconicsLayoutInflater2;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.interfaces.OnCheckedChangeListener;
@@ -231,7 +232,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        LayoutInflaterCompat.setFactory(getLayoutInflater(), new IconicsLayoutInflater(getDelegate()));
+        LayoutInflaterCompat.setFactory2(getLayoutInflater(), new IconicsLayoutInflater2(getDelegate()));
         super.onCreate(savedInstanceState);
         if (!BuildConfig.DEBUG) {
             Fabric.with(this, new Crashlytics());
