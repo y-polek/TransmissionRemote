@@ -29,7 +29,7 @@ public class RenameDialogFragment extends DialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
         View view = getActivity().getLayoutInflater().inflate(R.layout.rename_dialog, null);
-        final EditText nameText = (EditText) view.findViewById(R.id.text);
+        final EditText nameText = view.findViewById(R.id.text);
 
         builder.setView(view)
                .setTitle(R.string.rename_file)
@@ -85,7 +85,7 @@ public class RenameDialogFragment extends DialogFragment {
     }
 
     private OnNameSelectedListener getListener() {
-        Fragment targetFragment = getTargetFragment();
+        Fragment targetFragment = getParentFragment();
         if (targetFragment instanceof OnNameSelectedListener) {
             return (OnNameSelectedListener) targetFragment;
         } else {

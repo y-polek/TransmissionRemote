@@ -772,7 +772,6 @@ public class TorrentListFragment extends Fragment implements ChooseLocationDialo
 
     private void renameTorrent(Torrent torrent) {
         RenameDialogFragment dialogFragment = RenameDialogFragment.newInstance(torrent.getId(), torrent.getName(), torrent.getName());
-        dialogFragment.setTargetFragment(this, 0);
         dialogFragment.show(getChildFragmentManager(), RENAME_TORRENT_FRAGMENT_TAG);
     }
 
