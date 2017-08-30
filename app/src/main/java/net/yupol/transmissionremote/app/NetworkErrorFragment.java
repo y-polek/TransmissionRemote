@@ -30,12 +30,12 @@ public class NetworkErrorFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.network_error_fragment, container, false);
 
-        messageView = (TextView) view.findViewById(R.id.error_message);
+        messageView = view.findViewById(R.id.error_message);
         messageView.setText(getArguments().getString(KEY_MESSAGE));
 
         int iconColor = ColorUtils.resolveColor(getContext(), R.attr.colorAccent, R.color.accent);
 
-        Button retryBtn = (Button) view.findViewById(R.id.retry_button);
+        Button retryBtn = view.findViewById(R.id.retry_button);
         retryBtn.setCompoundDrawables(
                 new IconicsDrawable(getContext()).icon(GoogleMaterial.Icon.gmd_refresh).color(iconColor).sizeRes(R.dimen.default_button_icon_size),
                 null, null, null);
@@ -46,7 +46,7 @@ public class NetworkErrorFragment extends Fragment {
             }
         });
 
-        Button serverSettingsBtn = (Button) view.findViewById(R.id.server_settings_button);
+        Button serverSettingsBtn = view.findViewById(R.id.server_settings_button);
         serverSettingsBtn.setCompoundDrawables(
                 new IconicsDrawable(getContext()).icon(GoogleMaterial.Icon.gmd_account_circle).color(iconColor).sizeRes(R.dimen.default_button_icon_size),
                 null, null, null);
@@ -59,7 +59,7 @@ public class NetworkErrorFragment extends Fragment {
             }
         });
 
-        Button networkSettingsBtn = (Button) view.findViewById(R.id.network_settings_button);
+        Button networkSettingsBtn = view.findViewById(R.id.network_settings_button);
         networkSettingsBtn.setCompoundDrawables(
                 new IconicsDrawable(getContext()).icon(GoogleMaterial.Icon.gmd_network_wifi).color(iconColor).sizeRes(R.dimen.default_button_icon_size),
                 null, null, null);

@@ -36,7 +36,7 @@ public class FilesPageFragment extends BasePageFragment implements DirectoryFrag
         super.onCreateView(inflater, container, savedInstanceState);
 
         View view = inflater.inflate(R.layout.torrent_details_file_page_fragment, container, false);
-        breadcrumbView = (BreadcrumbView) view.findViewById(R.id.breadcrumb_view);
+        breadcrumbView = view.findViewById(R.id.breadcrumb_view);
         breadcrumbView.setOnNodeSelectedListener(new BreadcrumbView.OnNodeSelectedListener() {
             @Override
             public void onNodeSelected(int position) {

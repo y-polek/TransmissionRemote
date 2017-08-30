@@ -62,7 +62,7 @@ public class ServerPreferencesFragment extends Fragment {
                 getChildFragmentManager().findFragmentById(R.id.global_bandwidth_limit_fragment);
         altBandwidthLimitFragment = (BandwidthLimitFragment)
                 getChildFragmentManager().findFragmentById(R.id.alt_bandwidth_limit_fragment);
-        altLimitHeader = (TextView) view.findViewById(R.id.turtle_limit_header_text);
+        altLimitHeader = view.findViewById(R.id.turtle_limit_header_text);
 
         return view;
     }

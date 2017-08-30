@@ -70,7 +70,7 @@ public class DirectoryFragment extends Fragment implements DirectoryAdapter.OnIt
         super.onCreateView(inflater, container, savedInstanceState);
 
         View view = inflater.inflate(R.layout.directory_fragment, container, false);
-        RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
+        RecyclerView recyclerView = view.findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.addItemDecoration(new DividerItemDecoration(getContext()));
         recyclerView.setItemAnimator(null);

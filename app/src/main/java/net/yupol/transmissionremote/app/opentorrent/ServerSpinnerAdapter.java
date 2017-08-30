@@ -31,7 +31,7 @@ public class ServerSpinnerAdapter extends ArrayAdapter<Server> {
         if (view instanceof TextView) {
             textView = (TextView) view;
         } else {
-            textView = (TextView) view.findViewById(android.R.id.text1);
+            textView = view.findViewById(android.R.id.text1);
         }
 
         Server server = getItem(position);

@@ -14,7 +14,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import com.mikepenz.iconics.context.IconicsLayoutInflater;
+import com.mikepenz.iconics.context.IconicsLayoutInflater2;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
 
@@ -66,7 +66,7 @@ public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveCha
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        LayoutInflaterCompat.setFactory(getLayoutInflater(), new IconicsLayoutInflater(getDelegate()));
+        LayoutInflaterCompat.setFactory2(getLayoutInflater(), new IconicsLayoutInflater2(getDelegate()));
         super.onCreate(savedInstanceState);
         setContentView(R.layout.torrent_details_layout);
 
@@ -83,7 +83,7 @@ public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveCha
 
         setupActionBar();
 
-        ViewPager pager = (ViewPager) findViewById(R.id.pager);
+        ViewPager pager = findViewById(R.id.pager);
         assert pager != null;
         pager.setAdapter(pagerAdapter);
 
@@ -190,7 +190,7 @@ public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveCha
     }
 
     private void setupActionBar() {
-        Toolbar toolbar = (Toolbar) findViewById(R.id.actionbar_toolbar);
+        Toolbar toolbar = findViewById(R.id.actionbar_toolbar);
         assert toolbar != null;
         toolbar.setSubtitle(torrent.getName());
         setSupportActionBar(toolbar);

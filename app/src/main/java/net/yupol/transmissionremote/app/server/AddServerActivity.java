@@ -39,7 +39,7 @@ public class AddServerActivity extends AppCompatActivity {
             ft.commit();
         }
 
-        Button okButton = (Button) findViewById(R.id.ok_button);
+        Button okButton = findViewById(R.id.ok_button);
         okButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -51,7 +51,7 @@ public class AddServerActivity extends AppCompatActivity {
             }
         });
 
-        Button cancelButton = (Button) findViewById(R.id.cancel_button);
+        Button cancelButton = findViewById(R.id.cancel_button);
         boolean isCancelable = getIntent().getBooleanExtra(PARAM_CANCELABLE, true);
         cancelButton.setVisibility(isCancelable ? View.VISIBLE : View.GONE);
         if (isCancelable) {

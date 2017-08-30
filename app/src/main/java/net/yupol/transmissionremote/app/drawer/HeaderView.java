@@ -104,9 +104,9 @@ public class HeaderView extends RelativeLayout implements View.OnClickListener {
         primaryInverseTextColor = ColorUtils.resolveColor(context, android.R.attr.textColorPrimaryInverse, R.color.text_primary_inverse);
         secondaryTextColor = ColorUtils.resolveColor(context, android.R.attr.textColorSecondary, R.color.text_secondary);
 
-        nameText = (TextView) findViewById(R.id.name_text);
+        nameText = findViewById(R.id.name_text);
 
-        final ImageView serverListButton = (ImageView) findViewById(R.id.server_list_button);
+        final ImageView serverListButton = findViewById(R.id.server_list_button);
         expandIcon = new IconicsDrawable(context)
                 .icon(serverListExpanded ? MaterialDrawerFont.Icon.mdf_arrow_drop_up : MaterialDrawerFont.Icon.mdf_arrow_drop_down)
                 .color(primaryInverseTextColor)
@@ -125,7 +125,7 @@ public class HeaderView extends RelativeLayout implements View.OnClickListener {
             }
         });
 
-        ImageButton settingsButton = (ImageButton) findViewById(R.id.settings_button);
+        ImageButton settingsButton = findViewById(R.id.settings_button);
         settingsButton.setImageDrawable(new IconicsDrawable(context).icon(GoogleMaterial.Icon.gmd_settings)
                 .color(primaryInverseTextColor)
                 .sizeRes(R.dimen.header_settings_size)
@@ -137,11 +137,11 @@ public class HeaderView extends RelativeLayout implements View.OnClickListener {
             }
         });
 
-        serverCircleCurrent = (BezelImageView) findViewById(R.id.circle_current);
+        serverCircleCurrent = findViewById(R.id.circle_current);
         serverCircleCurrent.setOnClickListener(this);
-        serverCircleSmallFirst = (BezelImageView) findViewById(R.id.circle_1);
+        serverCircleSmallFirst = findViewById(R.id.circle_1);
         serverCircleSmallFirst.setOnClickListener(this);
-        serverCircleSmallSecond = (BezelImageView) findViewById(R.id.circle_2);
+        serverCircleSmallSecond = findViewById(R.id.circle_2);
         serverCircleSmallSecond.setOnClickListener(this);
     }
 

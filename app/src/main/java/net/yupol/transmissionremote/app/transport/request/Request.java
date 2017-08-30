@@ -9,6 +9,7 @@ import com.google.api.client.http.HttpHeaders;
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpRequestFactory;
 import com.google.api.client.http.HttpResponse;
+import com.google.api.client.http.HttpStatusCodes;
 import com.google.api.client.json.JsonObjectParser;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.common.base.Optional;
@@ -17,9 +18,11 @@ import com.octo.android.robospice.request.googlehttpclient.GoogleHttpClientSpice
 
 import net.yupol.transmissionremote.app.server.Server;
 
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.io.StringReader;
 import java.util.Locale;
 
@@ -37,6 +40,8 @@ public abstract class Request<RESULT> extends GoogleHttpClientSpiceRequest<RESUL
     private String responseSessionId;
 
     private int statusCode = -1;
+
+    private String redirectLocation;
 
     public Request(Class<RESULT> resultClass) {
         super(resultClass);
@@ -58,6 +63,10 @@ public abstract class Request<RESULT> extends GoogleHttpClientSpiceRequest<RESUL
         return responseSessionId;
     }
 
+    public String getRedirectLocation() {
+        return redirectLocation;
+    }
+
     @Override
     public RESULT loadDataFromNetwork() throws Exception {
         if (server == null) {
@@ -68,7 +77,7 @@ public abstract class Request<RESULT> extends GoogleHttpClientSpiceRequest<RESUL
                 server.useHttps() ? "https" : "http",
                 server.getHost(),
                 server.getPort(),
-                server.getRpcUrl());
+                server.getUrlPath());
 
         HttpRequestFactory requestFactory = getHttpRequestFactory();
 
@@ -90,31 +99,53 @@ public abstract class Request<RESULT> extends GoogleHttpClientSpiceRequest<RESUL
         HttpResponse response = request.execute();
 
         statusCode = response.getStatusCode();
-        responseSessionId = response.getHeaders().getFirstHeaderStringValue(HEADER_SESSION_ID);
 
-        RESULT result;
         try {
-            //result = response.parseAs(getResultType());
-            String responseBody = response.parseAsString();
+            if (HttpStatusCodes.isRedirect(statusCode)) {
+                String location = response.getHeaders().getFirstHeaderStringValue("location");
+                if (StringUtils.isNotEmpty(location)) {
+                    if (location.startsWith("/")) {
+                        location = location.substring(1, location.length());
+                    }
+                    if (location.endsWith("/")) {
+                        location = location.substring(0, location.length() - 1);
+                    }
 
-            JSONObject responseBodyJson = new JSONObject(responseBody);
+                    int lastSectionStartIdx = location.lastIndexOf('/');
+                    if (lastSectionStartIdx >= 0) {
+                        location = location.substring(0, lastSectionStartIdx) + "/rpc";
+                    }
 
-            String resultStatus = responseBodyJson.getString("result");
-            if (!"success".equalsIgnoreCase(resultStatus)) {
-                throw new ResponseFailureException(resultStatus);
+                    redirectLocation = location;
+                }
+                throw new IOException("Request redirected");
+            } else {
+                responseSessionId = response.getHeaders().getFirstHeaderStringValue(HEADER_SESSION_ID);
+
+                RESULT result;
+                try {
+                    //result = response.parseAs(getResultType());
+                    String responseBody = response.parseAsString();
+
+                    JSONObject responseBodyJson = new JSONObject(responseBody);
+
+                    String resultStatus = responseBodyJson.getString("result");
+                    if (!"success".equalsIgnoreCase(resultStatus)) {
+                        throw new ResponseFailureException(resultStatus);
+                    }
+
+                    result = request.getParser().parseAndClose(
+                            new StringReader(responseBodyJson.getString("arguments")),
+                            getResultType());
+                } catch (Exception e) {
+                    Log.e(TAG, "Failed to parse response. SC: " + statusCode, e);
+                    throw e;
+                }
+                return result;
             }
-
-            result = request.getParser().parseAndClose(
-                    new StringReader(responseBodyJson.getString("arguments")),
-                    getResultType());
-        } catch (Exception e) {
-            Log.e(TAG, "Failed to parse response. SC: " + statusCode, e);
-            throw e;
         } finally {
             response.disconnect();
         }
-
-        return result;
     }
 
     private String createBody() {

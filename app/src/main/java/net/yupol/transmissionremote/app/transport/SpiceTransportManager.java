@@ -6,6 +6,7 @@ import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import com.google.api.client.http.HttpStatusCodes;
 import com.octo.android.robospice.SpiceManager;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
@@ -56,6 +57,9 @@ public class SpiceTransportManager extends SpiceManager implements TransportMana
                     request.getServer().setLastSessionId(responseSessionId);
                     doRequest(request, request.getServer(), listener);
                     return false;
+                } else if (HttpStatusCodes.isRedirect(request.getResponseStatusCode())) {
+                    request.getServer().setRedirectLocation(request.getRedirectLocation());
+                    doRequest(request, request.getServer(), listener);
                 }
                 return true;
             }

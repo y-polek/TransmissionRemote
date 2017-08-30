@@ -48,14 +48,14 @@ public class BandwidthLimitFragment extends Fragment implements View.OnFocusChan
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.bandwidth_limit_fragment, container, false);
 
-        downLimitEdit = (EditText) view.findViewById(R.id.download_limit_edittext);
+        downLimitEdit = view.findViewById(R.id.download_limit_edittext);
         downLimitEdit.setEnabled(!disableableLimits);
         InputFilter[] limitFilters = {new InputFilter.LengthFilter((int) (Math.log10(LIMIT_MAX) + 1))};
         downLimitEdit.setFilters(limitFilters);
         downLimitEdit.setOnFocusChangeListener(this);
-        downLimitUnits = (TextView) view.findViewById(R.id.download_limit_units);
+        downLimitUnits = view.findViewById(R.id.download_limit_units);
         downLimitUnits.setEnabled(!disableableLimits);
-        downLimitCheckbox = (CheckBox) view.findViewById(R.id.download_limit_checkbox);
+        downLimitCheckbox = view.findViewById(R.id.download_limit_checkbox);
         downLimitCheckbox.setVisibility(disableableLimits ? View.VISIBLE : View.GONE);
         if (disableableLimits) {
             downLimitCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -66,16 +66,16 @@ public class BandwidthLimitFragment extends Fragment implements View.OnFocusChan
                 }
             });
         }
-        TextView downLimitText = (TextView) view.findViewById(R.id.download_limit_text);
+        TextView downLimitText = view.findViewById(R.id.download_limit_text);
         downLimitText.setVisibility(disableableLimits ? View.GONE : View.VISIBLE);
 
-        upLimitEdit = (EditText) view.findViewById(R.id.upload_limit_edittext);
+        upLimitEdit = view.findViewById(R.id.upload_limit_edittext);
         upLimitEdit.setEnabled(!disableableLimits);
         upLimitEdit.setFilters(limitFilters);
         upLimitEdit.setOnFocusChangeListener(this);
-        upLimitUnits = (TextView) view.findViewById(R.id.upload_limit_units);
+        upLimitUnits = view.findViewById(R.id.upload_limit_units);
         upLimitUnits.setEnabled(!disableableLimits);
-        upLimitCheckbox = (CheckBox) view.findViewById(R.id.upload_limit_checkbox);
+        upLimitCheckbox = view.findViewById(R.id.upload_limit_checkbox);
         upLimitCheckbox.setVisibility(disableableLimits ? View.VISIBLE : View.GONE);
         upLimitCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -84,7 +84,7 @@ public class BandwidthLimitFragment extends Fragment implements View.OnFocusChan
                 upLimitUnits.setEnabled(isChecked);
             }
         });
-        TextView upLimitText = (TextView) view.findViewById(R.id.upload_limit_text);
+        TextView upLimitText = view.findViewById(R.id.upload_limit_text);
         upLimitText.setVisibility(disableableLimits ? View.GONE : View.VISIBLE);
 
         return view;

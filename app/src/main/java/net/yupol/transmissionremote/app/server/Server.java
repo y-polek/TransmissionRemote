@@ -31,6 +31,7 @@ public class Server implements Parcelable {
     private String password;
     private String rpcUrl = DEFAULT_RPC_URL;
     private String lastSessionId;
+    private String redirectLocation;
     private boolean useHttps;
     private boolean trustSelfSignedSslCert;
     private List<String> savedDownloadLocations = new LinkedList<>();
@@ -108,6 +109,10 @@ public class Server implements Parcelable {
         return rpcUrl;
     }
 
+    public String getUrlPath() {
+        return redirectLocation == null ? rpcUrl : redirectLocation;
+    }
+
     public void setRpcUrl(@NonNull String url) {
         this.rpcUrl = url;
     }
@@ -118,6 +123,14 @@ public class Server implements Parcelable {
 
     public String getLastSessionId() {
         return lastSessionId;
+    }
+
+    public void setRedirectLocation(String location) {
+        redirectLocation = location;
+    }
+
+    public String getRedirectLocation() {
+        return redirectLocation;
     }
 
     public void setUseHttps(boolean useHttps) {

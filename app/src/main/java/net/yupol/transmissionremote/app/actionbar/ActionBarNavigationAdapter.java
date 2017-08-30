@@ -95,9 +95,9 @@ public class ActionBarNavigationAdapter extends BaseAdapter {
             itemView = li.inflate(R.layout.drop_down_navigation_item, parent, false);
         }
 
-        TextView text = (TextView) itemView.findViewById(R.id.text);
-        TextView countText = (TextView) itemView.findViewById(R.id.torrent_count);
-        TextView headerText = (TextView) itemView.findViewById(R.id.header_text);
+        TextView text = itemView.findViewById(R.id.text);
+        TextView countText = itemView.findViewById(R.id.torrent_count);
+        TextView headerText = itemView.findViewById(R.id.header_text);
         View separator = itemView.findViewById(R.id.separator);
 
         if (id == ID_SERVER_TITLE || id == ID_FILTER_TITLE) {
@@ -144,14 +144,14 @@ public class ActionBarNavigationAdapter extends BaseAdapter {
             view = li.inflate(R.layout.drop_down_navigation, parent, false);
         }
 
-        TextView serverName = (TextView) view.findViewById(R.id.server_name);
+        TextView serverName = view.findViewById(R.id.server_name);
         Server activeServer = app.getActiveServer();
         serverName.setText(activeServer != null ? activeServer.getName() : "");
         serverName.setTextColor(textColorPrimaryInverse);
 
         Filter activeFilter = app.getActiveFilter();
 
-        TextView filterName = (TextView) view.findViewById(R.id.filter_name);
+        TextView filterName = view.findViewById(R.id.filter_name);
         filterName.setText(activeFilter.getNameResId());
 
         filterName.setTextColor(activeFilter.equals(Filters.ALL) ? textColorPrimaryInverse : alternativeAccentColor);
