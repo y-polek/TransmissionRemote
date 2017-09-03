@@ -289,10 +289,10 @@ public class TorrentListFragment extends Fragment implements ChooseLocationDialo
         allTorrents = app.getTorrents();
 
         updateTorrentList();
-        if (restoredSelection != null) {
+        if (restoredSelection != null && !allTorrents.isEmpty()) {
             adapter.setSelectedItemsPositions(restoredSelection);
-            restoredSelection = null;
         }
+        restoredSelection = null;
     }
 
     @Override
