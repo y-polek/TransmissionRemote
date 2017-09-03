@@ -934,7 +934,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
     @Override
     public void onTorrentSelected(Torrent torrent) {
         Intent intent = new Intent(this, TorrentDetailsActivity.class);
-        intent.putExtra(TorrentDetailsActivity.EXTRA_NAME_TORRENT, torrent);
+        intent.putExtra(TorrentDetailsActivity.EXTRA_TORRENT, torrent);
         startActivity(intent);
     }
 

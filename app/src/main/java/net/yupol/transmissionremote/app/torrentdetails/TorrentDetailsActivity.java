@@ -1,13 +1,13 @@
 package net.yupol.transmissionremote.app.torrentdetails;
 
 import android.content.SharedPreferences;
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.view.LayoutInflaterCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.Menu;
@@ -20,8 +20,10 @@ import com.octo.android.robospice.request.listener.RequestListener;
 
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.TransmissionRemote;
+import net.yupol.transmissionremote.app.databinding.TorrentDetailsLayoutBinding;
 import net.yupol.transmissionremote.app.model.json.Torrent;
 import net.yupol.transmissionremote.app.model.json.TorrentInfo;
+import net.yupol.transmissionremote.app.model.json.Torrents;
 import net.yupol.transmissionremote.app.torrentlist.ChooseLocationDialogFragment;
 import net.yupol.transmissionremote.app.torrentlist.RemoveTorrentsDialogFragment;
 import net.yupol.transmissionremote.app.torrentlist.RenameDialogFragment;
@@ -31,6 +33,8 @@ import net.yupol.transmissionremote.app.transport.request.RenameRequest;
 import net.yupol.transmissionremote.app.transport.request.SetLocationRequest;
 import net.yupol.transmissionremote.app.transport.request.StartTorrentRequest;
 import net.yupol.transmissionremote.app.transport.request.StopTorrentRequest;
+import net.yupol.transmissionremote.app.transport.request.TorrentGetRequest;
+import net.yupol.transmissionremote.app.transport.request.TorrentInfoGetRequest;
 import net.yupol.transmissionremote.app.transport.request.TorrentRemoveRequest;
 import net.yupol.transmissionremote.app.transport.request.TorrentSetRequest;
 import net.yupol.transmissionremote.app.transport.request.VerifyTorrentRequest;
@@ -44,7 +48,7 @@ public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveCha
 
     private static final String TAG = TorrentDetailsActivity.class.getSimpleName();
 
-    public static final String EXTRA_NAME_TORRENT = "extra_key_torrent";
+    public static final String EXTRA_TORRENT = "extra_key_torrent";
 
     private static final String TAG_SAVE_CHANGES_DIALOG = "tag_save_changes_dialog";
     private static final String TAG_CHOOSE_LOCATION_DIALOG = "tag_choose_location_dialog";
@@ -63,37 +67,28 @@ public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveCha
     private TorrentDetailsPagerAdapter pagerAdapter;
     private MenuItem setLocationMenuItem;
     private TorrentInfoUpdater torrentInfoUpdater;
+    private TorrentDetailsLayoutBinding binding;
+    private SharedPreferences sharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         LayoutInflaterCompat.setFactory2(getLayoutInflater(), new IconicsLayoutInflater2(getDelegate()));
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.torrent_details_layout);
+        binding = DataBindingUtil.setContentView(this, R.layout.torrent_details_layout);
 
-        torrent = getIntent().getParcelableExtra(EXTRA_NAME_TORRENT);
-        pagerAdapter = new TorrentDetailsPagerAdapter(this, getSupportFragmentManager(), torrent);
-
-        torrentInfoUpdater = new TorrentInfoUpdater(getTransportManager(), torrent.getId(),
-                1000 * TransmissionRemote.getInstance().getUpdateInterval());
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(TorrentDetailsActivity.this);
 
         if (savedInstanceState != null) {
             torrentInfo = savedInstanceState.getParcelable(KEY_TORRENT_INFO);
-            if (torrentInfo != null) pagerAdapter.setTorrentInfo(torrentInfo);
         }
 
-        setupActionBar();
+        torrent = getIntent().getParcelableExtra(EXTRA_TORRENT);
+        setupPager();
 
-        ViewPager pager = findViewById(R.id.pager);
-        assert pager != null;
-        pager.setAdapter(pagerAdapter);
-
-        final SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(TorrentDetailsActivity.this);
-        int lastPagePosition = sp.getInt(KEY_LAST_PAGE_POSITION, 0);
-        pager.setCurrentItem(lastPagePosition < pagerAdapter.getCount() ? lastPagePosition : 0);
-        pager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+        binding.pager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
-                sp.edit().putInt(KEY_LAST_PAGE_POSITION, position).apply();
+                sharedPreferences.edit().putInt(KEY_LAST_PAGE_POSITION, position).apply();
             }
 
             @Override
@@ -189,11 +184,31 @@ public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveCha
         saveChangesRequests.put(requestBuilder.getTorrentId(), requestBuilder.build());
     }
 
+    private void setupPager() {
+        pagerAdapter = new TorrentDetailsPagerAdapter(this, getSupportFragmentManager(), torrent);
+
+        boolean restartUpdater = false;
+        if (torrentInfoUpdater != null) {
+            torrentInfoUpdater.stop();
+            restartUpdater = true;
+        }
+        torrentInfoUpdater = new TorrentInfoUpdater(getTransportManager(), torrent.getId(),
+                1000 * TransmissionRemote.getInstance().getUpdateInterval());
+        if (restartUpdater) torrentInfoUpdater.start(this);
+
+        if (torrentInfo != null) pagerAdapter.setTorrentInfo(torrentInfo);
+
+        setupActionBar();
+
+        binding.pager.setAdapter(pagerAdapter);
+
+        int lastPagePosition = sharedPreferences.getInt(KEY_LAST_PAGE_POSITION, 0);
+        binding.pager.setCurrentItem(lastPagePosition < pagerAdapter.getCount() ? lastPagePosition : 0);
+    }
+
     private void setupActionBar() {
-        Toolbar toolbar = findViewById(R.id.actionbar_toolbar);
-        assert toolbar != null;
-        toolbar.setSubtitle(torrent.getName());
-        setSupportActionBar(toolbar);
+        binding.toolbar.setSubtitle(torrent.getName());
+        setSupportActionBar(binding.toolbar);
 
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -326,16 +341,52 @@ public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveCha
     }
 
     @Override
-    public void onNameSelected(int torrentId, String path, String name) {
+    public void onNameSelected(final int torrentId, String path, String name) {
         getTransportManager().doRequest(new RenameRequest(torrentId, path, name), new RequestListener<Void>() {
             @Override
             public void onRequestSuccess(Void aVoid) {
-                torrentInfoUpdater.updateNow(TorrentDetailsActivity.this);
+                updateTorrentAndTorrentInfo();
             }
 
             @Override
             public void onRequestFailure(SpiceException spiceException) {
                 Log.e(TAG, "Failed to rename torrent", spiceException);
+            }
+
+            private void updateTorrentAndTorrentInfo() {
+                getTransportManager().doRequest(new TorrentGetRequest(torrentId), new RequestListener<Torrents>() {
+                    @Override
+                    public void onRequestSuccess(Torrents torrents) {
+                        if (torrents.size() != 1) {
+                            Log.e(TAG, "Wrong number of torrents");
+                            return;
+                        }
+
+                        updateTorrentInfo(torrents.get(0));
+                    }
+
+                    @Override
+                    public void onRequestFailure(SpiceException spiceException) {
+                        Log.e(TAG, "Failed to reload torrent", spiceException);
+                    }
+                });
+            }
+
+            private void updateTorrentInfo(final Torrent torrent) {
+                getTransportManager().doRequest(new TorrentInfoGetRequest(torrent.getId()), new RequestListener<TorrentInfo>() {
+                    @Override
+                    public void onRequestSuccess(TorrentInfo torrentInfo) {
+                        onTorrentInfoUpdated(torrentInfo);
+                        TorrentDetailsActivity.this.torrent = torrent;
+                        getIntent().putExtra(EXTRA_TORRENT, torrent);
+                        setupPager();
+                    }
+
+                    @Override
+                    public void onRequestFailure(SpiceException spiceException) {
+                        Log.e(TAG, "Failed to reload torrent", spiceException);
+                    }
+                });
             }
         });
     }
