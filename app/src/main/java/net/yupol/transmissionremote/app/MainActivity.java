@@ -16,6 +16,7 @@ import android.databinding.DataBindingUtil;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.TransactionTooLargeException;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.provider.OpenableColumns;
@@ -894,7 +895,15 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
             Intent intent = new Intent(this, BackgroundUpdateService.class);
             intent.putExtra(BackgroundUpdateService.KEY_SERVER, application.getActiveServer());
             intent.putParcelableArrayListExtra(BackgroundUpdateService.KEY_TORRENT_LIST, new ArrayList<>(torrents));
-            startService(intent);
+            try {
+                startService(intent);
+            } catch (RuntimeException e) { // TODO: this is temporal code to workaround TransactionTooLargeException while passing data to background service
+                if (e.getCause() instanceof TransactionTooLargeException) {
+                    application.disableNotifications();
+                } else {
+                    throw e;
+                }
+            }
         }
 
         if (getTorrentListFragment() == null) {
