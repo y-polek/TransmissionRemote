@@ -11,8 +11,8 @@ android {
     defaultConfig {
         minSdkVersion 15
         targetSdkVersion 26
-        versionCode 13
-        versionName '0.9.9'
+        versionCode 15
+        versionName '0.9.10'
         applicationId 'net.yupol.transmissionremote.app'
     }
     compileOptions {
