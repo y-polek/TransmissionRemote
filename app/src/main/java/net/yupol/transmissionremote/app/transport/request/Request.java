@@ -34,7 +34,7 @@ public abstract class Request<RESULT> extends GoogleHttpClientSpiceRequest<RESUL
 
     private static final String HEADER_SESSION_ID = "X-Transmission-Session-Id";
 
-    private static final JsonObjectParser JSON_PARSER = new JsonObjectParser.Builder(new JacksonFactory()).build();
+    private static final JsonObjectParser JSON_PARSER = new JsonObjectParser.Builder(JacksonFactory.getDefaultInstance()).build();
 
     private Server server;
     private String responseSessionId;
