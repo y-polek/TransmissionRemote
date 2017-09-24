@@ -159,6 +159,7 @@
     <string name="torrent_details">Torrent details</string>
     <string name="info">Info</string>
     <string name="files">Files</string>
+    <string name="trackers">Trackers</string>
     <string name="peers">Peers</string>
     <string name="options">Options</string>
     <string name="priority">Priority</string>
@@ -217,12 +218,14 @@
     <string name="remove_failed">Failed to remove torrent. Try again.</string>
     <string name="client_on_port">%1$s on port %2$d</string>
     <string name="peers_empty_message">No connected peers</string>
+    <string name="trackers_empty_message">No trackers</string>
     <string name="peers_sort_by">Sort by</string>
     <string name="peers_sort_by_address">Address</string>
     <string name="peers_sort_by_client">Client</string>
     <string name="peers_sort_by_progress">Progress</string>
     <string name="peers_sort_by_download_rate">Downloading</string>
     <string name="peers_sort_by_upload_rate">Uploading</string>
+    <string name="trackers_add">Add Tracker</string>
 
     <string name="retry">Retry</string>
     <string name="server_settings">Server settings</string>
