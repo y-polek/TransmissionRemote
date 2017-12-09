@@ -15,6 +15,7 @@ import net.yupol.transmissionremote.app.databinding.PeerItemLayoutBinding;
 import net.yupol.transmissionremote.app.databinding.TrackerItemLayoutBinding;
 import net.yupol.transmissionremote.app.model.json.Peer;
 import net.yupol.transmissionremote.app.model.json.Tracker;
+import net.yupol.transmissionremote.app.model.json.TrackerStats;
 import net.yupol.transmissionremote.app.sorting.PeersSortedBy;
 import net.yupol.transmissionremote.app.sorting.SortOrder;
 
@@ -28,24 +29,24 @@ import javax.annotation.Nullable;
 
 public class TrackersAdapter extends RecyclerView.Adapter<TrackersAdapter.ViewHolder> {
 
-    private Comparator<Tracker> COMPARATOR = new Comparator<Tracker>() {
+    private Comparator<TrackerStats> COMPARATOR = new Comparator<TrackerStats>() {
         @Override
-        public int compare(Tracker t1, Tracker t2) {
+        public int compare(TrackerStats t1, TrackerStats t2) {
             int x = t1.tier;
             int y = t2.tier;
             return (x < y) ? -1 : (x == y ? 0 : 1);
         }
     };
 
-    private Tracker[] trackers = {};
+    private TrackerStats[] trackerStats = {};
 
     public TrackersAdapter() {
         setHasStableIds(true);
     }
 
-    public void setTrackers(@NonNull Tracker[] trackers) {
-        this.trackers = trackers;
-        Arrays.sort(this.trackers, COMPARATOR);
+    public void setTrackerStats(@NonNull TrackerStats[] trackerStats) {
+        this.trackerStats = trackerStats;
+        Arrays.sort(this.trackerStats, COMPARATOR);
         notifyDataSetChanged();
     }
 
@@ -58,18 +59,18 @@ public class TrackersAdapter extends RecyclerView.Adapter<TrackersAdapter.ViewHo
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        holder.binding.setTracker(trackers[position]);
+        holder.binding.setTrackerStats(trackerStats[position]);
         holder.binding.executePendingBindings();
     }
 
     @Override
     public int getItemCount() {
-        return trackers.length;
+        return trackerStats.length;
     }
 
     @Override
     public long getItemId(int position) {
-        return trackers[position].id;
+        return trackerStats[position].id;
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {

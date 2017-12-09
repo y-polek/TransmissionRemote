@@ -68,6 +68,7 @@ public class TextUtilsTest extends TestCase {
     public void testDisplayableTime() {
         assertEquals("0s", TextUtils.displayableTime(0));
         assertEquals("10s", TextUtils.displayableTime(10));
+        assertEquals("1m 0s", TextUtils.displayableTime(60));
         assertEquals("1m 1s", TextUtils.displayableTime(61));
         assertEquals("1h 0m", TextUtils.displayableTime(TimeUnit.HOURS.toSeconds(1)));
         assertEquals("19h 59m", TextUtils.displayableTime(TimeUnit.HOURS.toSeconds(19) + TimeUnit.MINUTES.toSeconds(59) + 59));

@@ -218,14 +218,31 @@
     <string name="remove_failed">Failed to remove torrent. Try again.</string>
     <string name="client_on_port">%1$s on port %2$d</string>
     <string name="peers_empty_message">No connected peers</string>
-    <string name="trackers_empty_message">No trackers</string>
     <string name="peers_sort_by">Sort by</string>
     <string name="peers_sort_by_address">Address</string>
     <string name="peers_sort_by_client">Client</string>
     <string name="peers_sort_by_progress">Progress</string>
     <string name="peers_sort_by_download_rate">Downloading</string>
     <string name="peers_sort_by_upload_rate">Uploading</string>
+
+    <string name="trackers_empty_message">No trackers</string>
     <string name="trackers_add">Add Tracker</string>
+    <string name="trackers_last_announce">Last Announce: %s</string>
+    <string name="trackers_announce_error">Announce error: %s</string>
+    <string name="trackers_next_announce_in">Next Announce in %s</string>
+    <string name="trackers_last_scrape_title">Last Scrape:</string>
+    <string name="trackers_seeders_title">Seeders:</string>
+    <string name="trackers_leechers_title">Leechers:</string>
+    <string name="trackers_downloaded_title">Downloaded:</string>
+    <plurals name="trackers_last_announce_with_results">
+        <item quantity="one">%1$s (got %2$d peer)</item>
+        <item quantity="other">%1$s (got %2$d peers)</item>
+    </plurals>
+    <string name="trackers_announce_in_progress">Announce in progress</string>
+    <string name="trackers_announce_is_queued">Announce is queued</string>
+    <string name="trackers_tracked_will_be_used_as_backup">Tracker will be used as a backup</string>
+    <string name="trackers_announce_not_scheduled">Announce not scheduled</string>
+    <string name="trackers_unknown_announce_state">Unknown announce state: %d</string>
 
     <string name="retry">Retry</string>
     <string name="server_settings">Server settings</string>
@@ -248,6 +265,7 @@
 
     <string name="remove">Remove</string>
     <string name="delete">Delete</string>
+    <string name="not_available">N/A</string>
 
     <string name="night_mode">Night Mode</string>
 

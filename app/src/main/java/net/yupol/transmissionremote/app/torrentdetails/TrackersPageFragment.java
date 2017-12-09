@@ -18,7 +18,7 @@ import com.mikepenz.community_material_typeface_library.CommunityMaterial;
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.databinding.TorrentDetailsTrackersPageFragmentBinding;
 import net.yupol.transmissionremote.app.model.json.TorrentInfo;
-import net.yupol.transmissionremote.app.model.json.Tracker;
+import net.yupol.transmissionremote.app.model.json.TrackerStats;
 import net.yupol.transmissionremote.app.utils.DividerItemDecoration;
 import net.yupol.transmissionremote.app.utils.IconUtils;
 
@@ -50,9 +50,9 @@ public class TrackersPageFragment extends BasePageFragment {
 
         TorrentInfo torrentInfo = getTorrentInfo();
         if (torrentInfo != null) {
-            Tracker[] trackers = torrentInfo.getTrackers();
-            adapter.setTrackers(trackers);
-            binding.emptyText.setVisibility(trackers.length > 0 ? View.GONE : View.VISIBLE);
+            TrackerStats[] trackerStats = torrentInfo.getTrackerStats();
+            adapter.setTrackerStats(trackerStats);
+            binding.emptyText.setVisibility(trackerStats.length > 0 ? View.GONE : View.VISIBLE);
         } else {
             binding.swiperefresh.setRefreshing(true);
         }
@@ -88,9 +88,9 @@ public class TrackersPageFragment extends BasePageFragment {
     public void setTorrentInfo(TorrentInfo torrentInfo) {
         super.setTorrentInfo(torrentInfo);
         if (viewCreated) {
-            Tracker[] trackers = torrentInfo.getTrackers();
-            adapter.setTrackers(trackers);
-            binding.emptyText.setVisibility(trackers.length > 0 ? View.GONE : View.VISIBLE);
+            TrackerStats[] trackerStats = torrentInfo.getTrackerStats();
+            adapter.setTrackerStats(trackerStats);
+            binding.emptyText.setVisibility(trackerStats.length > 0 ? View.GONE : View.VISIBLE);
             binding.swiperefresh.setRefreshing(false);
         }
     }

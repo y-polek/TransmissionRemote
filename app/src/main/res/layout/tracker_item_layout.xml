@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
     <data>
         <import type="android.view.View" />
         <import type="net.yupol.transmissionremote.app.utils.TextUtils" />
-        <variable name="tracker" type="net.yupol.transmissionremote.app.model.json.Tracker" />
+        <variable name="trackerStats" type="net.yupol.transmissionremote.app.model.json.TrackerStats" />
     </data>
-    <LinearLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+    <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -15,10 +17,29 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@{`` + tracker.tier}"/>
+            android:text="@{`` + trackerStats.tier}"
+            tools:text="Tier 1"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@{tracker.announce}"/>
+            android:text="@{trackerStats.host}"
+            tools:text="http://retracker.local:80"/>
+        <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                app:lastAnnounceStatus="@{trackerStats}"
+                tools:text="Today at 18:16 (got 30 peers)"/>
+            <TextView
+                app:announceState="@{trackerStats}"
+                tools:text="Next announce in 21m 13s"/>
+            <TableRow>
+                <TextView
+                    android:text="@string/trackers_last_scrape_title"/>
+                <TextView
+                    android:layout_marginLeft="@dimen/default_text_margin"
+                    tools:text="Today at 19:06"/>
+            </TableRow>
+        </TableLayout>
     </LinearLayout>
 </layout>
