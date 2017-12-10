@@ -13,33 +13,75 @@
         android:layout_height="wrap_content"
         android:paddingTop="@dimen/default_padding"
         android:paddingBottom="@dimen/default_padding"
-        android:background="?android:selectableItemBackground">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@{`` + trackerStats.tier}"
-            tools:text="Tier 1"/>
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@{trackerStats.host}"
-            tools:text="http://retracker.local:80"/>
-        <TableLayout
+        android:background="?android:selectableItemBackground"
+        tools:ignore="RtlHardcoded">
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:paddingLeft="@dimen/default_layout_margin"
+            android:paddingRight="@dimen/default_layout_margin"
+            android:orientation="horizontal">
             <TextView
-                app:lastAnnounceStatus="@{trackerStats}"
-                tools:text="Today at 18:16 (got 30 peers)"/>
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textColor="?android:attr/textColorPrimary"
+                android:textSize="@dimen/tr_abc_text_size_subhead_material"
+                android:textStyle="bold"
+                app:trackerHost="@{trackerStats}"
+                tools:text="http://retracker.local:80"/>
             <TextView
-                app:announceState="@{trackerStats}"
-                tools:text="Next announce in 21m 13s"/>
-            <TableRow>
-                <TextView
-                    android:text="@string/trackers_last_scrape_title"/>
-                <TextView
-                    android:layout_marginLeft="@dimen/default_text_margin"
-                    tools:text="Today at 19:06"/>
-            </TableRow>
-        </TableLayout>
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/default_layout_margin"
+                android:textColor="?android:attr/textColorSecondary"
+                android:textSize="@dimen/tr_abc_text_size_subhead_material"
+                android:textStyle="bold"
+                app:trackerTier="@{trackerStats}"
+                tools:text="Tier 1" />
+        </LinearLayout>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="@dimen/default_layout_margin"
+            android:paddingRight="@dimen/default_layout_margin"
+            app:trackerLastAnnounceStatus="@{trackerStats}"
+            tools:text="Last Announce: Today at 18:16 (got 30 peers)"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="@dimen/default_layout_margin"
+            android:paddingRight="@dimen/default_layout_margin"
+            app:trackerAnnounceState="@{trackerStats}"
+            tools:text="Next announce in 21m 13s"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="@dimen/default_layout_margin"
+            android:paddingRight="@dimen/default_layout_margin"
+            app:trackerScrapeStatus="@{trackerStats}"
+            tools:text="Last Scrape: Today at 19:06"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="@dimen/default_layout_margin"
+            android:paddingRight="@dimen/default_layout_margin"
+            android:orientation="vertical">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:trackerSeeders="@{trackerStats}"
+                tools:text="Seeders: 1"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:trackerLeechers="@{trackerStats}"
+                tools:text="Leechers: 1"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:trackerDownloaded="@{ trackerStats}"
+                tools:text="Downloaded: 1"/>
+        </LinearLayout>
     </LinearLayout>
 </layout>

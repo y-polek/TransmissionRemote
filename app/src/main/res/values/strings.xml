@@ -227,13 +227,15 @@
 
     <string name="trackers_empty_message">No trackers</string>
     <string name="trackers_add">Add Tracker</string>
+    <string name="trackers_tier_number">Tier %d</string>
     <string name="trackers_last_announce">Last Announce: %s</string>
     <string name="trackers_announce_error">Announce error: %s</string>
     <string name="trackers_next_announce_in">Next Announce in %s</string>
-    <string name="trackers_last_scrape_title">Last Scrape:</string>
-    <string name="trackers_seeders_title">Seeders:</string>
-    <string name="trackers_leechers_title">Leechers:</string>
-    <string name="trackers_downloaded_title">Downloaded:</string>
+    <string name="trackers_last_scrape">Last Scrape: %s</string>
+    <string name="trackers_scrape_error">Scrape error: %s</string>
+    <string name="trackers_seeders">Seeders: %s</string>
+    <string name="trackers_leechers">Leechers: %s</string>
+    <string name="trackers_downloaded">Downloaded: %s</string>
     <plurals name="trackers_last_announce_with_results">
         <item quantity="one">%1$s (got %2$d peer)</item>
         <item quantity="other">%1$s (got %2$d peers)</item>
