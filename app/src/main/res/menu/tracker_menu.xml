@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/remove"
+        android:title="@string/trackers_menu_remove"/>
+    <item android:id="@+id/edit"
+        android:title="@string/trackers_menu_edit_url" />
+    <item android:id="@+id/copy"
+        android:title="@string/trackers_menu_copy_to_clipboard"/>
+</menu>

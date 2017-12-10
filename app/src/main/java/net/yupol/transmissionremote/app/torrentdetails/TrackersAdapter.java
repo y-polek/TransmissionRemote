@@ -2,30 +2,19 @@ package net.yupol.transmissionremote.app.torrentdetails;
 
 import android.databinding.DataBindingUtil;
 import android.support.annotation.NonNull;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Ordering;
-
 import net.yupol.transmissionremote.app.R;
-import net.yupol.transmissionremote.app.databinding.PeerItemLayoutBinding;
 import net.yupol.transmissionremote.app.databinding.TrackerItemLayoutBinding;
-import net.yupol.transmissionremote.app.model.json.Peer;
-import net.yupol.transmissionremote.app.model.json.Tracker;
 import net.yupol.transmissionremote.app.model.json.TrackerStats;
-import net.yupol.transmissionremote.app.sorting.PeersSortedBy;
-import net.yupol.transmissionremote.app.sorting.SortOrder;
-
-import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
-
-import javax.annotation.Nullable;
 
 public class TrackersAdapter extends RecyclerView.Adapter<TrackersAdapter.ViewHolder> {
 
@@ -39,8 +28,10 @@ public class TrackersAdapter extends RecyclerView.Adapter<TrackersAdapter.ViewHo
     };
 
     private TrackerStats[] trackerStats = {};
+    private TrackerActionListener listener;
 
-    public TrackersAdapter() {
+    public TrackersAdapter(TrackerActionListener listener) {
+        this.listener = listener;
         setHasStableIds(true);
     }
 
@@ -73,19 +64,51 @@ public class TrackersAdapter extends RecyclerView.Adapter<TrackersAdapter.ViewHo
         return trackerStats[position].id;
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder implements PopupMenu.OnMenuItemClickListener {
 
         private TrackerItemLayoutBinding binding;
 
         public ViewHolder(TrackerItemLayoutBinding binding) {
             super(binding.getRoot());
             this.binding = binding;
-            this.binding.getRoot().setOnClickListener(new View.OnClickListener() {
+
+            binding.menuButton.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onClick(View view) {
-                    // this listener is required for view selection background
+                public void onClick(View v) {
+                    PopupMenu menu = new PopupMenu(v.getContext(), v);
+                    menu.inflate(R.menu.tracker_menu);
+                    menu.show();
+                    menu.setOnMenuItemClickListener(ViewHolder.this);
                 }
             });
         }
+
+        @Override
+        public boolean onMenuItemClick(MenuItem item) {
+            int position = getAdapterPosition();
+            if (position == RecyclerView.NO_POSITION) return false;
+
+            switch (item.getItemId()) {
+                case R.id.remove:
+                    listener.onRemoveTrackerClicked(trackerStats[position]);
+                    return true;
+                case R.id.edit:
+                    listener.onEditTrackerUrlClicked(trackerStats[position]);
+                    return true;
+                case R.id.copy:
+                    listener.onCopyTrackerUrlClicked(trackerStats[position]);
+                    return true;
+            }
+            return false;
+        }
+    }
+
+    public interface TrackerActionListener {
+
+        void onRemoveTrackerClicked(TrackerStats tracker);
+
+        void onEditTrackerUrlClicked(TrackerStats tracker);
+
+        void onCopyTrackerUrlClicked(TrackerStats tracker);
     }
 }

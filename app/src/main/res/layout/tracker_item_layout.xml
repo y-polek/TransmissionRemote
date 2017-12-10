@@ -12,8 +12,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingTop="@dimen/default_padding"
-        android:paddingBottom="@dimen/default_padding"
         android:background="?android:selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true"
         tools:ignore="RtlHardcoded">
         <LinearLayout
             android:layout_width="match_parent"
@@ -65,23 +66,36 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingLeft="@dimen/default_layout_margin"
-            android:paddingRight="@dimen/default_layout_margin"
-            android:orientation="vertical">
-            <TextView
+            android:orientation="horizontal"
+            tools:ignore="RtlSymmetry">
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:paddingBottom="@dimen/default_padding"
+                android:orientation="vertical">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:trackerSeeders="@{trackerStats}"
+                    tools:text="Seeders: 1"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:trackerLeechers="@{trackerStats}"
+                    tools:text="Leechers: 1"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:trackerDownloaded="@{ trackerStats}"
+                    tools:text="Downloaded: 1"/>
+            </LinearLayout>
+            <ImageButton android:id="@+id/menu_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:trackerSeeders="@{trackerStats}"
-                tools:text="Seeders: 1"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:trackerLeechers="@{trackerStats}"
-                tools:text="Leechers: 1"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:trackerDownloaded="@{ trackerStats}"
-                tools:text="Downloaded: 1"/>
+                android:layout_gravity="right|bottom"
+                android:contentDescription="@string/trackers_menu_content_description"
+                style="?android:attr/actionOverflowButtonStyle"/>
         </LinearLayout>
     </LinearLayout>
 </layout>

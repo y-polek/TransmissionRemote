@@ -1,5 +1,8 @@
 package net.yupol.transmissionremote.app.torrentdetails;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -22,11 +25,14 @@ import net.yupol.transmissionremote.app.model.json.TrackerStats;
 import net.yupol.transmissionremote.app.utils.DividerItemDecoration;
 import net.yupol.transmissionremote.app.utils.IconUtils;
 
-public class TrackersPageFragment extends BasePageFragment {
+import org.apache.commons.lang3.StringUtils;
 
-    private TrackersAdapter adapter = new TrackersAdapter();
+public class TrackersPageFragment extends BasePageFragment implements TrackersAdapter.TrackerActionListener {
+
+    private TrackersAdapter adapter = new TrackersAdapter(this);
     private TorrentDetailsTrackersPageFragmentBinding binding;
     private boolean viewCreated;
+    private ClipboardManager clipboardManager;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -93,5 +99,30 @@ public class TrackersPageFragment extends BasePageFragment {
             binding.emptyText.setVisibility(trackerStats.length > 0 ? View.GONE : View.VISIBLE);
             binding.swiperefresh.setRefreshing(false);
         }
+    }
+
+    @Override
+    public void onRemoveTrackerClicked(TrackerStats tracker) {
+
+    }
+
+    @Override
+    public void onEditTrackerUrlClicked(TrackerStats tracker) {
+
+    }
+
+    @Override
+    public void onCopyTrackerUrlClicked(TrackerStats tracker) {
+        String url = StringUtils.isNotEmpty(tracker.host) ? tracker.host : tracker.announce;
+        ClipData clip = ClipData.newPlainText(url, url);
+        clipboardManager().setPrimaryClip(clip);
+        Toast.makeText(getContext(), getString(R.string.copied), Toast.LENGTH_SHORT).show();
+    }
+
+    private ClipboardManager clipboardManager() {
+        if (clipboardManager == null) {
+            clipboardManager = (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
+        }
+        return clipboardManager;
     }
 }
