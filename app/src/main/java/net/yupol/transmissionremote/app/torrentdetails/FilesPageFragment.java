@@ -121,7 +121,7 @@ public class FilesPageFragment extends BasePageFragment implements DirectoryFrag
 
     @Override
     public boolean onBackPressed() {
-        if (path.size() > 1) {
+        if (getUserVisibleHint() && path.size() > 1) {
             path.pop();
             breadcrumbView.setPath(path);
             showDirectory(path.peek(), AnimationDirection.LEFT_TO_RIGHT);
