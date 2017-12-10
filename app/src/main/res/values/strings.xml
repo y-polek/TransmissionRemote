@@ -248,7 +248,9 @@
     <string name="trackers_menu_content_description">Tracker Menu</string>
     <string name="trackers_menu_copy_to_clipboard">Copy URL to clipboard</string>
     <string name="trackers_menu_edit_url">Edit URL</string>
-    <string name="trackers_menu_remove">Remove</string>
+    <string name="trackers_menu_remove">@string/remove</string>
+    <string name="trackers_remove_confirmation_title">Are you sure you want to remove this tracker?</string>
+    <string name="trackers_remove_confirmation_message">Once removed, Transmission will no longer attempt to contact it.\nThis cannot be undone.</string>
 
     <string name="retry">Retry</string>
     <string name="server_settings">Server settings</string>
@@ -273,6 +275,7 @@
     <string name="delete">Delete</string>
     <string name="not_available">N/A</string>
     <string name="copied">Copied</string>
+    <string name="cancel">Cancel</string>
 
     <string name="night_mode">Night Mode</string>
 

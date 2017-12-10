@@ -87,7 +87,7 @@ public class TorrentSetRequest extends Request<Void> implements Parcelable {
         private Double seedRatioLimit;
         private LimitMode seedIdleMode;
         private Double seedIdleLimit;
-        private int[] priorityHight;
+        private int[] priorityHigh;
         private int[] priorityNormal;
         private int[] priorityLow;
 
@@ -164,7 +164,7 @@ public class TorrentSetRequest extends Request<Void> implements Parcelable {
         public Builder filesWithPriority(Priority priority, int... fileIndices) {
             switch (priority) {
                 case HIGH:
-                    priorityHight = fileIndices;
+                    priorityHigh = fileIndices;
                     break;
                 case NORMAL:
                     priorityNormal = fileIndices;
@@ -202,7 +202,7 @@ public class TorrentSetRequest extends Request<Void> implements Parcelable {
             seedRatioLimit = null;
             seedIdleMode = null;
             seedIdleLimit = null;
-            priorityHight = null;
+            priorityHigh = null;
             priorityNormal = null;
             priorityLow = null;
 
@@ -252,8 +252,8 @@ public class TorrentSetRequest extends Request<Void> implements Parcelable {
                 if (seedIdleLimit != null) {
                     args.put("seedIdleLimit", seedIdleLimit);
                 }
-                if (ArrayUtils.isNotEmpty(priorityHight)) {
-                    args.put("priority-high", intArray(priorityHight));
+                if (ArrayUtils.isNotEmpty(priorityHigh)) {
+                    args.put("priority-high", intArray(priorityHigh));
                 }
                 if (ArrayUtils.isNotEmpty(priorityNormal)) {
                     args.put("priority-normal", intArray(priorityNormal));

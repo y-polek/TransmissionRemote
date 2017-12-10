@@ -1,12 +1,15 @@
 package net.yupol.transmissionremote.app.torrentdetails;
 
+import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -17,11 +20,16 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.mikepenz.community_material_typeface_library.CommunityMaterial;
+import com.octo.android.robospice.persistence.exception.SpiceException;
+import com.octo.android.robospice.request.listener.RequestListener;
 
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.databinding.TorrentDetailsTrackersPageFragmentBinding;
 import net.yupol.transmissionremote.app.model.json.TorrentInfo;
 import net.yupol.transmissionremote.app.model.json.TrackerStats;
+import net.yupol.transmissionremote.app.transport.BaseSpiceActivity;
+import net.yupol.transmissionremote.app.transport.TransportManager;
+import net.yupol.transmissionremote.app.transport.request.TrackerRemoveRequest;
 import net.yupol.transmissionremote.app.utils.DividerItemDecoration;
 import net.yupol.transmissionremote.app.utils.IconUtils;
 
@@ -33,6 +41,18 @@ public class TrackersPageFragment extends BasePageFragment implements TrackersAd
     private TorrentDetailsTrackersPageFragmentBinding binding;
     private boolean viewCreated;
     private ClipboardManager clipboardManager;
+    private TransportManager transportManager;
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        Activity activity = getActivity();
+        if (activity instanceof BaseSpiceActivity) {
+            transportManager = ((BaseSpiceActivity) activity).getTransportManager();
+        } else {
+            throw new IllegalStateException("Fragment must be used with BaseSpiceActivity");
+        }
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -51,7 +71,7 @@ public class TrackersPageFragment extends BasePageFragment implements TrackersAd
         binding.recyclerView.setAdapter(adapter);
 
         if (getActivity() instanceof SwipeRefreshLayout.OnRefreshListener) {
-            binding.swiperefresh.setOnRefreshListener((SwipeRefreshLayout.OnRefreshListener) getActivity());
+            binding.swipeRefresh.setOnRefreshListener((SwipeRefreshLayout.OnRefreshListener) getActivity());
         }
 
         TorrentInfo torrentInfo = getTorrentInfo();
@@ -60,7 +80,7 @@ public class TrackersPageFragment extends BasePageFragment implements TrackersAd
             adapter.setTrackerStats(trackerStats);
             binding.emptyText.setVisibility(trackerStats.length > 0 ? View.GONE : View.VISIBLE);
         } else {
-            binding.swiperefresh.setRefreshing(true);
+            binding.swipeRefresh.setRefreshing(true);
         }
 
         viewCreated = true;
@@ -97,13 +117,40 @@ public class TrackersPageFragment extends BasePageFragment implements TrackersAd
             TrackerStats[] trackerStats = torrentInfo.getTrackerStats();
             adapter.setTrackerStats(trackerStats);
             binding.emptyText.setVisibility(trackerStats.length > 0 ? View.GONE : View.VISIBLE);
-            binding.swiperefresh.setRefreshing(false);
+            binding.swipeRefresh.setRefreshing(false);
         }
     }
 
     @Override
-    public void onRemoveTrackerClicked(TrackerStats tracker) {
+    public void onRemoveTrackerClicked(final TrackerStats tracker) {
+        new AlertDialog.Builder(getContext())
+                .setTitle(R.string.trackers_remove_confirmation_title)
+                .setMessage(R.string.trackers_remove_confirmation_message)
+                .setPositiveButton(R.string.remove, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        removeTracker(tracker.id);
+                    }
+                })
+                .setNegativeButton(R.string.cancel, null)
+                .show();
+    }
 
+    private void removeTracker(int trackerId) {
+        binding.swipeRefresh.setRefreshing(true);
+        transportManager.doRequest(new TrackerRemoveRequest(getTorrent().getId(), trackerId), new RequestListener<Void>() {
+            @Override
+            public void onRequestSuccess(Void aVoid) {
+                binding.swipeRefresh.setRefreshing(false);
+                refresh();
+            }
+
+            @Override
+            public void onRequestFailure(SpiceException spiceException) {
+                binding.swipeRefresh.setRefreshing(false);
+                refresh();
+            }
+        });
     }
 
     @Override
@@ -124,5 +171,9 @@ public class TrackersPageFragment extends BasePageFragment implements TrackersAd
             clipboardManager = (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
         }
         return clipboardManager;
+    }
+
+    private void refresh() {
+        ((SwipeRefreshLayout.OnRefreshListener) getActivity()).onRefresh();
     }
 }
