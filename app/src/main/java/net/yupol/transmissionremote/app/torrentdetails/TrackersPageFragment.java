@@ -29,6 +29,7 @@ import net.yupol.transmissionremote.app.model.json.TorrentInfo;
 import net.yupol.transmissionremote.app.model.json.TrackerStats;
 import net.yupol.transmissionremote.app.transport.BaseSpiceActivity;
 import net.yupol.transmissionremote.app.transport.TransportManager;
+import net.yupol.transmissionremote.app.transport.request.TrackerAddRequest;
 import net.yupol.transmissionremote.app.transport.request.TrackerRemoveRequest;
 import net.yupol.transmissionremote.app.utils.DividerItemDecoration;
 import net.yupol.transmissionremote.app.utils.IconUtils;
@@ -104,7 +105,7 @@ public class TrackersPageFragment extends BasePageFragment implements TrackersAd
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_add:
-                Toast.makeText(getContext(), "Add tracker", Toast.LENGTH_SHORT).show();
+                addTracker("abc:101");
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -136,6 +137,19 @@ public class TrackersPageFragment extends BasePageFragment implements TrackersAd
                 .show();
     }
 
+    @Override
+    public void onEditTrackerUrlClicked(TrackerStats tracker) {
+
+    }
+
+    @Override
+    public void onCopyTrackerUrlClicked(TrackerStats tracker) {
+        String url = StringUtils.isNotEmpty(tracker.host) ? tracker.host : tracker.announce;
+        ClipData clip = ClipData.newPlainText(url, url);
+        clipboardManager().setPrimaryClip(clip);
+        Toast.makeText(getContext(), getString(R.string.copied), Toast.LENGTH_SHORT).show();
+    }
+
     private void removeTracker(int trackerId) {
         binding.swipeRefresh.setRefreshing(true);
         transportManager.doRequest(new TrackerRemoveRequest(getTorrent().getId(), trackerId), new RequestListener<Void>() {
@@ -153,17 +167,21 @@ public class TrackersPageFragment extends BasePageFragment implements TrackersAd
         });
     }
 
-    @Override
-    public void onEditTrackerUrlClicked(TrackerStats tracker) {
+    private void addTracker(String url) {
+        binding.swipeRefresh.setRefreshing(true);
+        transportManager.doRequest(new TrackerAddRequest(getTorrent().getId(), url), new RequestListener<Void>() {
+            @Override
+            public void onRequestSuccess(Void aVoid) {
+                binding.swipeRefresh.setRefreshing(false);
+                refresh();
+            }
 
-    }
-
-    @Override
-    public void onCopyTrackerUrlClicked(TrackerStats tracker) {
-        String url = StringUtils.isNotEmpty(tracker.host) ? tracker.host : tracker.announce;
-        ClipData clip = ClipData.newPlainText(url, url);
-        clipboardManager().setPrimaryClip(clip);
-        Toast.makeText(getContext(), getString(R.string.copied), Toast.LENGTH_SHORT).show();
+            @Override
+            public void onRequestFailure(SpiceException spiceException) {
+                binding.swipeRefresh.setRefreshing(false);
+                refresh();
+            }
+        });
     }
 
     private ClipboardManager clipboardManager() {
