@@ -7,7 +7,10 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
@@ -31,12 +34,16 @@ import net.yupol.transmissionremote.app.transport.BaseSpiceActivity;
 import net.yupol.transmissionremote.app.transport.TransportManager;
 import net.yupol.transmissionremote.app.transport.request.TrackerAddRequest;
 import net.yupol.transmissionremote.app.transport.request.TrackerRemoveRequest;
+import net.yupol.transmissionremote.app.transport.request.TrackerReplaceRequest;
 import net.yupol.transmissionremote.app.utils.DividerItemDecoration;
 import net.yupol.transmissionremote.app.utils.IconUtils;
 
 import org.apache.commons.lang3.StringUtils;
 
-public class TrackersPageFragment extends BasePageFragment implements TrackersAdapter.TrackerActionListener {
+public class TrackersPageFragment extends BasePageFragment implements TrackersAdapter.TrackerActionListener,
+        TrackerUrlDialog.OnTrackerUrlEnteredListener {
+
+    private static final String TAG_EDIT_URL_DIALOG = "tag_edit_url_dialog";
 
     private TrackersAdapter adapter = new TrackersAdapter(this);
     private TorrentDetailsTrackersPageFragmentBinding binding;
@@ -105,7 +112,7 @@ public class TrackersPageFragment extends BasePageFragment implements TrackersAd
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_add:
-                addTracker("abc:101");
+                showEditTrackerUrlDialog(null);
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -139,7 +146,7 @@ public class TrackersPageFragment extends BasePageFragment implements TrackersAd
 
     @Override
     public void onEditTrackerUrlClicked(TrackerStats tracker) {
-
+        showEditTrackerUrlDialog(tracker);
     }
 
     @Override
@@ -148,6 +155,15 @@ public class TrackersPageFragment extends BasePageFragment implements TrackersAd
         ClipData clip = ClipData.newPlainText(url, url);
         clipboardManager().setPrimaryClip(clip);
         Toast.makeText(getContext(), getString(R.string.copied), Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onTrackerUrlEntered(@Nullable TrackerStats tracker, String url) {
+        if (tracker == null) {
+            addTracker(url);
+        } else {
+            editTracker(tracker, url);
+        }
     }
 
     private void removeTracker(int trackerId) {
@@ -182,6 +198,36 @@ public class TrackersPageFragment extends BasePageFragment implements TrackersAd
                 refresh();
             }
         });
+    }
+
+    private void editTracker(@NonNull TrackerStats tracker, String url) {
+        binding.swipeRefresh.setRefreshing(true);
+        transportManager.doRequest(new TrackerReplaceRequest(getTorrent().getId(), tracker.id, url), new RequestListener<Void>() {
+            @Override
+            public void onRequestSuccess(Void aVoid) {
+                binding.swipeRefresh.setRefreshing(false);
+                refresh();
+            }
+
+            @Override
+            public void onRequestFailure(SpiceException spiceException) {
+                binding.swipeRefresh.setRefreshing(false);
+                refresh();
+            }
+        });
+    }
+
+    private void showEditTrackerUrlDialog(@Nullable TrackerStats tracker) {
+        FragmentTransaction ft = getChildFragmentManager().beginTransaction();
+        Fragment prev = getFragmentManager().findFragmentByTag(TAG_EDIT_URL_DIALOG);
+        if (prev != null) {
+            ft.remove(prev);
+        }
+        ft.addToBackStack(null);
+
+        // Create and show the dialog.
+        TrackerUrlDialog dialog = TrackerUrlDialog.newInstance(tracker);
+        dialog.show(ft, TAG_EDIT_URL_DIALOG);
     }
 
     private ClipboardManager clipboardManager() {

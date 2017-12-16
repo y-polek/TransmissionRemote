@@ -251,6 +251,11 @@
     <string name="trackers_menu_remove">@string/remove</string>
     <string name="trackers_remove_confirmation_title">Are you sure you want to remove this tracker?</string>
     <string name="trackers_remove_confirmation_message">Once removed, Transmission will no longer attempt to contact it.\nThis cannot be undone.</string>
+    <string name="trackers_add_tracker_title">Add Tracker</string>
+    <string name="trackers_edit_tracker_title">Edit Tracker</string>
+    <string name="trackers_url_hint">URL</string>
+    <string name="trackers_add_button">Add</string>
+    <string name="trackers_done_button">Done</string>
 
     <string name="retry">Retry</string>
     <string name="server_settings">Server settings</string>

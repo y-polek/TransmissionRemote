@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <android.support.design.widget.TextInputLayout android:id="@+id/url_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="@dimen/default_layout_margin"
+        android:paddingRight="@dimen/default_layout_margin"
+        android:paddingTop="@dimen/default_padding_small"
+        android:hint="@string/trackers_url_hint"
+        app:hintEnabled="true"
+        app:hintAnimationEnabled="false">
+    <android.support.design.widget.TextInputEditText
+        android:id="@+id/url"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textUri" />
+    </android.support.design.widget.TextInputLayout>
+</layout>
