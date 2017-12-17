@@ -11,6 +11,7 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.text.Editable;
+import android.widget.Button;
 
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.databinding.TrackerUrlDialogLayoutBinding;
@@ -78,8 +79,11 @@ public class TrackerUrlDialog extends DialogFragment {
         binding.url.addTextChangedListener(new SimpleTextWatcher() {
             @Override
             public void afterTextChanged(Editable s) {
-                String url = formatUrl(s.toString());
-                dialog.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(isValidUrl(url));
+                Button addButton = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
+                if (addButton != null) {
+                    String url = formatUrl(s.toString());
+                    addButton.setEnabled(isValidUrl(url));
+                }
             }
         });
 
