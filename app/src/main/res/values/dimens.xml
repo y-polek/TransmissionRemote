@@ -23,6 +23,7 @@
     <dimen name="header_text_padding_left">16dp</dimen>
     <dimen name="header_text_padding_top">16dp</dimen>
     <dimen name="header_text_padding_bottom">16dp</dimen>
+    <dimen name="footer_item_height">32dp</dimen>
 
                 <!-- Servers -->
     <dimen name="add_server_group_margin">16dp</dimen>

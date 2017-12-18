@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/free_space_text"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/footer_item_height"
+    android:gravity="center_vertical"
+    android:textSize="@dimen/tr_abc_text_size_body_1_material"
+    android:textColor="?android:attr/textColorPrimary"
+    android:textStyle="bold"
+    android:text="@{@string/free_space_title(TextUtils.displayableSize(freeSpace))}"
+    tools:text="Free Space: 999.9GB"/>

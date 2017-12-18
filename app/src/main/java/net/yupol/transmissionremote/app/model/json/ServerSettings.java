@@ -19,6 +19,8 @@ public class ServerSettings implements Parcelable {
     public static final String SEED_RATIO_LIMIT = "seedRatioLimit";
     public static final String SEED_IDLE_LIMITED = "idle-seeding-limit-enabled";
     public static final String SEED_IDLE_LIMIT = "idle-seeding-limit";
+    public static final String DOWNLOAD_DIR_FREE_SPACE = "download-dir-free-space";
+    public static final String VERSION = "version";
 
     @Key(SPEED_LIMIT_DOWN)
     private int speedLimitDown;
@@ -56,6 +58,12 @@ public class ServerSettings implements Parcelable {
     @Key(SEED_IDLE_LIMIT)
     private int seedIdleLimit;
 
+    @Key(DOWNLOAD_DIR_FREE_SPACE)
+    private long downloadDirFreeSpace;
+
+    @Key(VERSION)
+    private String version;
+
     public ServerSettings() {
         // accessible default constructor required for JSON parser
     }
@@ -73,6 +81,8 @@ public class ServerSettings implements Parcelable {
         seedRatioLimit = in.readDouble();
         seedIdleLimited = in.readByte() != 0;
         seedIdleLimit = in.readInt();
+        downloadDirFreeSpace = in.readLong();
+        version = in.readString();
     }
 
     public static final Creator<ServerSettings> CREATOR = new Creator<ServerSettings>() {
@@ -135,6 +145,14 @@ public class ServerSettings implements Parcelable {
         return seedIdleLimit;
     }
 
+    public long getDownloadDirFreeSpace() {
+        return downloadDirFreeSpace;
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
     @Override
     public String toString() {
         return "ServerSettings{" +
@@ -150,6 +168,8 @@ public class ServerSettings implements Parcelable {
                 ", seedRatioLimit=" + seedRatioLimit +
                 ", seedIdleLimited=" + seedIdleLimited +
                 ", seedIdleLimit=" + seedIdleLimit +
+                ", downloadDirFreeSpace=" + downloadDirFreeSpace +
+                ", version=" + version +
                 '}';
     }
 
@@ -172,5 +192,7 @@ public class ServerSettings implements Parcelable {
         dest.writeDouble(seedRatioLimit);
         dest.writeByte((byte) (seedIdleLimited ? 1 : 0));
         dest.writeInt(seedIdleLimit);
+        dest.writeLong(downloadDirFreeSpace);
+        dest.writeString(version);
     }
 }

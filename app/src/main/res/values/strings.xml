@@ -107,6 +107,7 @@
     <string name="preferences_advanced_summary">Advanced options</string>
     <string name="disable_free_space_check_title">Disable free space check</string>
     <string name="disable_free_space_check_summary">Allows to add torrent without verifying free space availability</string>
+    <string name="free_space_title">Free Space: %s</string>
 
     <!-- Torrent List -->
     <string name="unknown_error_message">Unknown error</string>
@@ -182,7 +183,7 @@
     <string name="stop_when_inactive">Stop When Inactive</string>
     <string name="save_torrent_options">Save</string>
     <string name="options_update_failed">Failed to update torrent options</string>
-    <string name="three_dots">&#8230;</string>
+    <string name="three_dots">…</string>
     <string name="disabled">disabled</string>
     <string name="total_size_text">%1$s (%2$d pieces of %3$s)</string>
     <string name="have_size_text">%1$s of %2$s (%3$.1f%%)</string>

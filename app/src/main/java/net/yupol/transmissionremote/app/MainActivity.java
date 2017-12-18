@@ -64,6 +64,7 @@ import net.yupol.transmissionremote.app.actionbar.ActionBarNavigationAdapter;
 import net.yupol.transmissionremote.app.actionbar.SpeedTextView;
 import net.yupol.transmissionremote.app.actionbar.TurtleModeButton;
 import net.yupol.transmissionremote.app.databinding.MainActivityBinding;
+import net.yupol.transmissionremote.app.drawer.FreeSpaceFooterDrawerItem;
 import net.yupol.transmissionremote.app.drawer.HeaderView;
 import net.yupol.transmissionremote.app.drawer.SortDrawerItem;
 import net.yupol.transmissionremote.app.filtering.Filter;
@@ -228,6 +229,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
     private Spinner toolbarSpinner;
     private MainActivityBinding binding;
     private boolean showFab;
+    private FreeSpaceFooterDrawerItem freeSpaceFooterDrawerItem;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -364,6 +366,9 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
                 new SortDrawerItem(SortedBy.UPLOAD_RATIO).withName(R.string.drawer_sort_by_upload_ratio)
         };
 
+        freeSpaceFooterDrawerItem = new FreeSpaceFooterDrawerItem();
+        freeSpaceFooterDrawerItem.withSelectable(false);
+
         drawer = new DrawerBuilder()
                 .withActivity(this)
                 .withToolbar(binding.toolbar)
@@ -372,8 +377,10 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
                 .addDrawerItems((IDrawerItem[]) sortItems)
                 .addStickyDrawerItems(
                         nightModeItem,
-                        settingsItem
-                ).withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+                        settingsItem,
+                        freeSpaceFooterDrawerItem
+                )
+                .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                     @Override
                     public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
                         if (drawerItem instanceof SortDrawerItem) {
@@ -1083,6 +1090,9 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
                     public void onRequestSuccess(ServerSettings serverSettings) {
                         application.setSpeedLimitEnabled(serverSettings.isAltSpeedLimitEnabled());
                         application.setDefaultDownloadDir(serverSettings.getDownloadDir());
+                        if (drawer != null) {
+                            drawer.updateStickyFooterItem(freeSpaceFooterDrawerItem.withFreeSpace(serverSettings.getDownloadDirFreeSpace()));
+                        }
                     }
                 });
             }
