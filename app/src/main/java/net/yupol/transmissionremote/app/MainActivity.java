@@ -1090,7 +1090,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
                     public void onRequestSuccess(ServerSettings serverSettings) {
                         application.setSpeedLimitEnabled(serverSettings.isAltSpeedLimitEnabled());
                         application.setDefaultDownloadDir(serverSettings.getDownloadDir());
-                        if (drawer != null) {
+                        if (drawer != null && !drawer.switchedDrawerContent()) {
                             drawer.updateStickyFooterItem(freeSpaceFooterDrawerItem.withFreeSpace(serverSettings.getDownloadDirFreeSpace()));
                         }
                     }
