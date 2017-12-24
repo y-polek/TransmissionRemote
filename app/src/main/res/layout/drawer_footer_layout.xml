@@ -8,5 +8,4 @@
     android:textSize="@dimen/tr_abc_text_size_body_1_material"
     android:textColor="?android:attr/textColorPrimary"
     android:textStyle="bold"
-    android:text="@{@string/free_space_title(TextUtils.displayableSize(freeSpace))}"
     tools:text="Free Space: 999.9GB"/>
