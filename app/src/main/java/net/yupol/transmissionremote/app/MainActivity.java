@@ -16,7 +16,6 @@ import android.databinding.DataBindingUtil;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.TransactionTooLargeException;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.provider.OpenableColumns;
@@ -71,7 +70,7 @@ import net.yupol.transmissionremote.app.filtering.Filter;
 import net.yupol.transmissionremote.app.model.json.AddTorrentResult;
 import net.yupol.transmissionremote.app.model.json.ServerSettings;
 import net.yupol.transmissionremote.app.model.json.Torrent;
-import net.yupol.transmissionremote.app.notifications.BackgroundUpdateService;
+import net.yupol.transmissionremote.app.notifications.FinishedTorrentsDetector;
 import net.yupol.transmissionremote.app.opentorrent.DownloadLocationDialogFragment;
 import net.yupol.transmissionremote.app.opentorrent.OpenAddressDialogFragment;
 import net.yupol.transmissionremote.app.opentorrent.OpenByDialogFragment;
@@ -113,7 +112,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Timer;
@@ -230,6 +228,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
     private MainActivityBinding binding;
     private boolean showFab;
     private FreeSpaceFooterDrawerItem freeSpaceFooterDrawerItem;
+    private FinishedTorrentsDetector finishedTorrentsDetector;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -242,6 +241,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
         binding = DataBindingUtil.setContentView(this, R.layout.main_activity);
 
         application = TransmissionRemote.getApplication(this);
+        finishedTorrentsDetector = new FinishedTorrentsDetector(this);
 
         setupActionBar();
         setupBottomToolbar();
@@ -899,18 +899,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
         hasTorrentList = true;
 
         if (application.isNotificationEnabled()) {
-            Intent intent = new Intent(this, BackgroundUpdateService.class);
-            intent.putExtra(BackgroundUpdateService.KEY_SERVER, application.getActiveServer());
-            intent.putParcelableArrayListExtra(BackgroundUpdateService.KEY_TORRENT_LIST, new ArrayList<>(torrents));
-            try {
-                startService(intent);
-            } catch (RuntimeException e) { // TODO: this is temporal code to workaround TransactionTooLargeException while passing data to background service
-                if (e.getCause() instanceof TransactionTooLargeException) {
-                    application.disableNotifications();
-                } else {
-                    throw e;
-                }
-            }
+            finishedTorrentsDetector.checkForFinishedTorrents(application.getActiveServer(), torrents);
         }
 
         if (getTorrentListFragment() == null) {

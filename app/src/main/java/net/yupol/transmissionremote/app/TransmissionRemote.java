@@ -215,13 +215,6 @@ public class TransmissionRemote extends Application implements SharedPreferences
                 Boolean.parseBoolean(getString(R.string.torrent_finished_notification_enabled_default_value)));
     }
 
-    /**
-     * TODO: this is temporal method to workaround TransactionTooLargeException while passing data to background service
-     */
-    public void disableNotifications() {
-        sharedPreferences.edit().putBoolean(getString(R.string.torrent_finished_notification_enabled_key), false).apply();
-    }
-
     public boolean isNotificationVibroEnabled() {
         return sharedPreferences.getBoolean(getString(R.string.torrent_finished_notification_vibrate_key), false);
     }
