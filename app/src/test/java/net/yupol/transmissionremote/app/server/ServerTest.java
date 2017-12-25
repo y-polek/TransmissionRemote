@@ -1,7 +1,5 @@
 package net.yupol.transmissionremote.app.server;
 
-import android.os.Parcel;
-
 import junit.framework.TestCase;
 
 import static net.yupol.transmissionremote.app.server.Server.fromJson;
@@ -38,20 +36,6 @@ public class ServerTest extends TestCase {
 
         server.setLastSessionId("a;ldskfja;lsdfkj");
         assertEquals(server, fromJson(server.toJson()));
-    }
-
-    public void testParcelSerialization() {
-        Server server = new Server("name", "192.168.1.1", 9091);
-        Parcel parcel = Parcel.obtain();
-        server.writeToParcel(parcel, 0);
-        parcel.setDataPosition(0);
-        assertEquals(server, Server.CREATOR.createFromParcel(parcel));
-
-        server.setLastSessionId("a;ldskfja;lsdfkj");
-        parcel = Parcel.obtain();
-        server.writeToParcel(parcel, 0);
-        parcel.setDataPosition(0);
-        assertEquals(server, Server.CREATOR.createFromParcel(parcel));
     }
 
     public void testEquals() {
