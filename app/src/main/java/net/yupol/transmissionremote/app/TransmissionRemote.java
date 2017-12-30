@@ -1,13 +1,17 @@
 package net.yupol.transmissionremote.app;
 
 import android.app.Application;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatDelegate;
 
 import com.google.common.base.Function;
@@ -94,6 +98,10 @@ public class TransmissionRemote extends Application implements SharedPreferences
 
         if (isNotificationEnabled()) {
             startService(new Intent(this, BackgroundUpdateService.class));
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            createNotificationChannel();
         }
     }
 
@@ -425,6 +433,17 @@ public class TransmissionRemote extends Application implements SharedPreferences
         SharedPreferences sp = getSharedPreferences(SHARED_PREFS_NAME, MODE_PRIVATE);
         sortedBy = SortedBy.values()[sp.getInt(KEY_SORTED_BY, 0)];
         sortOrder = SortOrder.values()[sp.getInt(KEY_SORT_ORDER, 0)];
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private void createNotificationChannel() {
+        NotificationChannel channel = new NotificationChannel(
+                NotificationChannel.DEFAULT_CHANNEL_ID,
+                "Transmission Remote notifications",
+                NotificationManager.IMPORTANCE_DEFAULT);
+        NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        assert manager != null;
+        manager.createNotificationChannel(channel);
     }
 
     public interface OnActiveServerChangedListener {

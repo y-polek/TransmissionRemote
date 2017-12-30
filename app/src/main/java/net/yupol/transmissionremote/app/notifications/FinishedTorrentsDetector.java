@@ -1,6 +1,7 @@
 package net.yupol.transmissionremote.app.notifications;
 
 import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.ContentValues;
@@ -9,6 +10,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
+import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 import android.util.SparseBooleanArray;
@@ -108,8 +110,13 @@ public class FinishedTorrentsDetector {
                 return t.getName();
             }
         }).join(Joiner.on(", "));
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(context)
-                .setSmallIcon(R.drawable.transmission)
+        NotificationCompat.Builder builder;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            builder = new NotificationCompat.Builder(context, NotificationChannel.DEFAULT_CHANNEL_ID);
+        } else {
+            builder = new NotificationCompat.Builder(context);
+        }
+        builder.setSmallIcon(R.drawable.transmission)
                 .setContentTitle(title)
                 .setContentText(text)
                 .setAutoCancel(true);
