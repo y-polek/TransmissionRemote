@@ -49,6 +49,8 @@ public class TransmissionRemote extends Application implements SharedPreferences
     private static final String KEY_SORTED_BY = "key_sorted_by";
     private static final String KEY_SORT_ORDER = "key_sort_order";
 
+    public static final String NOTIFICATION_CHANNEL_ID = "finished_torrents_notification_channel_id";
+
     private static final Filter[] ALL_FILTERS = {
             Filters.ALL,
             Filters.ACTIVE,
@@ -438,8 +440,8 @@ public class TransmissionRemote extends Application implements SharedPreferences
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void createNotificationChannel() {
         NotificationChannel channel = new NotificationChannel(
-                NotificationChannel.DEFAULT_CHANNEL_ID,
-                "Transmission Remote notifications",
+                NOTIFICATION_CHANNEL_ID,
+                getString(R.string.notification_channel_name),
                 NotificationManager.IMPORTANCE_DEFAULT);
         NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         assert manager != null;

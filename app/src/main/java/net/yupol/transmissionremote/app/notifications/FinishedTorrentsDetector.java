@@ -1,7 +1,6 @@
 package net.yupol.transmissionremote.app.notifications;
 
 import android.app.Notification;
-import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.ContentValues;
@@ -72,7 +71,9 @@ public class FinishedTorrentsDetector {
             db.endTransaction();
         }
 
-        showFinishedNotification(finishedTorrents);
+        if (!finishedTorrents.isEmpty()) {
+            showFinishedNotification(finishedTorrents);
+        }
     }
 
     private SparseBooleanArray readPreviousFinishedStates(Server server) {
@@ -100,8 +101,6 @@ public class FinishedTorrentsDetector {
     }
 
     private void showFinishedNotification(List<Torrent> finishedTorrents) {
-        if (finishedTorrents.isEmpty()) return;
-
         final int count = finishedTorrents.size();
         String title = context.getResources().getQuantityString(R.plurals.torrents_finished, count, count);
         String text = FluentIterable.from(finishedTorrents).limit(5).transform(new Function<Torrent, String>() {
@@ -112,7 +111,7 @@ public class FinishedTorrentsDetector {
         }).join(Joiner.on(", "));
         NotificationCompat.Builder builder;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            builder = new NotificationCompat.Builder(context, NotificationChannel.DEFAULT_CHANNEL_ID);
+            builder = new NotificationCompat.Builder(context, TransmissionRemote.NOTIFICATION_CHANNEL_ID);
         } else {
             builder = new NotificationCompat.Builder(context);
         }

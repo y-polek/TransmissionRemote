@@ -299,4 +299,6 @@
         <item quantity="other">%d torrents are finished</item>
     </plurals>
 
+    <string name="notification_channel_name">Torrent Downloading Finished</string>
+
 </resources>
