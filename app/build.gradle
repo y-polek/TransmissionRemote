@@ -7,7 +7,7 @@ repositories {
 
 android {
     compileSdkVersion 26
-    buildToolsVersion '26.0.1'
+    buildToolsVersion '26.0.2'
     defaultConfig {
         minSdkVersion 15
         targetSdkVersion 26
@@ -46,11 +46,11 @@ android {
 }
 
 dependencies {
-    compile 'com.android.support:appcompat-v7:26.0.1'
-    compile 'com.android.support:support-v4:26.0.1'
-    compile 'com.android.support:recyclerview-v7:26.0.1'
+    compile 'com.android.support:appcompat-v7:26.1.0'
+    compile 'com.android.support:support-v4:26.1.0'
+    compile 'com.android.support:recyclerview-v7:26.1.0'
     compile 'com.android.support:design:26.1.0'
-    compile 'com.google.guava:guava:20.0'
+    compile 'com.google.guava:guava:23.6-android'
     compile 'com.google.code.gson:gson:2.8.2'
     compile('com.octo.android.robospice:robospice:1.4.14') {
         exclude (group: 'commons-io', module: 'commons-io')
@@ -75,7 +75,7 @@ dependencies {
     compile 'com.github.sevar83:indeterminate-checkbox:1.0.5@aar'
 
     compile('com.crashlytics.sdk.android:crashlytics:2.6.5@aar') {
-        transitive = true;
+        transitive = true
     }
 
     compile 'com.github.hotchemi:permissionsdispatcher:2.2.0'
