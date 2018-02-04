@@ -10,8 +10,8 @@ public class BootCompleteBroadcastReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
 
-        if (((TransmissionRemote) context.getApplicationContext()).isNotificationEnabled()) {
-            context.startService(new Intent(context, BackgroundUpdateService.class));
+        if (TransmissionRemote.getApplication(context).isNotificationEnabled()) {
+            BackgroundUpdater.start(context);
         }
     }
 }

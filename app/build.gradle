@@ -83,6 +83,8 @@ dependencies {
 
     compile 'com.getbase:floatingactionbutton:1.10.1'
 
+    compile 'com.evernote:android-job:1.2.2'
+
     testCompile 'junit:junit:4.12'
     testCompile 'org.hamcrest:hamcrest-library:1.3'
 }

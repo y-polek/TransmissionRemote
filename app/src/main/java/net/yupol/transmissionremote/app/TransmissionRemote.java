@@ -4,7 +4,6 @@ import android.app.Application;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
@@ -14,6 +13,7 @@ import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatDelegate;
 
+import com.evernote.android.job.JobManager;
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
@@ -22,7 +22,8 @@ import com.google.common.collect.FluentIterable;
 import net.yupol.transmissionremote.app.filtering.Filter;
 import net.yupol.transmissionremote.app.filtering.Filters;
 import net.yupol.transmissionremote.app.model.json.Torrent;
-import net.yupol.transmissionremote.app.notifications.BackgroundUpdateService;
+import net.yupol.transmissionremote.app.notifications.BackgroundUpdateJob;
+import net.yupol.transmissionremote.app.notifications.BackgroundUpdater;
 import net.yupol.transmissionremote.app.server.Server;
 import net.yupol.transmissionremote.app.sorting.SortOrder;
 import net.yupol.transmissionremote.app.sorting.SortedBy;
@@ -98,8 +99,12 @@ public class TransmissionRemote extends Application implements SharedPreferences
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         sharedPreferences.registerOnSharedPreferenceChangeListener(this);
 
+        JobManager.create(this)
+                .addJobCreator(new BackgroundUpdateJob.Creator());
+
+
         if (isNotificationEnabled()) {
-            startService(new Intent(this, BackgroundUpdateService.class));
+            BackgroundUpdater.start(this);
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -111,12 +116,14 @@ public class TransmissionRemote extends Application implements SharedPreferences
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         if (key.equals(getString(R.string.torrent_finished_notification_enabled_key))) {
             if (isNotificationEnabled()) {
-                startService(new Intent(this, BackgroundUpdateService.class));
+                BackgroundUpdater.start(this);
             } else {
-                stopService(new Intent(this, BackgroundUpdateService.class));
+                BackgroundUpdater.stop(this);
             }
         } else if (key.equals(getString(R.string.background_update_interval_key))) {
-            startService(new Intent(this, BackgroundUpdateService.class));
+            BackgroundUpdater.start(this);
+            // TODO: restart with new interval
+            //startService(new Intent(this, BackgroundUpdateService.class));
         }
     }
 
@@ -148,7 +155,7 @@ public class TransmissionRemote extends Application implements SharedPreferences
         }
 
         if (isNotificationEnabled()) {
-            startService(new Intent(this, BackgroundUpdateService.class));
+            BackgroundUpdater.start(this);
         }
     }
 
