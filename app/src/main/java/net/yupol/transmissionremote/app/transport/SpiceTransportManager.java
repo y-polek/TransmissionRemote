@@ -49,17 +49,19 @@ public class SpiceTransportManager extends SpiceManager implements TransportMana
         execute(request, new PropagateRequestListener<T>(listener) {
             @Override
             protected boolean onFailure(SpiceException spiceException) {
-                Log.d(TAG, "onFailure SC: " + request.getResponseStatusCode() + " " + request.getClass().getSimpleName() + " " + request.getServer().getLastSessionId());
-                if (request.getResponseStatusCode() == HttpURLConnection.HTTP_CONFLICT) {
+                int statusCode = request.getResponseStatusCode();
+                Log.d(TAG, "onFailure SC: " + statusCode + " " + request.getClass().getSimpleName() + " " + request.getServer().getLastSessionId());
+                if (statusCode == HttpURLConnection.HTTP_CONFLICT) {
                     Log.d(TAG, "SC_CONFLICT old sessionId: " + request.getServer().getLastSessionId());
                     String responseSessionId = request.getResponseSessionId();
                     Log.d(TAG, "new sessionId: " + responseSessionId);
                     request.getServer().setLastSessionId(responseSessionId);
                     doRequest(request, request.getServer(), listener);
                     return false;
-                } else if (HttpStatusCodes.isRedirect(request.getResponseStatusCode())) {
+                } else if (HttpStatusCodes.isRedirect(statusCode)) {
                     request.getServer().setRedirectLocation(request.getRedirectLocation());
                     doRequest(request, request.getServer(), listener);
+                    return false;
                 }
                 return true;
             }
