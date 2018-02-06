@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 
+import com.google.api.client.http.HttpStatusCodes;
 import com.octo.android.robospice.networkstate.NetworkStateChecker;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
@@ -26,6 +27,8 @@ import java.util.concurrent.CountDownLatch;
 
 import javax.annotation.Nonnull;
 
+import static org.hamcrest.core.IsEqual.equalTo;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -36,10 +39,13 @@ public class RequestExecutorTest {
 
     private static final String FAKE_RESULT = "Fake Result";
     private static final Exception FAKE_EXCEPTION = new IOException("Fake Exception");
+    private static final String SESSION_ID = "fake_session_id";
+    private static final String REDIRECT_LOCATION = "fake_redirect_location";
 
     private RequestExecutor executor;
     private Server server;
 
+    @Mock private Request<String> mockRequest;
     @Mock private Request<String> mockSuccessfulRequest;
     @Mock private Request<String> mockFailedRequest;
     @Mock private RequestListener<String> mockListener;
@@ -49,6 +55,9 @@ public class RequestExecutorTest {
     @Before
     public void setup() throws Exception {
         MockitoAnnotations.initMocks(this);
+
+        when(mockRequest.getResultType())
+                .thenReturn(String.class);
 
         when(mockSuccessfulRequest.loadDataFromNetwork())
                 .thenReturn(FAKE_RESULT);
@@ -68,7 +77,7 @@ public class RequestExecutorTest {
     }
 
     @Test
-    public void testExecuteRequest() throws Exception {
+    public void testExecuteRequest() throws InterruptedException {
         CountDownLatch latch = new CountDownLatch(1);
 
         executor.executeRequest(mockSuccessfulRequest, server, CountDownRequestListenerWrapper.wrap(mockListener, latch));
@@ -79,7 +88,7 @@ public class RequestExecutorTest {
     }
 
     @Test
-    public void testExecuteFailedResult() throws Exception {
+    public void testExecuteFailedResult() throws InterruptedException {
         CountDownLatch latch = new CountDownLatch(1);
 
         executor.executeRequest(mockFailedRequest, server, CountDownRequestListenerWrapper.wrap(mockListener, latch));
@@ -92,7 +101,7 @@ public class RequestExecutorTest {
     }
 
     @Test
-    public void testExecuteMultipleRequests() throws Exception {
+    public void testExecuteMultipleRequests() throws InterruptedException {
         final int n = 10;
         CountDownLatch latch = new CountDownLatch(n);
 
@@ -103,6 +112,52 @@ public class RequestExecutorTest {
         latch.await();
         verify(mockListener, times(n)).onRequestSuccess(FAKE_RESULT);
         verifyNoMoreInteractions(mockListener);
+    }
+
+    @Test
+    public void testExecuteRequestWithConflictResponse() throws Exception {
+        when(mockRequest.loadDataFromNetwork())
+                .thenThrow(new IOException())
+                .thenReturn(FAKE_RESULT);
+        when(mockRequest.getResponseStatusCode())
+                .thenReturn(HttpStatusCodes.STATUS_CODE_CONFLICT)
+                .thenReturn(HttpStatusCodes.STATUS_CODE_OK);
+        when(mockRequest.getResponseSessionId())
+                .thenReturn(SESSION_ID);
+        when(mockRequest.getServer())
+                .thenReturn(server);
+
+        CountDownLatch latch = new CountDownLatch(1);
+
+        executor.executeRequest(mockRequest, server, CountDownRequestListenerWrapper.wrap(mockListener, latch));
+
+        latch.await();
+        verify(mockListener, times(1)).onRequestSuccess(FAKE_RESULT);
+        verifyNoMoreInteractions(mockListener);
+        assertThat(server.getLastSessionId(), equalTo(SESSION_ID));
+    }
+
+    @Test
+    public void testExecuteRequestWithRedirect() throws Exception {
+        when(mockRequest.loadDataFromNetwork())
+                .thenThrow(new IOException())
+                .thenReturn(FAKE_RESULT);
+        when(mockRequest.getResponseStatusCode())
+                .thenReturn(HttpStatusCodes.STATUS_CODE_TEMPORARY_REDIRECT)
+                .thenReturn(HttpStatusCodes.STATUS_CODE_OK);
+        when(mockRequest.getRedirectLocation())
+                .thenReturn(REDIRECT_LOCATION);
+        when(mockRequest.getServer())
+                .thenReturn(server);
+
+        CountDownLatch latch = new CountDownLatch(1);
+
+        executor.executeRequest(mockRequest, server, CountDownRequestListenerWrapper.wrap(mockListener, latch));
+
+        latch.await();
+        verify(mockListener, times(1)).onRequestSuccess(FAKE_RESULT);
+        verifyNoMoreInteractions(mockListener);
+        assertThat(server.getRedirectLocation(), equalTo(REDIRECT_LOCATION));
     }
 
     //region Helper Classes

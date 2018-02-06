@@ -31,6 +31,7 @@ import java.util.Set;
 import java.util.concurrent.Executors;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public class RequestExecutor {
 
@@ -78,7 +79,12 @@ public class RequestExecutor {
 
         CachedSpiceRequest<T> cachedSpiceRequest = new CachedSpiceRequest<>(request, null, DurationInMillis.ALWAYS_EXPIRED);
 
-        registerListener(cachedSpiceRequest, listener);
+        registerListener(cachedSpiceRequest, new RetryPropagateRequestListener<T>(request, listener) {
+            @Override
+            protected void retry(Request<T> request, @Nullable RequestListener<T> listener) {
+                executeRequest(request, request.getServer(), listener);
+            }
+        });
 
         requestRunner.executeRequest(cachedSpiceRequest);
     }

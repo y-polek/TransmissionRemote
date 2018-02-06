@@ -6,9 +6,7 @@ import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
-import com.google.api.client.http.HttpStatusCodes;
 import com.octo.android.robospice.SpiceManager;
-import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
 import com.octo.android.robospice.retry.DefaultRetryPolicy;
 import com.octo.android.robospice.retry.RetryPolicy;
@@ -16,9 +14,10 @@ import com.octo.android.robospice.retry.RetryPolicy;
 import net.yupol.transmissionremote.app.server.Server;
 import net.yupol.transmissionremote.app.transport.request.Request;
 
-import java.net.HttpURLConnection;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import javax.annotation.Nullable;
 
 import roboguice.util.temp.Ln;
 
@@ -46,30 +45,10 @@ public class SpiceTransportManager extends SpiceManager implements TransportMana
         request.setRetryPolicy(RETRY_POLICY_NO_RETRIES);
 
         Log.d(TAG, "execute " + request.getClass().getSimpleName() + " sessionId: " + request.getServer().getLastSessionId());
-        execute(request, new PropagateRequestListener<T>(listener) {
+        execute(request, new RetryPropagateRequestListener<T>(request, listener) {
             @Override
-            protected boolean onFailure(SpiceException spiceException) {
-                int statusCode = request.getResponseStatusCode();
-                Log.d(TAG, "onFailure SC: " + statusCode + " " + request.getClass().getSimpleName() + " " + request.getServer().getLastSessionId());
-                if (statusCode == HttpURLConnection.HTTP_CONFLICT) {
-                    Log.d(TAG, "SC_CONFLICT old sessionId: " + request.getServer().getLastSessionId());
-                    String responseSessionId = request.getResponseSessionId();
-                    Log.d(TAG, "new sessionId: " + responseSessionId);
-                    request.getServer().setLastSessionId(responseSessionId);
-                    doRequest(request, request.getServer(), listener);
-                    return false;
-                } else if (HttpStatusCodes.isRedirect(statusCode)) {
-                    request.getServer().setRedirectLocation(request.getRedirectLocation());
-                    doRequest(request, request.getServer(), listener);
-                    return false;
-                }
-                return true;
-            }
-
-            @Override
-            protected boolean onSuccess(T t) {
-                Log.d(TAG, "onSuccess " + request.getClass().getSimpleName() + " " + request.getServer().getLastSessionId());
-                return true;
+            protected void retry(Request<T> request, @Nullable RequestListener<T> listener) {
+                doRequest(request, request.getServer(), listener);
             }
         });
     }
