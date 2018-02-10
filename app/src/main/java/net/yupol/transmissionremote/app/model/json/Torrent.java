@@ -30,6 +30,7 @@ public class Torrent implements ID, Parcelable {
     @Key private int webseedsSendingToUs;
     @Key private int queuePosition;
     @Key private double recheckProgress;
+    @Key private long doneDate;
 
     public Torrent() {}
 
@@ -55,6 +56,7 @@ public class Torrent implements ID, Parcelable {
         peersSendingToUs = in.readInt();
         webseedsSendingToUs = in.readInt();
         queuePosition = in.readInt();
+        doneDate = in.readLong();
     }
 
     public int getId() {
@@ -161,6 +163,10 @@ public class Torrent implements ID, Parcelable {
         return recheckProgress;
     }
 
+    public long getDoneDate() {
+        return doneDate;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -189,6 +195,7 @@ public class Torrent implements ID, Parcelable {
         out.writeInt(peersSendingToUs);
         out.writeInt(webseedsSendingToUs);
         out.writeInt(queuePosition);
+        out.writeLong(doneDate);
     }
 
     public static final Creator<Torrent> CREATOR = new Creator<Torrent>() {
@@ -220,6 +227,7 @@ public class Torrent implements ID, Parcelable {
                 ", error=" + error +
                 ", errorString='" + errorString + '\'' +
                 ", isFinished=" + isFinished +
+                ", doneDate=" + doneDate +
                 '}';
     }
 
@@ -272,6 +280,24 @@ public class Torrent implements ID, Parcelable {
                 if (e.id == id) return e;
             }
             return UNKNOWN;
+        }
+    }
+
+    public static class Builder {
+
+        private Torrent torrent;
+
+        public Builder() {
+            torrent = new Torrent();
+        }
+
+        public Builder doneDate(long date) {
+            torrent.doneDate = date;
+            return this;
+        }
+
+        public Torrent build() {
+            return torrent;
         }
     }
 }

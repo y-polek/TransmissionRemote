@@ -195,7 +195,7 @@
                 </TableRow>
                 <TableRow
                     android:layout_marginTop="@dimen/default_text_margin"
-                    android:visibility="@{torrentInfo.doneDate > 0 ? View.VISIBLE : View.GONE}">
+                    android:visibility="@{torrent.doneDate > 0 ? View.VISIBLE : View.GONE}">
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -205,7 +205,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         style="@style/InfoPageSecondColumnStyle"
-                        android:text="@{TextUtils.displayableDate(torrentInfo.doneDate)}" />
+                        android:text="@{TextUtils.displayableDate(torrent.doneDate)}" />
                 </TableRow>
                 <TableRow
                     android:layout_marginTop="@dimen/default_text_margin"

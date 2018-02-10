@@ -32,7 +32,7 @@ public class BackgroundUpdateService extends Service {
 
     private SpiceTransportManager transportManager;
     private ConnectivityManager connectivityManager;
-    private FinishedTorrentsDetector finishedTorrentsDetector;
+    private FinishedTorrentsNotificationManager finishedTorrentsNotificationManager;
 
     @Override
     public void onCreate() {
@@ -43,7 +43,7 @@ public class BackgroundUpdateService extends Service {
 
         connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 
-        finishedTorrentsDetector = new FinishedTorrentsDetector(this);
+        finishedTorrentsNotificationManager = new FinishedTorrentsNotificationManager(this);
     }
 
     @Override
@@ -65,7 +65,7 @@ public class BackgroundUpdateService extends Service {
 
                         @Override
                         public void onRequestSuccess(Torrents torrents) {
-                            finishedTorrentsDetector.checkForFinishedTorrents(server, torrents);
+                            finishedTorrentsNotificationManager.checkForFinishedTorrents(server, torrents);
                         }
                     });
                 }

@@ -35,6 +35,7 @@ public class Server implements Parcelable {
     private boolean useHttps;
     private boolean trustSelfSignedSslCert;
     private List<String> savedDownloadLocations = new LinkedList<>();
+    private long lastUpdateDate;
 
     public Server(@Nonnull String name, @Nonnull String host, int port) {
         if (port <= 0 || port > 0xFFFF)
@@ -162,6 +163,14 @@ public class Server implements Parcelable {
         return idStr;
     }
 
+    public long getLastUpdateDate() {
+        return lastUpdateDate;
+    }
+
+    public void setLastUpdateDate(long lastUpdateDate) {
+        this.lastUpdateDate = lastUpdateDate;
+    }
+
     public static Server fromJson(String jsonObj) {
         return new Gson().fromJson(jsonObj, Server.class);
     }
@@ -252,6 +261,7 @@ public class Server implements Parcelable {
         dest.writeByte((byte) (useHttps ? 1 : 0));
         dest.writeByte((byte) (trustSelfSignedSslCert ? 1 : 0));
         dest.writeStringList(savedDownloadLocations);
+        dest.writeLong(lastUpdateDate);
     }
 
     public static final Creator<Server> CREATOR = new Creator<Server>() {
@@ -278,6 +288,7 @@ public class Server implements Parcelable {
             server.useHttps = parcel.readByte() != 0;
             server.trustSelfSignedSslCert = parcel.readByte() != 0;
             parcel.readStringList(server.savedDownloadLocations);
+            server.lastUpdateDate = parcel.readLong();
             return server;
         }
 

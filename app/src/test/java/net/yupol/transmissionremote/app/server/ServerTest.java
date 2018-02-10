@@ -2,7 +2,8 @@ package net.yupol.transmissionremote.app.server;
 
 import junit.framework.TestCase;
 
-import static net.yupol.transmissionremote.app.server.Server.fromJson;
+import static org.hamcrest.core.IsEqual.equalTo;
+import static org.junit.Assert.assertThat;
 
 public class ServerTest extends TestCase {
 
@@ -32,10 +33,19 @@ public class ServerTest extends TestCase {
 
     public void testJsonSerialization() {
         Server server = new Server("name", "192.168.1.1", 9091);
-        assertEquals(server, fromJson(server.toJson()));
+        assertEquals(server, Server.fromJson(server.toJson()));
 
         server.setLastSessionId("a;ldskfja;lsdfkj");
-        assertEquals(server, fromJson(server.toJson()));
+        assertEquals(server, Server.fromJson(server.toJson()));
+    }
+
+    public void testJsonSerializationWithLastUpdatedField() {
+        Server server = new Server("FeeNAS", "localhost", 9092);
+        final long lastUpdateDate = 12345L;
+        server.setLastUpdateDate(lastUpdateDate);
+        Server deserializedServer = Server.fromJson(server.toJson());
+
+        assertThat(deserializedServer.getLastUpdateDate(), equalTo(lastUpdateDate));
     }
 
     public void testEquals() {
@@ -44,7 +54,7 @@ public class ServerTest extends TestCase {
         assertFalse(s1.equals(s2));
 
         s1.setLastSessionId("slfajsldfkajsfa;fa");
-        Server deserializedS1 = fromJson(s1.toJson());
+        Server deserializedS1 = Server.fromJson(s1.toJson());
         assertEquals(s1, deserializedS1);
 
         deserializedS1.setLastSessionId(null);

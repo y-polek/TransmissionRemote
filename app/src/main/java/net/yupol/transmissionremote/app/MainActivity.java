@@ -70,7 +70,7 @@ import net.yupol.transmissionremote.app.filtering.Filter;
 import net.yupol.transmissionremote.app.model.json.AddTorrentResult;
 import net.yupol.transmissionremote.app.model.json.ServerSettings;
 import net.yupol.transmissionremote.app.model.json.Torrent;
-import net.yupol.transmissionremote.app.notifications.FinishedTorrentsDetector;
+import net.yupol.transmissionremote.app.notifications.FinishedTorrentsNotificationManager;
 import net.yupol.transmissionremote.app.opentorrent.DownloadLocationDialogFragment;
 import net.yupol.transmissionremote.app.opentorrent.OpenAddressDialogFragment;
 import net.yupol.transmissionremote.app.opentorrent.OpenByDialogFragment;
@@ -228,7 +228,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
     private MainActivityBinding binding;
     private boolean showFab;
     private FreeSpaceFooterDrawerItem freeSpaceFooterDrawerItem;
-    private FinishedTorrentsDetector finishedTorrentsDetector;
+    private FinishedTorrentsNotificationManager finishedTorrentsNotificationManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -241,7 +241,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
         binding = DataBindingUtil.setContentView(this, R.layout.main_activity);
 
         application = TransmissionRemote.getApplication(this);
-        finishedTorrentsDetector = new FinishedTorrentsDetector(this);
+        finishedTorrentsNotificationManager = new FinishedTorrentsNotificationManager(this);
 
         setupActionBar();
         setupBottomToolbar();
@@ -899,7 +899,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
         hasTorrentList = true;
 
         if (application.isNotificationEnabled()) {
-            finishedTorrentsDetector.checkForFinishedTorrents(application.getActiveServer(), torrents);
+            finishedTorrentsNotificationManager.checkForFinishedTorrents(application.getActiveServer(), torrents);
         }
 
         if (getTorrentListFragment() == null) {

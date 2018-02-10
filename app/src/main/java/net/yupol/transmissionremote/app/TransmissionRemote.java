@@ -366,7 +366,7 @@ public class TransmissionRemote extends Application implements SharedPreferences
         restoreSorting();
     }
 
-    private void persistServers() {
+    public void persistServers() {
         Set<String> serversInJson = FluentIterable.from(servers).transform(new Function<Server, String>() {
             @Override
             public String apply(Server server) {

@@ -47,7 +47,6 @@ public class TorrentInfoGetRequest extends Request<TorrentInfo> {
             TorrentMetadata.CORRUPT_EVER,
             TorrentMetadata.UPLOADED_EVER,
             TorrentMetadata.ADDED_DATE,
-            TorrentMetadata.DONE_DATE,
             TorrentMetadata.ACTIVITY_DATE,
             TorrentMetadata.SECONDS_DOWNLOADING,
             TorrentMetadata.SECONDS_SEEDING,
