@@ -94,6 +94,8 @@
     <string name="torrent_finished_notification_summary">Checks torrents in background</string>
     <string name="torrent_finished_notification_vibrate_title">Vibrate</string>
     <string name="torrent_finished_notification_sound_title">Sound</string>
+    <string name="torrent_finished_notification_only_unmetered_wifi_title">Only on unmetered WiFi</string>
+    <string name="torrent_finished_notification_only_unmetered_wifi_summary">Turning this off will allow background update on cellular as well as other metered networks</string>
     <string name="server_preferences">Server Preferences</string>
     <string name="remote_preferences">Preferences</string>
     <string name="global_bandwidth_limits">Global bandwidth limits</string>

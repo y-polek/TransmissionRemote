@@ -64,16 +64,22 @@ public class BackgroundUpdateJob extends Job {
         return Result.SUCCESS;
     }
 
-    public static void schedule() {
+    public static void schedule(boolean onlyUnmeteredNetwork) {
         Set<JobRequest> pendingJobs = JobManager.instance().getAllJobRequestsForTag(TAG_UPDATE_TORRENTS);
         if (pendingJobs.size() > 0) {
             return; // Already scheduled
         }
 
-        new JobRequest.Builder(TAG_UPDATE_TORRENTS)
-                .setPeriodic(JobRequest.MIN_INTERVAL, (long) (0.75 * JobRequest.MIN_INTERVAL))
-                .setRequiredNetworkType(JobRequest.NetworkType.CONNECTED)
-                .setRequirementsEnforced(true)
+        JobRequest.Builder builder = new JobRequest.Builder(TAG_UPDATE_TORRENTS)
+                .setPeriodic(JobRequest.MIN_INTERVAL, (long) (0.75 * JobRequest.MIN_INTERVAL));
+
+        if (onlyUnmeteredNetwork) {
+            builder.setRequiredNetworkType(JobRequest.NetworkType.UNMETERED);
+        } else {
+            builder.setRequiredNetworkType(JobRequest.NetworkType.CONNECTED);
+        }
+
+        builder.setRequirementsEnforced(true)
                 .build()
                 .schedule();
     }

@@ -121,7 +121,9 @@ public class TransmissionRemote extends Application implements SharedPreferences
                 BackgroundUpdater.stop(this);
             }
         } else if (key.equals(getString(R.string.background_update_interval_key))) {
-            BackgroundUpdater.start(this);
+            BackgroundUpdater.restart(this);
+        } else if (key.equals(getString(R.string.background_update_only_unmetered_wifi_key))) {
+            BackgroundUpdater.restart(this);
         }
     }
 

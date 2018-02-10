@@ -9,6 +9,9 @@
     <string name="background_update_interval_key" translatable="false">notification_update_interval</string>
     <string name="background_update_interval_default_value" translatable="false">30</string>
 
+    <string name="background_update_only_unmetered_wifi_key" translatable="false">background_update_only_unmetered_wifi</string>
+    <string name="background_update_only_unmetered_wifi_default_value" translatable="false">true</string>
+
     <string name="torrent_finished_notification_sound_key" translatable="false">torrent_finished_notification_sound_key</string>
 
     <string name="torrent_finished_notification_vibrate_key" translatable="false">torrent_finished_notification_vibrate_key</string>
