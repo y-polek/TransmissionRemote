@@ -7,7 +7,7 @@ import android.os.Build;
 public class BackgroundUpdater {
 
     public static void start(Context context) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
             context.startService(new Intent(context, BackgroundUpdateService.class));
         } else {
             BackgroundUpdateJob.schedule();
@@ -15,7 +15,7 @@ public class BackgroundUpdater {
     }
 
     public static void stop(Context context) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
             context.stopService(new Intent(context, BackgroundUpdateService.class));
         } else {
             BackgroundUpdateJob.cancelAll();
