@@ -122,8 +122,6 @@ public class TransmissionRemote extends Application implements SharedPreferences
             }
         } else if (key.equals(getString(R.string.background_update_interval_key))) {
             BackgroundUpdater.start(this);
-            // TODO: restart with new interval
-            //startService(new Intent(this, BackgroundUpdateService.class));
         }
     }
 
