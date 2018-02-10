@@ -45,7 +45,7 @@ public class RequestExecutor {
         this(context, new DefaultNetworkStateChecker());
     }
 
-    public RequestExecutor(Context context, @Nonnull NetworkStateChecker networkStateChecker) {
+    RequestExecutor(Context context, @Nonnull NetworkStateChecker networkStateChecker) {
 
         RequestProgressManager requestProgressManager = new RequestProgressManager(new RequestProcessorListener() {
             @Override
@@ -72,7 +72,7 @@ public class RequestExecutor {
         requestProgressManager.setMapRequestToRequestListener(requestListenersMap);
     }
 
-    public <T> void executeRequest(@Nonnull Request<T> request, @Nonnull Server server, @Nonnull RequestListener<T> listener) {
+    public <T> void executeRequest(@Nonnull Request<T> request, @Nonnull Server server, @Nullable RequestListener<T> listener) {
         request.setServer(server);
         request.setRetryPolicy(NO_RETRY_POLICY);
         request.setHttpRequestFactory(httpRequestFactory);
@@ -98,7 +98,7 @@ public class RequestExecutor {
         listeners.add(listener);
     }
 
-    private void unregisterAllListeners() {
+    public void unregisterAllListeners() {
         requestListenersMap.clear();
     }
 }
