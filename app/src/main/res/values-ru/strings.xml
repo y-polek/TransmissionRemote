@@ -210,4 +210,13 @@
     <string name="add_torrent_by_address">Адрес</string>
     <string name="checking_progress_text">Проверка существующих данных (%1$.2f%%)</string>
     <string name="show_add_torrent_fab_title">Показывать плавающую кнопку \"Добавить торрент\"</string>
+    <string name="action_rename">Переименовать</string>
+    <string name="torrent_finished_notification_only_unmetered_wifi_title">Только на неограниченном WiFi</string>
+    <string name="free_space_title">Свободное место: %s</string>
+    <string name="rename_file">Переименовать файл</string>
+    <string name="rename">Переименовать</string>
+    <string name="select_server_title">Сервер:</string>
+    <string name="trackers">Трекеры</string>
+    <string name="peers">Пиры</string>
+    <string name="client_on_port">%1$s на порту %2$d</string>
 </resources>
