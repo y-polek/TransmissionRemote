@@ -119,6 +119,10 @@ public class TransmissionRemote extends Application implements SharedPreferences
                 BackgroundUpdater.start(this);
             } else {
                 BackgroundUpdater.stop(this);
+                for (Server server : servers) {
+                    server.setLastUpdateDate(0);
+                }
+                persistServers();
             }
         } else if (key.equals(getString(R.string.background_update_interval_key))) {
             BackgroundUpdater.restart(this);
