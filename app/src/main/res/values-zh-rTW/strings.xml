@@ -85,8 +85,6 @@
     <!-- Preferences -->
     <string name="update_interval_title">更新間隔</string>
     <string name="update_interval_summary">種子列表更新間隔</string>
-    <string name="background_update_interval_title">後台更新間隔</string>
-    <string name="background_update_interval_summary">後台重新整理種子狀態的頻率</string>
     <string name="torrent_finished_notification_title">開啟種子完成提醒</string>
     <string name="torrent_finished_notification_summary">在後台重新整理種子</string>
     <string name="torrent_finished_notification_vibrate_title">震動</string>

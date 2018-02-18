@@ -87,8 +87,6 @@
     <!-- Preferences -->
     <string name="update_interval_title">更新間隔</string>
     <string name="update_interval_summary">Torrentリスト更新間隔</string>
-    <string name="background_update_interval_title">バックグラウンド更新間隔</string>
-    <string name="background_update_interval_summary">バックグラウンド時における更新間隔</string>
     <string name="torrent_finished_notification_title">Torrent完了通知を有効にする</string>
     <string name="torrent_finished_notification_summary">バックグラウンドでtorrentを確認します</string>
     <string name="torrent_finished_notification_vibrate_title">バイブレーション</string>

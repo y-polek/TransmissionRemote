@@ -5,14 +5,11 @@
         android:title="@string/torrent_finished_notification_title"
         android:summary="@string/torrent_finished_notification_summary"
         android:defaultValue="@string/torrent_finished_notification_enabled_default_value"/>
-    <ListPreference
-        android:key="@string/background_update_interval_key"
-        android:title="@string/background_update_interval_title"
-        android:summary="@string/background_update_interval_summary"
-        android:dialogTitle="@string/background_update_interval_title"
-        android:entries="@array/pref_background_update_interval_entries"
-        android:entryValues="@array/pref_background_update_interval_entry_values"
-        android:defaultValue="@string/background_update_interval_default_value"
+    <SwitchPreference
+        android:key="@string/background_update_only_unmetered_wifi_key"
+        android:title="@string/torrent_finished_notification_only_unmetered_wifi_title"
+        android:summary="@string/torrent_finished_notification_only_unmetered_wifi_summary"
+        android:defaultValue="@string/background_update_only_unmetered_wifi_default_value"
         android:dependency="@string/torrent_finished_notification_enabled_key"/>
     <RingtonePreference
         android:key="@string/torrent_finished_notification_sound_key"

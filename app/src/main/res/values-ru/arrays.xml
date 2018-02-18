@@ -10,17 +10,6 @@
         <item>1 минута</item>
     </array>
 
-    <array name="pref_background_update_interval_entries">
-        <item>2 минуты</item>
-        <item>5 минут</item>
-        <item>10 минут</item>
-        <item>30 минут</item>
-        <item>1 час</item>
-        <item>3 часа</item>
-        <item>12 часов</item>
-        <item>1 день</item>
-    </array>
-
     <string-array name="open_torrent_by_entries">
         <item>Файл</item>
         <item>Адрес</item>

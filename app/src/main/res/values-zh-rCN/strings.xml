@@ -85,8 +85,6 @@
     <!-- Preferences -->
     <string name="update_interval_title">更新间隔</string>
     <string name="update_interval_summary">种子列表更新间隔</string>
-    <string name="background_update_interval_title">后台更新间隔</string>
-    <string name="background_update_interval_summary">后台刷新种子状态的频率</string>
     <string name="torrent_finished_notification_title">打开种子完成提醒</string>
     <string name="torrent_finished_notification_summary">在后台刷新种子</string>
     <string name="torrent_finished_notification_vibrate_title">震动</string>

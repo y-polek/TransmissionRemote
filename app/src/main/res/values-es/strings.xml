@@ -20,8 +20,6 @@
     <string name="address_of_torrent_file">Url del archivo torrent</string>
     <string name="authentication">Autentificación</string>
     <string name="available">Disponible:</string>
-    <string name="background_update_interval_summary">Frecuencia del chequeo de torrents en segundo plano</string>
-    <string name="background_update_interval_title">Intervalo entre actualizaciones en segundo plano</string>
     <string name="comment">Comentarios:</string>
     <string name="completed">Completados:</string>
     <string name="created_on">Creado en:</string>

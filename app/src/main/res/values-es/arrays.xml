@@ -10,17 +10,6 @@
         <item>60 segs</item>
     </array>
 
-    <array name="pref_background_update_interval_entries">
-        <item>2 minutos</item>
-        <item>5 minutos</item>
-        <item>10 minutos</item>
-        <item>30 minutos</item>
-        <item>1 hora</item>
-        <item>3 horas</item>
-        <item>12 horas</item>
-        <item>1 día</item>
-    </array>
-
     <string-array name="open_torrent_by_entries">
         <item>Archivo</item>
         <item>Url</item>

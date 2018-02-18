@@ -21,8 +21,6 @@
     <string name="authentication">Авторизация</string>
     <string name="available">Доступно:</string>
     <string name="available_text">%1$.1f%%</string>
-    <string name="background_update_interval_summary">Как часто обновлять в фоновом режиме</string>
-    <string name="background_update_interval_title">Интервал фоновых обновлений</string>
     <string name="comment">Комментарий:</string>
     <string name="completed">Завершено:</string>
     <string name="created_on">Добавлено:</string>

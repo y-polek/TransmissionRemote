@@ -132,9 +132,6 @@
         <service android:name=".transport.NoCacheGoogleHttpClientSpiceService"
             android:exported="false" />
 
-        <service android:name=".notifications.BackgroundUpdateService"
-            android:exported="false"/>
-
         <receiver android:name=".notifications.BootCompleteBroadcastReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />

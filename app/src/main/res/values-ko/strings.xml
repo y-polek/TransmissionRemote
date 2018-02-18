@@ -87,8 +87,6 @@
     <!-- Preferences -->
     <string name="update_interval_title">업데이트 간격</string>
     <string name="update_interval_summary">토렌트 목록 업데이트 간격</string>
-    <string name="background_update_interval_title">백그라운드 시 업데이트 간격</string>
-    <string name="background_update_interval_summary">백그라운드에 있을 때 토렌트를 확인할 시간 간격</string>
     <string name="torrent_finished_notification_title">토렌트 완료 알림 활성화</string>
     <string name="torrent_finished_notification_summary">백그라운드에서 토렌트 확인</string>
     <string name="torrent_finished_notification_vibrate_title">진동</string>

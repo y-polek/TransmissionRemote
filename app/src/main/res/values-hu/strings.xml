@@ -87,8 +87,6 @@
     <!-- Preferences -->
     <string name="update_interval_title">Frissítési időköz</string>
     <string name="update_interval_summary">Torrent lista frissítési időköze</string>
-    <string name="background_update_interval_title">Frissítés időköze a háttérben</string>
-    <string name="background_update_interval_summary">A háttérben, milyen időközönként ellenőrizzem a torrentek állapotát</string>
     <string name="torrent_finished_notification_title">Kész torrentekről az értesítés bekapcsolása</string>
     <string name="torrent_finished_notification_summary">Torrentek ellenőrzése a háttérben</string>
     <string name="torrent_finished_notification_vibrate_title">Rezgés</string>

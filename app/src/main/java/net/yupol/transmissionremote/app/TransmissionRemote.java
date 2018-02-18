@@ -124,8 +124,6 @@ public class TransmissionRemote extends Application implements SharedPreferences
                 }
                 persistServers();
             }
-        } else if (key.equals(getString(R.string.background_update_interval_key))) {
-            BackgroundUpdater.restart(this);
         } else if (key.equals(getString(R.string.background_update_only_unmetered_wifi_key))) {
             BackgroundUpdater.restart(this);
         }
@@ -221,14 +219,6 @@ public class TransmissionRemote extends Application implements SharedPreferences
     public int getUpdateInterval() {
         return Integer.parseInt(sharedPreferences.getString(getString(R.string.update_interval_key),
                 getString(R.string.update_interval_default_value)));
-    }
-
-    /**
-     * @return background update interval in minutes
-     */
-    public int getBackgroundUpdateInterval() {
-        return Integer.parseInt(sharedPreferences.getString(getString(R.string.background_update_interval_key),
-                getString((R.string.background_update_interval_default_value))));
     }
 
     public boolean isNotificationEnabled() {

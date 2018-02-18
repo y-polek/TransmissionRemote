@@ -86,8 +86,6 @@
     <!-- Preferences -->
     <string name="update_interval_title">Intervallo di aggiornamento</string>
     <string name="update_interval_summary">Intervallo di aggiornamento della lista torrent</string>
-    <string name="background_update_interval_title">Aggiornamento in background</string>
-    <string name="background_update_interval_summary">Frequenza di aggiornamento dei torrent in background</string>
     <string name="torrent_finished_notification_title">Notifica download completato</string>
     <string name="torrent_finished_notification_summary">Controlla il completamento dei torrent in background</string>
     <string name="torrent_finished_notification_vibrate_title">Vibrazione</string>
