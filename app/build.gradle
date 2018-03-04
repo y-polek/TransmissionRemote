@@ -1,8 +1,11 @@
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
 apply plugin: 'io.fabric'
 
 repositories {
     maven { url 'https://maven.fabric.io/public' }
+    mavenCentral()
 }
 
 android {
@@ -47,51 +50,89 @@ android {
 }
 
 dependencies {
-    compile 'com.android.support:appcompat-v7:26.1.0'
-    compile 'com.android.support:support-v4:26.1.0'
-    compile 'com.android.support:recyclerview-v7:26.1.0'
-    compile 'com.android.support:design:26.1.0'
-    compile 'com.google.guava:guava:23.6-android'
-    compile 'com.google.code.gson:gson:2.8.2'
-    compile('com.octo.android.robospice:robospice:1.4.14') {
+
+    // Kotlin
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+
+    // Support Library
+    implementation 'com.android.support:appcompat-v7:26.1.0'
+    implementation 'com.android.support:support-v4:26.1.0'
+    implementation 'com.android.support:recyclerview-v7:26.1.0'
+    implementation 'com.android.support:design:26.1.0'
+
+    // Architecture Components
+    implementation "android.arch.lifecycle:extensions:1.1.0"
+
+    // Dagger 2
+    implementation 'com.google.dagger:dagger:2.14.1'
+    kapt 'com.google.dagger:dagger-compiler:2.14.1'
+
+    // RxJava
+    implementation 'io.reactivex.rxjava2:rxkotlin:2.0.0'
+    implementation 'io.reactivex.rxjava2:rxandroid:2.0.2'
+
+    // Retrofit
+    implementation 'com.squareup.retrofit2:retrofit:2.3.0'
+
+    // Moshi
+    implementation 'com.squareup.moshi:moshi:1.5.0'
+
+    // Guava
+    implementation 'com.google.guava:guava:23.6-android'
+
+    // GSON
+    implementation 'com.google.code.gson:gson:2.8.2'
+
+    // Robospice
+    implementation('com.octo.android.robospice:robospice:1.4.14') {
         exclude (group: 'commons-io', module: 'commons-io')
     }
-    compile('com.octo.android.robospice:robospice-google-http-client:1.4.14') {
+    implementation('com.octo.android.robospice:robospice-google-http-client:1.4.14') {
         exclude (group: 'org.apache.httpcomponents', module: 'httpclient')
         exclude (group: 'commons-io', module: 'commons-io')
     }
-    compile('com.google.http-client:google-http-client-jackson2:1.22.0') {
+    implementation('com.google.http-client:google-http-client-jackson2:1.22.0') {
         exclude (group: 'org.apache.httpcomponents', module: 'httpclient')
     }
 
-    compile('com.mikepenz:materialdrawer:4.6.4@aar') {
-        transitive = true
-    }
-    compile 'com.mikepenz:iconics-core:2.9.1@aar'
-    compile "com.mikepenz:iconics-views:2.9.2@aar"
-    compile 'com.mikepenz:google-material-typeface:3.0.1.1.original@aar'
-    compile 'com.mikepenz:fontawesome-typeface:4.7.0.1@aar'
-    compile 'com.mikepenz:community-material-typeface:1.9.32.2@aar'
-    compile 'com.mikepenz:ionicons-typeface:2.0.1.3@aar'
-    compile 'com.github.sevar83:indeterminate-checkbox:1.0.5@aar'
-
-    compile('com.crashlytics.sdk.android:crashlytics:2.6.5@aar') {
+    // Material Drawer
+    implementation('com.mikepenz:materialdrawer:4.6.4@aar') {
         transitive = true
     }
 
-    compile 'com.github.hotchemi:permissionsdispatcher:2.2.0'
-    annotationProcessor 'com.github.hotchemi:permissionsdispatcher-processor:2.2.0'
+    // Iconics
+    implementation 'com.mikepenz:iconics-core:2.9.1@aar'
+    implementation "com.mikepenz:iconics-views:2.9.2@aar"
+    implementation 'com.mikepenz:google-material-typeface:3.0.1.1.original@aar'
+    implementation 'com.mikepenz:fontawesome-typeface:4.7.0.1@aar'
+    implementation 'com.mikepenz:community-material-typeface:1.9.32.2@aar'
+    implementation 'com.mikepenz:ionicons-typeface:2.0.1.3@aar'
 
-    compile 'com.getbase:floatingactionbutton:1.10.1'
+    // Indeterminate Checkbox
+    implementation 'com.github.sevar83:indeterminate-checkbox:1.0.5@aar'
 
-    compile 'com.evernote:android-job:1.2.2'
+    // Crashlytics
+    implementation('com.crashlytics.sdk.android:crashlytics:2.6.5@aar') {
+        transitive = true
+    }
 
-    testCompile 'junit:junit:4.12'
-    testCompile 'org.hamcrest:hamcrest-library:1.3'
-    androidTestCompile 'com.android.support:support-annotations:26.1.0'
-    androidTestCompile 'com.android.support.test:runner:1.0.1'
-    androidTestCompile 'com.android.support.test:rules:1.0.1'
-    androidTestCompile 'org.hamcrest:hamcrest-library:1.3'
-    androidTestCompile 'org.mockito:mockito-core:2.13.0'
-    androidTestCompile "org.mockito:mockito-android:2.13.0"
+    // Permissions Dispatcher
+    implementation 'com.github.hotchemi:permissionsdispatcher:2.2.0'
+    kapt 'com.github.hotchemi:permissionsdispatcher-processor:2.2.0'
+
+    // Floating Action Button
+    implementation 'com.getbase:floatingactionbutton:1.10.1'
+
+    // Evernote Android Job
+    implementation 'com.evernote:android-job:1.2.2'
+
+    // Testing
+    testImplementation 'junit:junit:4.12'
+    testImplementation 'org.hamcrest:hamcrest-library:1.3'
+    androidTestImplementation 'com.android.support:support-annotations:26.1.0'
+    androidTestImplementation 'com.android.support.test:runner:1.0.1'
+    androidTestImplementation 'com.android.support.test:rules:1.0.1'
+    androidTestImplementation 'org.hamcrest:hamcrest-library:1.3'
+    androidTestImplementation 'org.mockito:mockito-core:2.13.0'
+    androidTestImplementation "org.mockito:mockito-android:2.13.0"
 }
