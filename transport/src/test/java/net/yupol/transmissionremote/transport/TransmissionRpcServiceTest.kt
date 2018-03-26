@@ -1,56 +1,44 @@
 package net.yupol.transmissionremote.transport
 
-import com.serjltt.moshi.adapters.Wrapped
-import com.squareup.moshi.KotlinJsonAdapterFactory
-import com.squareup.moshi.Moshi
-import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
+import net.yupol.transmissionremote.model.Server
 import org.junit.Before
 import org.junit.Test
-import retrofit2.Retrofit
-import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
-import retrofit2.converter.moshi.MoshiConverterFactory
-import retrofit2.converter.scalars.ScalarsConverterFactory
 
 class TransmissionRpcServiceTest {
 
-    private lateinit var rpcService: TransmissionRpcService
+    private lateinit var rpcApi: TransmissionRpcApi
 
     @Before
     fun setup() {
+        val server = Server(name = "Ubuntu", host = "polek.ddns.net", port = 9093,
+                login = "transmission", password = "transmission")
 
-        val okHttpClient = OkHttpClient.Builder()
-                .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
-                .addInterceptor(SessionIdInterceptor())
-                .authenticator(BasicAuthenticator("transmission", "transmission"))
-                .build()
+        rpcApi = Transport(server).api
 
-        val moshi = Moshi.Builder()
-                .add(KotlinJsonAdapterFactory())
-                .add(Wrapped.ADAPTER_FACTORY)
-                .build()
 
-        val retrofit = Retrofit.Builder()
-                .baseUrl("http://polek.ddns.net:9093")
-                .client(okHttpClient)
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                .addConverterFactory(ScalarsConverterFactory.create())
-                .addConverterFactory(MoshiConverterFactory.create(moshi))
-                .build()
-
-        rpcService = retrofit.create(TransmissionRpcService::class.java)
     }
 
     @Test
     fun test() {
 
-        rpcService.torrentList()
+        rpcApi.torrentList()
                 .subscribe(
                         { torrents ->
                             println("Torrents: $torrents")
                         },
                         { error ->
                             println("Error: ${error.message}")
-                        })
+                        }
+                )
+
+        rpcApi.serverSettings()
+                .subscribe(
+                        { settings ->
+                            println("Settings: $settings")
+                        },
+                        { error ->
+                            println("Error ${error.message}")
+                        }
+                )
     }
 }

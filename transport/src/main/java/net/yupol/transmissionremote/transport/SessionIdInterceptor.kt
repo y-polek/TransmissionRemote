@@ -3,7 +3,7 @@ package net.yupol.transmissionremote.transport
 import okhttp3.Interceptor
 import okhttp3.Response
 
-class SessionIdInterceptor: Interceptor {
+internal class SessionIdInterceptor: Interceptor {
 
     companion object {
         const val SESSION_ID_HEADER = "X-Transmission-Session-Id"
