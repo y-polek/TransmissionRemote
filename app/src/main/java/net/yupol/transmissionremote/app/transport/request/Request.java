@@ -16,7 +16,7 @@ import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import com.octo.android.robospice.request.googlehttpclient.GoogleHttpClientSpiceRequest;
 
-import net.yupol.transmissionremote.app.server.Server;
+import net.yupol.transmissionremote.model.Server;
 
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONException;

@@ -4,7 +4,7 @@ import com.google.common.base.Optional;
 import com.google.common.collect.ComparisonChain;
 import com.google.common.primitives.Ints;
 
-import net.yupol.transmissionremote.app.model.json.Torrent;
+import net.yupol.transmissionremote.model.json.Torrent;
 
 import java.util.Comparator;
 

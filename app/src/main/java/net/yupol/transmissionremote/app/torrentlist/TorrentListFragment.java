@@ -42,7 +42,7 @@ import net.yupol.transmissionremote.app.TransmissionRemote.OnSortingChangedListe
 import net.yupol.transmissionremote.app.TransmissionRemote.OnTorrentsUpdatedListener;
 import net.yupol.transmissionremote.app.filtering.Filter;
 import net.yupol.transmissionremote.app.filtering.NameFilter;
-import net.yupol.transmissionremote.app.model.json.Torrent;
+import net.yupol.transmissionremote.model.json.Torrent;
 import net.yupol.transmissionremote.app.model.json.Torrents;
 import net.yupol.transmissionremote.app.transport.BaseSpiceActivity;
 import net.yupol.transmissionremote.app.transport.TransportManager;

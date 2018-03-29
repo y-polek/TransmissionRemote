@@ -26,6 +26,7 @@ import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import net.yupol.transmissionremote.app.OnBackPressedListener;
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.utils.IconUtils;
+import net.yupol.transmissionremote.model.Server;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;

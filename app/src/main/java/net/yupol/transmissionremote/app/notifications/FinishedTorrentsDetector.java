@@ -2,8 +2,8 @@ package net.yupol.transmissionremote.app.notifications;
 
 import com.google.common.base.Predicate;
 
-import net.yupol.transmissionremote.app.model.json.Torrent;
-import net.yupol.transmissionremote.app.server.Server;
+import net.yupol.transmissionremote.model.json.Torrent;
+import net.yupol.transmissionremote.model.Server;
 
 import java.util.Collection;
 import java.util.Collections;

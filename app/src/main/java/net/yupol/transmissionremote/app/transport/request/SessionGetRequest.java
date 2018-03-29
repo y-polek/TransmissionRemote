@@ -1,6 +1,6 @@
 package net.yupol.transmissionremote.app.transport.request;
 
-import net.yupol.transmissionremote.app.model.json.ServerSettings;
+import net.yupol.transmissionremote.model.json.ServerSettings;
 
 import org.json.JSONObject;
 

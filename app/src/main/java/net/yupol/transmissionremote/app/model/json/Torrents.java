@@ -2,6 +2,8 @@ package net.yupol.transmissionremote.app.model.json;
 
 import com.google.api.client.util.Key;
 
+import net.yupol.transmissionremote.model.json.Torrent;
+
 import java.util.AbstractList;
 
 public class Torrents extends AbstractList<Torrent> {

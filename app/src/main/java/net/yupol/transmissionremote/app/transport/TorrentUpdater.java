@@ -2,31 +2,32 @@ package net.yupol.transmissionremote.app.transport;
 
 import android.util.Log;
 
-import com.octo.android.robospice.exception.NetworkException;
-import com.octo.android.robospice.exception.NoNetworkException;
-import com.octo.android.robospice.persistence.exception.SpiceException;
-import com.octo.android.robospice.request.listener.RequestListener;
-
-import net.yupol.transmissionremote.app.model.json.Torrent;
-import net.yupol.transmissionremote.app.model.json.Torrents;
-import net.yupol.transmissionremote.app.transport.request.TorrentGetRequest;
+import net.yupol.transmissionremote.model.json.Torrent;
 
 import java.net.HttpURLConnection;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+
+import io.reactivex.SingleObserver;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
+import retrofit2.HttpException;
+import transport.RpcRequest;
+import transport.Transport;
 
 public class TorrentUpdater {
 
     private static final String TAG = TorrentUpdater.class.getSimpleName();
 
     private volatile int timeout;
-    private TransportManager transportManager;
+    private Transport transport;
     private TorrentUpdateListener listener;
     private UpdaterThread updaterThread;
-    private TorrentGetRequest currentRequest;
+    private Disposable currentRequest;
 
-    public TorrentUpdater(TransportManager transportManager, TorrentUpdateListener listener, int timeout) {
-        this.transportManager = transportManager;
+    public TorrentUpdater(Transport transport, TorrentUpdateListener listener, int timeout) {
+        this.transport = transport;
         this.listener = listener;
         this.timeout = timeout;
     }
@@ -94,37 +95,54 @@ public class TorrentUpdater {
                 }
             }
             if (currentRequest != null) {
-                currentRequest.cancel();
+                currentRequest.dispose();
             }
         }
 
         private void sendRequest() {
-            currentRequest = new TorrentGetRequest();
-            transportManager.doRequest(currentRequest, new RequestListener<Torrents>() {
-                @Override
-                public void onRequestFailure(SpiceException spiceException) {
-                    Log.d(TAG, "TorrentGetRequest failed. SC: " + currentRequest.getResponseStatusCode());
-                    responseReceived = Boolean.TRUE;
-                    if (spiceException instanceof NoNetworkException) {
-                        listener.onNetworkError(NetworkError.NO_NETWORK);
-                    } else if (spiceException instanceof NetworkException) {
-                        Log.d(TAG, "NetworkException: " + spiceException.getMessage() + " status code: " + currentRequest.getResponseStatusCode());
-                        NetworkError error = NetworkError.OTHER;
-                        if (currentRequest.getResponseStatusCode() == HttpURLConnection.HTTP_UNAUTHORIZED) {
-                            error = NetworkError.UNAUTHORIZED;
+            transport.getApi().torrentList(RpcRequest.torrentGet())
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new SingleObserver<List<Torrent>>() {
+                        @Override
+                        public void onSubscribe(Disposable d) {
+                            currentRequest = d;
                         }
-                        listener.onNetworkError(error);
-                    }
-                }
 
-                @Override
-                public void onRequestSuccess(Torrents torrents) {
-                    responseReceived = Boolean.TRUE;
-                    if (!canceled) {
-                        listener.onTorrentUpdate(torrents);
-                    }
-                }
-            });
+                        @Override
+                        public void onSuccess(List<Torrent> torrents) {
+                            responseReceived = Boolean.TRUE;
+                            if (!canceled) {
+                                listener.onTorrentUpdate(torrents);
+                            }
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                            Log.e(TAG, "TorrentGetRequest failed", e);
+                            responseReceived = Boolean.TRUE;
+
+                            NetworkError error = NetworkError.OTHER;
+                            if (e instanceof HttpException) {
+                                if (((HttpException) e).code() == HttpURLConnection.HTTP_UNAUTHORIZED) {
+                                    error = NetworkError.UNAUTHORIZED;
+                                }
+                            }
+                            listener.onNetworkError(error);
+
+                            // TODO: handle different types of network error
+                            /*if (spiceException instanceof NoNetworkException) {
+                                listener.onNetworkError(NetworkError.NO_NETWORK);
+                            } else if (spiceException instanceof NetworkException) {
+                                Log.d(TAG, "NetworkException: " + spiceException.getMessage() + " status code: " + currentRequest.getResponseStatusCode());
+                                NetworkError error = NetworkError.OTHER;
+                                if (currentRequest.getResponseStatusCode() == HttpURLConnection.HTTP_UNAUTHORIZED) {
+                                    error = NetworkError.UNAUTHORIZED;
+                                }
+                                listener.onNetworkError(error);
+                            }*/
+                        }
+                    });
         }
 
         public void cancel() {

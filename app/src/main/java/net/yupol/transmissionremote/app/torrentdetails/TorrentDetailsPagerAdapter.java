@@ -7,7 +7,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
 import net.yupol.transmissionremote.app.R;
-import net.yupol.transmissionremote.app.model.json.Torrent;
+import net.yupol.transmissionremote.model.json.Torrent;
 import net.yupol.transmissionremote.app.model.json.TorrentInfo;
 
 public class TorrentDetailsPagerAdapter extends FragmentStatePagerAdapter {

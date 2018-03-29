@@ -9,7 +9,7 @@ import com.octo.android.robospice.networkstate.NetworkStateChecker;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
 
-import net.yupol.transmissionremote.app.server.Server;
+import net.yupol.transmissionremote.model.Server;
 import net.yupol.transmissionremote.app.transport.request.Request;
 
 import org.hamcrest.core.IsEqual;

@@ -13,7 +13,7 @@ import com.octo.android.robospice.persistence.exception.CacheSavingException;
 import com.octo.android.robospice.request.CachedSpiceRequest;
 import com.octo.android.robospice.request.listener.RequestListener;
 
-import net.yupol.transmissionremote.app.server.Server;
+import net.yupol.transmissionremote.model.Server;
 import net.yupol.transmissionremote.app.transport.request.Request;
 
 import java.security.GeneralSecurityException;

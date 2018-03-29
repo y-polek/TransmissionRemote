@@ -1,6 +1,6 @@
 package net.yupol.transmissionremote.app.utils.diff;
 
-import net.yupol.transmissionremote.app.model.ID;
+import net.yupol.transmissionremote.model.ID;
 
 import java.util.LinkedList;
 import java.util.List;

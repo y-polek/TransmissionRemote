@@ -1,9 +1,9 @@
-package net.yupol.transmissionremote.app.model.json;
+package net.yupol.transmissionremote.model.json;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.google.api.client.util.Key;
+import com.squareup.moshi.Json;
 
 public class ServerSettings implements Parcelable {
 
@@ -22,46 +22,46 @@ public class ServerSettings implements Parcelable {
     public static final String DOWNLOAD_DIR_FREE_SPACE = "download-dir-free-space";
     public static final String VERSION = "version";
 
-    @Key(SPEED_LIMIT_DOWN)
+    @Json(name = SPEED_LIMIT_DOWN)
     private int speedLimitDown;
 
-    @Key(SPEED_LIMIT_DOWN_ENABLED)
+    @Json(name = SPEED_LIMIT_DOWN_ENABLED)
     private boolean speedLimitDownEnabled;
 
-    @Key(SPEED_LIMIT_UP)
+    @Json(name = SPEED_LIMIT_UP)
     private int speedLimitUp;
 
-    @Key(SPEED_LIMIT_UP_ENABLED)
+    @Json(name = SPEED_LIMIT_UP_ENABLED)
     private boolean speedLimitUpEnabled;
 
-    @Key(ALT_SPEED_LIMIT_DOWN)
+    @Json(name = ALT_SPEED_LIMIT_DOWN)
     private int altSpeedLimitDown;
 
-    @Key(ALT_SPEED_LIMIT_UP)
+    @Json(name = ALT_SPEED_LIMIT_UP)
     private int altSpeedLimitUp;
 
-    @Key(ALT_SPEED_LIMIT_ENABLED)
+    @Json(name = ALT_SPEED_LIMIT_ENABLED)
     private boolean altSpeedLimitEnabled;
 
-    @Key(DOWNLOAD_DIR)
+    @Json(name = DOWNLOAD_DIR)
     private String downloadDir;
 
-    @Key(SEED_RATIO_LIMITED)
+    @Json(name = SEED_RATIO_LIMITED)
     private boolean seedRatioLimited;
 
-    @Key(SEED_RATIO_LIMIT)
+    @Json(name = SEED_RATIO_LIMIT)
     private double seedRatioLimit;
 
-    @Key(SEED_IDLE_LIMITED)
+    @Json(name = SEED_IDLE_LIMITED)
     private boolean seedIdleLimited;
 
-    @Key(SEED_IDLE_LIMIT)
+    @Json(name = SEED_IDLE_LIMIT)
     private int seedIdleLimit;
 
-    @Key(DOWNLOAD_DIR_FREE_SPACE)
+    @Json(name = DOWNLOAD_DIR_FREE_SPACE)
     private long downloadDirFreeSpace;
 
-    @Key(VERSION)
+    @Json(name = VERSION)
     private String version;
 
     public ServerSettings() {

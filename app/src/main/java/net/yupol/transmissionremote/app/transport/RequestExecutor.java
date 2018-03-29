@@ -21,7 +21,7 @@ import com.octo.android.robospice.request.notifier.SpiceServiceListenerNotifier;
 import com.octo.android.robospice.retry.DefaultRetryPolicy;
 import com.octo.android.robospice.retry.RetryPolicy;
 
-import net.yupol.transmissionremote.app.server.Server;
+import net.yupol.transmissionremote.model.Server;
 import net.yupol.transmissionremote.app.transport.request.Request;
 
 import java.util.HashMap;

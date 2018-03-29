@@ -21,10 +21,10 @@ import com.google.common.collect.FluentIterable;
 
 import net.yupol.transmissionremote.app.filtering.Filter;
 import net.yupol.transmissionremote.app.filtering.Filters;
-import net.yupol.transmissionremote.app.model.json.Torrent;
+import net.yupol.transmissionremote.model.json.Torrent;
 import net.yupol.transmissionremote.app.notifications.BackgroundUpdateJob;
 import net.yupol.transmissionremote.app.notifications.BackgroundUpdater;
-import net.yupol.transmissionremote.app.server.Server;
+import net.yupol.transmissionremote.model.Server;
 import net.yupol.transmissionremote.app.sorting.SortOrder;
 import net.yupol.transmissionremote.app.sorting.SortedBy;
 import net.yupol.transmissionremote.app.utils.ThemeUtils;

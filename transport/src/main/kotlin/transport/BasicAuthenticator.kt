@@ -1,10 +1,10 @@
-package net.yupol.transmissionremote.transport
+package transport
 
+import android.util.Base64
 import okhttp3.Authenticator
 import okhttp3.Request
 import okhttp3.Response
 import okhttp3.Route
-import java.util.*
 
 internal class BasicAuthenticator(private val login: String, private val password: String): Authenticator {
 
@@ -26,7 +26,7 @@ internal class BasicAuthenticator(private val login: String, private val passwor
     }
 
     private fun authHeader(login: String, password: String): String {
-        val credentials = Base64.getEncoder().encodeToString("$login:$password".toByteArray())
+        val credentials = Base64.encodeToString("$login:$password".toByteArray(), Base64.NO_WRAP)
         return "Basic $credentials"
     }
 }

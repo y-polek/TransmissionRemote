@@ -18,7 +18,7 @@ import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
 
 import net.yupol.transmissionremote.app.R;
-import net.yupol.transmissionremote.app.model.json.ServerSettings;
+import net.yupol.transmissionremote.model.json.ServerSettings;
 import net.yupol.transmissionremote.app.torrentdetails.BandwidthLimitFragment;
 import net.yupol.transmissionremote.app.transport.BaseSpiceActivity;
 import net.yupol.transmissionremote.app.transport.TransportManager;

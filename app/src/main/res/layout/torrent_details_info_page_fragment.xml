@@ -7,7 +7,7 @@
         <import type="net.yupol.transmissionremote.app.utils.TextUtils" />
         <variable
             name="torrent"
-            type="net.yupol.transmissionremote.app.model.json.Torrent" />
+            type="net.yupol.transmissionremote.model.json.Torrent" />
         <variable
             name="torrentInfo"
             type="net.yupol.transmissionremote.app.model.json.TorrentInfo" />

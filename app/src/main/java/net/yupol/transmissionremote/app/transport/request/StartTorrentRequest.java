@@ -1,6 +1,6 @@
 package net.yupol.transmissionremote.app.transport.request;
 
-import net.yupol.transmissionremote.app.model.json.Torrent;
+import net.yupol.transmissionremote.model.json.Torrent;
 
 import java.util.Collection;
 

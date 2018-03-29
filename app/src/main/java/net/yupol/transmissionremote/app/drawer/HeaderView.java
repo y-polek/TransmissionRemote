@@ -25,7 +25,7 @@ import com.mikepenz.materialdrawer.view.BezelImageView;
 
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.TransmissionRemote;
-import net.yupol.transmissionremote.app.server.Server;
+import net.yupol.transmissionremote.model.Server;
 import net.yupol.transmissionremote.app.utils.ColorUtils;
 
 import org.json.JSONArray;

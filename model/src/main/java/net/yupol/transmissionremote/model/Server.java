@@ -1,4 +1,4 @@
-package net.yupol.transmissionremote.app.server;
+package net.yupol.transmissionremote.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -11,8 +11,6 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
-
-import javax.annotation.Nonnull;
 
 public class Server implements Parcelable {
 
@@ -37,7 +35,7 @@ public class Server implements Parcelable {
     private List<String> savedDownloadLocations = new LinkedList<>();
     private long lastUpdateDate;
 
-    public Server(@Nonnull String name, @Nonnull String host, int port) {
+    public Server(@NonNull String name, @NonNull String host, int port) {
         if (port <= 0 || port > 0xFFFF)
             throw new IllegalArgumentException("Port number value must be in range [1, 65535], actual value: " + port);
         setId(UUID.randomUUID());
@@ -48,8 +46,8 @@ public class Server implements Parcelable {
         useAuthentication = false;
     }
 
-    public Server(@Nonnull String name, @Nonnull String host, int port,
-                  @Nonnull String userName, @Nonnull String password) {
+    public Server(@NonNull String name, @NonNull String host, int port,
+                  @NonNull String userName, @NonNull String password) {
         this(name, host, port);
 
         useAuthentication = true;
@@ -61,7 +59,7 @@ public class Server implements Parcelable {
         return name;
     }
 
-    public void setName(@Nonnull String name) {
+    public void setName(@NonNull String name) {
         this.name = name;
     }
 
@@ -69,7 +67,7 @@ public class Server implements Parcelable {
         return host;
     }
 
-    public void setHost(@Nonnull String host) {
+    public void setHost(@NonNull String host) {
         this.host = host;
     }
 

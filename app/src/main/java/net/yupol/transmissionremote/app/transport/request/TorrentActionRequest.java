@@ -2,7 +2,7 @@ package net.yupol.transmissionremote.app.transport.request;
 
 import android.util.Log;
 
-import net.yupol.transmissionremote.app.model.json.Torrent;
+import net.yupol.transmissionremote.model.json.Torrent;
 
 import org.json.JSONArray;
 import org.json.JSONException;

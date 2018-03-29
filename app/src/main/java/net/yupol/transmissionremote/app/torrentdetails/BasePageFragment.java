@@ -9,7 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import net.yupol.transmissionremote.app.BaseFragment;
-import net.yupol.transmissionremote.app.model.json.Torrent;
+import net.yupol.transmissionremote.model.json.Torrent;
 import net.yupol.transmissionremote.app.model.json.TorrentInfo;
 
 public abstract class BasePageFragment extends BaseFragment implements OnDataAvailableListener<TorrentInfo> {

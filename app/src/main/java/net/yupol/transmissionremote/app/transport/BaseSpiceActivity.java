@@ -4,7 +4,7 @@ import android.os.Bundle;
 
 import net.yupol.transmissionremote.app.BaseActivity;
 import net.yupol.transmissionremote.app.TransmissionRemote;
-import net.yupol.transmissionremote.app.server.Server;
+import net.yupol.transmissionremote.model.Server;
 
 public abstract class BaseSpiceActivity extends BaseActivity {
 

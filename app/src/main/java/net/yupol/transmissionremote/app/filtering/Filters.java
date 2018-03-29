@@ -1,6 +1,6 @@
 package net.yupol.transmissionremote.app.filtering;
 
-import net.yupol.transmissionremote.app.model.json.Torrent;
+import net.yupol.transmissionremote.model.json.Torrent;
 
 import static net.yupol.transmissionremote.app.R.string.filter_active;
 import static net.yupol.transmissionremote.app.R.string.filter_all;

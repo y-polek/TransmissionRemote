@@ -8,7 +8,7 @@ import android.view.ViewGroup;
 
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.databinding.TorrentDetailsInfoPageFragmentBinding;
-import net.yupol.transmissionremote.app.model.json.Torrent;
+import net.yupol.transmissionremote.model.json.Torrent;
 import net.yupol.transmissionremote.app.model.json.TorrentInfo;
 
 public class TorrentInfoPageFragment extends BasePageFragment {

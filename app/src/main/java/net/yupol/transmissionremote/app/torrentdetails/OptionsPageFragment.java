@@ -21,7 +21,7 @@ import com.octo.android.robospice.request.listener.RequestListener;
 
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.databinding.TorrentDetailsOptionsPageFragmentBinding;
-import net.yupol.transmissionremote.app.model.json.ServerSettings;
+import net.yupol.transmissionremote.model.json.ServerSettings;
 import net.yupol.transmissionremote.app.model.json.TorrentInfo;
 import net.yupol.transmissionremote.app.model.json.TransferPriority;
 import net.yupol.transmissionremote.app.model.limitmode.IdleLimitMode;

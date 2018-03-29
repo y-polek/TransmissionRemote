@@ -1,9 +1,9 @@
-package net.yupol.transmissionremote.transport
+package transport
 
 import com.serjltt.moshi.adapters.Wrapped
 import io.reactivex.Single
-import net.yupol.transmissionremote.model.ServerSettings
-import net.yupol.transmissionremote.model.Torrent
+import net.yupol.transmissionremote.model.json.ServerSettings
+import net.yupol.transmissionremote.model.json.Torrent
 import retrofit2.http.Body
 import retrofit2.http.POST
 

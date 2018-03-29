@@ -2,6 +2,8 @@ package net.yupol.transmissionremote.app.server;
 
 import junit.framework.TestCase;
 
+import net.yupol.transmissionremote.model.Server;
+
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertThat;
 

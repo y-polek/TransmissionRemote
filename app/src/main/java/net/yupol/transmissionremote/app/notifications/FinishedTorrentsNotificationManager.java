@@ -16,10 +16,10 @@ import com.google.common.base.Joiner;
 import net.yupol.transmissionremote.app.MainActivity;
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.TransmissionRemote;
-import net.yupol.transmissionremote.app.model.json.Torrent;
+import net.yupol.transmissionremote.model.json.Torrent;
 import net.yupol.transmissionremote.app.preferences.NotificationsPreferencesActivity;
 import net.yupol.transmissionremote.app.preferences.PreferencesActivity;
-import net.yupol.transmissionremote.app.server.Server;
+import net.yupol.transmissionremote.model.Server;
 
 import java.util.Collection;
 import java.util.List;

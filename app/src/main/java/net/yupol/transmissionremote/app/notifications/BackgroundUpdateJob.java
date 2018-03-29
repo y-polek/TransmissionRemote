@@ -14,7 +14,7 @@ import com.octo.android.robospice.request.listener.RequestListener;
 
 import net.yupol.transmissionremote.app.TransmissionRemote;
 import net.yupol.transmissionremote.app.model.json.Torrents;
-import net.yupol.transmissionremote.app.server.Server;
+import net.yupol.transmissionremote.model.Server;
 import net.yupol.transmissionremote.app.transport.RequestExecutor;
 import net.yupol.transmissionremote.app.transport.request.TorrentGetRequest;
 

@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.Button;
 
 import net.yupol.transmissionremote.app.R;
+import net.yupol.transmissionremote.model.Server;
 
 public class AddServerActivity extends AppCompatActivity {
 

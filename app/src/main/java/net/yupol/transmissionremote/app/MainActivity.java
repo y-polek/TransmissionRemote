@@ -68,8 +68,6 @@ import net.yupol.transmissionremote.app.drawer.HeaderView;
 import net.yupol.transmissionremote.app.drawer.SortDrawerItem;
 import net.yupol.transmissionremote.app.filtering.Filter;
 import net.yupol.transmissionremote.app.model.json.AddTorrentResult;
-import net.yupol.transmissionremote.app.model.json.ServerSettings;
-import net.yupol.transmissionremote.app.model.json.Torrent;
 import net.yupol.transmissionremote.app.notifications.FinishedTorrentsNotificationManager;
 import net.yupol.transmissionremote.app.opentorrent.DownloadLocationDialogFragment;
 import net.yupol.transmissionremote.app.opentorrent.OpenAddressDialogFragment;
@@ -78,7 +76,6 @@ import net.yupol.transmissionremote.app.preferences.PreferencesActivity;
 import net.yupol.transmissionremote.app.preferences.ServerPreferencesActivity;
 import net.yupol.transmissionremote.app.preferences.ServersActivity;
 import net.yupol.transmissionremote.app.server.AddServerActivity;
-import net.yupol.transmissionremote.app.server.Server;
 import net.yupol.transmissionremote.app.sorting.SortOrder;
 import net.yupol.transmissionremote.app.sorting.SortedBy;
 import net.yupol.transmissionremote.app.torrentdetails.TorrentDetailsActivity;
@@ -92,7 +89,6 @@ import net.yupol.transmissionremote.app.transport.TransportManager;
 import net.yupol.transmissionremote.app.transport.request.AddTorrentByFileRequest;
 import net.yupol.transmissionremote.app.transport.request.AddTorrentByUrlRequest;
 import net.yupol.transmissionremote.app.transport.request.ResponseFailureException;
-import net.yupol.transmissionremote.app.transport.request.SessionGetRequest;
 import net.yupol.transmissionremote.app.transport.request.SessionSetRequest;
 import net.yupol.transmissionremote.app.transport.request.StartTorrentRequest;
 import net.yupol.transmissionremote.app.transport.request.StopTorrentRequest;
@@ -100,6 +96,9 @@ import net.yupol.transmissionremote.app.transport.request.TorrentRemoveRequest;
 import net.yupol.transmissionremote.app.utils.DialogUtils;
 import net.yupol.transmissionremote.app.utils.IconUtils;
 import net.yupol.transmissionremote.app.utils.ThemeUtils;
+import net.yupol.transmissionremote.model.Server;
+import net.yupol.transmissionremote.model.json.ServerSettings;
+import net.yupol.transmissionremote.model.json.Torrent;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -119,11 +118,17 @@ import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
 import io.fabric.sdk.android.Fabric;
+import io.reactivex.SingleObserver;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 import permissions.dispatcher.NeedsPermission;
 import permissions.dispatcher.OnNeverAskAgain;
 import permissions.dispatcher.OnShowRationale;
 import permissions.dispatcher.PermissionRequest;
 import permissions.dispatcher.RuntimePermissions;
+import transport.RpcRequest;
+import transport.Transport;
 
 import static android.preference.PreferenceManager.getDefaultSharedPreferences;
 
@@ -229,6 +234,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
     private boolean showFab;
     private FreeSpaceFooterDrawerItem freeSpaceFooterDrawerItem;
     private FinishedTorrentsNotificationManager finishedTorrentsNotificationManager;
+    private Transport transport;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -1056,7 +1062,8 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
         List<Server> servers = application.getServers();
         headerView.setServers(servers, servers.indexOf(server));
 
-        torrentUpdater = new TorrentUpdater(getTransportManager(), MainActivity.this, application.getUpdateInterval());
+        transport = new Transport(server);
+        torrentUpdater = new TorrentUpdater(transport, MainActivity.this, application.getUpdateInterval());
         torrentUpdater.start();
 
         startPreferencesUpdateTimer();
@@ -1069,21 +1076,28 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
         prefsUpdateTimer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                getTransportManager().doRequest(new SessionGetRequest(), new RequestListener<ServerSettings>() {
-                    @Override
-                    public void onRequestFailure(SpiceException spiceException) {
-                        Log.e(TAG, "Failed to obtain server settings");
-                    }
 
-                    @Override
-                    public void onRequestSuccess(ServerSettings serverSettings) {
-                        application.setSpeedLimitEnabled(serverSettings.isAltSpeedLimitEnabled());
-                        application.setDefaultDownloadDir(serverSettings.getDownloadDir());
-                        if (drawer != null && !drawer.switchedDrawerContent()) {
-                            drawer.updateStickyFooterItem(freeSpaceFooterDrawerItem.withFreeSpace(serverSettings.getDownloadDirFreeSpace()));
-                        }
-                    }
-                });
+                transport.getApi().serverSettings(RpcRequest.sessionGet())
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new SingleObserver<ServerSettings>() {
+                            @Override
+                            public void onSubscribe(Disposable d) {}
+
+                            @Override
+                            public void onSuccess(ServerSettings serverSettings) {
+                                application.setSpeedLimitEnabled(serverSettings.isAltSpeedLimitEnabled());
+                                application.setDefaultDownloadDir(serverSettings.getDownloadDir());
+                                if (drawer != null && !drawer.switchedDrawerContent()) {
+                                    drawer.updateStickyFooterItem(freeSpaceFooterDrawerItem.withFreeSpace(serverSettings.getDownloadDirFreeSpace()));
+                                }
+                            }
+
+                            @Override
+                            public void onError(Throwable e) {
+                                Log.e(TAG, "Failed to obtain server settings", e);
+                            }
+                        });
             }
         }, 0, TimeUnit.SECONDS.toMillis(Math.max(application.getUpdateInterval(), MIN_PREFS_UPDATE_INTERVAL)));
     }

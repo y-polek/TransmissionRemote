@@ -1,36 +1,36 @@
-package net.yupol.transmissionremote.app.model.json;
+package net.yupol.transmissionremote.model.json;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.google.api.client.util.Key;
+import com.squareup.moshi.Json;
 
-import net.yupol.transmissionremote.app.model.ID;
+import net.yupol.transmissionremote.model.ID;
 
 public class Torrent implements ID, Parcelable {
-    @Key private int id;
-    @Key private String name;
-    @Key private long addedDate;
-    @Key private long totalSize;
-    @Key private double percentDone;
-    @Key private int status;
-    @Key("rateDownload") private int downloadRate;
-    @Key("rateUpload") private int uploadRate;
-    @Key private long eta;
-    @Key("uploadedEver") private long uploadedSize;
-    @Key private double uploadRatio;
-    @Key("error") private int errorId;
-    private Error error;
-    @Key private String errorString;
-    @Key private boolean isFinished;
-    @Key private long sizeWhenDone;
-    @Key private long leftUntilDone;
-    @Key private int peersGettingFromUs;
-    @Key private int peersSendingToUs;
-    @Key private int webseedsSendingToUs;
-    @Key private int queuePosition;
-    @Key private double recheckProgress;
-    @Key private long doneDate;
+    @Json(name = "id") private int id;
+    @Json(name = "name") private String name;
+    @Json(name = "addedDate") private long addedDate;
+    @Json(name = "totalSize") private long totalSize;
+    @Json(name = "percentDone") private double percentDone;
+    @Json(name = "status") private int status;
+    @Json(name = "rateDownload") private int downloadRate;
+    @Json(name = "rateUpload") private int uploadRate;
+    @Json(name = "eta") private long eta;
+    @Json(name = "uploadedEver") private long uploadedSize;
+    @Json(name = "uploadRatio") private double uploadRatio;
+    @Json(name = "error") private int errorId;
+    private transient Error error;
+    @Json(name = "errorString") private String errorString;
+    @Json(name = "isFinished") private boolean isFinished;
+    @Json(name = "sizeWhenDone") private long sizeWhenDone;
+    @Json(name = "leftUntilDone") private long leftUntilDone;
+    @Json(name = "peersGettingFromUs") private int peersGettingFromUs;
+    @Json(name = "peersSendingToUs") private int peersSendingToUs;
+    @Json(name = "webseedsSendingToUs") private int webseedsSendingToUs;
+    @Json(name = "queuePosition") private int queuePosition;
+    @Json(name = "recheckProgress") private double recheckProgress;
+    @Json(name = "doneDate") private long doneDate;
 
     public Torrent() {}
 

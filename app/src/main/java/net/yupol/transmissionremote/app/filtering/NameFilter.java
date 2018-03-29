@@ -3,7 +3,7 @@ package net.yupol.transmissionremote.app.filtering;
 import android.support.annotation.NonNull;
 
 import net.yupol.transmissionremote.app.R;
-import net.yupol.transmissionremote.app.model.json.Torrent;
+import net.yupol.transmissionremote.model.json.Torrent;
 
 public class NameFilter extends BaseFilter {
 
