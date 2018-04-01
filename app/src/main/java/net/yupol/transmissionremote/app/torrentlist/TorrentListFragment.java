@@ -42,8 +42,6 @@ import net.yupol.transmissionremote.app.TransmissionRemote.OnSortingChangedListe
 import net.yupol.transmissionremote.app.TransmissionRemote.OnTorrentsUpdatedListener;
 import net.yupol.transmissionremote.app.filtering.Filter;
 import net.yupol.transmissionremote.app.filtering.NameFilter;
-import net.yupol.transmissionremote.model.json.Torrent;
-import net.yupol.transmissionremote.app.model.json.Torrents;
 import net.yupol.transmissionremote.app.transport.BaseSpiceActivity;
 import net.yupol.transmissionremote.app.transport.TransportManager;
 import net.yupol.transmissionremote.app.transport.request.ReannounceTorrentRequest;
@@ -52,7 +50,6 @@ import net.yupol.transmissionremote.app.transport.request.Request;
 import net.yupol.transmissionremote.app.transport.request.SetLocationRequest;
 import net.yupol.transmissionremote.app.transport.request.StartTorrentRequest;
 import net.yupol.transmissionremote.app.transport.request.StopTorrentRequest;
-import net.yupol.transmissionremote.app.transport.request.TorrentGetRequest;
 import net.yupol.transmissionremote.app.transport.request.VerifyTorrentRequest;
 import net.yupol.transmissionremote.app.utils.ColorUtils;
 import net.yupol.transmissionremote.app.utils.DividerItemDecoration;
@@ -61,6 +58,7 @@ import net.yupol.transmissionremote.app.utils.TextUtils;
 import net.yupol.transmissionremote.app.utils.diff.Equals;
 import net.yupol.transmissionremote.app.utils.diff.ListDiff;
 import net.yupol.transmissionremote.app.utils.diff.Range;
+import net.yupol.transmissionremote.model.json.Torrent;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -71,6 +69,14 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+
+import io.reactivex.SingleObserver;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
+import transport.RpcRequest;
+import transport.Transport;
 
 public class TorrentListFragment extends Fragment implements ChooseLocationDialogFragment.OnLocationSelectedListener, RenameDialogFragment.OnNameSelectedListener {
 
@@ -90,6 +96,7 @@ public class TorrentListFragment extends Fragment implements ChooseLocationDialo
 
     private TransmissionRemote app;
     private TransportManager transportManager;
+    private Transport transport;
 
     private Collection<Torrent> allTorrents = Collections.emptyList();
     private Set<Integer/*torrent ID*/> updateRequests = new HashSet<>();
@@ -228,6 +235,7 @@ public class TorrentListFragment extends Fragment implements ChooseLocationDialo
     private ActionMode actionMode;
     private int[] restoredSelection;
     private RecyclerView recyclerView;
+    private CompositeDisposable requests = new CompositeDisposable();
 
     @Override
     public void onAttach(Context context) {
@@ -242,6 +250,7 @@ public class TorrentListFragment extends Fragment implements ChooseLocationDialo
         if (!(activity instanceof BaseSpiceActivity))
             throw new IllegalStateException("Fragment must be used with BaseSpiceActivity");
         transportManager = ((BaseSpiceActivity) activity).getTransportManager();
+        transport = new Transport(app.getActiveServer());
 
         if (activity instanceof OnTorrentSelectedListener) {
             torrentSelectedListener = (OnTorrentSelectedListener) activity;
@@ -297,6 +306,7 @@ public class TorrentListFragment extends Fragment implements ChooseLocationDialo
 
     @Override
     public void onStop() {
+        requests.clear();
         app.removeTorrentsUpdatedListener(torrentsListener);
         if (actionMode != null) {
             actionMode.finish();
@@ -725,27 +735,36 @@ public class TorrentListFragment extends Fragment implements ChooseLocationDialo
             updateRequests.add(id);
         }
 
-        transportManager.doRequest(new TorrentGetRequest(torrentIds), new RequestListener<Torrents>() {
-            @Override
-            public void onRequestFailure(SpiceException spiceException) {
-                removeIds();
-                Log.e(TAG, "Failed to update torrent", spiceException);
-            }
+        transport.getApi().torrentList(RpcRequest.torrentGet(torrentIds))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .delay(UPDATE_REQUEST_DELAY, TimeUnit.MILLISECONDS)
+                .subscribe(new SingleObserver<List<Torrent>>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        requests.add(d);
+                    }
 
-            @Override
-            public void onRequestSuccess(Torrents torrents) {
-                removeIds();
-                for (Torrent torrent : torrents) {
-                    adapter.updateTorrent(torrent);
-                }
-            }
+                    @Override
+                    public void onSuccess(List<Torrent> torrents) {
+                        removeIds();
+                        for (Torrent torrent : torrents) {
+                            adapter.updateTorrent(torrent);
+                        }
+                    }
 
-            private void removeIds() {
-                for (int id : torrentIds) {
-                    updateRequests.remove(id);
-                }
-            }
-        }, UPDATE_REQUEST_DELAY);
+                    @Override
+                    public void onError(Throwable e) {
+                        removeIds();
+                        Log.e(TAG, "Failed to update torrent", e);
+                    }
+
+                    private void removeIds() {
+                        for (int id : torrentIds) {
+                            updateRequests.remove(id);
+                        }
+                    }
+                });
     }
 
     private void sendStopTorrentsRequest(final int... ids) {
