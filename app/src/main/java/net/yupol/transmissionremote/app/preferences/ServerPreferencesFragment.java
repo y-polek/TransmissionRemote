@@ -25,7 +25,11 @@ import net.yupol.transmissionremote.app.transport.BaseSpiceActivity;
 import net.yupol.transmissionremote.app.transport.TransportManager;
 import net.yupol.transmissionremote.app.transport.request.SessionSetRequest;
 import net.yupol.transmissionremote.app.utils.IconUtils;
+import net.yupol.transmissionremote.model.Parameter;
 import net.yupol.transmissionremote.model.json.ServerSettings;
+
+import java.util.LinkedList;
+import java.util.List;
 
 import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -34,6 +38,13 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import transport.RpcRequest;
 import transport.Transport;
+
+import static transport.SessionParameters.altSpeedLimitDown;
+import static transport.SessionParameters.altSpeedLimitUp;
+import static transport.SessionParameters.speedLimitDown;
+import static transport.SessionParameters.speedLimitDownEnabled;
+import static transport.SessionParameters.speedLimitUp;
+import static transport.SessionParameters.speedLimitUpEnabled;
 
 public class ServerPreferencesFragment extends Fragment {
 
@@ -159,6 +170,43 @@ public class ServerPreferencesFragment extends Fragment {
         }
 
         return builder;
+    }
+
+    public List<Parameter<String, ?>> getSessionParameters() {
+
+        List<Parameter<String, ?>> params = new LinkedList<>();
+
+        boolean downloadLimited = globalBandwidthLimitFragment.isDownloadLimited();
+        if (serverSettings.isSpeedLimitDownEnabled() != downloadLimited) {
+            params.add(speedLimitDownEnabled(downloadLimited));
+        }
+
+        long downloadLimit = globalBandwidthLimitFragment.getDownloadLimit();
+        if (serverSettings.getSpeedLimitDown() != downloadLimit) {
+            params.add(speedLimitDown(downloadLimit));
+        }
+
+        boolean uploadLimited = globalBandwidthLimitFragment.isUploadLimited();
+        if (serverSettings.isSpeedLimitUpEnabled() != uploadLimited) {
+            params.add(speedLimitUpEnabled(uploadLimited));
+        }
+
+        long uploadLimit = globalBandwidthLimitFragment.getUploadLimit();
+        if (serverSettings.getSpeedLimitUp() != uploadLimit) {
+            params.add(speedLimitUp(uploadLimit));
+        }
+
+        long altDownloadLimit = altBandwidthLimitFragment.getDownloadLimit();
+        if (serverSettings.getAltSpeedLimitDown() != altDownloadLimit) {
+            params.add(altSpeedLimitDown(altDownloadLimit));
+        }
+
+        long altUploadLimit = altBandwidthLimitFragment.getUploadLimit();
+        if (serverSettings.getAltSpeedLimitUp() != altUploadLimit) {
+            params.add(altSpeedLimitUp(uploadLimit));
+        }
+
+        return params;
     }
 
     private void updateUi() {
