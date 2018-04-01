@@ -21,9 +21,7 @@ import com.octo.android.robospice.request.listener.RequestListener;
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.TransmissionRemote;
 import net.yupol.transmissionremote.app.databinding.TorrentDetailsLayoutBinding;
-import net.yupol.transmissionremote.model.json.Torrent;
 import net.yupol.transmissionremote.app.model.json.TorrentInfo;
-import net.yupol.transmissionremote.app.model.json.Torrents;
 import net.yupol.transmissionremote.app.torrentlist.ChooseLocationDialogFragment;
 import net.yupol.transmissionremote.app.torrentlist.RemoveTorrentsDialogFragment;
 import net.yupol.transmissionremote.app.torrentlist.RenameDialogFragment;
@@ -33,14 +31,22 @@ import net.yupol.transmissionremote.app.transport.request.RenameRequest;
 import net.yupol.transmissionremote.app.transport.request.SetLocationRequest;
 import net.yupol.transmissionremote.app.transport.request.StartTorrentRequest;
 import net.yupol.transmissionremote.app.transport.request.StopTorrentRequest;
-import net.yupol.transmissionremote.app.transport.request.TorrentGetRequest;
 import net.yupol.transmissionremote.app.transport.request.TorrentInfoGetRequest;
 import net.yupol.transmissionremote.app.transport.request.TorrentRemoveRequest;
 import net.yupol.transmissionremote.app.transport.request.TorrentSetRequest;
 import net.yupol.transmissionremote.app.transport.request.VerifyTorrentRequest;
+import net.yupol.transmissionremote.model.json.Torrent;
 
 import java.util.LinkedList;
 import java.util.List;
+
+import io.reactivex.SingleObserver;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
+import transport.RpcRequest;
+import transport.Transport;
 
 public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveChangesDialogFragment.SaveDiscardListener,
         RemoveTorrentsDialogFragment.OnRemoveTorrentSelectionListener, ChooseLocationDialogFragment.OnLocationSelectedListener,
@@ -69,6 +75,8 @@ public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveCha
     private TorrentInfoUpdater torrentInfoUpdater;
     private TorrentDetailsLayoutBinding binding;
     private SharedPreferences sharedPreferences;
+    private Transport transport;
+    private CompositeDisposable requests = new CompositeDisposable();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,6 +85,7 @@ public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveCha
         binding = DataBindingUtil.setContentView(this, R.layout.torrent_details_layout);
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(TorrentDetailsActivity.this);
+        transport = new Transport(TransmissionRemote.getInstance().getActiveServer());
 
         if (savedInstanceState != null) {
             torrentInfo = savedInstanceState.getParcelable(KEY_TORRENT_INFO);
@@ -113,6 +122,12 @@ public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveCha
     protected void onPause() {
         super.onPause();
         torrentInfoUpdater.stop();
+    }
+
+    @Override
+    protected void onStop() {
+        requests.clear();
+        super.onStop();
     }
 
     @Override
@@ -354,22 +369,30 @@ public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveCha
             }
 
             private void updateTorrentAndTorrentInfo() {
-                getTransportManager().doRequest(new TorrentGetRequest(torrentId), new RequestListener<Torrents>() {
-                    @Override
-                    public void onRequestSuccess(Torrents torrents) {
-                        if (torrents.size() != 1) {
-                            Log.e(TAG, "Wrong number of torrents");
-                            return;
-                        }
+                transport.getApi().torrentList(RpcRequest.torrentGet(torrentId))
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new SingleObserver<List<Torrent>>() {
+                            @Override
+                            public void onSubscribe(Disposable d) {
+                                requests.add(d);
+                            }
 
-                        updateTorrentInfo(torrents.get(0));
-                    }
+                            @Override
+                            public void onSuccess(List<Torrent> torrents) {
+                                if (torrents.size() != 1) {
+                                    Log.e(TAG, "Wrong number of torrents");
+                                    return;
+                                }
 
-                    @Override
-                    public void onRequestFailure(SpiceException spiceException) {
-                        Log.e(TAG, "Failed to reload torrent", spiceException);
-                    }
-                });
+                                updateTorrentInfo(torrents.get(0));
+                            }
+
+                            @Override
+                            public void onError(Throwable e) {
+                                Log.e(TAG, "Failed to reload torrent", e);
+                            }
+                        });
             }
 
             private void updateTorrentInfo(final Torrent torrent) {
