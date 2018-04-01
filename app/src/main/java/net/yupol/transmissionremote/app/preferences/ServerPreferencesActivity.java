@@ -7,17 +7,22 @@ import android.support.v7.app.ActionBar;
 import android.util.Log;
 import android.view.MenuItem;
 
-import com.octo.android.robospice.persistence.exception.SpiceException;
-import com.octo.android.robospice.request.listener.RequestListener;
-
 import net.yupol.transmissionremote.app.ProgressbarFragment;
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.TransmissionRemote;
-import net.yupol.transmissionremote.model.json.ServerSettings;
 import net.yupol.transmissionremote.app.torrentdetails.SaveChangesDialogFragment;
 import net.yupol.transmissionremote.app.transport.BaseSpiceActivity;
-import net.yupol.transmissionremote.app.transport.request.SessionGetRequest;
 import net.yupol.transmissionremote.app.transport.request.SessionSetRequest;
+import net.yupol.transmissionremote.model.Server;
+import net.yupol.transmissionremote.model.json.ServerSettings;
+
+import io.reactivex.SingleObserver;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
+import transport.RpcRequest;
+import transport.Transport;
 
 public class ServerPreferencesActivity extends BaseSpiceActivity implements SaveChangesDialogFragment.SaveDiscardListener {
 
@@ -28,6 +33,7 @@ public class ServerPreferencesActivity extends BaseSpiceActivity implements Save
     private static final String KEY_SAVE_CHANGES_REQUEST = "key_save_changes_request";
 
     private SessionSetRequest saveChangesRequest;
+    private CompositeDisposable requests = new CompositeDisposable();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,19 +50,35 @@ public class ServerPreferencesActivity extends BaseSpiceActivity implements Save
         if (savedInstanceState == null) {
             showProgressbarFragment();
 
-            getTransportManager().doRequest(new SessionGetRequest(), new RequestListener<ServerSettings>() {
-                @Override
-                public void onRequestFailure(SpiceException spiceException) {
-                    Log.e(TAG, "Failed to obtain server settings");
-                }
+            final TransmissionRemote app = (TransmissionRemote) getApplication();
+            Server activeServer = app.getActiveServer();
+            new Transport(activeServer).getApi().serverSettings(RpcRequest.sessionGet())
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new SingleObserver<ServerSettings>() {
+                        @Override
+                        public void onSubscribe(Disposable d) {
+                            requests.clear();
+                        }
 
-                @Override
-                public void onRequestSuccess(ServerSettings serverSettings) {
-                    ((TransmissionRemote) getApplication()).setSpeedLimitEnabled(serverSettings.isAltSpeedLimitEnabled());
-                    showPreferencesFragment(serverSettings);
-                }
-            });
+                        @Override
+                        public void onSuccess(ServerSettings serverSettings) {
+                            app.setSpeedLimitEnabled(serverSettings.isAltSpeedLimitEnabled());
+                            showPreferencesFragment(serverSettings);
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                            Log.e(TAG, "Failed to obtain server settings", e);
+                        }
+                    });
         }
+    }
+
+    @Override
+    protected void onStop() {
+        requests.clear();
+        super.onStop();
     }
 
     @Override
