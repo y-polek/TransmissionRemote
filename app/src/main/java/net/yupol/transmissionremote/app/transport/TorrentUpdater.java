@@ -119,7 +119,7 @@ public class TorrentUpdater {
 
                         @Override
                         public void onError(Throwable e) {
-                            Log.e(TAG, "TorrentGetRequest failed", e);
+                            Log.e(TAG, "Can't fetch torrent list", e);
                             responseReceived = Boolean.TRUE;
 
                             NetworkError error = NetworkError.OTHER;
