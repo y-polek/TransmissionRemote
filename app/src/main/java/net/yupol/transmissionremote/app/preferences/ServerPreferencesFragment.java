@@ -1,6 +1,7 @@
 package net.yupol.transmissionremote.app.preferences;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -18,13 +19,21 @@ import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
 
 import net.yupol.transmissionremote.app.R;
-import net.yupol.transmissionremote.model.json.ServerSettings;
+import net.yupol.transmissionremote.app.TransmissionRemote;
 import net.yupol.transmissionremote.app.torrentdetails.BandwidthLimitFragment;
 import net.yupol.transmissionremote.app.transport.BaseSpiceActivity;
 import net.yupol.transmissionremote.app.transport.TransportManager;
-import net.yupol.transmissionremote.app.transport.request.SessionGetRequest;
 import net.yupol.transmissionremote.app.transport.request.SessionSetRequest;
 import net.yupol.transmissionremote.app.utils.IconUtils;
+import net.yupol.transmissionremote.model.json.ServerSettings;
+
+import io.reactivex.SingleObserver;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
+import transport.RpcRequest;
+import transport.Transport;
 
 public class ServerPreferencesFragment extends Fragment {
 
@@ -39,6 +48,7 @@ public class ServerPreferencesFragment extends Fragment {
     private TextView altLimitHeader;
     private TransportManager transportManager;
     private Menu menu;
+    private CompositeDisposable requests = new CompositeDisposable();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -47,8 +57,9 @@ public class ServerPreferencesFragment extends Fragment {
     }
 
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        Activity activity = getActivity();
         if (activity instanceof BaseSpiceActivity) {
             transportManager = ((BaseSpiceActivity) activity).getTransportManager();
         }
@@ -65,6 +76,12 @@ public class ServerPreferencesFragment extends Fragment {
         altLimitHeader = view.findViewById(R.id.turtle_limit_header_text);
 
         return view;
+    }
+
+    @Override
+    public void onStop() {
+        requests.clear();
+        super.onStop();
     }
 
     @Override
@@ -198,21 +215,29 @@ public class ServerPreferencesFragment extends Fragment {
     }
 
     private void sendPreferencesUpdateRequest() {
-        transportManager.doRequest(new SessionGetRequest(), new RequestListener<ServerSettings>() {
-            @Override
-            public void onRequestFailure(SpiceException spiceException) {
-                Toast.makeText(getActivity(), getString(R.string.preferences_update_failed), Toast.LENGTH_LONG).show();
-                saveFinished();
-            }
+        new Transport(TransmissionRemote.getInstance().getActiveServer()).getApi().serverSettings(RpcRequest.sessionGet())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new SingleObserver<ServerSettings>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        requests.add(d);
+                    }
 
-            @Override
-            public void onRequestSuccess(ServerSettings settings) {
-                serverSettings = settings;
-                updateUi();
-                Toast.makeText(getActivity(), getString(R.string.saved), Toast.LENGTH_SHORT).show();
-                saveFinished();
-            }
-        });
+                    @Override
+                    public void onSuccess(ServerSettings settings) {
+                        serverSettings = settings;
+                        updateUi();
+                        Toast.makeText(getActivity(), getString(R.string.saved), Toast.LENGTH_SHORT).show();
+                        saveFinished();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Toast.makeText(getActivity(), getString(R.string.preferences_update_failed), Toast.LENGTH_LONG).show();
+                        saveFinished();
+                    }
+                });
     }
 
     private void saveStarted() {
