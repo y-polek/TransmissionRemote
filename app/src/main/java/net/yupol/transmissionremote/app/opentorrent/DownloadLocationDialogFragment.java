@@ -32,16 +32,23 @@ import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.TransmissionRemote;
 import net.yupol.transmissionremote.app.databinding.DownloadLocationDialogBinding;
 import net.yupol.transmissionremote.app.model.json.FreeSpace;
-import net.yupol.transmissionremote.model.json.ServerSettings;
-import net.yupol.transmissionremote.model.Server;
 import net.yupol.transmissionremote.app.transport.BaseSpiceActivity;
 import net.yupol.transmissionremote.app.transport.TransportManager;
 import net.yupol.transmissionremote.app.transport.request.FreeSpaceRequest;
-import net.yupol.transmissionremote.app.transport.request.SessionGetRequest;
 import net.yupol.transmissionremote.app.utils.SimpleTextWatcher;
 import net.yupol.transmissionremote.app.utils.TextUtils;
+import net.yupol.transmissionremote.model.Server;
+import net.yupol.transmissionremote.model.json.ServerSettings;
 
 import java.util.List;
+
+import io.reactivex.SingleObserver;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
+import transport.RpcRequest;
+import transport.Transport;
 
 public class DownloadLocationDialogFragment extends DialogFragment {
 
@@ -61,8 +68,8 @@ public class DownloadLocationDialogFragment extends DialogFragment {
     private FreeSpaceRequest currentRequest;
     private FreeSpace freeSpace;
     private DownloadLocationDialogBinding binding;
-    private SessionGetRequest sessionGetRequest;
     private TransmissionRemote app;
+    private CompositeDisposable requests = new CompositeDisposable();
 
     private ListPopupWindow downloadLocationsPopup;
 
@@ -101,23 +108,31 @@ public class DownloadLocationDialogFragment extends DialogFragment {
                     }
                 }
             });
-            sessionGetRequest = new SessionGetRequest();
-            getTransportManager().doRequest(new SessionGetRequest(), new RequestListener<ServerSettings>() {
-                @Override
-                public void onRequestSuccess(ServerSettings serverSettings) {
-                    binding.setLoadingInProgress(false);
-                    binding.downloadLocationText.setText(Strings.nullToEmpty(serverSettings.getDownloadDir()));
-                    AlertDialog dialog = (AlertDialog) getDialog();
-                    if (dialog != null) dialog.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(true);
-                }
 
-                @Override
-                public void onRequestFailure(SpiceException spiceException) {
-                    binding.setLoadingInProgress(false);
-                    AlertDialog dialog = (AlertDialog) getDialog();
-                    if (dialog != null) dialog.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(true);
-                }
-            });
+            new Transport(app.getActiveServer()).getApi().serverSettings(RpcRequest.sessionGet())
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new SingleObserver<ServerSettings>() {
+                        @Override
+                        public void onSubscribe(Disposable d) {
+                            requests.add(d);
+                        }
+
+                        @Override
+                        public void onSuccess(ServerSettings serverSettings) {
+                            binding.setLoadingInProgress(false);
+                            binding.downloadLocationText.setText(Strings.nullToEmpty(serverSettings.getDownloadDir()));
+                            AlertDialog dialog = (AlertDialog) getDialog();
+                            if (dialog != null) dialog.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(true);
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                            binding.setLoadingInProgress(false);
+                            AlertDialog dialog = (AlertDialog) getDialog();
+                            if (dialog != null) dialog.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(true);
+                        }
+                    });
         }
 
         binding.downloadLocationDropdownButton.setOnClickListener(new View.OnClickListener() {
@@ -257,7 +272,7 @@ public class DownloadLocationDialogFragment extends DialogFragment {
     @Override
     public void onDismiss(DialogInterface dialog) {
         if (currentRequest != null) currentRequest.cancel();
-        if (sessionGetRequest != null) sessionGetRequest.cancel();
+        requests.clear();
         super.onDismiss(dialog);
     }
 
