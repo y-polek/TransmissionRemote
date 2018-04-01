@@ -9,19 +9,23 @@ import com.evernote.android.job.Job;
 import com.evernote.android.job.JobCreator;
 import com.evernote.android.job.JobManager;
 import com.evernote.android.job.JobRequest;
-import com.octo.android.robospice.persistence.exception.SpiceException;
-import com.octo.android.robospice.request.listener.RequestListener;
 
 import net.yupol.transmissionremote.app.TransmissionRemote;
-import net.yupol.transmissionremote.app.model.json.Torrents;
 import net.yupol.transmissionremote.model.Server;
-import net.yupol.transmissionremote.app.transport.RequestExecutor;
-import net.yupol.transmissionremote.app.transport.request.TorrentGetRequest;
+import net.yupol.transmissionremote.model.json.Torrent;
 
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+
+import io.reactivex.SingleObserver;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
+import transport.RpcRequest;
+import transport.Transport;
 
 public class BackgroundUpdateJob extends Job {
 
@@ -35,29 +39,37 @@ public class BackgroundUpdateJob extends Job {
 
         List<Server> servers = TransmissionRemote.getApplication(context).getServers();
         final CountDownLatch countDownLatch = new CountDownLatch(servers.size());
-        final RequestExecutor requestExecutor = new RequestExecutor(context);
         final FinishedTorrentsNotificationManager finishedTorrentsNotificationManager = new FinishedTorrentsNotificationManager(context);
 
+        final CompositeDisposable requests = new CompositeDisposable();
         for (final Server server : servers) {
-            requestExecutor.executeRequest(new TorrentGetRequest(), server, new RequestListener<Torrents>() {
-                @Override
-                public void onRequestSuccess(Torrents torrents) {
-                    finishedTorrentsNotificationManager.checkForFinishedTorrents(server, torrents);
-                    countDownLatch.countDown();
-                }
+            new Transport(server).getApi().torrentList(RpcRequest.torrentGet())
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new SingleObserver<List<Torrent>>() {
+                        @Override
+                        public void onSubscribe(Disposable d) {
+                            requests.add(d);
+                        }
 
-                @Override
-                public void onRequestFailure(SpiceException spiceException) {
-                    Log.e(TAG, "Failed to retrieve torrent list from " + server.getName() + "(" + server.getHost() + ")");
-                    countDownLatch.countDown();
-                }
-            });
+                        @Override
+                        public void onSuccess(List<Torrent> torrents) {
+                            finishedTorrentsNotificationManager.checkForFinishedTorrents(server, torrents);
+                            countDownLatch.countDown();
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                            Log.e(TAG, "Failed to retrieve torrent list from " + server.getName() + "(" + server.getHost() + ")", e);
+                            countDownLatch.countDown();
+                        }
+                    });
         }
 
         try {
             countDownLatch.await(2, TimeUnit.MINUTES);
         } catch (InterruptedException e) {
-            requestExecutor.unregisterAllListeners();
+            requests.clear();
             return Result.FAILURE;
         }
 
