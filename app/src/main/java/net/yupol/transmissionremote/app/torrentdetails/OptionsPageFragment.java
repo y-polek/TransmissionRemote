@@ -20,8 +20,8 @@ import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
 
 import net.yupol.transmissionremote.app.R;
+import net.yupol.transmissionremote.app.TransmissionRemote;
 import net.yupol.transmissionremote.app.databinding.TorrentDetailsOptionsPageFragmentBinding;
-import net.yupol.transmissionremote.model.json.ServerSettings;
 import net.yupol.transmissionremote.app.model.json.TorrentInfo;
 import net.yupol.transmissionremote.app.model.json.TransferPriority;
 import net.yupol.transmissionremote.app.model.limitmode.IdleLimitMode;
@@ -29,11 +29,19 @@ import net.yupol.transmissionremote.app.model.limitmode.LimitMode;
 import net.yupol.transmissionremote.app.model.limitmode.RatioLimitMode;
 import net.yupol.transmissionremote.app.transport.BaseSpiceActivity;
 import net.yupol.transmissionremote.app.transport.TransportManager;
-import net.yupol.transmissionremote.app.transport.request.SessionGetRequest;
 import net.yupol.transmissionremote.app.transport.request.TorrentInfoGetRequest;
 import net.yupol.transmissionremote.app.transport.request.TorrentSetRequest;
 import net.yupol.transmissionremote.app.utils.IconUtils;
 import net.yupol.transmissionremote.app.utils.MinMaxTextWatcher;
+import net.yupol.transmissionremote.model.json.ServerSettings;
+
+import io.reactivex.SingleObserver;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
+import transport.RpcRequest;
+import transport.Transport;
 
 public class OptionsPageFragment extends BasePageFragment implements AdapterView.OnItemSelectedListener,
         OnActivityExitingListener<TorrentSetRequest.Builder> {
@@ -48,8 +56,8 @@ public class OptionsPageFragment extends BasePageFragment implements AdapterView
     private MenuItem saveMenuItem;
 
     private boolean viewCreated;
-    private SessionGetRequest sessionGetRequest;
     private TorrentDetailsOptionsPageFragmentBinding binding;
+    private CompositeDisposable requests = new CompositeDisposable();
 
     @Override
     public void onAttach(Context context) {
@@ -67,9 +75,7 @@ public class OptionsPageFragment extends BasePageFragment implements AdapterView
     public void onDetach() {
         super.onDetach();
 
-        if (sessionGetRequest != null) {
-            sessionGetRequest.cancel();
-        }
+        requests.clear();
 
         if (getActivity() instanceof TorrentDetailsActivity) {
             TorrentDetailsActivity activity = (TorrentDetailsActivity) getActivity();
@@ -87,20 +93,27 @@ public class OptionsPageFragment extends BasePageFragment implements AdapterView
 
         setHasOptionsMenu(true);
 
-        sessionGetRequest = new SessionGetRequest();
-        transportManager.doRequest(sessionGetRequest, new RequestListener<ServerSettings>() {
-            @Override
-            public void onRequestFailure(SpiceException spiceException) {
-                Log.e(TAG, "Failed to retrieve server settings");
-                // TODO: retry
-            }
+        new Transport(TransmissionRemote.getInstance().getActiveServer()).getApi().serverSettings(RpcRequest.sessionGet())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new SingleObserver<ServerSettings>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        requests.add(d);
+                    }
 
-            @Override
-            public void onRequestSuccess(ServerSettings settings) {
-                serverSettings = settings;
-                updateSeedingLimitsUi(false);
-            }
-        });
+                    @Override
+                    public void onSuccess(ServerSettings settings) {
+                        serverSettings = settings;
+                        updateSeedingLimitsUi(false);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.e(TAG, "Failed to retrieve server settings", e);
+                        // TODO: retry
+                    }
+                });
     }
 
     @Override
