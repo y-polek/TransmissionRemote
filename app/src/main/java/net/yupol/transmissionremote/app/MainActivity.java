@@ -89,7 +89,6 @@ import net.yupol.transmissionremote.app.transport.TransportManager;
 import net.yupol.transmissionremote.app.transport.request.AddTorrentByFileRequest;
 import net.yupol.transmissionremote.app.transport.request.AddTorrentByUrlRequest;
 import net.yupol.transmissionremote.app.transport.request.ResponseFailureException;
-import net.yupol.transmissionremote.app.transport.request.SessionSetRequest;
 import net.yupol.transmissionremote.app.transport.request.StartTorrentRequest;
 import net.yupol.transmissionremote.app.transport.request.StopTorrentRequest;
 import net.yupol.transmissionremote.app.transport.request.TorrentRemoveRequest;
@@ -103,8 +102,6 @@ import net.yupol.transmissionremote.model.json.Torrent;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -118,8 +115,10 @@ import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
 import io.fabric.sdk.android.Fabric;
+import io.reactivex.CompletableObserver;
 import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import permissions.dispatcher.NeedsPermission;
@@ -132,6 +131,7 @@ import transport.RpcRequest;
 import transport.Transport;
 
 import static android.preference.PreferenceManager.getDefaultSharedPreferences;
+import static transport.SessionParameters.altSpeedLimitEnabled;
 
 @RuntimePermissions
 public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.TorrentUpdateListener,
@@ -236,6 +236,8 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
     private FreeSpaceFooterDrawerItem freeSpaceFooterDrawerItem;
     private FinishedTorrentsNotificationManager finishedTorrentsNotificationManager;
     private Transport transport;
+    private CompositeDisposable serverSettingsRequests = new CompositeDisposable();
+    private CompositeDisposable requests = new CompositeDisposable();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -266,6 +268,13 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
             openTorrentScheme = savedInstanceState.getString(KEY_OPEN_TORRENT_SCHEME);
             openTorrentPermissionRationaleOpen = savedInstanceState.getBoolean(KEY_OPEN_TORRENT_PERMISSION_RATIONALE_OPEN);
         }
+    }
+
+    @Override
+    protected void onStop() {
+        requests.clear();
+        serverSettingsRequests.clear();
+        super.onStop();
     }
 
     private void setupActionBar() {
@@ -1083,7 +1092,10 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(new SingleObserver<ServerSettings>() {
                             @Override
-                            public void onSubscribe(Disposable d) {}
+                            public void onSubscribe(Disposable d) {
+                                serverSettingsRequests.clear();
+                                serverSettingsRequests.add(d);
+                            }
 
                             @Override
                             public void onSuccess(ServerSettings serverSettings) {
@@ -1177,24 +1189,25 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
 
     private void updateSpeedLimitServerPrefs() {
 
-        JSONObject sessionArgs = new JSONObject();
-        try {
-            sessionArgs.put(ServerSettings.ALT_SPEED_LIMIT_ENABLED, application.isSpeedLimitEnabled());
-        } catch (JSONException e) {
-            Log.e(TAG, "Failed to create session arguments JSON object", e);
-        }
+        transport.getApi().setServerSettings(RpcRequest.sessionSet(altSpeedLimitEnabled(application.isSpeedLimitEnabled())))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new CompletableObserver() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        requests.add(d);
+                    }
 
-        getTransportManager().doRequest(new SessionSetRequest(sessionArgs), new RequestListener<Void>() {
-            @Override
-            public void onRequestFailure(SpiceException spiceException) {
-                Log.d(TAG, "Failed to update session settings");
-            }
+                    @Override
+                    public void onComplete() {
+                        Log.d(TAG, "Session settings updated successfully");
+                    }
 
-            @Override
-            public void onRequestSuccess(Void aVoid) {
-                Log.e(TAG, "Session settings updated successfully");
-            }
-        });
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.e(TAG, "Failed to update session settings", e);
+                    }
+                });
     }
 
     private void updateSpeedActions(Collection<Torrent> torrents) {

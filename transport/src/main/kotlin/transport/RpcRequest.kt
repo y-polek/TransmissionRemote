@@ -1,5 +1,6 @@
 package transport
 
+import net.yupol.transmissionremote.model.Parameter
 import net.yupol.transmissionremote.model.TorrentMetadata.*
 
 data class RpcRequest(val method: String, val arguments: Map<String, Any>? = null) {
@@ -45,5 +46,34 @@ data class RpcRequest(val method: String, val arguments: Map<String, Any>? = nul
 
         @JvmStatic
         fun sessionGet() = RpcRequest("session-get")
+
+        @JvmStatic
+        fun sessionSet(vararg params: Parameter<String, Any>): RpcRequest {
+            return RpcRequest("session-set", params.map { it.key to it.value }.toMap())
+        }
     }
+}
+
+object SessionParameters {
+
+    @JvmStatic
+    fun altSpeedLimitEnabled(enabled: Boolean) = Parameter("alt-speed-enabled", enabled)
+
+    @JvmStatic
+    fun altSpeedLimitDown(limit: Long) = Parameter("alt-speed-down", limit)
+
+    @JvmStatic
+    fun altSpeedLimitUp(limit: Long) = Parameter("alt-speed-up", limit)
+
+    @JvmStatic
+    fun speedLimitDownEnabled(enabled: Boolean) = Parameter("speed-limit-down-enabled", enabled)
+
+    @JvmStatic
+    fun speedLimitDown(limit: Long) = Parameter("speed-limit-down", limit)
+
+    @JvmStatic
+    fun speedLimitUpEnabled(enabled: Boolean) = Parameter("speed-limit-up-enabled", enabled)
+
+    @JvmStatic
+    fun speedLimitUp(limit: Long) = Parameter("speed-limit-up", limit)
 }

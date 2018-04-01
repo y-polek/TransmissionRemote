@@ -1,6 +1,7 @@
 package transport
 
 import com.serjltt.moshi.adapters.Wrapped
+import io.reactivex.Completable
 import io.reactivex.Single
 import net.yupol.transmissionremote.model.json.ServerSettings
 import net.yupol.transmissionremote.model.json.Torrent
@@ -16,4 +17,8 @@ interface TransmissionRpcApi {
     @POST("./")
     @Wrapped(path = ["arguments"])
     fun serverSettings(@Body body: RpcRequest = RpcRequest.sessionGet()): Single<ServerSettings>
+
+    @POST("./")
+    @Wrapped(path = ["result"])
+    fun setServerSettings(@Body body: RpcRequest): Completable
 }
