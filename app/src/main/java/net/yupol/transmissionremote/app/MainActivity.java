@@ -127,6 +127,7 @@ import permissions.dispatcher.OnNeverAskAgain;
 import permissions.dispatcher.OnShowRationale;
 import permissions.dispatcher.PermissionRequest;
 import permissions.dispatcher.RuntimePermissions;
+import transport.ConnectivityInterceptor;
 import transport.RpcRequest;
 import transport.Transport;
 
@@ -1062,7 +1063,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
         List<Server> servers = application.getServers();
         headerView.setServers(servers, servers.indexOf(server));
 
-        transport = new Transport(server);
+        transport = new Transport(server, new ConnectivityInterceptor(getBaseContext()));
         torrentUpdater = new TorrentUpdater(transport, MainActivity.this, application.getUpdateInterval());
         torrentUpdater.start();
 

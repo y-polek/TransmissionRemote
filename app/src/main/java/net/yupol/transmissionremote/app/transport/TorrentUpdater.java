@@ -13,6 +13,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import retrofit2.HttpException;
+import transport.NoNetworkException;
 import transport.RpcRequest;
 import transport.Transport;
 
@@ -127,20 +128,10 @@ public class TorrentUpdater {
                                 if (((HttpException) e).code() == HttpURLConnection.HTTP_UNAUTHORIZED) {
                                     error = NetworkError.UNAUTHORIZED;
                                 }
+                            } else if (e instanceof NoNetworkException) {
+                                error = NetworkError.NO_NETWORK;
                             }
                             listener.onNetworkError(error);
-
-                            // TODO: handle different types of network error
-                            /*if (spiceException instanceof NoNetworkException) {
-                                listener.onNetworkError(NetworkError.NO_NETWORK);
-                            } else if (spiceException instanceof NetworkException) {
-                                Log.d(TAG, "NetworkException: " + spiceException.getMessage() + " status code: " + currentRequest.getResponseStatusCode());
-                                NetworkError error = NetworkError.OTHER;
-                                if (currentRequest.getResponseStatusCode() == HttpURLConnection.HTTP_UNAUTHORIZED) {
-                                    error = NetworkError.UNAUTHORIZED;
-                                }
-                                listener.onNetworkError(error);
-                            }*/
                         }
                     });
         }
