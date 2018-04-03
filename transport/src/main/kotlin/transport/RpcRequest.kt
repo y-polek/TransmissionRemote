@@ -2,6 +2,7 @@ package transport
 
 import net.yupol.transmissionremote.model.Parameter
 import net.yupol.transmissionremote.model.TorrentMetadata.*
+import net.yupol.transmissionremote.model.json.Torrent
 
 data class RpcRequest(val method: String, val arguments: Map<String, Any>? = null) {
 
@@ -52,6 +53,27 @@ data class RpcRequest(val method: String, val arguments: Map<String, Any>? = nul
 
         @JvmStatic
         fun sessionSet(params: List<Parameter<String, Any>>) = sessionSet(*params.toTypedArray())
+
+        private fun action(method: String, vararg ids: Int) = RpcRequest(method, mapOf("ids" to ids))
+
+        @JvmStatic
+        @JvmOverloads
+        fun startTorrents(noQueue: Boolean = false, vararg ids: Int): RpcRequest {
+            val method = if (noQueue) "torrent-start-now" else "torrent-start"
+            return action(method, *ids)
+        }
+
+        @JvmStatic
+        @JvmOverloads
+        fun startTorrents(noQueue: Boolean = false, torrents: Collection<Torrent>): RpcRequest {
+            return startTorrents(noQueue, *torrents.map { it.id }.toIntArray())
+        }
+
+        @JvmStatic
+        fun stopTorrents(vararg ids: Int) = action("torrent-stop", *ids)
+
+        @JvmStatic
+        fun stopTorrents(torrents: Collection<Torrent>) = stopTorrents(*torrents.map { it.id }.toIntArray())
     }
 }
 

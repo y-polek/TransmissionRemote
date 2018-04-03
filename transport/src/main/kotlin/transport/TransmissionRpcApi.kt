@@ -21,4 +21,7 @@ interface TransmissionRpcApi {
     @POST("./")
     @Wrapped(path = ["result"])
     fun setServerSettings(@Body body: RpcRequest): Completable
+
+    @POST("./")
+    fun action(@Body body: RpcRequest): Completable
 }

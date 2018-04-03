@@ -89,8 +89,6 @@ import net.yupol.transmissionremote.app.transport.TransportManager;
 import net.yupol.transmissionremote.app.transport.request.AddTorrentByFileRequest;
 import net.yupol.transmissionremote.app.transport.request.AddTorrentByUrlRequest;
 import net.yupol.transmissionremote.app.transport.request.ResponseFailureException;
-import net.yupol.transmissionremote.app.transport.request.StartTorrentRequest;
-import net.yupol.transmissionremote.app.transport.request.StopTorrentRequest;
 import net.yupol.transmissionremote.app.transport.request.TorrentRemoveRequest;
 import net.yupol.transmissionremote.app.utils.DialogUtils;
 import net.yupol.transmissionremote.app.utils.IconUtils;
@@ -1277,12 +1275,18 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
     }
 
     private void startAllTorrents() {
-        getTransportManager().doRequest(new StartTorrentRequest(application.getTorrents()), null);
+        transport.getApi().action(RpcRequest.startTorrents(application.getTorrents()))
+                .subscribeOn(Schedulers.io())
+                .onErrorComplete()
+                .subscribe();
         torrentUpdater.scheduleUpdate(UPDATE_REQUEST_DELAY);
     }
 
     private void pauseAllTorrents() {
-        getTransportManager().doRequest(new StopTorrentRequest(application.getTorrents()), null);
+        transport.getApi().action(RpcRequest.stopTorrents(application.getTorrents()))
+                .subscribeOn(Schedulers.io())
+                .onErrorComplete()
+                .subscribe();
         torrentUpdater.scheduleUpdate(UPDATE_REQUEST_DELAY);
     }
 
