@@ -15,15 +15,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
-import com.octo.android.robospice.persistence.exception.SpiceException;
-import com.octo.android.robospice.request.listener.RequestListener;
 
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.TransmissionRemote;
 import net.yupol.transmissionremote.app.torrentdetails.BandwidthLimitFragment;
 import net.yupol.transmissionremote.app.transport.BaseSpiceActivity;
 import net.yupol.transmissionremote.app.transport.TransportManager;
-import net.yupol.transmissionremote.app.transport.request.SessionSetRequest;
 import net.yupol.transmissionremote.app.utils.IconUtils;
 import net.yupol.transmissionremote.model.Parameter;
 import net.yupol.transmissionremote.model.json.ServerSettings;
@@ -31,6 +28,7 @@ import net.yupol.transmissionremote.model.json.ServerSettings;
 import java.util.LinkedList;
 import java.util.List;
 
+import io.reactivex.CompletableObserver;
 import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -126,50 +124,13 @@ public class ServerPreferencesFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_save:
-                SessionSetRequest.Builder builder = getPreferencesRequestBuilder();
-                if (builder.isChanged()) {
-                    sendUpdateOptionsRequest(builder.build());
+                List<Parameter<String, ?>> parameters = getSessionParameters();
+                if (!parameters.isEmpty()) {
+                    sendUpdateOptionsRequest(parameters);
                 }
                 return true;
         }
         return false;
-    }
-
-    public SessionSetRequest.Builder getPreferencesRequestBuilder() {
-
-        SessionSetRequest.Builder builder = SessionSetRequest.builder();
-
-        boolean downloadLimited = globalBandwidthLimitFragment.isDownloadLimited();
-        if (serverSettings.isSpeedLimitDownEnabled() != downloadLimited) {
-            builder.setSpeedLimitDownEnabled(downloadLimited);
-        }
-
-        long downloadLimit = globalBandwidthLimitFragment.getDownloadLimit();
-        if (serverSettings.getSpeedLimitDown() != downloadLimit) {
-            builder.setSpeedLimitDown(downloadLimit);
-        }
-
-        boolean uploadLimited = globalBandwidthLimitFragment.isUploadLimited();
-        if (serverSettings.isSpeedLimitUpEnabled() != uploadLimited) {
-            builder.setSpeedLimitUpEnabled(uploadLimited);
-        }
-
-        long uploadLimit = globalBandwidthLimitFragment.getUploadLimit();
-        if (serverSettings.getSpeedLimitUp() != uploadLimit) {
-            builder.setSpeedLimitUp(uploadLimit);
-        }
-
-        long altDownloadLimit = altBandwidthLimitFragment.getDownloadLimit();
-        if (serverSettings.getAltSpeedLimitDown() != altDownloadLimit) {
-            builder.setAltSpeedLimitDown(altDownloadLimit);
-        }
-
-        long altUploadLimit = altBandwidthLimitFragment.getUploadLimit();
-        if (serverSettings.getAltSpeedLimitUp() != altUploadLimit) {
-            builder.setAltSpeedLimitUp(altUploadLimit);
-        }
-
-        return builder;
     }
 
     public List<Parameter<String, ?>> getSessionParameters() {
@@ -203,7 +164,7 @@ public class ServerPreferencesFragment extends Fragment {
 
         long altUploadLimit = altBandwidthLimitFragment.getUploadLimit();
         if (serverSettings.getAltSpeedLimitUp() != altUploadLimit) {
-            params.add(altSpeedLimitUp(uploadLimit));
+            params.add(altSpeedLimitUp(altUploadLimit));
         }
 
         return params;
@@ -242,24 +203,32 @@ public class ServerPreferencesFragment extends Fragment {
         altLimitHeader.setCompoundDrawablesWithIntrinsicBounds(turtleImage, 0, 0, 0);
     }
 
-    private void sendUpdateOptionsRequest(SessionSetRequest request) {
+    private void sendUpdateOptionsRequest(List<Parameter<String, ?>> parameters) {
         if (transportManager == null)
             throw new RuntimeException("ServerPreferencesFragment should be used with BaseSpiceActivity.");
 
         saveStarted();
 
-        transportManager.doRequest(request, new RequestListener<Void>() {
-            @Override
-            public void onRequestFailure(SpiceException spiceException) {
-                Toast.makeText(getActivity(), getString(R.string.preferences_update_failed), Toast.LENGTH_LONG).show();
-                saveFinished();
-            }
+        new Transport(TransmissionRemote.getInstance().getActiveServer()).getApi().setServerSettings(RpcRequest.sessionSet(parameters))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new CompletableObserver() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        requests.add(d);
+                    }
 
-            @Override
-            public void onRequestSuccess(Void aVoid) {
-                sendPreferencesUpdateRequest();
-            }
-        });
+                    @Override
+                    public void onComplete() {
+                        sendPreferencesUpdateRequest();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Toast.makeText(getActivity(), getString(R.string.preferences_update_failed), Toast.LENGTH_LONG).show();
+                        saveFinished();
+                    }
+                });
     }
 
     private void sendPreferencesUpdateRequest() {

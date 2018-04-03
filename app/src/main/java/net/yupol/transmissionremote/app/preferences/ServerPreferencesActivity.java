@@ -12,9 +12,11 @@ import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.TransmissionRemote;
 import net.yupol.transmissionremote.app.torrentdetails.SaveChangesDialogFragment;
 import net.yupol.transmissionremote.app.transport.BaseSpiceActivity;
-import net.yupol.transmissionremote.app.transport.request.SessionSetRequest;
+import net.yupol.transmissionremote.model.Parameter;
 import net.yupol.transmissionremote.model.Server;
 import net.yupol.transmissionremote.model.json.ServerSettings;
+
+import java.util.List;
 
 import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -30,9 +32,6 @@ public class ServerPreferencesActivity extends BaseSpiceActivity implements Save
     private static final String TAG_SERVER_PREFERENCES_FRAGMENT = "tag_server_preferences_fragment";
     private static final String TAG_SAVE_CHANGES_DIALOG = "tag_save_changes_dialog";
 
-    private static final String KEY_SAVE_CHANGES_REQUEST = "key_save_changes_request";
-
-    private SessionSetRequest saveChangesRequest;
     private CompositeDisposable requests = new CompositeDisposable();
 
     @Override
@@ -58,7 +57,7 @@ public class ServerPreferencesActivity extends BaseSpiceActivity implements Save
                     .subscribe(new SingleObserver<ServerSettings>() {
                         @Override
                         public void onSubscribe(Disposable d) {
-                            requests.clear();
+                            requests.add(d);
                         }
 
                         @Override
@@ -79,18 +78,6 @@ public class ServerPreferencesActivity extends BaseSpiceActivity implements Save
     protected void onStop() {
         requests.clear();
         super.onStop();
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putParcelable(KEY_SAVE_CHANGES_REQUEST, saveChangesRequest);
-    }
-
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-        saveChangesRequest = savedInstanceState.getParcelable(KEY_SAVE_CHANGES_REQUEST);
     }
 
     private void showProgressbarFragment() {
@@ -115,9 +102,8 @@ public class ServerPreferencesActivity extends BaseSpiceActivity implements Save
             return;
         }
 
-        SessionSetRequest.Builder requestBuilder = fragment.getPreferencesRequestBuilder();
-        if (requestBuilder.isChanged()) {
-            saveChangesRequest = requestBuilder.build();
+        List<Parameter<String, ?>> sessionParameters = fragment.getSessionParameters();
+        if (!sessionParameters.isEmpty()) {
             new SaveChangesDialogFragment().show(getFragmentManager(), TAG_SAVE_CHANGES_DIALOG);
         } else {
             super.onBackPressed();
@@ -138,7 +124,14 @@ public class ServerPreferencesActivity extends BaseSpiceActivity implements Save
 
     @Override
     public void onSavePressed() {
-        getTransportManager().doRequest(saveChangesRequest, null);
+        ServerPreferencesFragment fragment = (ServerPreferencesFragment)
+                getSupportFragmentManager().findFragmentByTag(TAG_SERVER_PREFERENCES_FRAGMENT);
+        if (fragment != null) {
+            new Transport(TransmissionRemote.getInstance().getActiveServer()).getApi().setServerSettings(RpcRequest.sessionSet(fragment.getSessionParameters()))
+                    .subscribeOn(Schedulers.io())
+                    .onErrorComplete()
+                    .subscribe();
+        }
         super.onBackPressed();
     }
 

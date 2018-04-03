@@ -48,9 +48,10 @@ data class RpcRequest(val method: String, val arguments: Map<String, Any>? = nul
         fun sessionGet() = RpcRequest("session-get")
 
         @JvmStatic
-        fun sessionSet(vararg params: Parameter<String, Any>): RpcRequest {
-            return RpcRequest("session-set", params.map { it.key to it.value }.toMap())
-        }
+        fun sessionSet(vararg params: Parameter<String, Any>) = RpcRequest("session-set", params.map { it.key to it.value }.toMap())
+
+        @JvmStatic
+        fun sessionSet(params: List<Parameter<String, Any>>) = sessionSet(*params.toTypedArray())
     }
 }
 
