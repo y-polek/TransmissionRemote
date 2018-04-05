@@ -40,7 +40,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
-import transport.RpcRequest;
+import transport.RpcArgs;
 import transport.Transport;
 
 public class OptionsPageFragment extends BasePageFragment implements AdapterView.OnItemSelectedListener,
@@ -93,7 +93,7 @@ public class OptionsPageFragment extends BasePageFragment implements AdapterView
 
         setHasOptionsMenu(true);
 
-        new Transport(TransmissionRemote.getInstance().getActiveServer()).getApi().serverSettings(RpcRequest.sessionGet())
+        new Transport(TransmissionRemote.getInstance().getActiveServer()).getApi().serverSettings(RpcArgs.sessionGet())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new SingleObserver<ServerSettings>() {

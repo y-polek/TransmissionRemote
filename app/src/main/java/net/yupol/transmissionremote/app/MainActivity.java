@@ -125,7 +125,7 @@ import permissions.dispatcher.OnShowRationale;
 import permissions.dispatcher.PermissionRequest;
 import permissions.dispatcher.RuntimePermissions;
 import transport.ConnectivityInterceptor;
-import transport.RpcRequest;
+import transport.RpcArgs;
 import transport.Transport;
 
 import static android.preference.PreferenceManager.getDefaultSharedPreferences;
@@ -1085,7 +1085,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
             @Override
             public void run() {
 
-                transport.getApi().serverSettings(RpcRequest.sessionGet())
+                transport.getApi().serverSettings(RpcArgs.sessionGet())
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(new SingleObserver<ServerSettings>() {
@@ -1187,7 +1187,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
 
     private void updateSpeedLimitServerPrefs() {
 
-        transport.getApi().setServerSettings(RpcRequest.sessionSet(altSpeedLimitEnabled(application.isSpeedLimitEnabled())))
+        transport.getApi().setServerSettings(RpcArgs.sessionSet(altSpeedLimitEnabled(application.isSpeedLimitEnabled())))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new CompletableObserver() {
@@ -1275,7 +1275,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
     }
 
     private void startAllTorrents() {
-        transport.getApi().action(RpcRequest.startTorrents(application.getTorrents()))
+        transport.getApi().startTorrent(RpcArgs.startTorrents(application.getTorrents()))
                 .subscribeOn(Schedulers.io())
                 .onErrorComplete()
                 .subscribe();
@@ -1283,7 +1283,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
     }
 
     private void pauseAllTorrents() {
-        transport.getApi().action(RpcRequest.stopTorrents(application.getTorrents()))
+        transport.getApi().action(RpcArgs.stopTorrents(application.getTorrents()))
                 .subscribeOn(Schedulers.io())
                 .onErrorComplete()
                 .subscribe();

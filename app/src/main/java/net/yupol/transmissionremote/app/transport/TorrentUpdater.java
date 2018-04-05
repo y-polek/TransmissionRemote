@@ -14,7 +14,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import retrofit2.HttpException;
 import transport.NoNetworkException;
-import transport.RpcRequest;
+import transport.RpcArgs;
 import transport.Transport;
 
 public class TorrentUpdater {
@@ -101,7 +101,7 @@ public class TorrentUpdater {
         }
 
         private void sendRequest() {
-            transport.getApi().torrentList(RpcRequest.torrentGet())
+            transport.getApi().torrentList(RpcArgs.torrentGet())
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(new SingleObserver<List<Torrent>>() {

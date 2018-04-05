@@ -75,7 +75,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
-import transport.RpcRequest;
+import transport.RpcArgs;
 import transport.Transport;
 
 public class TorrentListFragment extends Fragment implements ChooseLocationDialogFragment.OnLocationSelectedListener, RenameDialogFragment.OnNameSelectedListener {
@@ -735,7 +735,7 @@ public class TorrentListFragment extends Fragment implements ChooseLocationDialo
             updateRequests.add(id);
         }
 
-        transport.getApi().torrentList(RpcRequest.torrentGet(torrentIds))
+        transport.getApi().torrentList(RpcArgs.torrentGet(torrentIds))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .delay(UPDATE_REQUEST_DELAY, TimeUnit.MILLISECONDS)

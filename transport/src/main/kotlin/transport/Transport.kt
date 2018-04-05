@@ -45,6 +45,7 @@ class Transport(private val server: Server, vararg interceptors: Interceptor) {
                 .client(okHttpClient)
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .addConverterFactory(ScalarsConverterFactory.create())
+                .addConverterFactory(RpcRequestBodyConverterFactory.create(moshi))
                 .addConverterFactory(MoshiConverterFactory.create(moshi))
                 .build()
 

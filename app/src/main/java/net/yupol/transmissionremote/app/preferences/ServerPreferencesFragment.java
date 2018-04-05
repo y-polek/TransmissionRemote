@@ -34,7 +34,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
-import transport.RpcRequest;
+import transport.RpcArgs;
 import transport.Transport;
 
 import static transport.SessionParameters.altSpeedLimitDown;
@@ -209,7 +209,7 @@ public class ServerPreferencesFragment extends Fragment {
 
         saveStarted();
 
-        new Transport(TransmissionRemote.getInstance().getActiveServer()).getApi().setServerSettings(RpcRequest.sessionSet(parameters))
+        new Transport(TransmissionRemote.getInstance().getActiveServer()).getApi().setServerSettings(RpcArgs.sessionSet(parameters))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new CompletableObserver() {
@@ -232,7 +232,7 @@ public class ServerPreferencesFragment extends Fragment {
     }
 
     private void sendPreferencesUpdateRequest() {
-        new Transport(TransmissionRemote.getInstance().getActiveServer()).getApi().serverSettings(RpcRequest.sessionGet())
+        new Transport(TransmissionRemote.getInstance().getActiveServer()).getApi().serverSettings(RpcArgs.sessionGet())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new SingleObserver<ServerSettings>() {

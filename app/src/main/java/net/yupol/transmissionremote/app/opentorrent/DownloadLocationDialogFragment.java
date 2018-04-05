@@ -47,7 +47,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
-import transport.RpcRequest;
+import transport.RpcArgs;
 import transport.Transport;
 
 public class DownloadLocationDialogFragment extends DialogFragment {
@@ -109,7 +109,7 @@ public class DownloadLocationDialogFragment extends DialogFragment {
                 }
             });
 
-            new Transport(app.getActiveServer()).getApi().serverSettings(RpcRequest.sessionGet())
+            new Transport(app.getActiveServer()).getApi().serverSettings(RpcArgs.sessionGet())
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(new SingleObserver<ServerSettings>() {

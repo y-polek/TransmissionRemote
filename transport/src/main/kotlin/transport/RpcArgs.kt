@@ -4,12 +4,12 @@ import net.yupol.transmissionremote.model.Parameter
 import net.yupol.transmissionremote.model.TorrentMetadata.*
 import net.yupol.transmissionremote.model.json.Torrent
 
-data class RpcRequest(val method: String, val arguments: Map<String, Any>? = null) {
+data class RpcArgs(val method: String, val arguments: Map<String, Any>? = null) {
 
     companion object {
 
         @JvmStatic
-        fun torrentGet(vararg ids: Int): RpcRequest {
+        fun torrentGet(vararg ids: Int): Map<String, Any> {
 
             val args: MutableMap<String, Any> = mutableMapOf()
 
@@ -42,30 +42,30 @@ data class RpcRequest(val method: String, val arguments: Map<String, Any>? = nul
                 args["ids"] = ids
             }
 
-            return RpcRequest("torrent-get", args)
+            return args
         }
 
         @JvmStatic
-        fun sessionGet() = RpcRequest("session-get")
+        fun sessionGet() = mapOf<String, Any>()
 
         @JvmStatic
-        fun sessionSet(vararg params: Parameter<String, Any>) = RpcRequest("session-set", params.map { it.key to it.value }.toMap())
+        fun sessionSet(vararg params: Parameter<String, Any>) = RpcArgs("session-set", params.map { it.key to it.value }.toMap())
 
         @JvmStatic
         fun sessionSet(params: List<Parameter<String, Any>>) = sessionSet(*params.toTypedArray())
 
-        private fun action(method: String, vararg ids: Int) = RpcRequest(method, mapOf("ids" to ids))
+        private fun action(method: String, vararg ids: Int) = RpcArgs(method, mapOf("ids" to ids))
 
         @JvmStatic
         @JvmOverloads
-        fun startTorrents(noQueue: Boolean = false, vararg ids: Int): RpcRequest {
+        fun startTorrents(noQueue: Boolean = false, vararg ids: Int): RpcArgs {
             val method = if (noQueue) "torrent-start-now" else "torrent-start"
             return action(method, *ids)
         }
 
         @JvmStatic
         @JvmOverloads
-        fun startTorrents(noQueue: Boolean = false, torrents: Collection<Torrent>): RpcRequest {
+        fun startTorrents(noQueue: Boolean = false, torrents: Collection<Torrent>): RpcArgs {
             return startTorrents(noQueue, *torrents.map { it.id }.toIntArray())
         }
 

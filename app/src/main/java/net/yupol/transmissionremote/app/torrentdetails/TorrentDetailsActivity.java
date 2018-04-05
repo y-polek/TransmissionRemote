@@ -45,7 +45,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
-import transport.RpcRequest;
+import transport.RpcArgs;
 import transport.Transport;
 
 public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveChangesDialogFragment.SaveDiscardListener,
@@ -369,7 +369,7 @@ public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveCha
             }
 
             private void updateTorrentAndTorrentInfo() {
-                transport.getApi().torrentList(RpcRequest.torrentGet(torrentId))
+                transport.getApi().torrentList(RpcArgs.torrentGet(torrentId))
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(new SingleObserver<List<Torrent>>() {
