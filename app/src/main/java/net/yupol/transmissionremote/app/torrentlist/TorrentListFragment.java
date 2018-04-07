@@ -46,10 +46,7 @@ import net.yupol.transmissionremote.app.transport.BaseSpiceActivity;
 import net.yupol.transmissionremote.app.transport.TransportManager;
 import net.yupol.transmissionremote.app.transport.request.ReannounceTorrentRequest;
 import net.yupol.transmissionremote.app.transport.request.RenameRequest;
-import net.yupol.transmissionremote.app.transport.request.Request;
 import net.yupol.transmissionremote.app.transport.request.SetLocationRequest;
-import net.yupol.transmissionremote.app.transport.request.StartTorrentRequest;
-import net.yupol.transmissionremote.app.transport.request.StopTorrentRequest;
 import net.yupol.transmissionremote.app.transport.request.VerifyTorrentRequest;
 import net.yupol.transmissionremote.app.utils.ColorUtils;
 import net.yupol.transmissionremote.app.utils.DividerItemDecoration;
@@ -58,6 +55,7 @@ import net.yupol.transmissionremote.app.utils.TextUtils;
 import net.yupol.transmissionremote.app.utils.diff.Equals;
 import net.yupol.transmissionremote.app.utils.diff.ListDiff;
 import net.yupol.transmissionremote.app.utils.diff.Range;
+import net.yupol.transmissionremote.model.Torrents;
 import net.yupol.transmissionremote.model.json.Torrent;
 
 import java.util.ArrayList;
@@ -70,13 +68,15 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import io.reactivex.Completable;
+import io.reactivex.CompletableObserver;
 import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
-import transport.rpc.RpcArgs;
 import transport.Transport;
+import transport.rpc.RpcArgs;
 
 public class TorrentListFragment extends Fragment implements ChooseLocationDialogFragment.OnLocationSelectedListener, RenameDialogFragment.OnNameSelectedListener {
 
@@ -504,9 +504,9 @@ public class TorrentListFragment extends Fragment implements ChooseLocationDialo
                     boolean wasPaused = btn.isPaused();
                     btn.toggle();
 
-                    Request<Void> request = wasPaused
-                            ? new StartTorrentRequest(Collections.singletonList(torrent))
-                            : new StopTorrentRequest(Collections.singletonList(torrent));
+                    Completable request = wasPaused
+                            ? transport.getApi().startTorrents(Torrents.ids(torrents))
+                            : transport.getApi().stopTorrents(Torrents.ids(torrents));
                     sendRequestAndUpdateTorrents(request, torrent.getId());
                 }
             });
@@ -768,25 +768,35 @@ public class TorrentListFragment extends Fragment implements ChooseLocationDialo
     }
 
     private void sendStopTorrentsRequest(final int... ids) {
-        sendRequestAndUpdateTorrents(new StopTorrentRequest(ids), ids);
+        sendRequestAndUpdateTorrents(transport.getApi().stopTorrents(ids), ids);
     }
 
     private void sendStartTorrentsRequest(final int[] ids, boolean noQueue) {
-        sendRequestAndUpdateTorrents(new StartTorrentRequest(ids, noQueue), ids);
+        Completable request = noQueue
+                ? transport.getApi().startTorrentsNoQueue(ids)
+                : transport.getApi().startTorrents(ids);
+        sendRequestAndUpdateTorrents(request, ids);
     }
 
-    private <T> void sendRequestAndUpdateTorrents(Request<T> request, final int... torrentIds) {
-        transportManager.doRequest(request, new RequestListener<T>() {
-            @Override
-            public void onRequestFailure(SpiceException spiceException) {
-                sendTorrentGetRequest(torrentIds);
-            }
+    private void sendRequestAndUpdateTorrents(Completable request, final int... torrentIds) {
+        request.subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new CompletableObserver() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        requests.add(d);
+                    }
 
-            @Override
-            public void onRequestSuccess(Object result) {
-                sendTorrentGetRequest(torrentIds);
-            }
-        });
+                    @Override
+                    public void onComplete() {
+                        sendTorrentGetRequest(torrentIds);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        sendTorrentGetRequest(torrentIds);
+                    }
+                });
     }
 
     private void renameTorrent(Torrent torrent) {

@@ -29,8 +29,6 @@ import net.yupol.transmissionremote.app.transport.BaseSpiceActivity;
 import net.yupol.transmissionremote.app.transport.request.ReannounceTorrentRequest;
 import net.yupol.transmissionremote.app.transport.request.RenameRequest;
 import net.yupol.transmissionremote.app.transport.request.SetLocationRequest;
-import net.yupol.transmissionremote.app.transport.request.StartTorrentRequest;
-import net.yupol.transmissionremote.app.transport.request.StopTorrentRequest;
 import net.yupol.transmissionremote.app.transport.request.TorrentInfoGetRequest;
 import net.yupol.transmissionremote.app.transport.request.TorrentRemoveRequest;
 import net.yupol.transmissionremote.app.transport.request.TorrentSetRequest;
@@ -45,8 +43,8 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
-import transport.rpc.RpcArgs;
 import transport.Transport;
+import transport.rpc.RpcArgs;
 
 public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveChangesDialogFragment.SaveDiscardListener,
         RemoveTorrentsDialogFragment.OnRemoveTorrentSelectionListener, ChooseLocationDialogFragment.OnLocationSelectedListener,
@@ -281,13 +279,22 @@ public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveCha
                         .show(getSupportFragmentManager(), RemoveTorrentsDialogFragment.TAG_REMOVE_TORRENTS_DIALOG);
                 return true;
             case R.id.action_pause:
-                getTransportManager().doRequest(new StopTorrentRequest(torrent.getId()), null);
+                transport.getApi().stopTorrents(torrent.getId())
+                        .subscribeOn(Schedulers.io())
+                        .onErrorComplete()
+                        .subscribe();
                 return true;
             case R.id.action_start:
-                getTransportManager().doRequest(new StartTorrentRequest(torrent.getId()), null);
+                transport.getApi().startTorrents(torrent.getId())
+                        .subscribeOn(Schedulers.io())
+                        .onErrorComplete()
+                        .subscribe();
                 return true;
             case R.id.action_start_now:
-                getTransportManager().doRequest(new StartTorrentRequest(new int[] { torrent.getId() }, true), null);
+                transport.getApi().startTorrentsNoQueue(torrent.getId())
+                        .subscribeOn(Schedulers.io())
+                        .onErrorComplete()
+                        .subscribe();
                 return true;
             case R.id.action_rename:
                 RenameDialogFragment dialogFragment = RenameDialogFragment.newInstance(torrent.getId(), torrent.getName(), torrent.getName());
