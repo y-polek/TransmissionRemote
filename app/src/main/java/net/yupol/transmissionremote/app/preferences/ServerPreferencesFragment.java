@@ -34,15 +34,15 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
-import transport.RpcArgs;
+import transport.rpc.RpcArgs;
 import transport.Transport;
 
-import static transport.SessionParameters.altSpeedLimitDown;
-import static transport.SessionParameters.altSpeedLimitUp;
-import static transport.SessionParameters.speedLimitDown;
-import static transport.SessionParameters.speedLimitDownEnabled;
-import static transport.SessionParameters.speedLimitUp;
-import static transport.SessionParameters.speedLimitUpEnabled;
+import static transport.rpc.SessionParameters.altSpeedLimitDown;
+import static transport.rpc.SessionParameters.altSpeedLimitUp;
+import static transport.rpc.SessionParameters.speedLimitDown;
+import static transport.rpc.SessionParameters.speedLimitDownEnabled;
+import static transport.rpc.SessionParameters.speedLimitUp;
+import static transport.rpc.SessionParameters.speedLimitUpEnabled;
 
 public class ServerPreferencesFragment extends Fragment {
 

@@ -1,8 +1,7 @@
-package transport
+package transport.rpc
 
 import net.yupol.transmissionremote.model.Parameter
 import net.yupol.transmissionremote.model.TorrentMetadata.*
-import net.yupol.transmissionremote.model.json.Torrent
 
 data class RpcArgs(val method: String, val arguments: Map<String, Any>? = null) {
 
@@ -49,31 +48,10 @@ data class RpcArgs(val method: String, val arguments: Map<String, Any>? = null) 
         fun sessionGet() = mapOf<String, Any>()
 
         @JvmStatic
-        fun sessionSet(vararg params: Parameter<String, Any>) = RpcArgs("session-set", params.map { it.key to it.value }.toMap())
+        fun sessionSet(vararg params: Parameter<String, Any>) = params.map { it.key to it.value }.toMap()
 
         @JvmStatic
         fun sessionSet(params: List<Parameter<String, Any>>) = sessionSet(*params.toTypedArray())
-
-        private fun action(method: String, vararg ids: Int) = RpcArgs(method, mapOf("ids" to ids))
-
-        @JvmStatic
-        @JvmOverloads
-        fun startTorrents(noQueue: Boolean = false, vararg ids: Int): RpcArgs {
-            val method = if (noQueue) "torrent-start-now" else "torrent-start"
-            return action(method, *ids)
-        }
-
-        @JvmStatic
-        @JvmOverloads
-        fun startTorrents(noQueue: Boolean = false, torrents: Collection<Torrent>): RpcArgs {
-            return startTorrents(noQueue, *torrents.map { it.id }.toIntArray())
-        }
-
-        @JvmStatic
-        fun stopTorrents(vararg ids: Int) = action("torrent-stop", *ids)
-
-        @JvmStatic
-        fun stopTorrents(torrents: Collection<Torrent>) = stopTorrents(*torrents.map { it.id }.toIntArray())
     }
 }
 

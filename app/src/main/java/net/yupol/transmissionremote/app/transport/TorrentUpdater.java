@@ -14,7 +14,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import retrofit2.HttpException;
 import transport.NoNetworkException;
-import transport.RpcArgs;
+import transport.rpc.RpcArgs;
 import transport.Transport;
 
 public class TorrentUpdater {

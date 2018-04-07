@@ -94,6 +94,7 @@ import net.yupol.transmissionremote.app.utils.DialogUtils;
 import net.yupol.transmissionremote.app.utils.IconUtils;
 import net.yupol.transmissionremote.app.utils.ThemeUtils;
 import net.yupol.transmissionremote.model.Server;
+import net.yupol.transmissionremote.model.Torrents;
 import net.yupol.transmissionremote.model.json.ServerSettings;
 import net.yupol.transmissionremote.model.json.Torrent;
 
@@ -125,11 +126,11 @@ import permissions.dispatcher.OnShowRationale;
 import permissions.dispatcher.PermissionRequest;
 import permissions.dispatcher.RuntimePermissions;
 import transport.ConnectivityInterceptor;
-import transport.RpcArgs;
+import transport.rpc.RpcArgs;
 import transport.Transport;
 
 import static android.preference.PreferenceManager.getDefaultSharedPreferences;
-import static transport.SessionParameters.altSpeedLimitEnabled;
+import static transport.rpc.SessionParameters.altSpeedLimitEnabled;
 
 @RuntimePermissions
 public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.TorrentUpdateListener,
@@ -1275,7 +1276,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
     }
 
     private void startAllTorrents() {
-        transport.getApi().startTorrent(RpcArgs.startTorrents(application.getTorrents()))
+        transport.getApi().startTorrents(Torrents.ids(application.getTorrents()))
                 .subscribeOn(Schedulers.io())
                 .onErrorComplete()
                 .subscribe();
@@ -1283,7 +1284,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
     }
 
     private void pauseAllTorrents() {
-        transport.getApi().action(RpcArgs.stopTorrents(application.getTorrents()))
+        transport.getApi().stopTorrents(Torrents.ids(application.getTorrents()))
                 .subscribeOn(Schedulers.io())
                 .onErrorComplete()
                 .subscribe();

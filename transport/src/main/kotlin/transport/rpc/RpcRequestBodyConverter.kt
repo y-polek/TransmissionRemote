@@ -1,10 +1,9 @@
-package transport
+package transport.rpc
 
 import com.squareup.moshi.JsonAdapter
 import okhttp3.MediaType
 import okhttp3.RequestBody
 import retrofit2.Converter
-import transport.rpc.RpcBody
 
 class RpcRequestBodyConverter(private val method: String, private val adapter: JsonAdapter<RpcBody>) : Converter<Map<String, Any>, RequestBody> {
 

@@ -1,11 +1,9 @@
-package transport
+package transport.rpc
 
 import com.squareup.moshi.Moshi
 import okhttp3.RequestBody
 import retrofit2.Converter
 import retrofit2.Retrofit
-import transport.rpc.RpcBody
-import transport.rpc.RpcMethod
 import java.lang.reflect.Type
 
 class RpcRequestBodyConverterFactory(private val moshi: Moshi) : Converter.Factory() {
@@ -21,7 +19,11 @@ class RpcRequestBodyConverterFactory(private val moshi: Moshi) : Converter.Facto
         val rpcMethod = findRpcMethod(methodAnnotations) ?: return null
 
         val adapter = moshi.adapter<RpcBody>(RpcBody::class.java)
-        return RpcRequestBodyConverter(rpcMethod, adapter)
+        return if (hasAnnotation<RpcIds>(parameterAnnotations)) {
+            RpcIdsRequestBodyConverter(rpcMethod, adapter)
+        } else {
+            RpcRequestBodyConverter(rpcMethod, adapter)
+        }
     }
 
     private fun findRpcMethod(annotations: Array<out Annotation>?): String? {
@@ -29,5 +31,12 @@ class RpcRequestBodyConverterFactory(private val moshi: Moshi) : Converter.Facto
             it.annotationClass == RpcMethod::class
         } as? RpcMethod ?: return null
         return methodAnnotation.name
+    }
+
+    private inline fun <reified T> hasAnnotation(annotations: Array<out Annotation>?): Boolean {
+        val annotation = annotations?.find {
+            it.annotationClass == T::class
+        }
+        return annotation != null
     }
 }
