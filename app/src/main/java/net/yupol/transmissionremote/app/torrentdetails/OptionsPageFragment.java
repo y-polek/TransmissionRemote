@@ -40,8 +40,8 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
-import transport.rpc.RpcArgs;
-import transport.Transport;
+import net.yupol.transmissionremote.transport.rpc.RpcArgs;
+import net.yupol.transmissionremote.transport.Transport;
 
 public class OptionsPageFragment extends BasePageFragment implements AdapterView.OnItemSelectedListener,
         OnActivityExitingListener<TorrentSetRequest.Builder> {

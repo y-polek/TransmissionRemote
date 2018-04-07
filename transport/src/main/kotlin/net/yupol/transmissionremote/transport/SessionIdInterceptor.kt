@@ -1,4 +1,4 @@
-package transport
+package net.yupol.transmissionremote.transport
 
 import okhttp3.Interceptor
 import okhttp3.Response

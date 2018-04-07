@@ -1,4 +1,4 @@
-package transport.rpc
+package net.yupol.transmissionremote.transport.rpc
 
 @Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.FUNCTION)

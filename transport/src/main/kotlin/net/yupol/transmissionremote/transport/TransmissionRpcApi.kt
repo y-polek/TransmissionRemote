@@ -1,4 +1,4 @@
-package transport
+package net.yupol.transmissionremote.transport
 
 import com.serjltt.moshi.adapters.Wrapped
 import io.reactivex.Completable
@@ -6,9 +6,9 @@ import io.reactivex.Single
 import net.yupol.transmissionremote.model.json.ServerSettings
 import net.yupol.transmissionremote.model.json.Torrent
 import retrofit2.http.*
-import transport.rpc.RpcArgs
-import transport.rpc.RpcIds
-import transport.rpc.RpcMethod
+import net.yupol.transmissionremote.transport.rpc.RpcArgs
+import net.yupol.transmissionremote.transport.rpc.RpcIds
+import net.yupol.transmissionremote.transport.rpc.RpcMethod
 
 interface TransmissionRpcApi {
 

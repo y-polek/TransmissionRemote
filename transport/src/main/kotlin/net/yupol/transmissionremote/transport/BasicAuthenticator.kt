@@ -1,4 +1,4 @@
-package transport
+package net.yupol.transmissionremote.transport
 
 import android.util.Base64
 import okhttp3.Authenticator

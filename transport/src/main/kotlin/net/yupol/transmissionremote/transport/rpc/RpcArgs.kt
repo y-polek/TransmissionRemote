@@ -1,4 +1,4 @@
-package transport.rpc
+package net.yupol.transmissionremote.transport.rpc
 
 import net.yupol.transmissionremote.model.Parameter
 import net.yupol.transmissionremote.model.TorrentMetadata.*

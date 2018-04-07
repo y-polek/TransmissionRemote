@@ -1,4 +1,4 @@
-package transport.rpc
+package net.yupol.transmissionremote.transport.rpc
 
 import com.squareup.moshi.JsonAdapter
 import okhttp3.MediaType

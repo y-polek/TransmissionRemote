@@ -1,4 +1,4 @@
-package transport.rpc
+package net.yupol.transmissionremote.transport.rpc
 
 import com.squareup.moshi.Moshi
 import okhttp3.RequestBody

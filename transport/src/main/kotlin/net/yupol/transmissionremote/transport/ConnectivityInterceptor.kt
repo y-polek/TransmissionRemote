@@ -1,4 +1,4 @@
-package transport
+package net.yupol.transmissionremote.transport
 
 import android.content.Context
 import okhttp3.Interceptor

@@ -125,12 +125,12 @@ import permissions.dispatcher.OnNeverAskAgain;
 import permissions.dispatcher.OnShowRationale;
 import permissions.dispatcher.PermissionRequest;
 import permissions.dispatcher.RuntimePermissions;
-import transport.ConnectivityInterceptor;
-import transport.rpc.RpcArgs;
-import transport.Transport;
+import net.yupol.transmissionremote.transport.ConnectivityInterceptor;
+import net.yupol.transmissionremote.transport.rpc.RpcArgs;
+import net.yupol.transmissionremote.transport.Transport;
 
 import static android.preference.PreferenceManager.getDefaultSharedPreferences;
-import static transport.rpc.SessionParameters.altSpeedLimitEnabled;
+import static net.yupol.transmissionremote.transport.rpc.SessionParameters.altSpeedLimitEnabled;
 
 @RuntimePermissions
 public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.TorrentUpdateListener,
