@@ -37,4 +37,8 @@ interface TransmissionRpcApi {
     @POST(".")
     @RpcMethod("torrent-stop")
     fun stopTorrents(@RpcIds @Body vararg ids: Int): Completable
+
+    @POST(".")
+    @RpcMethod("torrent-reannounce")
+    fun reannounceTorrents(@RpcIds @Body vararg ids: Int): Completable
 }

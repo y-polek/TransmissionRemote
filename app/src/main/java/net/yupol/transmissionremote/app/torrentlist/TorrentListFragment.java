@@ -44,7 +44,6 @@ import net.yupol.transmissionremote.app.filtering.Filter;
 import net.yupol.transmissionremote.app.filtering.NameFilter;
 import net.yupol.transmissionremote.app.transport.BaseSpiceActivity;
 import net.yupol.transmissionremote.app.transport.TransportManager;
-import net.yupol.transmissionremote.app.transport.request.ReannounceTorrentRequest;
 import net.yupol.transmissionremote.app.transport.request.RenameRequest;
 import net.yupol.transmissionremote.app.transport.request.SetLocationRequest;
 import net.yupol.transmissionremote.app.transport.request.VerifyTorrentRequest;
@@ -57,6 +56,8 @@ import net.yupol.transmissionremote.app.utils.diff.ListDiff;
 import net.yupol.transmissionremote.app.utils.diff.Range;
 import net.yupol.transmissionremote.model.Torrents;
 import net.yupol.transmissionremote.model.json.Torrent;
+import net.yupol.transmissionremote.transport.Transport;
+import net.yupol.transmissionremote.transport.rpc.RpcArgs;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -75,8 +76,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
-import net.yupol.transmissionremote.transport.Transport;
-import net.yupol.transmissionremote.transport.rpc.RpcArgs;
 
 public class TorrentListFragment extends Fragment implements ChooseLocationDialogFragment.OnLocationSelectedListener, RenameDialogFragment.OnNameSelectedListener {
 
@@ -214,7 +213,10 @@ public class TorrentListFragment extends Fragment implements ChooseLocationDialo
                     mode.finish();
                     return true;
                 case R.id.action_reannounce:
-                    transportManager.doRequest(new ReannounceTorrentRequest(adapter.getSelectedItemsIds()), null);
+                    transport.getApi().reannounceTorrents(adapter.getSelectedItemsIds())
+                            .subscribeOn(Schedulers.io())
+                            .onErrorComplete()
+                            .subscribe();
                     mode.finish();
                     return true;
             }

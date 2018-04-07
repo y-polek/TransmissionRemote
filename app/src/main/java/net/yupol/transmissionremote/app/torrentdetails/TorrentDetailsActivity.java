@@ -26,7 +26,6 @@ import net.yupol.transmissionremote.app.torrentlist.ChooseLocationDialogFragment
 import net.yupol.transmissionremote.app.torrentlist.RemoveTorrentsDialogFragment;
 import net.yupol.transmissionremote.app.torrentlist.RenameDialogFragment;
 import net.yupol.transmissionremote.app.transport.BaseSpiceActivity;
-import net.yupol.transmissionremote.app.transport.request.ReannounceTorrentRequest;
 import net.yupol.transmissionremote.app.transport.request.RenameRequest;
 import net.yupol.transmissionremote.app.transport.request.SetLocationRequest;
 import net.yupol.transmissionremote.app.transport.request.TorrentInfoGetRequest;
@@ -34,6 +33,8 @@ import net.yupol.transmissionremote.app.transport.request.TorrentRemoveRequest;
 import net.yupol.transmissionremote.app.transport.request.TorrentSetRequest;
 import net.yupol.transmissionremote.app.transport.request.VerifyTorrentRequest;
 import net.yupol.transmissionremote.model.json.Torrent;
+import net.yupol.transmissionremote.transport.Transport;
+import net.yupol.transmissionremote.transport.rpc.RpcArgs;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -43,8 +44,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
-import net.yupol.transmissionremote.transport.Transport;
-import net.yupol.transmissionremote.transport.rpc.RpcArgs;
 
 public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveChangesDialogFragment.SaveDiscardListener,
         RemoveTorrentsDialogFragment.OnRemoveTorrentSelectionListener, ChooseLocationDialogFragment.OnLocationSelectedListener,
@@ -311,7 +310,10 @@ public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveCha
                 getTransportManager().doRequest(new VerifyTorrentRequest(torrent.getId()), null);
                 return true;
             case R.id.action_reannounce:
-                getTransportManager().doRequest(new ReannounceTorrentRequest(torrent.getId()), null);
+                transport.getApi().reannounceTorrents(torrent.getId())
+                        .subscribeOn(Schedulers.io())
+                        .onErrorComplete()
+                        .subscribe();
                 return true;
         }
         return super.onOptionsItemSelected(item);
