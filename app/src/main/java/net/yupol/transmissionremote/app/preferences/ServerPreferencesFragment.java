@@ -209,7 +209,7 @@ public class ServerPreferencesFragment extends Fragment {
 
         saveStarted();
 
-        new Transport(TransmissionRemote.getInstance().getActiveServer()).getApi().setServerSettings(RpcArgs.sessionSet(parameters))
+        new Transport(TransmissionRemote.getInstance().getActiveServer()).api().setServerSettings(RpcArgs.sessionSet(parameters))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new CompletableObserver() {
@@ -232,7 +232,7 @@ public class ServerPreferencesFragment extends Fragment {
     }
 
     private void sendPreferencesUpdateRequest() {
-        new Transport(TransmissionRemote.getInstance().getActiveServer()).getApi().serverSettings(RpcArgs.sessionGet())
+        new Transport(TransmissionRemote.getInstance().getActiveServer()).api().serverSettings(RpcArgs.sessionGet())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new SingleObserver<ServerSettings>() {

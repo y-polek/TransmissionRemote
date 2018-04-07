@@ -277,19 +277,19 @@ public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveCha
                         .show(getSupportFragmentManager(), RemoveTorrentsDialogFragment.TAG_REMOVE_TORRENTS_DIALOG);
                 return true;
             case R.id.action_pause:
-                transport.getApi().stopTorrents(torrent.getId())
+                transport.api().stopTorrents(torrent.getId())
                         .subscribeOn(Schedulers.io())
                         .onErrorComplete()
                         .subscribe();
                 return true;
             case R.id.action_start:
-                transport.getApi().startTorrents(torrent.getId())
+                transport.api().startTorrents(torrent.getId())
                         .subscribeOn(Schedulers.io())
                         .onErrorComplete()
                         .subscribe();
                 return true;
             case R.id.action_start_now:
-                transport.getApi().startTorrentsNoQueue(torrent.getId())
+                transport.api().startTorrentsNoQueue(torrent.getId())
                         .subscribeOn(Schedulers.io())
                         .onErrorComplete()
                         .subscribe();
@@ -306,13 +306,13 @@ public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveCha
                 dialog.show(getSupportFragmentManager(), TAG_CHOOSE_LOCATION_DIALOG);
                 return true;
             case R.id.action_verify:
-                transport.getApi().verifyTorrents(torrent.getId())
+                transport.api().verifyTorrents(torrent.getId())
                         .subscribeOn(Schedulers.io())
                         .onErrorComplete()
                         .subscribe();
                 return true;
             case R.id.action_reannounce:
-                transport.getApi().reannounceTorrents(torrent.getId())
+                transport.api().reannounceTorrents(torrent.getId())
                         .subscribeOn(Schedulers.io())
                         .onErrorComplete()
                         .subscribe();
@@ -380,7 +380,7 @@ public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveCha
             }
 
             private void updateTorrentAndTorrentInfo() {
-                transport.getApi().torrentList(RpcArgs.torrentGet(torrentId))
+                transport.api().torrentList(RpcArgs.torrentGet(torrentId))
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(new SingleObserver<List<Torrent>>() {

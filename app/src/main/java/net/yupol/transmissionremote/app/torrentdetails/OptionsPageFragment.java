@@ -93,7 +93,7 @@ public class OptionsPageFragment extends BasePageFragment implements AdapterView
 
         setHasOptionsMenu(true);
 
-        new Transport(TransmissionRemote.getInstance().getActiveServer()).getApi().serverSettings(RpcArgs.sessionGet())
+        new Transport(TransmissionRemote.getInstance().getActiveServer()).api().serverSettings(RpcArgs.sessionGet())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new SingleObserver<ServerSettings>() {

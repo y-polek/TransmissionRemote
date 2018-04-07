@@ -109,7 +109,7 @@ public class DownloadLocationDialogFragment extends DialogFragment {
                 }
             });
 
-            new Transport(app.getActiveServer()).getApi().serverSettings(RpcArgs.sessionGet())
+            new Transport(app.getActiveServer()).api().serverSettings(RpcArgs.sessionGet())
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(new SingleObserver<ServerSettings>() {

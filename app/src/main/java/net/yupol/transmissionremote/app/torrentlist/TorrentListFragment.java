@@ -208,14 +208,14 @@ public class TorrentListFragment extends Fragment implements ChooseLocationDialo
                     showChooseLocationDialog();
                     return true;
                 case R.id.action_verify:
-                    transport.getApi().verifyTorrents(adapter.getSelectedItemsIds())
+                    transport.api().verifyTorrents(adapter.getSelectedItemsIds())
                             .subscribeOn(Schedulers.io())
                             .onErrorComplete()
                             .subscribe();
                     mode.finish();
                     return true;
                 case R.id.action_reannounce:
-                    transport.getApi().reannounceTorrents(adapter.getSelectedItemsIds())
+                    transport.api().reannounceTorrents(adapter.getSelectedItemsIds())
                             .subscribeOn(Schedulers.io())
                             .onErrorComplete()
                             .subscribe();
@@ -509,8 +509,8 @@ public class TorrentListFragment extends Fragment implements ChooseLocationDialo
                     btn.toggle();
 
                     Completable request = wasPaused
-                            ? transport.getApi().startTorrents(Torrents.ids(torrents))
-                            : transport.getApi().stopTorrents(Torrents.ids(torrents));
+                            ? transport.api().startTorrents(Torrents.ids(torrents))
+                            : transport.api().stopTorrents(Torrents.ids(torrents));
                     sendRequestAndUpdateTorrents(request, torrent.getId());
                 }
             });
@@ -739,7 +739,7 @@ public class TorrentListFragment extends Fragment implements ChooseLocationDialo
             updateRequests.add(id);
         }
 
-        transport.getApi().torrentList(RpcArgs.torrentGet(torrentIds))
+        transport.api().torrentList(RpcArgs.torrentGet(torrentIds))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .delaySubscription(UPDATE_REQUEST_DELAY, TimeUnit.MILLISECONDS)
@@ -772,13 +772,13 @@ public class TorrentListFragment extends Fragment implements ChooseLocationDialo
     }
 
     private void sendStopTorrentsRequest(final int... ids) {
-        sendRequestAndUpdateTorrents(transport.getApi().stopTorrents(ids), ids);
+        sendRequestAndUpdateTorrents(transport.api().stopTorrents(ids), ids);
     }
 
     private void sendStartTorrentsRequest(final int[] ids, boolean noQueue) {
         Completable request = noQueue
-                ? transport.getApi().startTorrentsNoQueue(ids)
-                : transport.getApi().startTorrents(ids);
+                ? transport.api().startTorrentsNoQueue(ids)
+                : transport.api().startTorrents(ids);
         sendRequestAndUpdateTorrents(request, ids);
     }
 

@@ -1086,7 +1086,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
             @Override
             public void run() {
 
-                transport.getApi().serverSettings(RpcArgs.sessionGet())
+                transport.api().serverSettings(RpcArgs.sessionGet())
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(new SingleObserver<ServerSettings>() {
@@ -1188,7 +1188,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
 
     private void updateSpeedLimitServerPrefs() {
 
-        transport.getApi().setServerSettings(RpcArgs.sessionSet(altSpeedLimitEnabled(application.isSpeedLimitEnabled())))
+        transport.api().setServerSettings(RpcArgs.sessionSet(altSpeedLimitEnabled(application.isSpeedLimitEnabled())))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new CompletableObserver() {
@@ -1276,7 +1276,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
     }
 
     private void startAllTorrents() {
-        transport.getApi().startTorrents(Torrents.ids(application.getTorrents()))
+        transport.api().startTorrents(Torrents.ids(application.getTorrents()))
                 .subscribeOn(Schedulers.io())
                 .onErrorComplete()
                 .subscribe();
@@ -1284,7 +1284,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
     }
 
     private void pauseAllTorrents() {
-        transport.getApi().stopTorrents(Torrents.ids(application.getTorrents()))
+        transport.api().stopTorrents(Torrents.ids(application.getTorrents()))
                 .subscribeOn(Schedulers.io())
                 .onErrorComplete()
                 .subscribe();

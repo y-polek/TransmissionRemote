@@ -101,7 +101,7 @@ public class TorrentUpdater {
         }
 
         private void sendRequest() {
-            transport.getApi().torrentList(RpcArgs.torrentGet())
+            transport.api().torrentList(RpcArgs.torrentGet())
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(new SingleObserver<List<Torrent>>() {

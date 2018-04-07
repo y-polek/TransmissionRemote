@@ -21,6 +21,7 @@ class Transport(private val server: Server, vararg interceptors: Interceptor) {
             .add(Wrapped.ADAPTER_FACTORY)
             .build()
 
+    @get:JvmName(name = "api")
     val api: TransmissionRpcApi by lazy {
 
         val okHttpClient = with(OkHttpClient.Builder()) {
