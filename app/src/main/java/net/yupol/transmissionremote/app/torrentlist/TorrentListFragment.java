@@ -738,7 +738,7 @@ public class TorrentListFragment extends Fragment implements ChooseLocationDialo
         transport.getApi().torrentList(RpcArgs.torrentGet(torrentIds))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .delay(UPDATE_REQUEST_DELAY, TimeUnit.MILLISECONDS)
+                .delaySubscription(UPDATE_REQUEST_DELAY, TimeUnit.MILLISECONDS)
                 .subscribe(new SingleObserver<List<Torrent>>() {
                     @Override
                     public void onSubscribe(Disposable d) {
