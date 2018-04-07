@@ -44,7 +44,6 @@ import net.yupol.transmissionremote.app.filtering.Filter;
 import net.yupol.transmissionremote.app.filtering.NameFilter;
 import net.yupol.transmissionremote.app.transport.BaseSpiceActivity;
 import net.yupol.transmissionremote.app.transport.TransportManager;
-import net.yupol.transmissionremote.app.transport.request.RenameRequest;
 import net.yupol.transmissionremote.app.transport.request.SetLocationRequest;
 import net.yupol.transmissionremote.app.utils.ColorUtils;
 import net.yupol.transmissionremote.app.utils.DividerItemDecoration;
@@ -360,15 +359,10 @@ public class TorrentListFragment extends Fragment implements ChooseLocationDialo
 
     @Override
     public void onNameSelected(int torrentId, String path, String name) {
-        transportManager.doRequest(new RenameRequest(torrentId, path, name), new RequestListener<Void>() {
-            @Override
-            public void onRequestSuccess(Void aVoid) {}
-
-            @Override
-            public void onRequestFailure(SpiceException spiceException) {
-                Log.e(TAG, "Failed to rename torrent", spiceException);
-            }
-        });
+        transport.api().renameTorrent(RpcArgs.renameTorrent(torrentId, path, name))
+                .subscribeOn(Schedulers.io())
+                .onErrorComplete()
+                .subscribe();
     }
 
     public void search(String query) {

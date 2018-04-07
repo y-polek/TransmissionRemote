@@ -45,4 +45,8 @@ interface TransmissionRpcApi {
     @POST(".")
     @RpcMethod("torrent-verify")
     fun verifyTorrents(@RpcIds @Body vararg ids: Int): Completable
+
+    @POST(".")
+    @RpcMethod("torrent-rename-path")
+    fun renameTorrent(@Body body: Map<String, @JvmSuppressWildcards Any>): Completable
 }

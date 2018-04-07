@@ -52,6 +52,9 @@ data class RpcArgs(val method: String, val arguments: Map<String, Any>? = null) 
 
         @JvmStatic
         fun sessionSet(params: List<Parameter<String, Any>>) = sessionSet(*params.toTypedArray())
+
+        @JvmStatic
+        fun renameTorrent(id: Int, path: String, name: String) = mapOf<String, Any>("ids" to intArrayOf(id), "path" to path, "name" to name)
     }
 }
 

@@ -26,7 +26,6 @@ import net.yupol.transmissionremote.app.torrentlist.ChooseLocationDialogFragment
 import net.yupol.transmissionremote.app.torrentlist.RemoveTorrentsDialogFragment;
 import net.yupol.transmissionremote.app.torrentlist.RenameDialogFragment;
 import net.yupol.transmissionremote.app.transport.BaseSpiceActivity;
-import net.yupol.transmissionremote.app.transport.request.RenameRequest;
 import net.yupol.transmissionremote.app.transport.request.SetLocationRequest;
 import net.yupol.transmissionremote.app.transport.request.TorrentInfoGetRequest;
 import net.yupol.transmissionremote.app.transport.request.TorrentRemoveRequest;
@@ -38,6 +37,7 @@ import net.yupol.transmissionremote.transport.rpc.RpcArgs;
 import java.util.LinkedList;
 import java.util.List;
 
+import io.reactivex.CompletableObserver;
 import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -368,65 +368,73 @@ public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveCha
 
     @Override
     public void onNameSelected(final int torrentId, String path, String name) {
-        getTransportManager().doRequest(new RenameRequest(torrentId, path, name), new RequestListener<Void>() {
-            @Override
-            public void onRequestSuccess(Void aVoid) {
-                updateTorrentAndTorrentInfo();
-            }
-
-            @Override
-            public void onRequestFailure(SpiceException spiceException) {
-                Log.e(TAG, "Failed to rename torrent", spiceException);
-            }
-
-            private void updateTorrentAndTorrentInfo() {
-                transport.api().torrentList(RpcArgs.torrentGet(torrentId))
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(new SingleObserver<List<Torrent>>() {
-                            @Override
-                            public void onSubscribe(Disposable d) {
-                                requests.add(d);
-                            }
-
-                            @Override
-                            public void onSuccess(List<Torrent> torrents) {
-                                if (torrents.size() != 1) {
-                                    Log.e(TAG, "Wrong number of torrents");
-                                    return;
-                                }
-
-                                updateTorrentInfo(torrents.get(0));
-                            }
-
-                            @Override
-                            public void onError(Throwable e) {
-                                Log.e(TAG, "Failed to reload torrent", e);
-                            }
-                        });
-            }
-
-            private void updateTorrentInfo(final Torrent torrent) {
-                getTransportManager().doRequest(new TorrentInfoGetRequest(torrent.getId()), new RequestListener<TorrentInfo>() {
+        transport.api().renameTorrent(RpcArgs.renameTorrent(torrentId, path, name))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new CompletableObserver() {
                     @Override
-                    public void onRequestSuccess(TorrentInfo torrentInfo) {
-                        onTorrentInfoUpdated(torrentInfo);
-                        TorrentDetailsActivity.this.torrent = torrent;
-                        getIntent().putExtra(EXTRA_TORRENT, torrent);
-                        setupPager();
+                    public void onSubscribe(Disposable d) {
+                        requests.add(d);
                     }
 
                     @Override
-                    public void onRequestFailure(SpiceException spiceException) {
-                        Log.e(TAG, "Failed to reload torrent", spiceException);
+                    public void onComplete() {
+                        updateTorrentAndTorrentInfo(torrentId);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.e(TAG, "Failed to rename torrent", e);
                     }
                 });
-            }
-        });
     }
 
     @Override
     public void onRefresh() {
         torrentInfoUpdater.updateNow(this);
+    }
+
+    private void updateTorrentAndTorrentInfo(int torrentId) {
+        transport.api().torrentList(RpcArgs.torrentGet(torrentId))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new SingleObserver<List<Torrent>>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        requests.add(d);
+                    }
+
+                    @Override
+                    public void onSuccess(List<Torrent> torrents) {
+                        if (torrents.size() != 1) {
+                            Log.e(TAG, "Wrong number of torrents");
+                            return;
+                        }
+
+                        updateTorrentInfo(torrents.get(0));
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.e(TAG, "Failed to reload torrent", e);
+                    }
+                });
+    }
+
+    private void updateTorrentInfo(final Torrent torrent) {
+        getTransportManager().doRequest(new TorrentInfoGetRequest(torrent.getId()), new RequestListener<TorrentInfo>() {
+            @Override
+            public void onRequestSuccess(TorrentInfo torrentInfo) {
+                onTorrentInfoUpdated(torrentInfo);
+                TorrentDetailsActivity.this.torrent = torrent;
+                getIntent().putExtra(EXTRA_TORRENT, torrent);
+                setupPager();
+            }
+
+            @Override
+            public void onRequestFailure(SpiceException spiceException) {
+                Log.e(TAG, "Failed to reload torrent", spiceException);
+            }
+        });
     }
 }
