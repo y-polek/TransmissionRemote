@@ -31,7 +31,6 @@ import net.yupol.transmissionremote.app.transport.request.SetLocationRequest;
 import net.yupol.transmissionremote.app.transport.request.TorrentInfoGetRequest;
 import net.yupol.transmissionremote.app.transport.request.TorrentRemoveRequest;
 import net.yupol.transmissionremote.app.transport.request.TorrentSetRequest;
-import net.yupol.transmissionremote.app.transport.request.VerifyTorrentRequest;
 import net.yupol.transmissionremote.model.json.Torrent;
 import net.yupol.transmissionremote.transport.Transport;
 import net.yupol.transmissionremote.transport.rpc.RpcArgs;
@@ -307,7 +306,10 @@ public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveCha
                 dialog.show(getSupportFragmentManager(), TAG_CHOOSE_LOCATION_DIALOG);
                 return true;
             case R.id.action_verify:
-                getTransportManager().doRequest(new VerifyTorrentRequest(torrent.getId()), null);
+                transport.getApi().verifyTorrents(torrent.getId())
+                        .subscribeOn(Schedulers.io())
+                        .onErrorComplete()
+                        .subscribe();
                 return true;
             case R.id.action_reannounce:
                 transport.getApi().reannounceTorrents(torrent.getId())

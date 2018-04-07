@@ -46,7 +46,6 @@ import net.yupol.transmissionremote.app.transport.BaseSpiceActivity;
 import net.yupol.transmissionremote.app.transport.TransportManager;
 import net.yupol.transmissionremote.app.transport.request.RenameRequest;
 import net.yupol.transmissionremote.app.transport.request.SetLocationRequest;
-import net.yupol.transmissionremote.app.transport.request.VerifyTorrentRequest;
 import net.yupol.transmissionremote.app.utils.ColorUtils;
 import net.yupol.transmissionremote.app.utils.DividerItemDecoration;
 import net.yupol.transmissionremote.app.utils.IconUtils;
@@ -209,7 +208,10 @@ public class TorrentListFragment extends Fragment implements ChooseLocationDialo
                     showChooseLocationDialog();
                     return true;
                 case R.id.action_verify:
-                    transportManager.doRequest(new VerifyTorrentRequest(adapter.getSelectedItemsIds()), null);
+                    transport.getApi().verifyTorrents(adapter.getSelectedItemsIds())
+                            .subscribeOn(Schedulers.io())
+                            .onErrorComplete()
+                            .subscribe();
                     mode.finish();
                     return true;
                 case R.id.action_reannounce:

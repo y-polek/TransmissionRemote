@@ -41,4 +41,8 @@ interface TransmissionRpcApi {
     @POST(".")
     @RpcMethod("torrent-reannounce")
     fun reannounceTorrents(@RpcIds @Body vararg ids: Int): Completable
+
+    @POST(".")
+    @RpcMethod("torrent-verify")
+    fun verifyTorrents(@RpcIds @Body vararg ids: Int): Completable
 }
