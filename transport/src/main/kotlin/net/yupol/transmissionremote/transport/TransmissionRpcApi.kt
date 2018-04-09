@@ -15,16 +15,16 @@ interface TransmissionRpcApi {
     @POST("./")
     @RpcMethod("torrent-get")
     @Wrapped(path = ["arguments", "torrents"])
-    fun torrentList(@Body body: Map<String, @JvmSuppressWildcards Any> = RpcArgs.torrentGet()): Single<List<Torrent>>
+    fun torrentList(@Body args: Map<String, @JvmSuppressWildcards Any> = RpcArgs.torrentGet()): Single<List<Torrent>>
 
     @POST("./")
     @RpcMethod("session-get")
     @Wrapped(path = ["arguments"])
-    fun serverSettings(@Body body: Map<String, @JvmSuppressWildcards Any> = RpcArgs.sessionGet()): Single<ServerSettings>
+    fun serverSettings(@Body args: Map<String, @JvmSuppressWildcards Any> = RpcArgs.sessionGet()): Single<ServerSettings>
 
     @POST("./")
     @RpcMethod("session-set")
-    fun setServerSettings(@Body body: Map<String, @JvmSuppressWildcards Any>): Completable
+    fun setServerSettings(@Body args: Map<String, @JvmSuppressWildcards Any>): Completable
 
     @POST(".")
     @RpcMethod("torrent-start")
@@ -48,5 +48,9 @@ interface TransmissionRpcApi {
 
     @POST(".")
     @RpcMethod("torrent-rename-path")
-    fun renameTorrent(@Body body: Map<String, @JvmSuppressWildcards Any>): Completable
+    fun renameTorrent(@Body args: Map<String, @JvmSuppressWildcards Any>): Completable
+
+    @POST(".")
+    @RpcMethod("torrent-set-location")
+    fun setTorrentLocation(@Body args: Map<String, @JvmSuppressWildcards Any>): Completable
 }

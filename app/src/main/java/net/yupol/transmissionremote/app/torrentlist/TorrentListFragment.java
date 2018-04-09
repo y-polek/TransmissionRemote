@@ -32,8 +32,6 @@ import com.google.common.collect.FluentIterable;
 import com.mikepenz.fontawesome_typeface_library.FontAwesome;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.iconics.IconicsDrawable;
-import com.octo.android.robospice.persistence.exception.SpiceException;
-import com.octo.android.robospice.request.listener.RequestListener;
 
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.TransmissionRemote;
@@ -44,7 +42,6 @@ import net.yupol.transmissionremote.app.filtering.Filter;
 import net.yupol.transmissionremote.app.filtering.NameFilter;
 import net.yupol.transmissionremote.app.transport.BaseSpiceActivity;
 import net.yupol.transmissionremote.app.transport.TransportManager;
-import net.yupol.transmissionremote.app.transport.request.SetLocationRequest;
 import net.yupol.transmissionremote.app.utils.ColorUtils;
 import net.yupol.transmissionremote.app.utils.DividerItemDecoration;
 import net.yupol.transmissionremote.app.utils.IconUtils;
@@ -346,15 +343,11 @@ public class TorrentListFragment extends Fragment implements ChooseLocationDialo
         if (actionMode != null) {
             actionMode.finish();
         }
-        transportManager.doRequest(new SetLocationRequest(path, moveData, torrentIds), new RequestListener<Void>() {
-            @Override
-            public void onRequestSuccess(Void aVoid) {}
 
-            @Override
-            public void onRequestFailure(SpiceException spiceException) {
-                Log.e(TAG, "Failed to set location", spiceException);
-            }
-        });
+        transport.api().setTorrentLocation(RpcArgs.setLocation(path, moveData, torrentIds))
+                .subscribeOn(Schedulers.io())
+                .onErrorComplete()
+                .subscribe();
     }
 
     @Override

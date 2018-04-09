@@ -26,7 +26,6 @@ import net.yupol.transmissionremote.app.torrentlist.ChooseLocationDialogFragment
 import net.yupol.transmissionremote.app.torrentlist.RemoveTorrentsDialogFragment;
 import net.yupol.transmissionremote.app.torrentlist.RenameDialogFragment;
 import net.yupol.transmissionremote.app.transport.BaseSpiceActivity;
-import net.yupol.transmissionremote.app.transport.request.SetLocationRequest;
 import net.yupol.transmissionremote.app.transport.request.TorrentInfoGetRequest;
 import net.yupol.transmissionremote.app.transport.request.TorrentRemoveRequest;
 import net.yupol.transmissionremote.app.transport.request.TorrentSetRequest;
@@ -353,17 +352,25 @@ public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveCha
 
     @Override
     public void onLocationSelected(String path, boolean moveData) {
-        getTransportManager().doRequest(new SetLocationRequest(path, moveData, torrent.getId()), new RequestListener<Void>() {
-            @Override
-            public void onRequestSuccess(Void aVoid) {
-                torrentInfoUpdater.updateNow(TorrentDetailsActivity.this);
-            }
+        transport.api().setTorrentLocation(RpcArgs.setLocation(path, moveData, torrent.getId()))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new CompletableObserver() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        requests.add(d);
+                    }
 
-            @Override
-            public void onRequestFailure(SpiceException spiceException) {
-                Log.e(TAG, "Failed to set location", spiceException);
-            }
-        });
+                    @Override
+                    public void onComplete() {
+                        torrentInfoUpdater.updateNow(TorrentDetailsActivity.this);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.e(TAG, "Failed to set location", e);
+                    }
+                });
     }
 
     @Override
