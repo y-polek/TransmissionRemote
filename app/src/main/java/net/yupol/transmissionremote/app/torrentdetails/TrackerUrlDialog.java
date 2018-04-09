@@ -107,7 +107,7 @@ public class TrackerUrlDialog extends DialogFragment {
 
         if (url.isEmpty()) return "";
 
-        if (url.startsWith("http://") || url.startsWith("https://")) {
+        if (url.startsWith("http://") || url.startsWith("https://") || url.startsWith("udp://")) {
             return url;
         } else {
             return "http://" + url;
