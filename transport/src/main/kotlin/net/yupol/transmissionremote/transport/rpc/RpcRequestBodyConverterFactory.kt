@@ -16,27 +16,16 @@ class RpcRequestBodyConverterFactory(private val moshi: Moshi) : Converter.Facto
             type: Type?, parameterAnnotations: Array<out Annotation>?,
             methodAnnotations: Array<out Annotation>?, retrofit: Retrofit?): Converter<*, RequestBody>? {
 
-        val rpcMethod = findRpcMethod(methodAnnotations) ?: return null
+        val rpcMethod = methodAnnotations.find<RpcMethod>()?.name ?: return null
+        val argName = parameterAnnotations.find<RpcArg>()?.name
 
         val adapter = moshi.adapter<RpcBody>(RpcBody::class.java)
-        return if (hasAnnotation<RpcIds>(parameterAnnotations)) {
-            RpcIdsRequestBodyConverter(rpcMethod, adapter)
-        } else {
-            RpcRequestBodyConverter(rpcMethod, adapter)
-        }
-    }
 
-    private fun findRpcMethod(annotations: Array<out Annotation>?): String? {
-        val methodAnnotation = annotations?.find {
-            it.annotationClass == RpcMethod::class
-        } as? RpcMethod ?: return null
-        return methodAnnotation.name
-    }
-
-    private inline fun <reified T> hasAnnotation(annotations: Array<out Annotation>?): Boolean {
-        val annotation = annotations?.find {
-            it.annotationClass == T::class
+        return when {
+            argName != null -> RpcArgRequestBodyConverter(rpcMethod, argName, adapter)
+            else -> RpcRequestBodyConverter(rpcMethod, adapter)
         }
-        return annotation != null
     }
 }
+
+private inline fun <reified T> Array<out Annotation>?.find() = this?.find { it.annotationClass == T::class } as? T

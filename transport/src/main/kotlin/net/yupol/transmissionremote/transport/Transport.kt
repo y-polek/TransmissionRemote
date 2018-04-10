@@ -27,6 +27,7 @@ class Transport(private val server: Server, vararg interceptors: Interceptor) {
         val okHttpClient = with(OkHttpClient.Builder()) {
             addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
             addInterceptor(SessionIdInterceptor())
+            addInterceptor(RpcFailureInterceptor(moshi))
             for (interceptor in interceptors) {
                 addInterceptor(interceptor)
             }
@@ -46,8 +47,8 @@ class Transport(private val server: Server, vararg interceptors: Interceptor) {
                 .baseUrl(baseUrl)
                 .client(okHttpClient)
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                .addConverterFactory(ScalarsConverterFactory.create())
                 .addConverterFactory(RpcRequestBodyConverterFactory.create(moshi))
+                .addConverterFactory(ScalarsConverterFactory.create())
                 .addConverterFactory(MoshiConverterFactory.create(moshi))
                 .build()
 

@@ -15,20 +15,19 @@ import android.support.v7.app.AlertDialog;
 import android.text.Editable;
 import android.view.LayoutInflater;
 
-import com.octo.android.robospice.exception.RequestCancelledException;
-import com.octo.android.robospice.persistence.exception.SpiceException;
-import com.octo.android.robospice.request.listener.RequestListener;
-
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.TransmissionRemote;
 import net.yupol.transmissionremote.app.databinding.SetLocationDialogBinding;
-import net.yupol.transmissionremote.app.model.json.FreeSpace;
-import net.yupol.transmissionremote.app.transport.BaseSpiceActivity;
-import net.yupol.transmissionremote.app.transport.TransportManager;
-import net.yupol.transmissionremote.app.transport.request.FreeSpaceRequest;
-import net.yupol.transmissionremote.app.transport.request.ResponseFailureException;
 import net.yupol.transmissionremote.app.utils.SimpleTextWatcher;
 import net.yupol.transmissionremote.app.utils.TextUtils;
+import net.yupol.transmissionremote.model.FreeSpace;
+import net.yupol.transmissionremote.transport.Transport;
+import net.yupol.transmissionremote.transport.rpc.RpcFailureException;
+
+import io.reactivex.SingleObserver;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
 public class ChooseLocationDialogFragment extends DialogFragment {
 
@@ -36,7 +35,7 @@ public class ChooseLocationDialogFragment extends DialogFragment {
 
     private OnLocationSelectedListener listener;
     private SetLocationDialogBinding binding;
-    private FreeSpaceRequest runningFreeSpaceRequest;
+    private Disposable runningFreeSpaceRequest;
     private String initialLocation;
 
     @Override
@@ -99,39 +98,40 @@ public class ChooseLocationDialogFragment extends DialogFragment {
     @Override
     public void onStop() {
         super.onStop();
-        if (runningFreeSpaceRequest != null) runningFreeSpaceRequest.cancel();
+        if (runningFreeSpaceRequest != null) runningFreeSpaceRequest.dispose();
     }
 
     private void updateFreeSpace(String path) {
-        if (runningFreeSpaceRequest != null) runningFreeSpaceRequest.cancel();
+        if (runningFreeSpaceRequest != null) runningFreeSpaceRequest.dispose();
         binding.setLoadingInProgress(true);
-        runningFreeSpaceRequest = new FreeSpaceRequest(path);
 
-        getTransportManager().doRequest(runningFreeSpaceRequest, new RequestListener<FreeSpace>() {
-            @Override
-            public void onRequestSuccess(FreeSpace freeSpace) {
-                runningFreeSpaceRequest = null;
-                binding.setLoadingInProgress(false);
-                binding.freeSpaceText.setText(getString(R.string.free_space,
-                        TextUtils.displayableSize(freeSpace.getSizeInBytes())));
-            }
+        new Transport(TransmissionRemote.getInstance().getActiveServer()).api().freeSpace(path)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new SingleObserver<FreeSpace>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        runningFreeSpaceRequest = d;
+                    }
 
-            @Override
-            public void onRequestFailure(SpiceException spiceException) {
-                if (spiceException.getCause() instanceof ResponseFailureException) {
-                    runningFreeSpaceRequest = null;
-                    binding.setLoadingInProgress(false);
-                    String failureMessage = ((ResponseFailureException) spiceException.getCause()).getFailureMessage();
-                    binding.freeSpaceText.setText(failureMessage);
-                } else if (!(spiceException instanceof RequestCancelledException)) { // Retry if not canceled
-                    getTransportManager().doRequest(runningFreeSpaceRequest, this);
-                }
-            }
-        });
-    }
+                    @Override
+                    public void onSuccess(FreeSpace freeSpace) {
+                        runningFreeSpaceRequest = null;
+                        binding.setLoadingInProgress(false);
+                        binding.freeSpaceText.setText(getString(R.string.free_space,
+                                TextUtils.displayableSize(freeSpace.getSize())));
+                    }
 
-    private TransportManager getTransportManager() {
-        return ((BaseSpiceActivity) getActivity()).getTransportManager();
+                    @Override
+                    public void onError(Throwable e) {
+                        if (e instanceof RpcFailureException) {
+                            runningFreeSpaceRequest = null;
+                            binding.setLoadingInProgress(false);
+                            String failureMessage = e.getMessage();
+                            binding.freeSpaceText.setText(failureMessage);
+                        }
+                    }
+                });
     }
 
     public interface OnLocationSelectedListener {

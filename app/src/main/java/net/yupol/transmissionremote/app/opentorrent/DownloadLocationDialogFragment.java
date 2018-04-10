@@ -25,20 +25,18 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.google.common.base.Strings;
-import com.octo.android.robospice.persistence.exception.SpiceException;
-import com.octo.android.robospice.request.listener.RequestListener;
 
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.TransmissionRemote;
 import net.yupol.transmissionremote.app.databinding.DownloadLocationDialogBinding;
-import net.yupol.transmissionremote.app.model.json.FreeSpace;
-import net.yupol.transmissionremote.app.transport.BaseSpiceActivity;
-import net.yupol.transmissionremote.app.transport.TransportManager;
-import net.yupol.transmissionremote.app.transport.request.FreeSpaceRequest;
 import net.yupol.transmissionremote.app.utils.SimpleTextWatcher;
 import net.yupol.transmissionremote.app.utils.TextUtils;
+import net.yupol.transmissionremote.model.FreeSpace;
 import net.yupol.transmissionremote.model.Server;
 import net.yupol.transmissionremote.model.json.ServerSettings;
+import net.yupol.transmissionremote.transport.Transport;
+import net.yupol.transmissionremote.transport.rpc.RpcArgs;
+import net.yupol.transmissionremote.transport.rpc.RpcFailureException;
 
 import java.util.List;
 
@@ -47,8 +45,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
-import net.yupol.transmissionremote.transport.rpc.RpcArgs;
-import net.yupol.transmissionremote.transport.Transport;
 
 public class DownloadLocationDialogFragment extends DialogFragment {
 
@@ -65,7 +61,7 @@ public class DownloadLocationDialogFragment extends DialogFragment {
     private static final String KEY_LOADING_IN_PROGRESS = "key_loading_in_progress";
 
     private OnDownloadLocationSelectedListener listener;
-    private FreeSpaceRequest currentRequest;
+    private Disposable currentRequest;
     private FreeSpace freeSpace;
     private DownloadLocationDialogBinding binding;
     private TransmissionRemote app;
@@ -228,7 +224,7 @@ public class DownloadLocationDialogFragment extends DialogFragment {
             addButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if (freeSpace != null && freeSpace.getSizeInBytes() >= 0
+                    if (freeSpace != null && freeSpace.getSize() >= 0
                             || TransmissionRemote.getInstance().isFreeSpaceCheckDisabled()) {
                         notifyListener();
                         dialog.dismiss();
@@ -271,7 +267,7 @@ public class DownloadLocationDialogFragment extends DialogFragment {
 
     @Override
     public void onDismiss(DialogInterface dialog) {
-        if (currentRequest != null) currentRequest.cancel();
+        if (currentRequest != null) currentRequest.dispose();
         requests.clear();
         super.onDismiss(dialog);
     }
@@ -287,7 +283,7 @@ public class DownloadLocationDialogFragment extends DialogFragment {
     }
 
     private void updateFreeSpaceInfo() {
-        if (currentRequest != null) currentRequest.cancel();
+        if (currentRequest != null) currentRequest.dispose();
         if (getDialog() == null) return;
         freeSpace = null;
 
@@ -298,49 +294,61 @@ public class DownloadLocationDialogFragment extends DialogFragment {
         }
 
         final String path = binding.downloadLocationText.getText().toString();
-        currentRequest = new FreeSpaceRequest(path);
-        getTransportManager().doRequest(currentRequest,
-            new RequestListener<FreeSpace>() {
-                @Override
-                public void onRequestFailure(SpiceException spiceException) {
-                    Log.e(TAG, "Can't fetch free space for '" + path + "'. " + spiceException.getMessage());
-
-                    AlertDialog dialog = (AlertDialog) getDialog();
-                    if (dialog != null) {
-                        binding.freeSpaceProgressBar.setVisibility(View.INVISIBLE);
-                        binding.freeSpaceText.setVisibility(View.VISIBLE);
-                        binding.freeSpaceText.setText(R.string.free_space_unknown);
-                        dialog.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(true);
+        new Transport(app.getActiveServer()).api().freeSpace(path)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new SingleObserver<FreeSpace>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        currentRequest = d;
                     }
-                    currentRequest = null;
-                }
 
-                @Override
-                public void onRequestSuccess(FreeSpace freeSpace) {
-                    DownloadLocationDialogFragment.this.freeSpace = freeSpace;
-                    AlertDialog dialog = (AlertDialog) getDialog();
-                    if (dialog != null) {
-                        dialog.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(true);
-                        if (freeSpace.getSizeInBytes() >= 0) {
-                            binding.freeSpaceText.setText(getString(
-                                    R.string.free_space, TextUtils.displayableSize(freeSpace.getSizeInBytes())));
-                        } else {
-                            String useDefaultText = getString(R.string.use_default_directory);
-                            binding.freeSpaceText.setText(getString(R.string.no_directory) + ". " + useDefaultText);
-                            clickify(binding.freeSpaceText, useDefaultText, new ClickSpan.OnClickListener() {
-                                @Override
-                                public void onClick() {
-                                    TransmissionRemote app = (TransmissionRemote) getActivity().getApplicationContext();
-                                    binding.downloadLocationText.setText(Strings.nullToEmpty(app.getDefaultDownloadDir()));
-                                }
-                            });
+                    @Override
+                    public void onSuccess(FreeSpace freeSpace) {
+                        DownloadLocationDialogFragment.this.freeSpace = freeSpace;
+                        AlertDialog dialog = (AlertDialog) getDialog();
+                        if (dialog != null) {
+                            dialog.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(true);
+                            if (freeSpace.getSize() >= 0) {
+                                binding.freeSpaceText.setText(getString(
+                                        R.string.free_space, TextUtils.displayableSize(freeSpace.getSize())));
+                            } else {
+                                String useDefaultText = getString(R.string.use_default_directory);
+                                binding.freeSpaceText.setText(getString(R.string.no_directory) + ". " + useDefaultText);
+                                clickify(binding.freeSpaceText, useDefaultText, new ClickSpan.OnClickListener() {
+                                    @Override
+                                    public void onClick() {
+                                        TransmissionRemote app = (TransmissionRemote) getActivity().getApplicationContext();
+                                        binding.downloadLocationText.setText(Strings.nullToEmpty(app.getDefaultDownloadDir()));
+                                    }
+                                });
+                            }
+                            binding.freeSpaceProgressBar.setVisibility(View.INVISIBLE);
+                            binding.freeSpaceText.setVisibility(View.VISIBLE);
                         }
-                        binding.freeSpaceProgressBar.setVisibility(View.INVISIBLE);
-                        binding.freeSpaceText.setVisibility(View.VISIBLE);
+                        currentRequest = null;
                     }
-                    currentRequest = null;
-                }
-            });
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.e(TAG, "Can't fetch free space for '" + path + "'. " + e.getMessage(), e);
+
+                        AlertDialog dialog = (AlertDialog) getDialog();
+                        if (dialog != null) {
+                            binding.freeSpaceProgressBar.setVisibility(View.INVISIBLE);
+                            binding.freeSpaceText.setVisibility(View.VISIBLE);
+                            String errorMsg;
+                            if (e instanceof RpcFailureException) {
+                                errorMsg = e.getMessage();
+                            } else {
+                                errorMsg = getString(R.string.free_space_unknown);
+                            }
+                            binding.freeSpaceText.setText(errorMsg);
+                            dialog.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(true);
+                        }
+                        currentRequest = null;
+                    }
+                });
     }
 
     public interface OnDownloadLocationSelectedListener {
@@ -371,10 +379,6 @@ public class DownloadLocationDialogFragment extends DialogFragment {
         if ((m == null) || !(m instanceof LinkMovementMethod)) {
             view.setMovementMethod(LinkMovementMethod.getInstance());
         }
-    }
-
-    private TransportManager getTransportManager() {
-        return ((BaseSpiceActivity) getActivity()).getTransportManager();
     }
 
     private static class ClickSpan extends ClickableSpan {
