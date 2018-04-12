@@ -1,1 +1,1 @@
-include ':app', ':transport', ':model'
+include ':app', ':transport', ':model', ':utils'

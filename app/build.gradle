@@ -54,6 +54,7 @@ android {
 dependencies {
     implementation project(':model')
     implementation project(':transport')
+    implementation project(':utils')
 
     // Support Library
     implementation 'com.android.support:appcompat-v7:' + rootProject.support_version

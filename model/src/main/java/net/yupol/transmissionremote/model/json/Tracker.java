@@ -1,16 +1,16 @@
-package net.yupol.transmissionremote.app.model.json;
+package net.yupol.transmissionremote.model.json;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.google.api.client.util.Key;
+import com.squareup.moshi.Json;
 
 public class Tracker implements Parcelable {
 
-    @Key public int id;
-    @Key public int tier;
-    @Key public String announce;
-    @Key public String scrape;
+    @Json(name = "id") public int id;
+    @Json(name = "tier") public int tier;
+    @Json(name = "announce") public String announce;
+    @Json(name = "scrape") public String scrape;
 
     public static final Creator<Tracker> CREATOR = new Creator<Tracker>() {
         @Override

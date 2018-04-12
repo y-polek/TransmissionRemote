@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.databinding.PeerItemLayoutBinding;
-import net.yupol.transmissionremote.app.model.json.Peer;
+import net.yupol.transmissionremote.model.json.Peer;
 import net.yupol.transmissionremote.app.sorting.PeersSortedBy;
 import net.yupol.transmissionremote.app.sorting.SortOrder;
 

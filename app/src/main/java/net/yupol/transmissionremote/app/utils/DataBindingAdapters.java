@@ -9,7 +9,7 @@ import android.widget.TextView;
 
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.model.TrackerState;
-import net.yupol.transmissionremote.app.model.json.TrackerStats;
+import net.yupol.transmissionremote.model.json.TrackerStats;
 
 import static net.yupol.transmissionremote.app.utils.TextUtils.displayableDate;
 import static net.yupol.transmissionremote.app.utils.TextUtils.displayableTime;

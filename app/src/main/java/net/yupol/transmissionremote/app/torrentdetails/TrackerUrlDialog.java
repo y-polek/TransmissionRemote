@@ -15,7 +15,7 @@ import android.widget.Button;
 
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.databinding.TrackerUrlDialogLayoutBinding;
-import net.yupol.transmissionremote.app.model.json.TrackerStats;
+import net.yupol.transmissionremote.model.json.TrackerStats;
 import net.yupol.transmissionremote.app.utils.SimpleTextWatcher;
 
 import org.apache.commons.lang3.StringUtils;

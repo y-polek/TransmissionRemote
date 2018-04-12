@@ -7,7 +7,7 @@ import android.util.Log;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
 
-import net.yupol.transmissionremote.app.model.json.TorrentInfo;
+import net.yupol.transmissionremote.model.json.TorrentInfo;
 import net.yupol.transmissionremote.app.transport.TransportManager;
 import net.yupol.transmissionremote.app.transport.request.TorrentInfoGetRequest;
 

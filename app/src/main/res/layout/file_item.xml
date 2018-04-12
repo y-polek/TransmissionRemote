@@ -2,7 +2,7 @@
 <layout>
     <data>
         <variable name="dir" type="net.yupol.transmissionremote.app.model.Dir" />
-        <variable name="file" type="net.yupol.transmissionremote.app.model.json.File" />
+        <variable name="file" type="net.yupol.transmissionremote.model.json.File" />
     </data>
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:orientation="horizontal"

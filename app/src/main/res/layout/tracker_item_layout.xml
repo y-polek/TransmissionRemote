@@ -5,7 +5,7 @@
     <data>
         <import type="android.view.View" />
         <import type="net.yupol.transmissionremote.app.utils.TextUtils" />
-        <variable name="trackerStats" type="net.yupol.transmissionremote.app.model.json.TrackerStats" />
+        <variable name="trackerStats" type="net.yupol.transmissionremote.model.json.TrackerStats" />
     </data>
     <LinearLayout
         android:orientation="vertical"

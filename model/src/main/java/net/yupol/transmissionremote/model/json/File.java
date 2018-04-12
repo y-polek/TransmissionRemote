@@ -1,14 +1,14 @@
-package net.yupol.transmissionremote.app.model.json;
+package net.yupol.transmissionremote.model.json;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.google.api.client.util.Key;
+import com.squareup.moshi.Json;
 
 public class File implements Parcelable {
-    @Key("name") private String path;
+    @Json(name = "name") private String path;
     private String name;
-    @Key private long length;
+    @Json(name = "length") private long length;
 
     public File() {}
 

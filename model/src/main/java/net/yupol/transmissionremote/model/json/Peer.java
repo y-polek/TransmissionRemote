@@ -1,28 +1,28 @@
-package net.yupol.transmissionremote.app.model.json;
+package net.yupol.transmissionremote.model.json;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.google.api.client.util.Key;
+import com.squareup.moshi.Json;
 
 public class Peer implements Parcelable {
 
-    @Key public String address;
-    @Key public String clientName;
-    @Key public boolean clientIsChoked;
-    @Key public boolean clientIsInterested;
-    @Key public String flagStr;
-    @Key public boolean isDownloadingFrom;
-    @Key public boolean isEncrypted;
-    @Key public boolean isIncoming;
-    @Key public boolean isUploadingTo;
-    @Key public boolean isUTP;
-    @Key public boolean peerIsChoked;
-    @Key public boolean peerIsInterested;
-    @Key public int port;
-    @Key public double progress;
-    @Key public long rateToClient;
-    @Key public long rateToPeer;
+    @Json(name = "address") public String address;
+    @Json(name = "clientName") public String clientName;
+    @Json(name = "clientIsChoked") public boolean clientIsChoked;
+    @Json(name = "clientIsInterested") public boolean clientIsInterested;
+    @Json(name = "flagStr") public String flagStr;
+    @Json(name = "isDownloadingFrom") public boolean isDownloadingFrom;
+    @Json(name = "isEncrypted") public boolean isEncrypted;
+    @Json(name = "isIncoming") public boolean isIncoming;
+    @Json(name = "isUploadingTo") public boolean isUploadingTo;
+    @Json(name = "isUTP") public boolean isUTP;
+    @Json(name = "peerIsChoked") public boolean peerIsChoked;
+    @Json(name = "peerIsInterested") public boolean peerIsInterested;
+    @Json(name = "port") public int port;
+    @Json(name = "progress") public double progress;
+    @Json(name = "rateToClient") public long rateToClient;
+    @Json(name = "rateToPeer") public long rateToPeer;
 
     public Peer() {
         // required by GSON

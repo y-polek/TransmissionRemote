@@ -1,38 +1,38 @@
-package net.yupol.transmissionremote.app.model.json;
+package net.yupol.transmissionremote.model.json;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.google.api.client.util.Key;
+import com.squareup.moshi.Json;
 
 public class TrackerStats implements Parcelable {
 
-    @Key public int id;
-    @Key public String announce;
-    @Key public int announceState;
-    @Key public int downloadCount;
-    @Key public boolean hasAnnounced;
-    @Key public boolean hasScraped;
-    @Key public String host;
-    @Key public boolean isBackup;
-    @Key public int lastAnnouncePeerCount;
-    @Key public String lastAnnounceResult;
-    @Key public long lastAnnounceStartTime;
-    @Key public boolean lastAnnounceSucceeded;
-    @Key public long lastAnnounceTime;
-    @Key public boolean lastAnnounceTimedOut;
-    @Key public String lastScrapeResult;
-    @Key public long lastScrapeStartTime;
-    @Key public boolean lastScrapeSucceeded;
-    @Key public long lastScrapeTime;
-    @Key public byte lastScrapeTimedOut;
-    @Key public int leecherCount;
-    @Key public long nextAnnounceTime;
-    @Key public long nextScrapeTime;
-    @Key public String scrape;
-    @Key public int scrapeState;
-    @Key public int seederCount;
-    @Key public int tier;
+    @Json(name = "id") public int id;
+    @Json(name = "announce") public String announce;
+    @Json(name = "announceState") public int announceState;
+    @Json(name = "downloadCount") public int downloadCount;
+    @Json(name = "hasAnnounced") public boolean hasAnnounced;
+    @Json(name = "hasScraped") public boolean hasScraped;
+    @Json(name = "host") public String host;
+    @Json(name = "isBackup") public boolean isBackup;
+    @Json(name = "lastAnnouncePeerCount") public int lastAnnouncePeerCount;
+    @Json(name = "lastAnnounceResult") public String lastAnnounceResult;
+    @Json(name = "lastAnnounceStartTime") public long lastAnnounceStartTime;
+    @Json(name = "lastAnnounceSucceeded") public boolean lastAnnounceSucceeded;
+    @Json(name = "lastAnnounceTime") public long lastAnnounceTime;
+    @Json(name = "lastAnnounceTimedOut") public boolean lastAnnounceTimedOut;
+    @Json(name = "lastScrapeResult") public String lastScrapeResult;
+    @Json(name = "lastScrapeStartTime") public long lastScrapeStartTime;
+    @Json(name = "lastScrapeSucceeded") public boolean lastScrapeSucceeded;
+    @Json(name = "lastScrapeTime") public long lastScrapeTime;
+    @Json(name = "lastScrapeTimedOut") public byte lastScrapeTimedOut;
+    @Json(name = "leecherCount") public int leecherCount;
+    @Json(name = "nextAnnounceTime") public long nextAnnounceTime;
+    @Json(name = "nextScrapeTime") public long nextScrapeTime;
+    @Json(name = "scrape") public String scrape;
+    @Json(name = "scrapeState") public int scrapeState;
+    @Json(name = "seederCount") public int seederCount;
+    @Json(name = "tier") public int tier;
 
     public static final Creator<TrackerStats> CREATOR = new Creator<TrackerStats>() {
         @Override

@@ -1,7 +1,7 @@
 package net.yupol.transmissionremote.app.torrentdetails;
 
-import net.yupol.transmissionremote.app.model.limitmode.LimitMode;
-import net.yupol.transmissionremote.app.model.limitmode.RatioLimitMode;
+import net.yupol.transmissionremote.model.limitmode.LimitMode;
+import net.yupol.transmissionremote.model.limitmode.RatioLimitMode;
 
 public class RatioLimitModeAdapter extends LimitModeAdapter {
     @Override

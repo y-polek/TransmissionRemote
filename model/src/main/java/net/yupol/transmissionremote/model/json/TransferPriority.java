@@ -1,4 +1,4 @@
-package net.yupol.transmissionremote.app.model.json;
+package net.yupol.transmissionremote.model.json;
 
 public enum TransferPriority {
     HIGH(1),

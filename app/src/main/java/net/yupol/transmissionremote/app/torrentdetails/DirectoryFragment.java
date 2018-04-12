@@ -19,13 +19,13 @@ import com.octo.android.robospice.request.listener.RequestListener;
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.model.Dir;
 import net.yupol.transmissionremote.app.model.Priority;
-import net.yupol.transmissionremote.app.model.json.File;
-import net.yupol.transmissionremote.app.model.json.FileStat;
+import net.yupol.transmissionremote.model.json.FileStat;
 import net.yupol.transmissionremote.app.transport.BaseSpiceActivity;
 import net.yupol.transmissionremote.app.transport.TransportManager;
 import net.yupol.transmissionremote.app.transport.request.TorrentSetRequest;
 import net.yupol.transmissionremote.app.utils.DividerItemDecoration;
-import net.yupol.transmissionremote.app.utils.ParcelableUtils;
+import net.yupol.transmissionremote.model.json.File;
+import net.yupol.transmissionremote.utils.Parcelables;
 
 public class DirectoryFragment extends Fragment implements DirectoryAdapter.OnItemSelectedListener {
 
@@ -50,12 +50,12 @@ public class DirectoryFragment extends Fragment implements DirectoryAdapter.OnIt
         Bundle args = getArguments();
         torrentId = args.getInt(ARG_TORRENT_ID, -1);
         dir = args.getParcelable(ARG_DIRECTORY);
-        files = ParcelableUtils.toArrayOfType(File.class, args.getParcelableArray(ARG_FILES));
+        files = Parcelables.toArrayOfType(File.class, args.getParcelableArray(ARG_FILES));
 
         if (savedInstanceState == null) {
-            fileStats = ParcelableUtils.toArrayOfType(FileStat.class, args.getParcelableArray(ARG_FILE_STATS));
+            fileStats = Parcelables.toArrayOfType(FileStat.class, args.getParcelableArray(ARG_FILE_STATS));
         } else {
-            fileStats = ParcelableUtils.toArrayOfType(FileStat.class, savedInstanceState.getParcelableArray(ARG_FILE_STATS));
+            fileStats = Parcelables.toArrayOfType(FileStat.class, savedInstanceState.getParcelableArray(ARG_FILE_STATS));
         }
 
         if (torrentId < 0 || dir == null || files == null || fileStats == null) {

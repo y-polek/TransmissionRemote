@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="global_settings">Global Settings</string>
+    <string name="unlimited">Unlimited</string>
+    <string name="stop_when_inactive">Stop When Inactive</string>
+    <string name="stop_at_ratio">Stop at Ratio</string>
+</resources>

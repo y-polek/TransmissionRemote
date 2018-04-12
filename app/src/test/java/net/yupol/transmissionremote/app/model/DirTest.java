@@ -4,7 +4,7 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 
 import junit.framework.TestCase;
 
-import net.yupol.transmissionremote.app.model.json.File;
+import net.yupol.transmissionremote.model.json.File;
 
 public class DirTest extends TestCase {
 

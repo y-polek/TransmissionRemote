@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="global_settings">Globális beállítások</string>
+    <string name="unlimited">Korlátlan</string>
+    <string name="stop_when_inactive">Ájjl, ha inaktív</string>
+    <string name="stop_at_ratio">Stop, ha eléri az arányt</string>
+</resources>

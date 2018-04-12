@@ -1,14 +1,14 @@
-package net.yupol.transmissionremote.app.model.json;
+package net.yupol.transmissionremote.model.json;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.google.api.client.util.Key;
+import com.squareup.moshi.Json;
 
 public class FileStat implements Parcelable {
-    @Key private boolean wanted;
-    @Key private int priority;
-    @Key private long bytesCompleted;
+    @Json(name = "wanted") private boolean wanted;
+    @Json(name = "priority") private int priority;
+    @Json(name = "bytesCompleted") private long bytesCompleted;
 
     public FileStat() {}
 

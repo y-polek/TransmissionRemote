@@ -10,7 +10,7 @@
             type="net.yupol.transmissionremote.model.json.Torrent" />
         <variable
             name="torrentInfo"
-            type="net.yupol.transmissionremote.app.model.json.TorrentInfo" />
+            type="net.yupol.transmissionremote.model.json.TorrentInfo" />
     </data>
 
     <FrameLayout

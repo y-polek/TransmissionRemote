@@ -1,18 +1,18 @@
-package net.yupol.transmissionremote.app.model.json;
+package net.yupol.transmissionremote.model.json;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.google.api.client.util.Key;
+import com.squareup.moshi.Json;
 
-import net.yupol.transmissionremote.app.model.limitmode.IdleLimitMode;
-import net.yupol.transmissionremote.app.model.limitmode.LimitMode;
-import net.yupol.transmissionremote.app.model.limitmode.RatioLimitMode;
-import net.yupol.transmissionremote.app.utils.ParcelableUtils;
+import net.yupol.transmissionremote.model.limitmode.IdleLimitMode;
+import net.yupol.transmissionremote.model.limitmode.LimitMode;
+import net.yupol.transmissionremote.model.limitmode.RatioLimitMode;
+import net.yupol.transmissionremote.utils.Parcelables;
 
 public class TorrentInfo implements Parcelable {
 
-    @Key("torrents") private Item[] items;
+    @Json(name = "torrents") private Item[] items;
 
     public TorrentInfo() {}
 
@@ -52,11 +52,11 @@ public class TorrentInfo implements Parcelable {
         i.activityDate = in.readLong();
         i.secondsDownloading = in.readLong();
         i.secondsSeeding = in.readLong();
-        i.peers = ParcelableUtils.toArrayOfType(Peer.class,
+        i.peers = Parcelables.toArrayOfType(Peer.class,
                 in.readParcelableArray(Peer.class.getClassLoader()));
-        i.trackers = ParcelableUtils.toArrayOfType(Tracker.class,
+        i.trackers = Parcelables.toArrayOfType(Tracker.class,
                 in.readParcelableArray(Tracker.class.getClassLoader()));
-        i.trackerStats = ParcelableUtils.toArrayOfType(TrackerStats.class,
+        i.trackerStats = Parcelables.toArrayOfType(TrackerStats.class,
                 in.readParcelableArray(TrackerStats.class.getClassLoader()));
     }
 
@@ -276,44 +276,43 @@ public class TorrentInfo implements Parcelable {
     };
 
     public static class Item {
-        @Key private int id;
-        @Key private File[] files;
-        @Key private FileStat[] fileStats;
-        @Key("bandwidthPriority")
-        private int transferPriorityValue;
+        @Json(name = "id") private int id;
+        @Json(name = "files") private File[] files;
+        @Json(name = "fileStats") private FileStat[] fileStats;
+        @Json(name = "bandwidthPriority") private int transferPriorityValue;
         private TransferPriority transferPriority;
-        @Key private boolean honorsSessionLimits;
-        @Key private boolean downloadLimited;
-        @Key private long downloadLimit;
-        @Key private boolean uploadLimited;
-        @Key private long uploadLimit;
-        @Key private double seedRatioLimit;
-        @Key("seedRatioMode") private int seedRatioModeValue;
+        @Json(name = "honorsSessionLimits") private boolean honorsSessionLimits;
+        @Json(name = "downloadLimited") private boolean downloadLimited;
+        @Json(name = "downloadLimit") private long downloadLimit;
+        @Json(name = "uploadLimited") private boolean uploadLimited;
+        @Json(name = "uploadLimit") private long uploadLimit;
+        @Json(name = "seedRatioLimit") private double seedRatioLimit;
+        @Json(name = "seedRatioMode") private int seedRatioModeValue;
         private LimitMode seedRatioMode;
-        @Key private int seedIdleLimit;
-        @Key("seedIdleMode") private int seedIdleModeValue;
+        @Json(name = "seedIdleLimit") private int seedIdleLimit;
+        @Json(name = "seedIdleMode") private int seedIdleModeValue;
         private LimitMode seedIdleMode;
-        @Key private long haveUnchecked;
-        @Key private long haveValid;
-        @Key private long sizeWhenDone;
-        @Key private long leftUntilDone;
-        @Key private long desiredAvailable;
-        @Key private long pieceCount;
-        @Key private long pieceSize;
-        @Key private String downloadDir;
-        @Key private boolean isPrivate;
-        @Key private String creator;
-        @Key private long dateCreated;
-        @Key private String comment;
-        @Key private long downloadedEver;
-        @Key private long corruptEver;
-        @Key private long uploadedEver;
-        @Key private long addedDate;
-        @Key private long activityDate;
-        @Key private long secondsDownloading;
-        @Key private long secondsSeeding;
-        @Key private Peer[] peers;
-        @Key private Tracker[] trackers;
-        @Key private TrackerStats[] trackerStats;
+        @Json(name = "haveUnchecked") private long haveUnchecked;
+        @Json(name = "haveValid") private long haveValid;
+        @Json(name = "sizeWhenDone") private long sizeWhenDone;
+        @Json(name = "leftUntilDone") private long leftUntilDone;
+        @Json(name = "desiredAvailable") private long desiredAvailable;
+        @Json(name = "pieceCount") private long pieceCount;
+        @Json(name = "pieceSize") private long pieceSize;
+        @Json(name = "downloadDir") private String downloadDir;
+        @Json(name = "isPrivate") private boolean isPrivate;
+        @Json(name = "creator") private String creator;
+        @Json(name = "dateCreated") private long dateCreated;
+        @Json(name = "comment") private String comment;
+        @Json(name = "downloadedEver") private long downloadedEver;
+        @Json(name = "corruptEver") private long corruptEver;
+        @Json(name = "uploadedEver") private long uploadedEver;
+        @Json(name = "addedDate") private long addedDate;
+        @Json(name = "activityDate") private long activityDate;
+        @Json(name = "secondsDownloading") private long secondsDownloading;
+        @Json(name = "secondsSeeding") private long secondsSeeding;
+        @Json(name = "peers") private Peer[] peers;
+        @Json(name = "trackers") private Tracker[] trackers;
+        @Json(name = "trackerStats") private TrackerStats[] trackerStats;
     }
 }

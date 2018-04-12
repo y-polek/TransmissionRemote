@@ -1,4 +1,4 @@
-package net.yupol.transmissionremote.app.model.limitmode;
+package net.yupol.transmissionremote.model.limitmode;
 
 public interface LimitMode {
     int getTextRes();

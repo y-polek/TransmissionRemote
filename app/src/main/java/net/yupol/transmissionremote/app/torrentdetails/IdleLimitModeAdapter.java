@@ -1,7 +1,7 @@
 package net.yupol.transmissionremote.app.torrentdetails;
 
-import net.yupol.transmissionremote.app.model.limitmode.IdleLimitMode;
-import net.yupol.transmissionremote.app.model.limitmode.LimitMode;
+import net.yupol.transmissionremote.model.limitmode.IdleLimitMode;
+import net.yupol.transmissionremote.model.limitmode.LimitMode;
 
 public class IdleLimitModeAdapter extends LimitModeAdapter {
     @Override

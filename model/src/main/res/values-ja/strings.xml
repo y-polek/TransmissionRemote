@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="global_settings">全体の設定</string>
+    <string name="unlimited">無制限</string>
+    <string name="stop_when_inactive">非アクティブ時に停止</string>
+    <string name="stop_at_ratio">設定した比率に到達したら停止</string>
+</resources>

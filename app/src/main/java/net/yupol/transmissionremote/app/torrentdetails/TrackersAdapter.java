@@ -11,7 +11,7 @@ import android.view.ViewGroup;
 
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.databinding.TrackerItemLayoutBinding;
-import net.yupol.transmissionremote.app.model.json.TrackerStats;
+import net.yupol.transmissionremote.model.json.TrackerStats;
 
 import java.util.Arrays;
 import java.util.Comparator;

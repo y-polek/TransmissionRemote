@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="global_settings">Общие настройки</string>
+    <string name="unlimited">Неограничено</string>
+    <string name="stop_when_inactive">Остановить при неактивности в течение</string>
+    <string name="stop_at_ratio">Остановить при рейтинге</string>
+</resources>

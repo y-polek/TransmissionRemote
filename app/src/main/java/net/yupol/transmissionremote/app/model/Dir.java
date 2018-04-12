@@ -4,7 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
-import net.yupol.transmissionremote.app.model.json.File;
+import net.yupol.transmissionremote.model.json.File;
 
 import java.util.Arrays;
 import java.util.LinkedList;

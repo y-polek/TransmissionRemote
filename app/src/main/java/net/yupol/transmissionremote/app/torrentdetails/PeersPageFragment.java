@@ -20,8 +20,8 @@ import com.mikepenz.community_material_typeface_library.CommunityMaterial;
 
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.databinding.TorrentDetailsPeersPageFragmentBinding;
-import net.yupol.transmissionremote.app.model.json.Peer;
-import net.yupol.transmissionremote.app.model.json.TorrentInfo;
+import net.yupol.transmissionremote.model.json.Peer;
+import net.yupol.transmissionremote.model.json.TorrentInfo;
 import net.yupol.transmissionremote.app.sorting.PeersSortedBy;
 import net.yupol.transmissionremote.app.sorting.SortOrder;
 import net.yupol.transmissionremote.app.utils.DividerItemDecoration;

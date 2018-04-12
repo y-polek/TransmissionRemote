@@ -28,8 +28,8 @@ import com.octo.android.robospice.request.listener.RequestListener;
 
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.databinding.TorrentDetailsTrackersPageFragmentBinding;
-import net.yupol.transmissionremote.app.model.json.TorrentInfo;
-import net.yupol.transmissionremote.app.model.json.TrackerStats;
+import net.yupol.transmissionremote.model.json.TorrentInfo;
+import net.yupol.transmissionremote.model.json.TrackerStats;
 import net.yupol.transmissionremote.app.transport.BaseSpiceActivity;
 import net.yupol.transmissionremote.app.transport.TransportManager;
 import net.yupol.transmissionremote.app.transport.request.TrackerAddRequest;

@@ -15,7 +15,7 @@ import com.mikepenz.iconics.IconicsDrawable;
 import com.mikepenz.iconics.typeface.IIcon;
 
 import net.yupol.transmissionremote.app.R;
-import net.yupol.transmissionremote.app.model.json.TransferPriority;
+import net.yupol.transmissionremote.model.json.TransferPriority;
 import net.yupol.transmissionremote.app.utils.ColorUtils;
 
 public class TransferPrioritySpinnerAdapter extends BaseAdapter {

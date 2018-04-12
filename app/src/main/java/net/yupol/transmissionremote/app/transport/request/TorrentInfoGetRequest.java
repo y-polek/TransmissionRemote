@@ -3,7 +3,7 @@ package net.yupol.transmissionremote.app.transport.request;
 import android.util.Log;
 
 import net.yupol.transmissionremote.model.TorrentMetadata;
-import net.yupol.transmissionremote.app.model.json.TorrentInfo;
+import net.yupol.transmissionremote.model.json.TorrentInfo;
 
 import org.json.JSONArray;
 import org.json.JSONException;
