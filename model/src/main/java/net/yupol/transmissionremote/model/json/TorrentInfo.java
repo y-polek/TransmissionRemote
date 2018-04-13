@@ -280,7 +280,7 @@ public class TorrentInfo implements Parcelable {
         @Json(name = "files") private File[] files;
         @Json(name = "fileStats") private FileStat[] fileStats;
         @Json(name = "bandwidthPriority") private int transferPriorityValue;
-        private TransferPriority transferPriority;
+        private transient TransferPriority transferPriority;
         @Json(name = "honorsSessionLimits") private boolean honorsSessionLimits;
         @Json(name = "downloadLimited") private boolean downloadLimited;
         @Json(name = "downloadLimit") private long downloadLimit;
@@ -288,10 +288,10 @@ public class TorrentInfo implements Parcelable {
         @Json(name = "uploadLimit") private long uploadLimit;
         @Json(name = "seedRatioLimit") private double seedRatioLimit;
         @Json(name = "seedRatioMode") private int seedRatioModeValue;
-        private LimitMode seedRatioMode;
+        private transient LimitMode seedRatioMode;
         @Json(name = "seedIdleLimit") private int seedIdleLimit;
         @Json(name = "seedIdleMode") private int seedIdleModeValue;
-        private LimitMode seedIdleMode;
+        private transient LimitMode seedIdleMode;
         @Json(name = "haveUnchecked") private long haveUnchecked;
         @Json(name = "haveValid") private long haveValid;
         @Json(name = "sizeWhenDone") private long sizeWhenDone;

@@ -1,11 +1,13 @@
 package net.yupol.transmissionremote.transport
 
+import com.serjltt.moshi.adapters.FirstElement
 import com.serjltt.moshi.adapters.Wrapped
 import io.reactivex.Completable
 import io.reactivex.Single
 import net.yupol.transmissionremote.model.FreeSpace
 import net.yupol.transmissionremote.model.json.ServerSettings
 import net.yupol.transmissionremote.model.json.Torrent
+import net.yupol.transmissionremote.model.json.TorrentInfo
 import net.yupol.transmissionremote.transport.rpc.RpcArg
 import retrofit2.http.*
 import net.yupol.transmissionremote.transport.rpc.RpcArgs
@@ -17,6 +19,11 @@ interface TransmissionRpcApi {
     @RpcMethod("torrent-get")
     @Wrapped(path = ["arguments", "torrents"])
     fun torrentList(@Body args: Map<String, @JvmSuppressWildcards Any> = RpcArgs.torrentGet()): Single<List<Torrent>>
+
+    @POST("./")
+    @RpcMethod("torrent-get")
+    @Wrapped(path = ["arguments"])
+    fun torrentInfo(@Body args: Map<String, @JvmSuppressWildcards Any>): Single<TorrentInfo>
 
     @POST("./")
     @RpcMethod("session-get")

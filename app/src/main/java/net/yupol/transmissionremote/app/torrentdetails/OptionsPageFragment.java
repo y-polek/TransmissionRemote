@@ -22,26 +22,25 @@ import com.octo.android.robospice.request.listener.RequestListener;
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.TransmissionRemote;
 import net.yupol.transmissionremote.app.databinding.TorrentDetailsOptionsPageFragmentBinding;
+import net.yupol.transmissionremote.app.transport.BaseSpiceActivity;
+import net.yupol.transmissionremote.app.transport.TransportManager;
+import net.yupol.transmissionremote.app.transport.request.TorrentSetRequest;
+import net.yupol.transmissionremote.app.utils.IconUtils;
+import net.yupol.transmissionremote.app.utils.MinMaxTextWatcher;
+import net.yupol.transmissionremote.model.json.ServerSettings;
 import net.yupol.transmissionremote.model.json.TorrentInfo;
 import net.yupol.transmissionremote.model.json.TransferPriority;
 import net.yupol.transmissionremote.model.limitmode.IdleLimitMode;
 import net.yupol.transmissionremote.model.limitmode.LimitMode;
 import net.yupol.transmissionremote.model.limitmode.RatioLimitMode;
-import net.yupol.transmissionremote.app.transport.BaseSpiceActivity;
-import net.yupol.transmissionremote.app.transport.TransportManager;
-import net.yupol.transmissionremote.app.transport.request.TorrentInfoGetRequest;
-import net.yupol.transmissionremote.app.transport.request.TorrentSetRequest;
-import net.yupol.transmissionremote.app.utils.IconUtils;
-import net.yupol.transmissionremote.app.utils.MinMaxTextWatcher;
-import net.yupol.transmissionremote.model.json.ServerSettings;
+import net.yupol.transmissionremote.transport.Transport;
+import net.yupol.transmissionremote.transport.rpc.RpcArgs;
 
 import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
-import net.yupol.transmissionremote.transport.rpc.RpcArgs;
-import net.yupol.transmissionremote.transport.Transport;
 
 public class OptionsPageFragment extends BasePageFragment implements AdapterView.OnItemSelectedListener,
         OnActivityExitingListener<TorrentSetRequest.Builder> {
@@ -49,6 +48,7 @@ public class OptionsPageFragment extends BasePageFragment implements AdapterView
     private static final String TAG = OptionsPageFragment.class.getSimpleName();
 
     private TransportManager transportManager;
+    private Transport transport;
 
     private ServerSettings serverSettings;
 
@@ -93,7 +93,9 @@ public class OptionsPageFragment extends BasePageFragment implements AdapterView
 
         setHasOptionsMenu(true);
 
-        new Transport(TransmissionRemote.getInstance().getActiveServer()).api().serverSettings(RpcArgs.sessionGet())
+        transport = new Transport(TransmissionRemote.getInstance().getActiveServer());
+
+        transport.api().serverSettings(RpcArgs.sessionGet())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new SingleObserver<ServerSettings>() {
@@ -405,19 +407,27 @@ public class OptionsPageFragment extends BasePageFragment implements AdapterView
     }
 
     private void sendTorrentUpdateRequest() {
-        transportManager.doRequest(new TorrentInfoGetRequest(getTorrent().getId()), new RequestListener<TorrentInfo>() {
-            @Override
-            public void onRequestFailure(SpiceException spiceException) {
-                Toast.makeText(getActivity(), getString(R.string.options_update_failed), Toast.LENGTH_LONG).show();
-                saveFinished();
-            }
+        transport.api().torrentInfo(RpcArgs.torrentInfoGet(getTorrent().getId()))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new SingleObserver<TorrentInfo>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        requests.add(d);
+                    }
 
-            @Override
-            public void onRequestSuccess(TorrentInfo torrentInfo) {
-                setTorrentInfo(torrentInfo);
-                Toast.makeText(getActivity(), getString(R.string.saved), Toast.LENGTH_SHORT).show();
-            }
-        });
+                    @Override
+                    public void onSuccess(TorrentInfo torrentInfo) {
+                        setTorrentInfo(torrentInfo);
+                        Toast.makeText(getActivity(), getString(R.string.saved), Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Toast.makeText(getActivity(), getString(R.string.options_update_failed), Toast.LENGTH_LONG).show();
+                        saveFinished();
+                    }
+                });
     }
 
     private void saveStarted() {

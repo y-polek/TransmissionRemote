@@ -8,11 +8,11 @@ data class RpcArgs(val method: String, val arguments: Map<String, Any>? = null) 
     companion object {
 
         @JvmStatic
-        fun torrentGet(vararg ids: Int): Map<String, Any> {
-
-            val args: MutableMap<String, Any> = mutableMapOf()
-
-            args["fields"] = listOf(
+        fun torrentGet(vararg ids: Int): Map<String, Any> = mutableMapOf<String, Any>().apply {
+            if (ids.isNotEmpty()) {
+                this["ids"] = ids
+            }
+            this["fields"] = listOf(
                     ID,
                     NAME,
                     PERCENT_DONE,
@@ -34,14 +34,48 @@ data class RpcArgs(val method: String, val arguments: Map<String, Any>? = null) 
                     WEBSEEDS_SENDING_TO_US,
                     QUEUE_POSITION,
                     RECHECK_PROGRESS,
-                    DONE_DATE
-            )
+                    DONE_DATE)
+        }
 
-            if (ids.isNotEmpty()) {
-                args["ids"] = ids
-            }
-
-            return args
+        @JvmStatic
+        fun torrentInfoGet(id: Int): Map<String, Any> = mutableMapOf<String, Any>().apply {
+            this["ids"] = id
+            this["fields"] = listOf(
+                    ID,
+                    FILES,
+                    FILE_STATS,
+                    BANDWIDTH_PRIORITY,
+                    HONORS_SESSION_LIMITS,
+                    DOWNLOAD_LIMITED,
+                    DOWNLOAD_LIMIT,
+                    UPLOAD_LIMITED,
+                    UPLOAD_LIMIT,
+                    SEED_RATIO_LIMIT,
+                    SEED_RATIO_MODE,
+                    SEED_IDLE_LIMIT,
+                    SEED_IDLE_MODE,
+                    HAVE_UNCHECKED,
+                    HAVE_VALID,
+                    SIZE_WHEN_DONE,
+                    LEFT_UNTIL_DONE,
+                    DESIRED_AVAILABLE,
+                    PIECE_COUNT,
+                    PIECE_SIZE,
+                    DOWNLOAD_DIR,
+                    IS_PRIVATE,
+                    CREATOR,
+                    DATE_CREATED,
+                    COMMENT,
+                    DOWNLOAD_EVER,
+                    CORRUPT_EVER,
+                    UPLOADED_EVER,
+                    ADDED_DATE,
+                    ACTIVITY_DATE,
+                    SECONDS_DOWNLOADING,
+                    SECONDS_SEEDING,
+                    PEERS,
+                    TRACKERS,
+                    TRACKER_STATS)
         }
 
         @JvmStatic

@@ -8,35 +8,63 @@ import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
 
 import net.yupol.transmissionremote.model.json.TorrentInfo;
-import net.yupol.transmissionremote.app.transport.TransportManager;
-import net.yupol.transmissionremote.app.transport.request.TorrentInfoGetRequest;
+import net.yupol.transmissionremote.transport.Transport;
+import net.yupol.transmissionremote.transport.rpc.RpcArgs;
 
 import java.util.Timer;
 import java.util.TimerTask;
+
+import io.reactivex.SingleObserver;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
 public class TorrentInfoUpdater implements RequestListener<TorrentInfo> {
 
     private static final String TAG = TorrentInfoUpdater.class.getSimpleName();
     private static final String TIMER_NAME = TorrentInfoUpdater.class.getSimpleName();
 
-    private TransportManager transportManager;
     private int torrentId;
     private final long timeoutMillis;
-    private TorrentInfoGetRequest request;
+    private Disposable request;
     private Timer timer;
     private OnTorrentInfoUpdatedListener listener;
+    private Transport transport;
 
-    public TorrentInfoUpdater(TransportManager transportManager, int torrentId, long timeoutMillis) {
-        this.transportManager = transportManager;
+    public TorrentInfoUpdater(Transport transport, int torrentId, long timeoutMillis) {
+        this.transport = transport;
         this.torrentId = torrentId;
         this.timeoutMillis = timeoutMillis;
     }
 
-    public void start(OnTorrentInfoUpdatedListener listener) {
+    public void start(final OnTorrentInfoUpdatedListener listener) {
         this.listener = listener;
         timer = new Timer(TIMER_NAME);
-        request = new TorrentInfoGetRequest(torrentId);
-        transportManager.doRequest(request, this);
+        loadTorrentInfoAndReschedule();
+    }
+
+    private void loadTorrentInfoAndReschedule() {
+        transport.api().torrentInfo(RpcArgs.torrentInfoGet(torrentId))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new SingleObserver<TorrentInfo>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        request = d;
+                    }
+
+                    @Override
+                    public void onSuccess(TorrentInfo torrentInfo) {
+                        if (listener != null) listener.onTorrentInfoUpdated(torrentInfo);
+                        if (timer != null) scheduleNexUpdate();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.d(TAG, "TorrentInfo request failed", e);
+                        if (timer != null) scheduleNexUpdate();
+                    }
+                });
     }
 
     public void stop() {
@@ -44,7 +72,7 @@ public class TorrentInfoUpdater implements RequestListener<TorrentInfo> {
         if (request == null) throw new IllegalArgumentException("TorrentInfoUpdater is not started");
         timer.cancel();
         timer = null;
-        request.cancel();
+        request.dispose();
     }
 
     public void updateNow(OnTorrentInfoUpdatedListener listener) {
@@ -72,8 +100,7 @@ public class TorrentInfoUpdater implements RequestListener<TorrentInfo> {
                     @Override
                     public void run() {
                         if (timer != null) {
-                            request = new TorrentInfoGetRequest(torrentId);
-                            transportManager.doRequest(request, TorrentInfoUpdater.this);
+                            loadTorrentInfoAndReschedule();
                         }
                     }
                 });

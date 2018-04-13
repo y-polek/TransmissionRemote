@@ -1,5 +1,6 @@
 package net.yupol.transmissionremote.transport
 
+import com.serjltt.moshi.adapters.FirstElement
 import com.serjltt.moshi.adapters.Wrapped
 import com.squareup.moshi.KotlinJsonAdapterFactory
 import com.squareup.moshi.Moshi
@@ -19,6 +20,7 @@ class Transport(private val server: Server, vararg interceptors: Interceptor) {
     private val moshi = Moshi.Builder()
             .add(KotlinJsonAdapterFactory())
             .add(Wrapped.ADAPTER_FACTORY)
+            .add(FirstElement.ADAPTER_FACTORY)
             .build()
 
     @get:JvmName(name = "api")

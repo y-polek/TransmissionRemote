@@ -7,7 +7,7 @@ import com.squareup.moshi.Json;
 
 public class File implements Parcelable {
     @Json(name = "name") private String path;
-    private String name;
+    transient private String name;
     @Json(name = "length") private long length;
 
     public File() {}

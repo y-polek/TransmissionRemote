@@ -21,15 +21,14 @@ import com.octo.android.robospice.request.listener.RequestListener;
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.TransmissionRemote;
 import net.yupol.transmissionremote.app.databinding.TorrentDetailsLayoutBinding;
-import net.yupol.transmissionremote.model.json.TorrentInfo;
 import net.yupol.transmissionremote.app.torrentlist.ChooseLocationDialogFragment;
 import net.yupol.transmissionremote.app.torrentlist.RemoveTorrentsDialogFragment;
 import net.yupol.transmissionremote.app.torrentlist.RenameDialogFragment;
 import net.yupol.transmissionremote.app.transport.BaseSpiceActivity;
-import net.yupol.transmissionremote.app.transport.request.TorrentInfoGetRequest;
 import net.yupol.transmissionremote.app.transport.request.TorrentRemoveRequest;
 import net.yupol.transmissionremote.app.transport.request.TorrentSetRequest;
 import net.yupol.transmissionremote.model.json.Torrent;
+import net.yupol.transmissionremote.model.json.TorrentInfo;
 import net.yupol.transmissionremote.transport.Transport;
 import net.yupol.transmissionremote.transport.rpc.RpcArgs;
 
@@ -202,7 +201,7 @@ public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveCha
             torrentInfoUpdater.stop();
             restartUpdater = true;
         }
-        torrentInfoUpdater = new TorrentInfoUpdater(getTransportManager(), torrent.getId(),
+        torrentInfoUpdater = new TorrentInfoUpdater(transport, torrent.getId(),
                 1000 * TransmissionRemote.getInstance().getUpdateInterval());
         if (restartUpdater) torrentInfoUpdater.start(this);
 
@@ -429,19 +428,27 @@ public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveCha
     }
 
     private void updateTorrentInfo(final Torrent torrent) {
-        getTransportManager().doRequest(new TorrentInfoGetRequest(torrent.getId()), new RequestListener<TorrentInfo>() {
-            @Override
-            public void onRequestSuccess(TorrentInfo torrentInfo) {
-                onTorrentInfoUpdated(torrentInfo);
-                TorrentDetailsActivity.this.torrent = torrent;
-                getIntent().putExtra(EXTRA_TORRENT, torrent);
-                setupPager();
-            }
+        transport.api().torrentInfo(RpcArgs.torrentInfoGet(torrent.getId()))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new SingleObserver<TorrentInfo>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        requests.add(d);
+                    }
 
-            @Override
-            public void onRequestFailure(SpiceException spiceException) {
-                Log.e(TAG, "Failed to reload torrent", spiceException);
-            }
-        });
+                    @Override
+                    public void onSuccess(TorrentInfo torrentInfo) {
+                        onTorrentInfoUpdated(torrentInfo);
+                        TorrentDetailsActivity.this.torrent = torrent;
+                        getIntent().putExtra(EXTRA_TORRENT, torrent);
+                        setupPager();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.e(TAG, "Failed to reload torrent", e);
+                    }
+                });
     }
 }
