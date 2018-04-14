@@ -1,5 +1,7 @@
 package net.yupol.transmissionremote.model.limitmode;
 
+import android.support.annotation.Nullable;
+
 import net.yupol.transmissionremote.model.R;
 
 public enum IdleLimitMode implements LimitMode {
@@ -25,6 +27,7 @@ public enum IdleLimitMode implements LimitMode {
         return textRes;
     }
 
+    @Nullable
     public static IdleLimitMode fromValue(int value) {
         for (IdleLimitMode mode : values()) {
             if (mode.value == value)

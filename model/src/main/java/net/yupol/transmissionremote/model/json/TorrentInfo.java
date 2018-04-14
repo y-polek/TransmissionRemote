@@ -12,130 +12,166 @@ import net.yupol.transmissionremote.utils.Parcelables;
 
 public class TorrentInfo implements Parcelable {
 
-    @Json(name = "torrents") private Item[] items;
+    @Json(name = "id") private int id;
+    @Json(name = "files") private File[] files;
+    @Json(name = "fileStats") private FileStat[] fileStats;
+    @Json(name = "bandwidthPriority") private int transferPriorityValue;
+    private transient TransferPriority transferPriority;
+    @Json(name = "honorsSessionLimits") private boolean honorsSessionLimits;
+    @Json(name = "downloadLimited") private boolean downloadLimited;
+    @Json(name = "downloadLimit") private long downloadLimit;
+    @Json(name = "uploadLimited") private boolean uploadLimited;
+    @Json(name = "uploadLimit") private long uploadLimit;
+    @Json(name = "seedRatioLimit") private double seedRatioLimit;
+    @Json(name = "seedRatioMode") private int seedRatioModeValue;
+    private transient LimitMode seedRatioMode;
+    @Json(name = "seedIdleLimit") private int seedIdleLimit;
+    @Json(name = "seedIdleMode") private int seedIdleModeValue;
+    private transient LimitMode seedIdleMode;
+    @Json(name = "haveUnchecked") private long haveUnchecked;
+    @Json(name = "haveValid") private long haveValid;
+    @Json(name = "sizeWhenDone") private long sizeWhenDone;
+    @Json(name = "leftUntilDone") private long leftUntilDone;
+    @Json(name = "desiredAvailable") private long desiredAvailable;
+    @Json(name = "pieceCount") private long pieceCount;
+    @Json(name = "pieceSize") private long pieceSize;
+    @Json(name = "downloadDir") private String downloadDir;
+    @Json(name = "isPrivate") private boolean isPrivate;
+    @Json(name = "creator") private String creator;
+    @Json(name = "dateCreated") private long dateCreated;
+    @Json(name = "comment") private String comment;
+    @Json(name = "downloadedEver") private long downloadedEver;
+    @Json(name = "corruptEver") private long corruptEver;
+    @Json(name = "uploadedEver") private long uploadedEver;
+    @Json(name = "addedDate") private long addedDate;
+    @Json(name = "activityDate") private long activityDate;
+    @Json(name = "secondsDownloading") private long secondsDownloading;
+    @Json(name = "secondsSeeding") private long secondsSeeding;
+    @Json(name = "peers") private Peer[] peers;
+    @Json(name = "trackers") private Tracker[] trackers;
+    @Json(name = "trackerStats") private TrackerStats[] trackerStats;
+    
+    
+    
+    
+    
 
     public TorrentInfo() {}
 
     private TorrentInfo(Parcel in) {
-        Item i = new Item();
-        items = new Item[] { i };
-
-        i.id = in.readInt();
-        i.files = in.createTypedArray(File.CREATOR);
-        i.fileStats = in.createTypedArray(FileStat.CREATOR);
-        i.transferPriorityValue = in.readInt();
-        i.honorsSessionLimits = in.readInt() != 0;
-        i.downloadLimited = in.readInt() != 0;
-        i.downloadLimit = in.readLong();
-        i.uploadLimited = in.readInt() != 0;
-        i.uploadLimit = in.readLong();
-        i.seedRatioLimit = in.readDouble();
-        i.seedRatioModeValue = in.readInt();
-        i.seedIdleLimit = in.readInt();
-        i.seedIdleModeValue = in.readInt();
-        i.haveUnchecked = in.readLong();
-        i.haveValid = in.readLong();
-        i.sizeWhenDone = in.readLong();
-        i.leftUntilDone = in.readLong();
-        i.desiredAvailable = in.readLong();
-        i.pieceCount = in.readLong();
-        i.pieceSize = in.readLong();
-        i.downloadDir = in.readString();
-        i.isPrivate = in.readInt() != 0;
-        i.creator = in.readString();
-        i.dateCreated = in.readLong();
-        i.comment = in.readString();
-        i.downloadedEver = in.readLong();
-        i.corruptEver = in.readLong();
-        i.uploadedEver = in.readLong();
-        i.addedDate = in.readLong();
-        i.activityDate = in.readLong();
-        i.secondsDownloading = in.readLong();
-        i.secondsSeeding = in.readLong();
-        i.peers = Parcelables.toArrayOfType(Peer.class,
+        id = in.readInt();
+        files = in.createTypedArray(File.CREATOR);
+        fileStats = in.createTypedArray(FileStat.CREATOR);
+        transferPriorityValue = in.readInt();
+        honorsSessionLimits = in.readInt() != 0;
+        downloadLimited = in.readInt() != 0;
+        downloadLimit = in.readLong();
+        uploadLimited = in.readInt() != 0;
+        uploadLimit = in.readLong();
+        seedRatioLimit = in.readDouble();
+        seedRatioModeValue = in.readInt();
+        seedIdleLimit = in.readInt();
+        seedIdleModeValue = in.readInt();
+        haveUnchecked = in.readLong();
+        haveValid = in.readLong();
+        sizeWhenDone = in.readLong();
+        leftUntilDone = in.readLong();
+        desiredAvailable = in.readLong();
+        pieceCount = in.readLong();
+        pieceSize = in.readLong();
+        downloadDir = in.readString();
+        isPrivate = in.readInt() != 0;
+        creator = in.readString();
+        dateCreated = in.readLong();
+        comment = in.readString();
+        downloadedEver = in.readLong();
+        corruptEver = in.readLong();
+        uploadedEver = in.readLong();
+        addedDate = in.readLong();
+        activityDate = in.readLong();
+        secondsDownloading = in.readLong();
+        secondsSeeding = in.readLong();
+        peers = Parcelables.toArrayOfType(Peer.class,
                 in.readParcelableArray(Peer.class.getClassLoader()));
-        i.trackers = Parcelables.toArrayOfType(Tracker.class,
+        trackers = Parcelables.toArrayOfType(Tracker.class,
                 in.readParcelableArray(Tracker.class.getClassLoader()));
-        i.trackerStats = Parcelables.toArrayOfType(TrackerStats.class,
+        trackerStats = Parcelables.toArrayOfType(TrackerStats.class,
                 in.readParcelableArray(TrackerStats.class.getClassLoader()));
     }
 
     public TransferPriority getTransferPriority() {
-        Item i = items[0];
-        if (i.transferPriority == null) i.transferPriority = TransferPriority.fromModelValue(i.transferPriorityValue);
-        return i.transferPriority;
+        if (transferPriority == null) transferPriority = TransferPriority.fromModelValue(transferPriorityValue);
+        return transferPriority;
     }
 
     public int getId() {
-        return items[0].id;
+        return id;
     }
 
     public File[] getFiles() {
-        return items.length == 1 ? items[0].files : null;
+        return files;
     }
 
     public FileStat[] getFileStats() {
-        return items[0].fileStats;
+        return fileStats;
     }
 
     public boolean isSessionLimitsHonored() {
-        return items[0].honorsSessionLimits;
+        return honorsSessionLimits;
     }
 
     public boolean isDownloadLimited() {
-        return items[0].downloadLimited;
+        return downloadLimited;
     }
 
     public long getDownloadLimit() {
-        return items[0].downloadLimit;
+        return downloadLimit;
     }
 
     public boolean isUploadLimited() {
-        return items[0].uploadLimited;
+        return uploadLimited;
     }
 
     public long getUploadLimit() {
-        return items[0].uploadLimit;
+        return uploadLimit;
     }
 
     public double getSeedRatioLimit() {
-        return items[0].seedRatioLimit;
+        return seedRatioLimit;
     }
 
     public LimitMode getSeedRatioMode() {
-        Item i = items[0];
-        if (i.seedRatioMode == null) i.seedRatioMode = RatioLimitMode.fromValue(i.seedRatioModeValue);
-        return i.seedRatioMode;
+        if (seedRatioMode == null) seedRatioMode = RatioLimitMode.fromValue(seedRatioModeValue);
+        return seedRatioMode;
     }
 
     public int getSeedIdleLimit() {
-        return items[0].seedIdleLimit;
+        return seedIdleLimit;
     }
 
     public LimitMode getSeedIdleMode() {
-        Item i = items[0];
-        if (i.seedIdleMode == null) i.seedIdleMode = IdleLimitMode.fromValue(i.seedIdleModeValue);
-        return i.seedIdleMode;
+        if (seedIdleMode == null) seedIdleMode = IdleLimitMode.fromValue(seedIdleModeValue);
+        return seedIdleMode;
     }
 
     public long getHaveUnchecked() {
-        return items[0].haveUnchecked;
+        return haveUnchecked;
     }
 
     public long getHaveValid() {
-        return items[0].haveValid;
+        return haveValid;
     }
 
     public long getSizeWhenDone() {
-        return items[0].sizeWhenDone;
+        return sizeWhenDone;
     }
 
     public long getLeftUntilDone() {
-        return items[0].leftUntilDone;
+        return leftUntilDone;
     }
 
     public long getDesiredAvailable() {
-        return items[0].desiredAvailable;
+        return desiredAvailable;
     }
 
     public double getHavePercent() {
@@ -151,71 +187,71 @@ public class TorrentInfo implements Parcelable {
     }
 
     public long getAddedDate() {
-        return items[0].addedDate;
+        return addedDate;
     }
 
     public long getActivityDate() {
-        return items[0].activityDate;
+        return activityDate;
     }
 
     public long getPieceCount() {
-        return items[0].pieceCount;
+        return pieceCount;
     }
 
     public long getPieceSize() {
-        return items[0].pieceSize;
+        return pieceSize;
     }
 
     public String getDownloadDir() {
-        return items[0].downloadDir;
+        return downloadDir;
     }
 
     public boolean isPrivate() {
-        return items[0].isPrivate;
+        return isPrivate;
     }
 
     public String getCreator() {
-        return items[0].creator;
+        return creator;
     }
 
     public long getDateCreated() {
-        return items[0].dateCreated;
+        return dateCreated;
     }
 
     public String getComment() {
-        return items[0].comment;
+        return comment;
     }
 
     public long getDownloadedEver() {
-        return items[0].downloadedEver;
+        return downloadedEver;
     }
 
     public long getCorruptEver() {
-        return items[0].corruptEver;
+        return corruptEver;
     }
 
     public long getUploadedEver() {
-        return items[0].uploadedEver;
+        return uploadedEver;
     }
 
     public long getSecondsDownloading() {
-        return items[0].secondsDownloading;
+        return secondsDownloading;
     }
 
     public long getSecondsSeeding() {
-        return items[0].secondsSeeding;
+        return secondsSeeding;
     }
 
     public Peer[] getPeers() {
-        return items[0].peers;
+        return peers;
     }
 
     public Tracker[] getTrackers() {
-        return items[0].trackers;
+        return trackers;
     }
 
     public TrackerStats[] getTrackerStats() {
-        return items[0].trackerStats;
+        return trackerStats;
     }
 
     @Override
@@ -225,42 +261,41 @@ public class TorrentInfo implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel out, int flags) {
-        Item i = items[0];
-        out.writeInt(i.id);
-        out.writeTypedArray(i.files, flags);
-        out.writeTypedArray(i.fileStats, flags);
-        out.writeInt(i.transferPriorityValue);
-        out.writeInt(i.honorsSessionLimits ? 1 : 0);
-        out.writeInt(i.downloadLimited ? 1 : 0);
-        out.writeLong(i.downloadLimit);
-        out.writeInt(i.uploadLimited ? 1 : 0);
-        out.writeLong(i.uploadLimit);
-        out.writeDouble(i.seedRatioLimit);
-        out.writeInt(i.seedRatioModeValue);
-        out.writeInt(i.seedIdleLimit);
-        out.writeInt(i.seedIdleModeValue);
-        out.writeLong(i.haveUnchecked);
-        out.writeLong(i.haveValid);
-        out.writeLong(i.sizeWhenDone);
-        out.writeLong(i.leftUntilDone);
-        out.writeLong(i.desiredAvailable);
-        out.writeLong(i.pieceCount);
-        out.writeLong(i.pieceSize);
-        out.writeString(i.downloadDir);
-        out.writeInt(i.isPrivate ? 1 : 0);
-        out.writeString(i.creator);
-        out.writeLong(i.dateCreated);
-        out.writeString(i.comment);
-        out.writeLong(i.downloadedEver);
-        out.writeLong(i.corruptEver);
-        out.writeLong(i.uploadedEver);
-        out.writeLong(i.addedDate);
-        out.writeLong(i.activityDate);
-        out.writeLong(i.secondsDownloading);
-        out.writeLong(i.secondsSeeding);
-        out.writeParcelableArray(i.peers, flags);
-        out.writeParcelableArray(i.trackers, flags);
-        out.writeParcelableArray(i.trackerStats, flags);
+        out.writeInt(id);
+        out.writeTypedArray(files, flags);
+        out.writeTypedArray(fileStats, flags);
+        out.writeInt(transferPriorityValue);
+        out.writeInt(honorsSessionLimits ? 1 : 0);
+        out.writeInt(downloadLimited ? 1 : 0);
+        out.writeLong(downloadLimit);
+        out.writeInt(uploadLimited ? 1 : 0);
+        out.writeLong(uploadLimit);
+        out.writeDouble(seedRatioLimit);
+        out.writeInt(seedRatioModeValue);
+        out.writeInt(seedIdleLimit);
+        out.writeInt(seedIdleModeValue);
+        out.writeLong(haveUnchecked);
+        out.writeLong(haveValid);
+        out.writeLong(sizeWhenDone);
+        out.writeLong(leftUntilDone);
+        out.writeLong(desiredAvailable);
+        out.writeLong(pieceCount);
+        out.writeLong(pieceSize);
+        out.writeString(downloadDir);
+        out.writeInt(isPrivate ? 1 : 0);
+        out.writeString(creator);
+        out.writeLong(dateCreated);
+        out.writeString(comment);
+        out.writeLong(downloadedEver);
+        out.writeLong(corruptEver);
+        out.writeLong(uploadedEver);
+        out.writeLong(addedDate);
+        out.writeLong(activityDate);
+        out.writeLong(secondsDownloading);
+        out.writeLong(secondsSeeding);
+        out.writeParcelableArray(peers, flags);
+        out.writeParcelableArray(trackers, flags);
+        out.writeParcelableArray(trackerStats, flags);
     }
 
     public static final Creator<TorrentInfo> CREATOR = new Creator<TorrentInfo>() {
@@ -274,45 +309,4 @@ public class TorrentInfo implements Parcelable {
             return new TorrentInfo[size];
         }
     };
-
-    public static class Item {
-        @Json(name = "id") private int id;
-        @Json(name = "files") private File[] files;
-        @Json(name = "fileStats") private FileStat[] fileStats;
-        @Json(name = "bandwidthPriority") private int transferPriorityValue;
-        private transient TransferPriority transferPriority;
-        @Json(name = "honorsSessionLimits") private boolean honorsSessionLimits;
-        @Json(name = "downloadLimited") private boolean downloadLimited;
-        @Json(name = "downloadLimit") private long downloadLimit;
-        @Json(name = "uploadLimited") private boolean uploadLimited;
-        @Json(name = "uploadLimit") private long uploadLimit;
-        @Json(name = "seedRatioLimit") private double seedRatioLimit;
-        @Json(name = "seedRatioMode") private int seedRatioModeValue;
-        private transient LimitMode seedRatioMode;
-        @Json(name = "seedIdleLimit") private int seedIdleLimit;
-        @Json(name = "seedIdleMode") private int seedIdleModeValue;
-        private transient LimitMode seedIdleMode;
-        @Json(name = "haveUnchecked") private long haveUnchecked;
-        @Json(name = "haveValid") private long haveValid;
-        @Json(name = "sizeWhenDone") private long sizeWhenDone;
-        @Json(name = "leftUntilDone") private long leftUntilDone;
-        @Json(name = "desiredAvailable") private long desiredAvailable;
-        @Json(name = "pieceCount") private long pieceCount;
-        @Json(name = "pieceSize") private long pieceSize;
-        @Json(name = "downloadDir") private String downloadDir;
-        @Json(name = "isPrivate") private boolean isPrivate;
-        @Json(name = "creator") private String creator;
-        @Json(name = "dateCreated") private long dateCreated;
-        @Json(name = "comment") private String comment;
-        @Json(name = "downloadedEver") private long downloadedEver;
-        @Json(name = "corruptEver") private long corruptEver;
-        @Json(name = "uploadedEver") private long uploadedEver;
-        @Json(name = "addedDate") private long addedDate;
-        @Json(name = "activityDate") private long activityDate;
-        @Json(name = "secondsDownloading") private long secondsDownloading;
-        @Json(name = "secondsSeeding") private long secondsSeeding;
-        @Json(name = "peers") private Peer[] peers;
-        @Json(name = "trackers") private Tracker[] trackers;
-        @Json(name = "trackerStats") private TrackerStats[] trackerStats;
-    }
 }

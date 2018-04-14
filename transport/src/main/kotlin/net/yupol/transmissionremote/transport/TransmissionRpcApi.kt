@@ -9,9 +9,10 @@ import net.yupol.transmissionremote.model.json.ServerSettings
 import net.yupol.transmissionremote.model.json.Torrent
 import net.yupol.transmissionremote.model.json.TorrentInfo
 import net.yupol.transmissionremote.transport.rpc.RpcArg
-import retrofit2.http.*
 import net.yupol.transmissionremote.transport.rpc.RpcArgs
 import net.yupol.transmissionremote.transport.rpc.RpcMethod
+import retrofit2.http.Body
+import retrofit2.http.POST
 
 interface TransmissionRpcApi {
 
@@ -22,7 +23,8 @@ interface TransmissionRpcApi {
 
     @POST("./")
     @RpcMethod("torrent-get")
-    @Wrapped(path = ["arguments"])
+    @Wrapped(path = ["arguments", "torrents"])
+    @FirstElement
     fun torrentInfo(@Body args: Map<String, @JvmSuppressWildcards Any>): Single<TorrentInfo>
 
     @POST("./")

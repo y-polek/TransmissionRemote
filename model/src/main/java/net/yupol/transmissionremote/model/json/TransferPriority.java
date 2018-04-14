@@ -1,5 +1,7 @@
 package net.yupol.transmissionremote.model.json;
 
+import android.support.annotation.NonNull;
+
 public enum TransferPriority {
     HIGH(1),
     NORMAL(0),
@@ -15,6 +17,7 @@ public enum TransferPriority {
         return modelValue;
     }
 
+    @NonNull
     public static TransferPriority fromModelValue(int value) {
         if (value == 0) return NORMAL;
         if (value < 0) return LOW;
