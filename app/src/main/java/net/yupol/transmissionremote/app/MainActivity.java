@@ -89,7 +89,6 @@ import net.yupol.transmissionremote.app.transport.TransportManager;
 import net.yupol.transmissionremote.app.transport.request.AddTorrentByFileRequest;
 import net.yupol.transmissionremote.app.transport.request.AddTorrentByUrlRequest;
 import net.yupol.transmissionremote.app.transport.request.ResponseFailureException;
-import net.yupol.transmissionremote.app.transport.request.TorrentRemoveRequest;
 import net.yupol.transmissionremote.app.utils.DialogUtils;
 import net.yupol.transmissionremote.app.utils.IconUtils;
 import net.yupol.transmissionremote.app.utils.ThemeUtils;
@@ -97,6 +96,9 @@ import net.yupol.transmissionremote.model.Server;
 import net.yupol.transmissionremote.model.Torrents;
 import net.yupol.transmissionremote.model.json.ServerSettings;
 import net.yupol.transmissionremote.model.json.Torrent;
+import net.yupol.transmissionremote.transport.ConnectivityInterceptor;
+import net.yupol.transmissionremote.transport.Transport;
+import net.yupol.transmissionremote.transport.rpc.RpcArgs;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -114,6 +116,7 @@ import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
 import io.fabric.sdk.android.Fabric;
+import io.reactivex.Completable;
 import io.reactivex.CompletableObserver;
 import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -125,9 +128,6 @@ import permissions.dispatcher.OnNeverAskAgain;
 import permissions.dispatcher.OnShowRationale;
 import permissions.dispatcher.PermissionRequest;
 import permissions.dispatcher.RuntimePermissions;
-import net.yupol.transmissionremote.transport.ConnectivityInterceptor;
-import net.yupol.transmissionremote.transport.rpc.RpcArgs;
-import net.yupol.transmissionremote.transport.Transport;
 
 import static android.preference.PreferenceManager.getDefaultSharedPreferences;
 import static net.yupol.transmissionremote.transport.rpc.SessionParameters.altSpeedLimitEnabled;
@@ -1036,7 +1036,16 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
 
     @Override
     public void onRemoveTorrentsSelected(int[] torrentsToRemove, boolean removeData) {
-        getTransportManager().doRequest(new TorrentRemoveRequest(torrentsToRemove, removeData), null);
+        Completable removeTorrent;
+        if (removeData) {
+            removeTorrent = transport.api().removeTorrentsAndDeleteData(torrentsToRemove);
+        } else {
+            removeTorrent = transport.api().removeTorrents(torrentsToRemove);
+        }
+        removeTorrent
+                .subscribeOn(Schedulers.io())
+                .onErrorComplete()
+                .subscribe();
         torrentUpdater.scheduleUpdate(UPDATE_REQUEST_DELAY);
     }
 

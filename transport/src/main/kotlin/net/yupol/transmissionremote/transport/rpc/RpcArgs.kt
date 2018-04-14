@@ -1,7 +1,6 @@
 package net.yupol.transmissionremote.transport.rpc
 
 import net.yupol.transmissionremote.model.Parameter
-import net.yupol.transmissionremote.model.TorrentMetadata.*
 
 data class RpcArgs(val method: String, val arguments: Map<String, Any>? = null) {
 
@@ -11,16 +10,31 @@ data class RpcArgs(val method: String, val arguments: Map<String, Any>? = null) 
         fun sessionGet() = mapOf<String, Any>()
 
         @JvmStatic
-        fun sessionSet(vararg params: Parameter<String, Any>) = params.map { it.key to it.value }.toMap()
+        fun sessionSet(vararg params: Parameter<String, Any>) =
+                params.map { it.key to it.value }.toMap()
 
         @JvmStatic
         fun sessionSet(params: List<Parameter<String, Any>>) = sessionSet(*params.toTypedArray())
 
         @JvmStatic
-        fun renameTorrent(id: Int, path: String, name: String) = mapOf<String, Any>("ids" to intArrayOf(id), "path" to path, "name" to name)
+        fun renameTorrent(id: Int, path: String, name: String) =
+                mapOf<String, Any>(
+                        "ids" to intArrayOf(id),
+                        "path" to path,
+                        "name" to name)
 
         @JvmStatic
-        fun setLocation(location: String, move: Boolean, vararg ids: Int) = mapOf<String, Any>("ids" to ids, "location" to location, "move" to move)
+        fun setLocation(location: String, move: Boolean, vararg ids: Int) =
+                mapOf<String, Any>(
+                        "ids" to ids,
+                        "location" to location,
+                        "move" to move)
+
+        @JvmStatic
+        fun removeTorrents(deleteData: Boolean, vararg ids: Int) =
+                mapOf<String, Any>(
+                        "ids" to ids,
+                        "delete-local-data" to deleteData)
     }
 }
 

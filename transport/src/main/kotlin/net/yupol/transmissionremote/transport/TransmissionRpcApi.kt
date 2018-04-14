@@ -41,7 +41,7 @@ interface TransmissionRpcApi {
     @POST("./")
     @RpcMethod("session-get")
     @Wrapped(path = ["arguments"])
-    fun serverSettings(@Body args: Map<String, @JvmSuppressWildcards Any> = RpcArgs.sessionGet()): Single<ServerSettings>
+    fun serverSettings(@Body args: Map<String, @JvmSuppressWildcards Any> = emptyMap()): Single<ServerSettings>
 
     @POST("./")
     @RpcMethod("session-set")
@@ -79,4 +79,14 @@ interface TransmissionRpcApi {
     @RpcMethod("free-space")
     @Wrapped(path = ["arguments"])
     fun freeSpace(@Body @RpcArg("path") path: String): Single<FreeSpace>
+
+    @POST(".")
+    @RpcMethod("torrent-remove")
+    @RpcBooleanArg(name = "delete-local-data", value = false)
+    fun removeTorrents(@Body @RpcArg("ids") vararg ids: Int): Completable
+
+    @POST(".")
+    @RpcMethod("torrent-remove")
+    @RpcBooleanArg(name = "delete-local-data", value = true)
+    fun removeTorrentsAndDeleteData(@Body @RpcArg("ids") vararg ids: Int): Completable
 }

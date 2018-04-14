@@ -15,8 +15,6 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.mikepenz.iconics.context.IconicsLayoutInflater2;
-import com.octo.android.robospice.persistence.exception.SpiceException;
-import com.octo.android.robospice.request.listener.RequestListener;
 
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.TransmissionRemote;
@@ -25,7 +23,6 @@ import net.yupol.transmissionremote.app.torrentlist.ChooseLocationDialogFragment
 import net.yupol.transmissionremote.app.torrentlist.RemoveTorrentsDialogFragment;
 import net.yupol.transmissionremote.app.torrentlist.RenameDialogFragment;
 import net.yupol.transmissionremote.app.transport.BaseSpiceActivity;
-import net.yupol.transmissionremote.app.transport.request.TorrentRemoveRequest;
 import net.yupol.transmissionremote.app.transport.request.TorrentSetRequest;
 import net.yupol.transmissionremote.model.json.Torrent;
 import net.yupol.transmissionremote.model.json.TorrentInfo;
@@ -35,6 +32,7 @@ import net.yupol.transmissionremote.transport.rpc.RpcArgs;
 import java.util.LinkedList;
 import java.util.List;
 
+import io.reactivex.Completable;
 import io.reactivex.CompletableObserver;
 import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -335,18 +333,32 @@ public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveCha
 
     @Override
     public void onRemoveTorrentsSelected(int[] torrentsToRemove, boolean removeData) {
-        getTransportManager().doRequest(new TorrentRemoveRequest(torrentsToRemove, removeData), new RequestListener<Void>() {
-            @Override
-            public void onRequestFailure(SpiceException spiceException) {
-                Toast.makeText(TorrentDetailsActivity.this, R.string.remove_failed, Toast.LENGTH_SHORT).show();
-                Log.e(TAG, "Failed to remove torrent", spiceException);
-            }
+        Completable removeTorrent;
+        if (removeData) {
+            removeTorrent = transport.api().removeTorrentsAndDeleteData(torrentsToRemove);
+        } else {
+            removeTorrent = transport.api().removeTorrents(torrentsToRemove);
+        }
+        removeTorrent
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new CompletableObserver() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        requests.add(d);
+                    }
 
-            @Override
-            public void onRequestSuccess(Void aVoid) {
-                TorrentDetailsActivity.super.onBackPressed();
-            }
-        });
+                    @Override
+                    public void onComplete() {
+                        TorrentDetailsActivity.super.onBackPressed();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Toast.makeText(TorrentDetailsActivity.this, R.string.remove_failed, Toast.LENGTH_SHORT).show();
+                        Log.e(TAG, "Failed to remove torrent", e);
+                    }
+                });
     }
 
     @Override
