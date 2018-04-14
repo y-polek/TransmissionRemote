@@ -43,7 +43,7 @@ public class BackgroundUpdateJob extends Job {
 
         final CompositeDisposable requests = new CompositeDisposable();
         for (final Server server : servers) {
-            new Transport(server).api().torrentList(RpcArgs.torrentGet())
+            new Transport(server).api().torrentList()
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(new SingleObserver<List<Torrent>>() {

@@ -9,7 +9,6 @@ import com.octo.android.robospice.request.listener.RequestListener;
 
 import net.yupol.transmissionremote.model.json.TorrentInfo;
 import net.yupol.transmissionremote.transport.Transport;
-import net.yupol.transmissionremote.transport.rpc.RpcArgs;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -44,7 +43,7 @@ public class TorrentInfoUpdater implements RequestListener<TorrentInfo> {
     }
 
     private void loadTorrentInfoAndReschedule() {
-        transport.api().torrentInfo(RpcArgs.torrentInfoGet(torrentId))
+        transport.api().torrentInfo(torrentId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new SingleObserver<TorrentInfo>() {

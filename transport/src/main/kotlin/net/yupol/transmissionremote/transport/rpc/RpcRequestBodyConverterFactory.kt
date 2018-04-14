@@ -17,13 +17,14 @@ class RpcRequestBodyConverterFactory(private val moshi: Moshi) : Converter.Facto
             methodAnnotations: Array<out Annotation>?, retrofit: Retrofit?): Converter<*, RequestBody>? {
 
         val rpcMethod = methodAnnotations.find<RpcMethod>()?.name ?: return null
+        val rpcFields = methodAnnotations.find<RpcFields>()?.fields ?: emptyArray()
         val argName = parameterAnnotations.find<RpcArg>()?.name
 
         val adapter = moshi.adapter<RpcBody>(RpcBody::class.java)
 
         return when {
-            argName != null -> RpcArgRequestBodyConverter(rpcMethod, argName, adapter)
-            else -> RpcRequestBodyConverter(rpcMethod, adapter)
+            argName != null -> RpcArgRequestBodyConverter(rpcMethod, rpcFields, argName, adapter)
+            else -> RpcRequestBodyConverter(rpcMethod, rpcFields, adapter)
         }
     }
 }

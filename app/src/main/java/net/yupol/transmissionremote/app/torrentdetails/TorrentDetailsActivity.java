@@ -401,7 +401,7 @@ public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveCha
     }
 
     private void updateTorrentAndTorrentInfo(int torrentId) {
-        transport.api().torrentList(RpcArgs.torrentGet(torrentId))
+        transport.api().torrentList(torrentId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new SingleObserver<List<Torrent>>() {
@@ -428,7 +428,7 @@ public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveCha
     }
 
     private void updateTorrentInfo(final Torrent torrent) {
-        transport.api().torrentInfo(RpcArgs.torrentInfoGet(torrent.getId()))
+        transport.api().torrentInfo(torrent.getId())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new SingleObserver<TorrentInfo>() {

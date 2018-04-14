@@ -407,7 +407,7 @@ public class OptionsPageFragment extends BasePageFragment implements AdapterView
     }
 
     private void sendTorrentUpdateRequest() {
-        transport.api().torrentInfo(RpcArgs.torrentInfoGet(getTorrent().getId()))
+        transport.api().torrentInfo(getTorrent().getId())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new SingleObserver<TorrentInfo>() {

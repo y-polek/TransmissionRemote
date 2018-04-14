@@ -726,7 +726,7 @@ public class TorrentListFragment extends Fragment implements ChooseLocationDialo
             updateRequests.add(id);
         }
 
-        transport.api().torrentList(RpcArgs.torrentGet(torrentIds))
+        transport.api().torrentList(torrentIds)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .delaySubscription(UPDATE_REQUEST_DELAY, TimeUnit.MILLISECONDS)
