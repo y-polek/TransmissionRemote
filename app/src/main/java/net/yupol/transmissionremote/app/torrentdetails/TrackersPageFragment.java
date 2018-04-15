@@ -31,7 +31,6 @@ import net.yupol.transmissionremote.app.TransmissionRemote;
 import net.yupol.transmissionremote.app.databinding.TorrentDetailsTrackersPageFragmentBinding;
 import net.yupol.transmissionremote.app.transport.BaseSpiceActivity;
 import net.yupol.transmissionremote.app.transport.TransportManager;
-import net.yupol.transmissionremote.app.transport.request.TrackerRemoveRequest;
 import net.yupol.transmissionremote.app.transport.request.TrackerReplaceRequest;
 import net.yupol.transmissionremote.app.utils.DividerItemDecoration;
 import net.yupol.transmissionremote.app.utils.IconUtils;
@@ -185,19 +184,28 @@ public class TrackersPageFragment extends BasePageFragment implements TrackersAd
 
     private void removeTracker(int trackerId) {
         binding.swipeRefresh.setRefreshing(true);
-        transportManager.doRequest(new TrackerRemoveRequest(getTorrent().getId(), trackerId), new RequestListener<Void>() {
-            @Override
-            public void onRequestSuccess(Void aVoid) {
-                binding.swipeRefresh.setRefreshing(false);
-                refresh();
-            }
 
-            @Override
-            public void onRequestFailure(SpiceException spiceException) {
-                binding.swipeRefresh.setRefreshing(false);
-                refresh();
-            }
-        });
+        transport.api().removeTracker(RpcArgs.removeTracker(getTorrent().getId(), trackerId))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new CompletableObserver() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        requests.add(d);
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        binding.swipeRefresh.setRefreshing(false);
+                        refresh();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        binding.swipeRefresh.setRefreshing(false);
+                        refresh();
+                    }
+                });
     }
 
     private void addTracker(String url) {

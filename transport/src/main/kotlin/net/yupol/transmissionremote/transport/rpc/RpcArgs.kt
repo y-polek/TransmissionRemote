@@ -28,9 +28,14 @@ data class RpcArgs(val method: String, val arguments: Map<String, Any>? = null) 
                         "move" to move)
 
         @JvmStatic
-        fun addTracker(torrentId: Int, url: String) = mapOf(
+        fun addTracker(torrentId: Int, url: String): Map<String, Any> = mapOf(
                 "ids" to intArrayOf(torrentId),
                 "trackerAdd" to arrayOf(url))
+
+        @JvmStatic
+        fun removeTracker(torrentId: Int, trackerId: Int): Map<String, Any> = mapOf(
+                "ids" to intArrayOf(torrentId),
+                "trackerRemove" to intArrayOf(trackerId))
     }
 }
 

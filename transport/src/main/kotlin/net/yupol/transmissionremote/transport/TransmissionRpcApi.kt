@@ -93,4 +93,8 @@ interface TransmissionRpcApi {
     @POST(".")
     @RpcMethod("torrent-set")
     fun addTracker(@Body args: Map<String, @JvmSuppressWildcards Any>): Completable
+
+    @POST(".")
+    @RpcMethod("torrent-set")
+    fun removeTracker(@Body args: Map<String, @JvmSuppressWildcards Any>): Completable
 }
