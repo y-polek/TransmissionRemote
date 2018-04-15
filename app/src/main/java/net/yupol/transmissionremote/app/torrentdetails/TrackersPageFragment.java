@@ -27,18 +27,26 @@ import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
 
 import net.yupol.transmissionremote.app.R;
+import net.yupol.transmissionremote.app.TransmissionRemote;
 import net.yupol.transmissionremote.app.databinding.TorrentDetailsTrackersPageFragmentBinding;
-import net.yupol.transmissionremote.model.json.TorrentInfo;
-import net.yupol.transmissionremote.model.json.TrackerStats;
 import net.yupol.transmissionremote.app.transport.BaseSpiceActivity;
 import net.yupol.transmissionremote.app.transport.TransportManager;
-import net.yupol.transmissionremote.app.transport.request.TrackerAddRequest;
 import net.yupol.transmissionremote.app.transport.request.TrackerRemoveRequest;
 import net.yupol.transmissionremote.app.transport.request.TrackerReplaceRequest;
 import net.yupol.transmissionremote.app.utils.DividerItemDecoration;
 import net.yupol.transmissionremote.app.utils.IconUtils;
+import net.yupol.transmissionremote.model.json.TorrentInfo;
+import net.yupol.transmissionremote.model.json.TrackerStats;
+import net.yupol.transmissionremote.transport.Transport;
+import net.yupol.transmissionremote.transport.rpc.RpcArgs;
 
 import org.apache.commons.lang3.StringUtils;
+
+import io.reactivex.CompletableObserver;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
 public class TrackersPageFragment extends BasePageFragment implements TrackersAdapter.TrackerActionListener,
         TrackerUrlDialog.OnTrackerUrlEnteredListener {
@@ -50,6 +58,8 @@ public class TrackersPageFragment extends BasePageFragment implements TrackersAd
     private boolean viewCreated;
     private ClipboardManager clipboardManager;
     private TransportManager transportManager;
+    private Transport transport;
+    private CompositeDisposable requests = new CompositeDisposable();
 
     @Override
     public void onAttach(Context context) {
@@ -66,6 +76,7 @@ public class TrackersPageFragment extends BasePageFragment implements TrackersAd
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+        transport = new Transport(TransmissionRemote.getInstance().getActiveServer());
     }
 
     @Override
@@ -94,6 +105,12 @@ public class TrackersPageFragment extends BasePageFragment implements TrackersAd
         viewCreated = true;
 
         return binding.getRoot();
+    }
+
+    @Override
+    public void onStop() {
+        requests.clear();
+        super.onStop();
     }
 
     @Override
@@ -185,19 +202,27 @@ public class TrackersPageFragment extends BasePageFragment implements TrackersAd
 
     private void addTracker(String url) {
         binding.swipeRefresh.setRefreshing(true);
-        transportManager.doRequest(new TrackerAddRequest(getTorrent().getId(), url), new RequestListener<Void>() {
-            @Override
-            public void onRequestSuccess(Void aVoid) {
-                binding.swipeRefresh.setRefreshing(false);
-                refresh();
-            }
+        transport.api().addTracker(RpcArgs.addTracker(getTorrent().getId(), url))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new CompletableObserver() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        requests.add(d);
+                    }
 
-            @Override
-            public void onRequestFailure(SpiceException spiceException) {
-                binding.swipeRefresh.setRefreshing(false);
-                refresh();
-            }
-        });
+                    @Override
+                    public void onComplete() {
+                        binding.swipeRefresh.setRefreshing(false);
+                        refresh();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        binding.swipeRefresh.setRefreshing(false);
+                        refresh();
+                    }
+                });
     }
 
     private void editTracker(@NonNull TrackerStats tracker, String url) {

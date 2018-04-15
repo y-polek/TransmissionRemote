@@ -89,4 +89,8 @@ interface TransmissionRpcApi {
     @RpcMethod("torrent-remove")
     @RpcBooleanArg(name = "delete-local-data", value = true)
     fun removeTorrentsAndDeleteData(@Body @RpcArg("ids") vararg ids: Int): Completable
+
+    @POST(".")
+    @RpcMethod("torrent-set")
+    fun addTracker(@Body args: Map<String, @JvmSuppressWildcards Any>): Completable
 }
