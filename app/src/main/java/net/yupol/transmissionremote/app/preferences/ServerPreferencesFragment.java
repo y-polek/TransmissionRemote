@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.common.collect.ImmutableMap;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 
 import net.yupol.transmissionremote.app.R;
@@ -232,7 +233,7 @@ public class ServerPreferencesFragment extends Fragment {
     }
 
     private void sendPreferencesUpdateRequest() {
-        new Transport(TransmissionRemote.getInstance().getActiveServer()).api().serverSettings(RpcArgs.sessionGet())
+        new Transport(TransmissionRemote.getInstance().getActiveServer()).api().serverSettings(ImmutableMap.<String, Object>of())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new SingleObserver<ServerSettings>() {

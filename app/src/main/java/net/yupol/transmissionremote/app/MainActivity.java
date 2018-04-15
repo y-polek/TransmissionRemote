@@ -43,6 +43,7 @@ import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
+import com.google.common.collect.ImmutableMap;
 import com.mikepenz.community_material_typeface_library.CommunityMaterial;
 import com.mikepenz.fontawesome_typeface_library.FontAwesome;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
@@ -1095,7 +1096,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
             @Override
             public void run() {
 
-                transport.api().serverSettings(RpcArgs.sessionGet())
+                transport.api().serverSettings(ImmutableMap.<String, Object>of())
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(new SingleObserver<ServerSettings>() {

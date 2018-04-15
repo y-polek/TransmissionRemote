@@ -25,6 +25,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableMap;
 
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.TransmissionRemote;
@@ -35,7 +36,6 @@ import net.yupol.transmissionremote.model.FreeSpace;
 import net.yupol.transmissionremote.model.Server;
 import net.yupol.transmissionremote.model.json.ServerSettings;
 import net.yupol.transmissionremote.transport.Transport;
-import net.yupol.transmissionremote.transport.rpc.RpcArgs;
 import net.yupol.transmissionremote.transport.rpc.RpcFailureException;
 
 import java.util.List;
@@ -105,7 +105,7 @@ public class DownloadLocationDialogFragment extends DialogFragment {
                 }
             });
 
-            new Transport(app.getActiveServer()).api().serverSettings(RpcArgs.sessionGet())
+            new Transport(app.getActiveServer()).api().serverSettings(ImmutableMap.<String, Object>of())
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(new SingleObserver<ServerSettings>() {

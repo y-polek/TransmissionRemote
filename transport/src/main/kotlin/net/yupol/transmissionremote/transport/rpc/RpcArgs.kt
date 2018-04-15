@@ -7,9 +7,6 @@ data class RpcArgs(val method: String, val arguments: Map<String, Any>? = null) 
     companion object {
 
         @JvmStatic
-        fun sessionGet() = mapOf<String, Any>()
-
-        @JvmStatic
         fun sessionSet(vararg params: Parameter<String, Any>) =
                 params.map { it.key to it.value }.toMap()
 
@@ -29,12 +26,6 @@ data class RpcArgs(val method: String, val arguments: Map<String, Any>? = null) 
                         "ids" to ids,
                         "location" to location,
                         "move" to move)
-
-        @JvmStatic
-        fun removeTorrents(deleteData: Boolean, vararg ids: Int) =
-                mapOf<String, Any>(
-                        "ids" to ids,
-                        "delete-local-data" to deleteData)
     }
 }
 

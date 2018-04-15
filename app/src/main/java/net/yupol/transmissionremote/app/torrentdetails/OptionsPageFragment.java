@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Toast;
 
+import com.google.common.collect.ImmutableMap;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
@@ -34,7 +35,6 @@ import net.yupol.transmissionremote.model.limitmode.IdleLimitMode;
 import net.yupol.transmissionremote.model.limitmode.LimitMode;
 import net.yupol.transmissionremote.model.limitmode.RatioLimitMode;
 import net.yupol.transmissionremote.transport.Transport;
-import net.yupol.transmissionremote.transport.rpc.RpcArgs;
 
 import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -95,7 +95,7 @@ public class OptionsPageFragment extends BasePageFragment implements AdapterView
 
         transport = new Transport(TransmissionRemote.getInstance().getActiveServer());
 
-        transport.api().serverSettings(RpcArgs.sessionGet())
+        transport.api().serverSettings(ImmutableMap.<String, Object>of())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new SingleObserver<ServerSettings>() {

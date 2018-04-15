@@ -7,6 +7,8 @@ import android.support.v7.app.ActionBar;
 import android.util.Log;
 import android.view.MenuItem;
 
+import com.google.common.collect.ImmutableMap;
+
 import net.yupol.transmissionremote.app.ProgressbarFragment;
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.TransmissionRemote;
@@ -51,7 +53,7 @@ public class ServerPreferencesActivity extends BaseSpiceActivity implements Save
 
             final TransmissionRemote app = (TransmissionRemote) getApplication();
             Server activeServer = app.getActiveServer();
-            new Transport(activeServer).api().serverSettings(RpcArgs.sessionGet())
+            new Transport(activeServer).api().serverSettings(ImmutableMap.<String, Object>of())
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(new SingleObserver<ServerSettings>() {
