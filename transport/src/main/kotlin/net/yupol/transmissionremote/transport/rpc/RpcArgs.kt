@@ -36,6 +36,12 @@ data class RpcArgs(val method: String, val arguments: Map<String, Any>? = null) 
         fun removeTracker(torrentId: Int, trackerId: Int): Map<String, Any> = mapOf(
                 "ids" to intArrayOf(torrentId),
                 "trackerRemove" to intArrayOf(trackerId))
+
+        @JvmStatic
+        fun editTracker(torrentId: Int, trackerId: Int, url: String): Map<String, Any> = mapOf(
+                "ids" to intArrayOf(torrentId),
+                "trackerReplace" to arrayOf(trackerId, url)
+        )
     }
 }
 

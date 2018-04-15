@@ -1,6 +1,5 @@
 package net.yupol.transmissionremote.app.torrentdetails;
 
-import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -23,15 +22,10 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.mikepenz.community_material_typeface_library.CommunityMaterial;
-import com.octo.android.robospice.persistence.exception.SpiceException;
-import com.octo.android.robospice.request.listener.RequestListener;
 
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.TransmissionRemote;
 import net.yupol.transmissionremote.app.databinding.TorrentDetailsTrackersPageFragmentBinding;
-import net.yupol.transmissionremote.app.transport.BaseSpiceActivity;
-import net.yupol.transmissionremote.app.transport.TransportManager;
-import net.yupol.transmissionremote.app.transport.request.TrackerReplaceRequest;
 import net.yupol.transmissionremote.app.utils.DividerItemDecoration;
 import net.yupol.transmissionremote.app.utils.IconUtils;
 import net.yupol.transmissionremote.model.json.TorrentInfo;
@@ -56,20 +50,8 @@ public class TrackersPageFragment extends BasePageFragment implements TrackersAd
     private TorrentDetailsTrackersPageFragmentBinding binding;
     private boolean viewCreated;
     private ClipboardManager clipboardManager;
-    private TransportManager transportManager;
     private Transport transport;
     private CompositeDisposable requests = new CompositeDisposable();
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        Activity activity = getActivity();
-        if (activity instanceof BaseSpiceActivity) {
-            transportManager = ((BaseSpiceActivity) activity).getTransportManager();
-        } else {
-            throw new IllegalStateException("Fragment must be used with BaseSpiceActivity");
-        }
-    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -235,19 +217,28 @@ public class TrackersPageFragment extends BasePageFragment implements TrackersAd
 
     private void editTracker(@NonNull TrackerStats tracker, String url) {
         binding.swipeRefresh.setRefreshing(true);
-        transportManager.doRequest(new TrackerReplaceRequest(getTorrent().getId(), tracker.id, url), new RequestListener<Void>() {
-            @Override
-            public void onRequestSuccess(Void aVoid) {
-                binding.swipeRefresh.setRefreshing(false);
-                refresh();
-            }
 
-            @Override
-            public void onRequestFailure(SpiceException spiceException) {
-                binding.swipeRefresh.setRefreshing(false);
-                refresh();
-            }
-        });
+        transport.api().editTracker(RpcArgs.editTracker(getTorrent().getId(), tracker.id, url))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new CompletableObserver() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        requests.add(d);
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        binding.swipeRefresh.setRefreshing(false);
+                        refresh();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        binding.swipeRefresh.setRefreshing(false);
+                        refresh();
+                    }
+                });
     }
 
     private void showEditTrackerUrlDialog(@Nullable TrackerStats tracker) {
