@@ -6,6 +6,7 @@ import io.reactivex.Completable
 import io.reactivex.Single
 import net.yupol.transmissionremote.model.FreeSpace
 import net.yupol.transmissionremote.model.TorrentMetadata.*
+import net.yupol.transmissionremote.model.json.AddTorrentResult
 import net.yupol.transmissionremote.model.json.ServerSettings
 import net.yupol.transmissionremote.model.json.Torrent
 import net.yupol.transmissionremote.model.json.TorrentInfo
@@ -101,4 +102,9 @@ interface TransmissionRpcApi {
     @POST(".")
     @RpcMethod("torrent-set")
     fun editTracker(@Body args: Map<String, @JvmSuppressWildcards Any>): Completable
+
+    @POST(".")
+    @RpcMethod("torrent-add")
+    @Wrapped(path = ["arguments"])
+    fun addTorrent(@Body args: Map<String, @JvmSuppressWildcards Any>): Single<AddTorrentResult>
 }

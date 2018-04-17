@@ -1,5 +1,6 @@
 package net.yupol.transmissionremote.transport.rpc
 
+import android.util.Base64
 import net.yupol.transmissionremote.model.Parameter
 
 data class RpcArgs(val method: String, val arguments: Map<String, Any>? = null) {
@@ -42,6 +43,31 @@ data class RpcArgs(val method: String, val arguments: Map<String, Any>? = null) 
                 "ids" to intArrayOf(torrentId),
                 "trackerReplace" to arrayOf(trackerId, url)
         )
+
+        @JvmStatic
+        fun addTorrent(url: String, destination: String, paused: Boolean): Map<String, Any> {
+            val magnetUri = if (url.matches("^[0-9a-fA-F]{40}$".toRegex()))
+                "magnet:?xt=urn:btih:$url"
+            else {
+                url
+            }
+
+            return mapOf(
+                    "filename" to magnetUri,
+                    "download-dir" to destination,
+                    "paused" to paused
+            )
+        }
+
+        @JvmStatic
+        fun addTorrent(torrentFileContent: ByteArray, destination: String, paused: Boolean): Map<String, Any> {
+            val metaInfo = Base64.encodeToString(torrentFileContent, Base64.DEFAULT)
+            return mapOf(
+                    "metainfo" to metaInfo,
+                    "download-dir" to destination,
+                    "paused" to paused
+            )
+        }
     }
 }
 

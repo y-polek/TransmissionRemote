@@ -14,7 +14,6 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.databinding.DataBindingUtil;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
@@ -57,8 +56,6 @@ import com.mikepenz.materialdrawer.model.SectionDrawerItem;
 import com.mikepenz.materialdrawer.model.SwitchDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.mikepenz.materialdrawer.util.KeyboardUtil;
-import com.octo.android.robospice.persistence.exception.SpiceException;
-import com.octo.android.robospice.request.listener.RequestListener;
 
 import net.yupol.transmissionremote.app.actionbar.ActionBarNavigationAdapter;
 import net.yupol.transmissionremote.app.actionbar.SpeedTextView;
@@ -68,7 +65,6 @@ import net.yupol.transmissionremote.app.drawer.FreeSpaceFooterDrawerItem;
 import net.yupol.transmissionremote.app.drawer.HeaderView;
 import net.yupol.transmissionremote.app.drawer.SortDrawerItem;
 import net.yupol.transmissionremote.app.filtering.Filter;
-import net.yupol.transmissionremote.app.model.json.AddTorrentResult;
 import net.yupol.transmissionremote.app.notifications.FinishedTorrentsNotificationManager;
 import net.yupol.transmissionremote.app.opentorrent.DownloadLocationDialogFragment;
 import net.yupol.transmissionremote.app.opentorrent.OpenAddressDialogFragment;
@@ -86,20 +82,18 @@ import net.yupol.transmissionremote.app.torrentlist.TorrentListFragment;
 import net.yupol.transmissionremote.app.transport.BaseSpiceActivity;
 import net.yupol.transmissionremote.app.transport.NetworkError;
 import net.yupol.transmissionremote.app.transport.TorrentUpdater;
-import net.yupol.transmissionremote.app.transport.TransportManager;
-import net.yupol.transmissionremote.app.transport.request.AddTorrentByFileRequest;
-import net.yupol.transmissionremote.app.transport.request.AddTorrentByUrlRequest;
-import net.yupol.transmissionremote.app.transport.request.ResponseFailureException;
 import net.yupol.transmissionremote.app.utils.DialogUtils;
 import net.yupol.transmissionremote.app.utils.IconUtils;
 import net.yupol.transmissionremote.app.utils.ThemeUtils;
 import net.yupol.transmissionremote.model.Server;
 import net.yupol.transmissionremote.model.Torrents;
+import net.yupol.transmissionremote.model.json.AddTorrentResult;
 import net.yupol.transmissionremote.model.json.ServerSettings;
 import net.yupol.transmissionremote.model.json.Torrent;
 import net.yupol.transmissionremote.transport.ConnectivityInterceptor;
 import net.yupol.transmissionremote.transport.Transport;
 import net.yupol.transmissionremote.transport.rpc.RpcArgs;
+import net.yupol.transmissionremote.transport.rpc.RpcFailureException;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -114,15 +108,20 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
 import io.fabric.sdk.android.Fabric;
 import io.reactivex.Completable;
 import io.reactivex.CompletableObserver;
+import io.reactivex.Observable;
 import io.reactivex.SingleObserver;
+import io.reactivex.SingleSource;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 import permissions.dispatcher.NeedsPermission;
 import permissions.dispatcher.OnNeverAskAgain;
@@ -189,25 +188,30 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
     private Toolbar bottomToolbar;
     private Drawer drawer;
     private HeaderView headerView;
-    private RequestListener<AddTorrentResult> addTorrentResultListener = new RequestListener<AddTorrentResult>() {
+    private SingleObserver<AddTorrentResult> addTorrentResultListener = new SingleObserver<AddTorrentResult>() {
         @Override
-        public void onRequestFailure(SpiceException spiceException) {
-            String message;
-            if (spiceException.getCause() instanceof ResponseFailureException) {
-                message = ((ResponseFailureException) spiceException.getCause()).getFailureMessage();
-            } else {
-                message = getString(R.string.error_failed_to_open_torrent);
-            }
-            Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG).show();
+        public void onSubscribe(Disposable d) {
+            requests.add(d);
         }
 
         @Override
-        public void onRequestSuccess(AddTorrentResult addTorrentResult) {
+        public void onSuccess(AddTorrentResult addTorrentResult) {
             if (addTorrentResult.torrentDuplicate != null) {
                 Toast.makeText(MainActivity.this, R.string.error_duplicate_torrent, Toast.LENGTH_LONG).show();
             } else {
                 Toast.makeText(MainActivity.this, R.string.torrent_added_successfully, Toast.LENGTH_LONG).show();
             }
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            String message;
+            if (e instanceof RpcFailureException) {
+                message = e.getMessage();
+            } else {
+                message = getString(R.string.error_failed_to_open_torrent);
+            }
+            Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG).show();
         }
     };
 
@@ -997,32 +1001,95 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
     public void onDownloadLocationSelected(Bundle args, final String downloadDir, final boolean startWhenAdded) {
         switch (args.getInt(DownloadLocationDialogFragment.KEY_REQUEST_CODE)) {
             case DownloadLocationDialogFragment.REQUEST_CODE_BY_LOCAL_FILE:
-                getTransportManager().doRequest(
-                        new AddTorrentByFileRequest(args.getByteArray(DownloadLocationDialogFragment.KEY_FILE_BYTES), downloadDir, !startWhenAdded),
-                        addTorrentResultListener);
+                byte[] fileContent = args.getByteArray(DownloadLocationDialogFragment.KEY_FILE_BYTES);
+                transport.api().addTorrent(RpcArgs.addTorrent(fileContent, downloadDir, !startWhenAdded))
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(addTorrentResultListener);
                 break;
             case DownloadLocationDialogFragment.REQUEST_CODE_BY_REMOTE_FILE:
-                Uri fileUri = args.getParcelable(DownloadLocationDialogFragment.KEY_FILE_URI);
-                new RetrieveTorrentContentAsyncTask() {
+                final Uri fileUri = args.getParcelable(DownloadLocationDialogFragment.KEY_FILE_URI);
+
+                Disposable request = Observable.fromCallable(new Callable<byte[]>() {
                     @Override
-                    protected void onPostExecute(byte[] bytes) {
-                        if (bytes != null) {
-                            TransportManager tm = getTransportManager();
-                            if (tm.isStarted()) {
-                                tm.doRequest(new AddTorrentByFileRequest(bytes, downloadDir, !startWhenAdded), addTorrentResultListener);
+                    public byte[] call() {
+                        if (fileUri == null) throw new RuntimeException("No file URI");
+
+                        String uri = fileUri.toString();
+                        InputStream inputStream = null;
+                        try {
+                            inputStream = new URL(uri).openConnection().getInputStream();
+                            return IOUtils.toByteArray(inputStream);
+                        } catch (IOException e) {
+                            Log.e(TAG, "Failed to retrieve Uri '" + uri + "'", e);
+                        } finally {
+                            if (inputStream != null) try {
+                                inputStream.close();
+                            } catch (IOException e) {
+                                Log.e(TAG, "Failed to close InputStream", e);
                             }
-                        } else {
-                            Toast.makeText(MainActivity.this, getString(R.string.error_cannot_read_file_msg), Toast.LENGTH_SHORT).show();
                         }
+                        throw new RuntimeException("Failed to read file with URI: " + uri);
                     }
-                }.execute(fileUri);
+                }).switchMapSingle(new Function<byte[], SingleSource<AddTorrentResult>>() {
+                    @Override
+                    public SingleSource<AddTorrentResult> apply(byte[] bytes) {
+                        return transport.api().addTorrent(RpcArgs.addTorrent(bytes, downloadDir, !startWhenAdded));
+                    }}).subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new Consumer<AddTorrentResult>() {
+                            @Override
+                            public void accept(AddTorrentResult result) {
+                                addTorrentResultListener.onSuccess(result);
+                            }
+                        }, new Consumer<Throwable>() {
+                            @Override
+                            public void accept(Throwable e) {
+                                if (e instanceof RpcFailureException) {
+                                    addTorrentResultListener.onError(e);
+                                } else {
+                                    Toast.makeText(
+                                            MainActivity.this
+                                            , getString(R.string.error_cannot_read_file_msg),
+                                            Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        });
+                requests.add(request);
                 break;
             case DownloadLocationDialogFragment.REQUEST_CODE_BY_MAGNET:
                 String magnetUri = args.getString(DownloadLocationDialogFragment.KEY_MAGNET_URI);
                 if (magnetUri != null) {
-                    getTransportManager().doRequest(
-                            new AddTorrentByUrlRequest(magnetUri, downloadDir, !startWhenAdded),
-                            addTorrentResultListener);
+
+                    transport.api().addTorrent(RpcArgs.addTorrent(magnetUri, downloadDir, !startWhenAdded))
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(new SingleObserver<AddTorrentResult>() {
+                                @Override
+                                public void onSubscribe(Disposable d) {
+                                    requests.add(d);
+                                }
+
+                                @Override
+                                public void onSuccess(AddTorrentResult addTorrentResult) {
+                                    if (addTorrentResult.torrentDuplicate != null) {
+                                        Toast.makeText(MainActivity.this, R.string.error_duplicate_torrent, Toast.LENGTH_LONG).show();
+                                    } else {
+                                        Toast.makeText(MainActivity.this, R.string.torrent_added_successfully, Toast.LENGTH_LONG).show();
+                                    }
+                                }
+
+                                @Override
+                                public void onError(Throwable e) {
+                                    String message;
+                                    if (e instanceof RpcFailureException) {
+                                        message = e.getMessage();
+                                    } else {
+                                        message = getString(R.string.error_failed_to_open_torrent);
+                                    }
+                                    Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG).show();
+                                }
+                            });
                 } else {
                     throw new IllegalStateException("Magnet Uri is null");
                 }
@@ -1299,31 +1366,6 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
                 .onErrorComplete()
                 .subscribe();
         torrentUpdater.scheduleUpdate(UPDATE_REQUEST_DELAY);
-    }
-
-    private static abstract class RetrieveTorrentContentAsyncTask extends AsyncTask<Uri, Void, byte[]> {
-
-        @Override
-        protected byte[] doInBackground(Uri... torrentFileUris) {
-            String uri = torrentFileUris[0].toString();
-            InputStream inputStream = null;
-            try {
-                inputStream = new URL(uri).openConnection().getInputStream();
-                return IOUtils.toByteArray(inputStream);
-            } catch (IOException e) {
-                Log.e(TAG, "Failed to retrieve Uri '" + uri + "'", e);
-            } finally {
-                if (inputStream != null) try {
-                    inputStream.close();
-                } catch (IOException e) {
-                    Log.e(TAG, "Failed to close InputStream", e);
-                }
-            }
-            return null;
-        }
-
-        @Override
-        protected abstract void onPostExecute(byte[] bytes);
     }
 
     public static class StoragePermissionNeverAskAgainDialog extends DialogFragment {
