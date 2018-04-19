@@ -4,4 +4,8 @@
     <string name="unlimited">無制限</string>
     <string name="stop_when_inactive">非アクティブ時に停止</string>
     <string name="stop_at_ratio">設定した比率に到達したら停止</string>
+
+    <string name="priority_high">高い</string>
+    <string name="priority_normal">普通</string>
+    <string name="priority_low">低い</string>
 </resources>

@@ -1,3 +1,5 @@
+@file:JvmName(name = "Collections")
+
 package net.yupol.transmissionremote.utils
 
 fun <K, V> Map<K, V>.emptyToNull(): Map<K, V>? {
@@ -18,3 +20,5 @@ fun Any.isEmptyArray(): Boolean {
         else -> false
     }
 }
+
+fun Collection<Int>.toArray() = toIntArray()

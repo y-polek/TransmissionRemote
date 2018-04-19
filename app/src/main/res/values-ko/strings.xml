@@ -157,9 +157,6 @@
     <string name="mode">모드:</string>
     <string name="value">설정값:</string>
     <string name="value_in_minutes">설정값 (분):</string>
-    <string name="priority_high">높음</string>
-    <string name="priority_normal">보통</string>
-    <string name="priority_low">낮음</string>
     <string name="global_settings">전역 설정</string>
     <string name="unlimited">제한 없음</string>
     <string name="stop_at_ratio">특정 배포 비율에서 멈춤</string>

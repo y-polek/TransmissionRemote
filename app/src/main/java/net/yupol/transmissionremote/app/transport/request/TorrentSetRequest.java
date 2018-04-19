@@ -6,7 +6,7 @@ import android.util.Log;
 
 import com.google.common.primitives.Ints;
 
-import net.yupol.transmissionremote.app.model.Priority;
+import net.yupol.transmissionremote.model.Priority;
 import net.yupol.transmissionremote.model.json.TransferPriority;
 import net.yupol.transmissionremote.model.limitmode.LimitMode;
 

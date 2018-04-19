@@ -1265,7 +1265,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
 
     private void updateSpeedLimitServerPrefs() {
 
-        transport.api().setServerSettings(RpcArgs.sessionSet(altSpeedLimitEnabled(application.isSpeedLimitEnabled())))
+        transport.api().setServerSettings(RpcArgs.parameters(altSpeedLimitEnabled(application.isSpeedLimitEnabled())))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new CompletableObserver() {

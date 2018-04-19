@@ -1,35 +1,39 @@
 package net.yupol.transmissionremote.app.torrentdetails;
 
-import android.app.Activity;
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.google.common.primitives.Ints;
-import com.octo.android.robospice.persistence.exception.SpiceException;
-import com.octo.android.robospice.request.listener.RequestListener;
 
 import net.yupol.transmissionremote.app.R;
+import net.yupol.transmissionremote.app.TransmissionRemote;
 import net.yupol.transmissionremote.app.model.Dir;
-import net.yupol.transmissionremote.app.model.Priority;
-import net.yupol.transmissionremote.model.json.FileStat;
-import net.yupol.transmissionremote.app.transport.BaseSpiceActivity;
-import net.yupol.transmissionremote.app.transport.TransportManager;
-import net.yupol.transmissionremote.app.transport.request.TorrentSetRequest;
 import net.yupol.transmissionremote.app.utils.DividerItemDecoration;
+import net.yupol.transmissionremote.model.Priority;
 import net.yupol.transmissionremote.model.json.File;
+import net.yupol.transmissionremote.model.json.FileStat;
+import net.yupol.transmissionremote.transport.Transport;
+import net.yupol.transmissionremote.transport.rpc.RpcArgs;
 import net.yupol.transmissionremote.utils.Parcelables;
+
+import java.util.Map;
+
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
+
+import static net.yupol.transmissionremote.transport.rpc.TorrentParameters.filesUnwanted;
+import static net.yupol.transmissionremote.transport.rpc.TorrentParameters.filesWanted;
+import static net.yupol.transmissionremote.transport.rpc.TorrentParameters.filesWithPriority;
+import static net.yupol.transmissionremote.utils.Collections.toArray;
 
 public class DirectoryFragment extends Fragment implements DirectoryAdapter.OnItemSelectedListener {
 
-    private static final String TAG = DirectoryFragment.class.getSimpleName();
     private static final String ARG_TORRENT_ID = "arg_torrent_id";
     private static final String ARG_DIRECTORY = "arg_directory";
     private static final String ARG_FILES = "arg_files";
@@ -41,7 +45,7 @@ public class DirectoryFragment extends Fragment implements DirectoryAdapter.OnIt
     private FileStat[] fileStats;
 
     private DirectoryAdapter adapter;
-    private TransportManager transportManager;
+    private Transport transport;
 
     @SuppressWarnings("SuspiciousSystemArraycopy")
     @Override
@@ -51,6 +55,8 @@ public class DirectoryFragment extends Fragment implements DirectoryAdapter.OnIt
         torrentId = args.getInt(ARG_TORRENT_ID, -1);
         dir = args.getParcelable(ARG_DIRECTORY);
         files = Parcelables.toArrayOfType(File.class, args.getParcelableArray(ARG_FILES));
+
+        transport = new Transport(TransmissionRemote.getInstance().getActiveServer());
 
         if (savedInstanceState == null) {
             fileStats = Parcelables.toArrayOfType(FileStat.class, args.getParcelableArray(ARG_FILE_STATS));
@@ -80,17 +86,6 @@ public class DirectoryFragment extends Fragment implements DirectoryAdapter.OnIt
     }
 
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        Activity activity = getActivity();
-        if (!(activity instanceof BaseSpiceActivity)) {
-            Log.e(TAG, "Fragment should be used with BaseSpiceActivity");
-            return;
-        }
-        transportManager = ((BaseSpiceActivity) activity).getTransportManager();
-    }
-
-    @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelableArray(ARG_FILE_STATS, fileStats);
@@ -113,13 +108,14 @@ public class DirectoryFragment extends Fragment implements DirectoryAdapter.OnIt
             fileStats[fileIndex].setWanted(isChecked);
         }
 
-        TorrentSetRequest.Builder requestBuilder = TorrentSetRequest.builder(torrentId);
-        if (isChecked) {
-            requestBuilder.filesWanted(fileIndices);
-        } else {
-            requestBuilder.filesUnwanted(fileIndices);
-        }
-        transportManager.doRequest(requestBuilder.build(), null);
+        Map<String, Object> parameters = RpcArgs.parameters(
+                torrentId,
+                isChecked ? filesWanted(fileIndices) : filesUnwanted(fileIndices)
+        );
+        transport.api().setTorrentSettings(parameters)
+                .subscribeOn(Schedulers.io())
+                .onErrorComplete()
+                .subscribe();
     }
 
     @Override
@@ -127,36 +123,35 @@ public class DirectoryFragment extends Fragment implements DirectoryAdapter.OnIt
         FileStat fileStat = fileStats[fileIndex];
         fileStat.setWanted(isChecked);
 
-        TorrentSetRequest.Builder requestBuilder = TorrentSetRequest.builder(torrentId);
-        if (fileStat.isWanted()) {
-            requestBuilder.filesWanted(fileIndex);
-        } else {
-            requestBuilder.filesUnwanted(fileIndex);
-        }
-        transportManager.doRequest(requestBuilder.build(), null);
+        Map<String, Object> parameters = RpcArgs.parameters(
+                torrentId,
+                fileStat.isWanted() ? filesWanted(fileIndex) : filesUnwanted(fileIndex));
+        transport.api().setTorrentSettings(parameters)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .onErrorComplete()
+                .subscribe();
     }
 
     @Override
     public void onDirectoryPriorityChanged(int position, Priority priority) {
         Dir changedDir = dir.getDirs().get(position);
-        transportManager.doRequest(TorrentSetRequest.builder(torrentId)
-                .filesWithPriority(priority, Dir.filesInDirRecursively(changedDir)).build(), null);
+        int[] fileIndices = toArray(Dir.filesInDirRecursively(changedDir));
+
+        Map<String, Object> parameters = RpcArgs.parameters(torrentId, filesWithPriority(priority, fileIndices));
+        transport.api().setTorrentSettings(parameters)
+                .subscribeOn(Schedulers.io())
+                .onErrorComplete()
+                .subscribe();
     }
 
     @Override
     public void onFilePriorityChanged(int fileIndex, Priority priority) {
-        transportManager.doRequest(TorrentSetRequest.builder(torrentId)
-                .filesWithPriority(priority, fileIndex).build(), new RequestListener<Void>() {
-            @Override
-            public void onRequestFailure(SpiceException spiceException) {
-                Log.d(TAG, "failed to change priority");
-            }
-
-            @Override
-            public void onRequestSuccess(Void aVoid) {
-                Log.d(TAG, "success");
-            }
-        });
+        Map<String, Object> parameters = RpcArgs.parameters(torrentId, filesWithPriority(priority, fileIndex));
+        transport.api().setTorrentSettings(parameters)
+                .subscribeOn(Schedulers.io())
+                .onErrorComplete()
+                .subscribe();
     }
 
     public void setFiles(File[] files) {

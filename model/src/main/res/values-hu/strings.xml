@@ -4,4 +4,8 @@
     <string name="unlimited">Korlátlan</string>
     <string name="stop_when_inactive">Ájjl, ha inaktív</string>
     <string name="stop_at_ratio">Stop, ha eléri az arányt</string>
+
+    <string name="priority_high">Magas</string>
+    <string name="priority_normal">Normál</string>
+    <string name="priority_low">Alacsony</string>
 </resources>

@@ -31,4 +31,5 @@ ext {
     gson_version = '2.8.2'
     guava_version = '23.6-android'
     retrofit_version = '2.4.0'
+    iconics_version = '2.9.1@aar'
 }

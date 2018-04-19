@@ -107,4 +107,8 @@ interface TransmissionRpcApi {
     @RpcMethod("torrent-add")
     @Wrapped(path = ["arguments"])
     fun addTorrent(@Body args: Map<String, @JvmSuppressWildcards Any>): Single<AddTorrentResult>
+
+    @POST(".")
+    @RpcMethod("torrent-set")
+    fun setTorrentSettings(@Body args: Map<String, @JvmSuppressWildcards Any>): Completable
 }

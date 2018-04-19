@@ -11,7 +11,7 @@ import android.widget.TextView;
 import com.mikepenz.iconics.view.IconicsImageView;
 
 import net.yupol.transmissionremote.app.R;
-import net.yupol.transmissionremote.app.model.Priority;
+import net.yupol.transmissionremote.model.Priority;
 import net.yupol.transmissionremote.app.utils.ColorUtils;
 
 public class PriorityListAdapter extends ArrayAdapter<Priority> {

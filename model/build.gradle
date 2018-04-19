@@ -31,6 +31,11 @@ dependencies {
 
     // Guava
     implementation 'com.google.guava:guava:' + rootProject.guava_version
+
+    // Iconics
+    implementation 'com.mikepenz:iconics-core:' + rootProject.iconics_version
+    implementation 'com.mikepenz:fontawesome-typeface:4.7.0.1@aar'
+    implementation 'com.mikepenz:community-material-typeface:1.9.32.2@aar'
 }
 
 buildscript {

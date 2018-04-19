@@ -1,12 +1,10 @@
-package net.yupol.transmissionremote.app.model;
+package net.yupol.transmissionremote.model;
 
 import android.support.annotation.StringRes;
 
 import com.mikepenz.community_material_typeface_library.CommunityMaterial;
 import com.mikepenz.fontawesome_typeface_library.FontAwesome;
 import com.mikepenz.iconics.typeface.IIcon;
-
-import net.yupol.transmissionremote.app.R;
 
 public enum Priority {
 

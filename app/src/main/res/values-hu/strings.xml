@@ -157,9 +157,6 @@
     <string name="mode">Mód:</string>
     <string name="value">Érték:</string>
     <string name="value_in_minutes">Érték (perc):</string>
-    <string name="priority_high">Magas</string>
-    <string name="priority_normal">Normál</string>
-    <string name="priority_low">Alacsony</string>
     <string name="global_settings">Globális beállítások</string>
     <string name="unlimited">Korlátlan</string>
     <string name="stop_at_ratio">Stop, ha eléri az arányt</string>

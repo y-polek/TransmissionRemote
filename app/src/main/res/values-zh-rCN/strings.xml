@@ -154,9 +154,6 @@
     <string name="mode">模式：</string>
     <string name="value">值：</string>
     <string name="value_in_minutes">值（分钟）:</string>
-    <string name="priority_high">高</string>
-    <string name="priority_normal">中</string>
-    <string name="priority_low">低</string>
     <string name="global_settings">全局设置</string>
     <string name="unlimited">无限制</string>
     <string name="stop_at_ratio">达到比率后停止</string>

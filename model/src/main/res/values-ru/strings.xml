@@ -4,4 +4,8 @@
     <string name="unlimited">Неограничено</string>
     <string name="stop_when_inactive">Остановить при неактивности в течение</string>
     <string name="stop_at_ratio">Остановить при рейтинге</string>
+
+    <string name="priority_high">Высокий</string>
+    <string name="priority_low">Низкий</string>
+    <string name="priority_normal">Нормальный</string>
 </resources>

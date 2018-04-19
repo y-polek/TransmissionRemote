@@ -174,9 +174,6 @@
     <string name="mode">Mode:</string>
     <string name="value">Value:</string>
     <string name="value_in_minutes">Value (mins):</string>
-    <string name="priority_high">High</string>
-    <string name="priority_normal">Normal</string>
-    <string name="priority_low">Low</string>
     <string name="global_settings">Global Settings</string>
     <string name="unlimited">Unlimited</string>
     <string name="stop_at_ratio">Stop at Ratio</string>

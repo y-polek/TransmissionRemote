@@ -72,9 +72,6 @@
     <string name="notifications_pref_title">Notificaciones</string>
     <string name="preferences_notifications_title">Notificaciones</string>
     <string name="priority">Prioridad</string>
-    <string name="priority_high">Alta</string>
-    <string name="priority_low">Baja</string>
-    <string name="priority_normal">Normal</string>
     <string name="remote_preferences">Preferencias</string>
     <string name="remove_data">Borrar datos</string>
     <string name="remove_from_list">Borrar de la lista</string>

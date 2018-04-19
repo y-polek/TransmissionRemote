@@ -157,9 +157,6 @@
     <string name="mode">モード:</string>
     <string name="value">値:</string>
     <string name="value_in_minutes">値 (分):</string>
-    <string name="priority_high">高い</string>
-    <string name="priority_normal">普通</string>
-    <string name="priority_low">低い</string>
     <string name="global_settings">全体の設定</string>
     <string name="unlimited">無制限</string>
     <string name="stop_at_ratio">設定した比率に到達したら停止</string>

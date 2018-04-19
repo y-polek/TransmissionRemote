@@ -210,7 +210,7 @@ public class ServerPreferencesFragment extends Fragment {
 
         saveStarted();
 
-        new Transport(TransmissionRemote.getInstance().getActiveServer()).api().setServerSettings(RpcArgs.sessionSet(parameters))
+        new Transport(TransmissionRemote.getInstance().getActiveServer()).api().setServerSettings(RpcArgs.parameters(parameters))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new CompletableObserver() {

@@ -163,9 +163,6 @@
     <string name="mode">Mode:</string>
     <string name="value">Valeur:</string>
     <string name="value_in_minutes">Valeur (mins):</string>
-    <string name="priority_high">Haute</string>
-    <string name="priority_normal">Normale</string>
-    <string name="priority_low">Basse</string>
     <string name="global_settings">Paramètres globaux</string>
     <string name="unlimited">illimité</string>
     <string name="stop_at_ratio">Arrêter au ratio</string>

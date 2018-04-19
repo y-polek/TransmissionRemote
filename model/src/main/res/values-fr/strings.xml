@@ -4,4 +4,8 @@
     <string name="unlimited">illimité</string>
     <string name="stop_when_inactive">Arrêter quand inactif</string>
     <string name="stop_at_ratio">Arrêter au ratio</string>
+
+    <string name="priority_high">Haute</string>
+    <string name="priority_normal">Normale</string>
+    <string name="priority_low">Basse</string>
 </resources>

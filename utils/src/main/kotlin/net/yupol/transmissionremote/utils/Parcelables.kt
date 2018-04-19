@@ -18,9 +18,10 @@ inline fun <reified T> Array<Parcelable>?.toArrayOf() : Array<T>? {
 
 /**
  * Transforms array of [Parcelable]s to array of specified type.
+ *
+ * This function is for calling from Java code.
+ * In Kotlin use [toArrayOf] extension function.
  */
-@Deprecated(message = "This function is for calling from Java code",
-        replaceWith = ReplaceWith("parcelables.toArrayOf<String>()"))
 fun <T> toArrayOfType(type: Class<T>, original: Array<Parcelable>?): Array<T>? {
     if (original == null) return null
     val newArray = java.lang.reflect.Array.newInstance(type, original.size) as Array<T>

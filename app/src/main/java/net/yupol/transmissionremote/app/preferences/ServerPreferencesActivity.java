@@ -129,7 +129,7 @@ public class ServerPreferencesActivity extends BaseSpiceActivity implements Save
         ServerPreferencesFragment fragment = (ServerPreferencesFragment)
                 getSupportFragmentManager().findFragmentByTag(TAG_SERVER_PREFERENCES_FRAGMENT);
         if (fragment != null) {
-            new Transport(TransmissionRemote.getInstance().getActiveServer()).api().setServerSettings(RpcArgs.sessionSet(fragment.getSessionParameters()))
+            new Transport(TransmissionRemote.getInstance().getActiveServer()).api().setServerSettings(RpcArgs.parameters(fragment.getSessionParameters()))
                     .subscribeOn(Schedulers.io())
                     .onErrorComplete()
                     .subscribe();

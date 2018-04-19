@@ -93,9 +93,6 @@
     <string name="preferences_notifications_title">Уведомления</string>
     <string name="preferences_update_failed">Не удалось обновить настройки сервера</string>
     <string name="priority">Приоритет</string>
-    <string name="priority_high">Высокий</string>
-    <string name="priority_low">Низкий</string>
-    <string name="priority_normal">Нормальный</string>
     <string name="privacy">Защита:</string>
     <string name="privacy_private_torrent">Частный торрент, обнаружение пользователей вне трекера отключено</string>
     <string name="privacy_public_torrent">Публичный торрент</string>

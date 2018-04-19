@@ -2,17 +2,24 @@ package net.yupol.transmissionremote.transport.rpc
 
 import android.util.Base64
 import net.yupol.transmissionremote.model.Parameter
+import net.yupol.transmissionremote.model.Priority
+import net.yupol.transmissionremote.model.Priority.*
 
 data class RpcArgs(val method: String, val arguments: Map<String, Any>? = null) {
 
     companion object {
 
         @JvmStatic
-        fun sessionSet(vararg params: Parameter<String, Any>) =
+        fun parameters(vararg params: Parameter<String, Any>) =
                 params.map { it.key to it.value }.toMap()
 
         @JvmStatic
-        fun sessionSet(params: List<Parameter<String, Any>>) = sessionSet(*params.toTypedArray())
+        fun parameters(params: List<Parameter<String, Any>>) = parameters(*params.toTypedArray())
+
+        @JvmStatic
+        @SafeVarargs
+        fun parameters(torrentId: Int, vararg params: Parameter<String, Any>) =
+                mapOf("ids" to arrayOf(torrentId)) + parameters(*params)
 
         @JvmStatic
         fun renameTorrent(id: Int, path: String, name: String) =
@@ -93,4 +100,25 @@ object SessionParameters {
 
     @JvmStatic
     fun speedLimitUp(limit: Long) = Parameter("speed-limit-up", limit)
+}
+
+object TorrentParameters {
+
+    @JvmStatic
+    fun filesWanted(vararg indices: Int) =
+            Parameter("files-wanted", indices)
+
+    @JvmStatic
+    fun filesUnwanted(vararg indices: Int) =
+            Parameter("files-unwanted", indices)
+
+    @JvmStatic
+    fun filesWithPriority(priority: Priority, vararg indices: Int): Parameter<String, Any> {
+        val key = when (priority) {
+            HIGH -> "priority-high"
+            NORMAL -> "priority-normal"
+            LOW -> "priority-low"
+        }
+        return Parameter(key, indices)
+    }
 }
