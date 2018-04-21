@@ -1,10 +1,12 @@
 package net.yupol.transmissionremote.transport
 
+import android.annotation.SuppressLint
 import com.serjltt.moshi.adapters.FirstElement
 import com.serjltt.moshi.adapters.Wrapped
 import com.squareup.moshi.KotlinJsonAdapterFactory
 import com.squareup.moshi.Moshi
 import net.yupol.transmissionremote.model.Server
+import net.yupol.transmissionremote.transport.rpc.RpcRequestBodyConverterFactory
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -12,8 +14,11 @@ import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
-import net.yupol.transmissionremote.transport.rpc.RpcRequestBodyConverterFactory
+import java.security.cert.X509Certificate
 import java.util.*
+import javax.net.ssl.SSLContext
+import javax.net.ssl.TrustManager
+import javax.net.ssl.X509TrustManager
 
 class Transport(private val server: Server, vararg interceptors: Interceptor) {
 
@@ -36,6 +41,9 @@ class Transport(private val server: Server, vararg interceptors: Interceptor) {
             if (!server.userName.isNullOrEmpty()) {
                 authenticator(BasicAuthenticator(server.userName, server.password))
             }
+            if (server.trustSelfSignedSslCert) {
+                trustAllCertificates()
+            }
             build()
         }
 
@@ -56,4 +64,28 @@ class Transport(private val server: Server, vararg interceptors: Interceptor) {
 
         retrofit.create(TransmissionRpcApi::class.java)
     }
+
+    private fun OkHttpClient.Builder.trustAllCertificates() {
+
+        // Create a trust manager that does not validate certificate chains
+        val trustAllCerts = arrayOf<TrustManager>(object : X509TrustManager {
+
+            @SuppressLint("TrustAllX509TrustManager")
+            override fun checkClientTrusted(chain: Array<X509Certificate>, authType: String) {}
+
+            @SuppressLint("TrustAllX509TrustManager")
+            override fun checkServerTrusted(chain: Array<X509Certificate>, authType: String) {}
+
+            override fun getAcceptedIssuers(): Array<X509Certificate> = arrayOf()
+        })
+
+        // Install the all-trusting trust manager
+        val sslContext = SSLContext.getInstance("SSL")
+        sslContext.init(null, trustAllCerts, java.security.SecureRandom())
+
+        // Create an ssl socket factory with our all-trusting manager
+        sslSocketFactory(sslContext.socketFactory, trustAllCerts[0] as X509TrustManager)
+        hostnameVerifier { _, _ -> true }
+    }
+
 }
