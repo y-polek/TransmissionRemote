@@ -4,6 +4,8 @@ import android.util.Base64
 import net.yupol.transmissionremote.model.Parameter
 import net.yupol.transmissionremote.model.Priority
 import net.yupol.transmissionremote.model.Priority.*
+import net.yupol.transmissionremote.model.json.TransferPriority
+import net.yupol.transmissionremote.model.limitmode.LimitMode
 
 data class RpcArgs(val method: String, val arguments: Map<String, Any>? = null) {
 
@@ -121,4 +123,44 @@ object TorrentParameters {
         }
         return Parameter(key, indices)
     }
+
+    @JvmStatic
+    fun transferPriority(priority: TransferPriority) =
+            Parameter("bandwidthPriority", priority.modelValue)
+
+    @JvmStatic
+    fun honorSessionLimits(enabled: Boolean) =
+            Parameter("honorsSessionLimits", enabled)
+
+    @JvmStatic
+    fun downloadLimited(isLimited: Boolean) =
+            Parameter("downloadLimited", isLimited)
+
+    @JvmStatic
+    fun downloadLimit(limit: Long) =
+            Parameter("downloadLimit", limit)
+
+    @JvmStatic
+    fun uploadLimited(isLimited: Boolean) =
+            Parameter("uploadLimited", isLimited)
+
+    @JvmStatic
+    fun uploadLimit(limit: Long) =
+            Parameter("uploadLimit", limit)
+
+    @JvmStatic
+    fun seedRatioMode(mode: LimitMode) =
+            Parameter("seedRatioMode", mode.value)
+
+    @JvmStatic
+    fun seedRatioLimit(limit: Double) =
+            Parameter("seedRatioLimit", limit)
+
+    @JvmStatic
+    fun seedIdleMode(mode: LimitMode) =
+            Parameter("seedIdleMode", mode.value)
+
+    @JvmStatic
+    fun seedIdleLimit(limit: Double) =
+            Parameter("seedIdleLimit", limit)
 }
