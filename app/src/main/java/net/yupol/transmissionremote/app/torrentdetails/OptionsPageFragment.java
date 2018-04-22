@@ -4,11 +4,14 @@ import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.text.InputFilter;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.CompoundButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.common.collect.ImmutableMap;
@@ -22,6 +25,7 @@ import net.yupol.transmissionremote.model.json.ServerSettings;
 import net.yupol.transmissionremote.model.json.TorrentInfo;
 import net.yupol.transmissionremote.model.json.TransferPriority;
 import net.yupol.transmissionremote.model.limitmode.IdleLimitMode;
+import net.yupol.transmissionremote.model.limitmode.LimitMode;
 import net.yupol.transmissionremote.model.limitmode.RatioLimitMode;
 import net.yupol.transmissionremote.transport.Transport;
 import net.yupol.transmissionremote.transport.rpc.RpcArgs;
@@ -36,7 +40,6 @@ import io.reactivex.schedulers.Schedulers;
 import static net.yupol.transmissionremote.transport.rpc.TorrentParameters.transferPriority;
 
 public class OptionsPageFragment extends BasePageFragment implements
-        AdapterView.OnItemSelectedListener,
         BandwidthLimitFragment.OnBandwidthLimitChangedListener {
 
     private static final String TAG = OptionsPageFragment.class.getSimpleName();
@@ -112,10 +115,44 @@ public class OptionsPageFragment extends BasePageFragment implements
 
         binding.ratioLimitSpinner.setAdapter(new RatioLimitModeAdapter());
         binding.ratioLimitEdit.setFilters(new InputFilter[] { new InputFilter.LengthFilter(10)} );
+        binding.ratioLimitEdit.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    saveRatioLimit();
+                }
+                return false;
+            }
+        });
+        binding.ratioLimitEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    saveRatioLimit();
+                }
+            }
+        });
 
         binding.idleLimitSpinner.setAdapter(new IdleLimitModeAdapter());
         binding.idleLimitEdit.setFilters(new InputFilter[]{ new InputFilter.LengthFilter(5)} );
         binding.idleLimitEdit.addTextChangedListener(new MinMaxTextWatcher(1, 0xFFFF));
+        binding.idleLimitEdit.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    saveIdleLimit();
+                }
+                return false;
+            }
+        });
+        binding.idleLimitEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    saveIdleLimit();
+                }
+            }
+        });
 
         if (getTorrentInfo() == null) {
             binding.contentView.setVisibility(View.GONE);
@@ -130,8 +167,29 @@ public class OptionsPageFragment extends BasePageFragment implements
         binding.getRoot().post(new Runnable() {
             @Override
             public void run() {
-                binding.ratioLimitSpinner.setOnItemSelectedListener(OptionsPageFragment.this);
-                binding.idleLimitSpinner.setOnItemSelectedListener(OptionsPageFragment.this);
+                binding.ratioLimitSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                        updateSeedingLimitsUi(false);
+                        LimitMode mode = (LimitMode) parent.getAdapter().getItem(position);
+                        sendSaveOptionRequest(TorrentParameters.seedRatioMode(mode));
+                    }
+
+                    @Override
+                    public void onNothingSelected(AdapterView<?> parent) { }
+                });
+
+                binding.idleLimitSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                        updateSeedingLimitsUi(false);
+                        LimitMode mode = (LimitMode) parent.getAdapter().getItem(position);
+                        sendSaveOptionRequest(TorrentParameters.seedIdleMode(mode));
+                    }
+
+                    @Override
+                    public void onNothingSelected(AdapterView<?> parent) { }
+                });
             }
         });
 
@@ -277,14 +335,6 @@ public class OptionsPageFragment extends BasePageFragment implements
     }
 
     @Override
-    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        updateSeedingLimitsUi(false);
-    }
-
-    @Override
-    public void onNothingSelected(AdapterView<?> parent) {}
-
-    @Override
     public void onDownLimitEnabledChanged(boolean isEnabled) {
         sendSaveOptionRequest(TorrentParameters.downloadLimited(isEnabled));
     }
@@ -302,6 +352,16 @@ public class OptionsPageFragment extends BasePageFragment implements
     @Override
     public void onUpLimitChanged(int limit) {
         sendSaveOptionRequest(TorrentParameters.uploadLimit(limit));
+    }
+
+    private void saveRatioLimit() {
+        double limit = getRatioLimit();
+        sendSaveOptionRequest(TorrentParameters.seedRatioLimit(limit));
+    }
+
+    private void saveIdleLimit() {
+        int limit = getIdleLimit();
+        sendSaveOptionRequest(TorrentParameters.seedIdleLimit(limit));
     }
 
     private void sendSaveOptionRequest(Parameter<String, ?> option) {

@@ -80,6 +80,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:inputType="numberDecimal"
+                                android:imeOptions="actionDone"
                                 android:textSize="@dimen/tr_abc_text_size_body_1_material"/>
                             <TextView android:id="@+id/ratio_limit_global_text"
                                 android:layout_width="match_parent"
@@ -118,6 +119,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:inputType="number"
+                                android:imeOptions="actionDone"
                                 android:textSize="@dimen/tr_abc_text_size_body_1_material"/>
                             <TextView android:id="@+id/idle_limit_global_text"
                                 android:layout_width="match_parent"
