@@ -13,7 +13,7 @@ import com.google.common.primitives.Ints;
 
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.TransmissionRemote;
-import net.yupol.transmissionremote.app.model.Dir;
+import net.yupol.transmissionremote.model.Dir;
 import net.yupol.transmissionremote.app.utils.DividerItemDecoration;
 import net.yupol.transmissionremote.model.Priority;
 import net.yupol.transmissionremote.model.json.File;

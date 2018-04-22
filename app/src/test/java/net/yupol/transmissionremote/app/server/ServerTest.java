@@ -1,14 +1,18 @@
 package net.yupol.transmissionremote.app.server;
 
-import junit.framework.TestCase;
-
 import net.yupol.transmissionremote.model.Server;
 
+import org.junit.Test;
+
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.fail;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertThat;
 
-public class ServerTest extends TestCase {
+public class ServerTest {
 
+    @Test
     public void testIllegalPort() {
         try {
             new Server("name", "192.168.1.1", 0);
@@ -33,11 +37,13 @@ public class ServerTest extends TestCase {
         }
     }
 
+    @Test
     public void testJsonSerialization() {
         Server server = new Server("name", "192.168.1.1", 9091);
         assertEquals(server, Server.fromJson(server.toJson()));
     }
 
+    @Test
     public void testJsonSerializationWithLastUpdatedField() {
         Server server = new Server("FeeNAS", "localhost", 9092);
         final long lastUpdateDate = 12345L;
@@ -47,6 +53,7 @@ public class ServerTest extends TestCase {
         assertThat(deserializedServer.getLastUpdateDate(), equalTo(lastUpdateDate));
     }
 
+    @Test
     public void testEquals() {
         Server s1 = new Server("name", "192.168.1.1", 9091);
         Server s2 = new Server("name", "192.168.1.1", 9091);
@@ -58,6 +65,7 @@ public class ServerTest extends TestCase {
         assertEquals(s1, deserializedS1);
     }
 
+    @Test
     public void testSavedDownloadLocations() {
         Server s1 = new Server("name", "192.168.1.1", 9091);
 
@@ -75,6 +83,7 @@ public class ServerTest extends TestCase {
         assertEquals(s1.getSavedDownloadLocations().size(), restoredServer.getSavedDownloadLocations().size());
     }
 
+    @Test
     public void testMaxSavedDownloadLocations() {
         Server s1 = new Server("name", "192.168.1.1", 9091);
         s1.addSavedDownloadLocations("/home/Documents1");

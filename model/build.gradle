@@ -4,6 +4,9 @@ apply plugin: 'kotlin-android-extensions'
 
 android {
     compileSdkVersion 26
+    defaultConfig {
+        minSdkVersion 15
+    }
 
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
@@ -36,6 +39,10 @@ dependencies {
     implementation 'com.mikepenz:iconics-core:' + rootProject.iconics_version
     implementation 'com.mikepenz:fontawesome-typeface:4.7.0.1@aar'
     implementation 'com.mikepenz:community-material-typeface:1.9.32.2@aar'
+
+    // Testing
+    testImplementation 'junit:junit:4.12'
+    testImplementation 'org.hamcrest:hamcrest-library:1.3'
 }
 
 buildscript {

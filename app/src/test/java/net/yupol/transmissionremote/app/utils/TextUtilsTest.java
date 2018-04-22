@@ -1,47 +1,59 @@
 package net.yupol.transmissionremote.app.utils;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
 import java.util.concurrent.TimeUnit;
 
-public class TextUtilsTest extends TestCase {
+import static junit.framework.Assert.assertEquals;
 
+public class TextUtilsTest {
+
+    @Test
     public void testAbbreviateSingleWord() {
         assertEquals("A", TextUtils.abbreviate("Abc"));
     }
 
+    @Test
     public void testAbbreviateTwoWords() {
         assertEquals("AB", TextUtils.abbreviate("Abc Bcd"));
     }
 
+    @Test
     public void testAbbreviateThreeWords() {
         assertEquals("AB", TextUtils.abbreviate("Abc Bcd Cde"));
     }
 
+    @Test
     public void testAbbreviateEmptyString() {
         assertEquals("", TextUtils.abbreviate(""));
     }
 
+    @Test
     public void testAbbreviateWhitespacesOnly() {
         assertEquals("", TextUtils.abbreviate(" \t \t"));
     }
 
+    @Test
     public void testAbbreviateIsCapitalized() {
         assertEquals("AB", TextUtils.abbreviate("abc bcd"));
     }
 
+    @Test
     public void testAbbreviateStartsWithWhitespace() {
         assertEquals("AB", TextUtils.abbreviate(" Abc Bcd"));
     }
 
+    @Test
     public void testAbbreviateTabSeparated() {
         assertEquals("AB", TextUtils.abbreviate("Abc\tBcd"));
     }
 
+    @Test
     public void testAbbreviateLongWhitespace() {
         assertEquals("AB", TextUtils.abbreviate("Abc    \tBcd"));
     }
 
+    @Test
     public void testDisplayableSize() {
         assertEquals("0.0 KB", TextUtils.displayableSize(0));
         assertEquals("0.0 KB", TextUtils.displayableSize(1));
@@ -65,6 +77,7 @@ public class TextUtilsTest extends TestCase {
         assertEquals("12345.0 GB", TextUtils.displayableSize(12345 * GB));
     }
 
+    @Test
     public void testDisplayableTime() {
         assertEquals("0s", TextUtils.displayableTime(0));
         assertEquals("10s", TextUtils.displayableTime(10));

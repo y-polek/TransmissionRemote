@@ -1,4 +1,4 @@
-package net.yupol.transmissionremote.app.model;
+package net.yupol.transmissionremote.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;

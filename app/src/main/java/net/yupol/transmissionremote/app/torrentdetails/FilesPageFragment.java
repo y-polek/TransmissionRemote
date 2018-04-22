@@ -11,7 +11,7 @@ import android.view.ViewGroup;
 
 import net.yupol.transmissionremote.app.ProgressbarFragment;
 import net.yupol.transmissionremote.app.R;
-import net.yupol.transmissionremote.app.model.Dir;
+import net.yupol.transmissionremote.model.Dir;
 import net.yupol.transmissionremote.model.json.TorrentInfo;
 
 import java.util.ArrayList;

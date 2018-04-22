@@ -18,7 +18,7 @@ import com.mikepenz.iconics.IconicsDrawable;
 
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.databinding.FileItemBinding;
-import net.yupol.transmissionremote.app.model.Dir;
+import net.yupol.transmissionremote.model.Dir;
 import net.yupol.transmissionremote.app.model.FileType;
 import net.yupol.transmissionremote.model.Priority;
 import net.yupol.transmissionremote.model.json.File;

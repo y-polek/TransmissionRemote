@@ -1,12 +1,18 @@
-package net.yupol.transmissionremote.app.model;
+package net.yupol.transmissionremote.model;
 
-import com.google.gson.Gson;
-
-import junit.framework.TestCase;
+import com.squareup.moshi.JsonAdapter;
+import com.squareup.moshi.Moshi;
 
 import net.yupol.transmissionremote.model.json.File;
 
-public class DirTest extends TestCase {
+import org.junit.Before;
+import org.junit.Test;
+
+import java.io.IOException;
+
+import static junit.framework.Assert.assertEquals;
+
+public class DirTest {
 
     private static final String NESTED_FILES = "[" +
             "{\"bytesCompleted\":1937408,\"length\":1937408,\"name\":\"Test Tree/d1/d1-1/f1-1-1\"}," +
@@ -43,14 +49,15 @@ public class DirTest extends TestCase {
     private File[] nestedFiles;
     private File[] singleFile;
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        Gson gson = new Gson();
-        nestedFiles = gson.fromJson(NESTED_FILES, File[].class);
-        singleFile = gson.fromJson(SINGLE_FILE, File[].class);
+    @Before
+    public void setUp() throws IOException {
+        Moshi moshi = new Moshi.Builder().build();
+        JsonAdapter<File[]> adapter = moshi.adapter(File[].class);
+        nestedFiles = adapter.fromJson(NESTED_FILES);
+        singleFile = adapter.fromJson(SINGLE_FILE);
     }
 
+    @Test
     public void testCreateFileTreeNestedFiles() {
         Dir dir = Dir.createFileTree(nestedFiles);
 
@@ -78,6 +85,7 @@ public class DirTest extends TestCase {
         assertEquals("f1-1-3", nestedFiles[d011.getFileIndices().get(2)].getName());
     }
 
+    @Test
     public void testCreateFileTreeSingleFile() {
         Dir dir = Dir.createFileTree(singleFile);
 
@@ -87,6 +95,7 @@ public class DirTest extends TestCase {
         assertEquals("r1.txt", singleFile[dir.getFileIndices().get(0)].getName());
     }
 
+    @Test
     public void testFileIndices() {
         Dir dir = Dir.createFileTree(nestedFiles);
 

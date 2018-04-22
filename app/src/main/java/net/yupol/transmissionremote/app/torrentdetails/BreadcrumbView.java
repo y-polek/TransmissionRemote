@@ -19,7 +19,7 @@ import com.mikepenz.iconics.view.IconicsImageView;
 import com.mikepenz.ionicons_typeface_library.Ionicons;
 
 import net.yupol.transmissionremote.app.R;
-import net.yupol.transmissionremote.app.model.Dir;
+import net.yupol.transmissionremote.model.Dir;
 
 import java.util.Stack;
 

@@ -1,15 +1,21 @@
 package net.yupol.transmissionremote.app.utils.diff;
 
-import junit.framework.TestCase;
-
 import net.yupol.transmissionremote.model.ID;
+
+import org.junit.Before;
+import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public class ListDiffTest extends TestCase {
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertNull;
+import static junit.framework.Assert.assertTrue;
+
+public class ListDiffTest {
 
     private List<Value> initialList;
     private List<Value> nonStructuralChangesList;
@@ -18,7 +24,8 @@ public class ListDiffTest extends TestCase {
     private List<Value> allStructuralChangesList;
     private List<Value> changedSecondValue;
 
-    public void setUp() throws Exception {
+    @Before
+    public void setUp() {
         initialList = Arrays.asList(
                 new Value(0, 0),
                 new Value(1, 1),
@@ -57,6 +64,7 @@ public class ListDiffTest extends TestCase {
         changedSecondValue.get(0).value2 += 10;
     }
 
+    @Test
     public void testNoChanges() {
         ListDiff<Value> diff = new ListDiff<>(initialList, Value.deepCopyOf(initialList));
 
@@ -64,6 +72,7 @@ public class ListDiffTest extends TestCase {
         assertEquals(0, diff.getChangedItems().size());
     }
 
+    @Test
     public void testNoStructuralChanges() {
         ListDiff<Value> diff = new ListDiff<>(initialList, nonStructuralChangesList);
         List<Range> changedItems = diff.getChangedItems();
@@ -87,6 +96,7 @@ public class ListDiffTest extends TestCase {
         assertEquals(1, range.count); // contain 1 item
     }
 
+    @Test
     public void testStructuralChanges() {
 
         assertTrue(new ListDiff<>(initialList, insertsOnlyList).containStructuralChanges());
@@ -94,6 +104,7 @@ public class ListDiffTest extends TestCase {
         assertTrue(new ListDiff<>(initialList, allStructuralChangesList).containStructuralChanges());
     }
 
+    @Test
     public void testGetChangedItemsReturnNullIfStructuralChanges() {
         ListDiff<Value> diff = new ListDiff<>(initialList, allStructuralChangesList);
 
@@ -101,24 +112,28 @@ public class ListDiffTest extends TestCase {
         assertNull(diff.getChangedItems());
     }
 
+    @Test
     public void testGetChangedItemsWithoutCallingContainStructuralChanges() {
         ListDiff<Value> diff = new ListDiff<>(initialList, nonStructuralChangesList);
 
         assertEquals(3, diff.getChangedItems().size());
     }
 
+    @Test
     public void testEmptyLists() {
         assertTrue(new ListDiff<>(initialList, Collections.<Value>emptyList()).containStructuralChanges());
         assertTrue(new ListDiff<>(Collections.<Value>emptyList(), initialList).containStructuralChanges());
         assertFalse(new ListDiff<>(Collections.<ID>emptyList(), Collections.<ID>emptyList()).containStructuralChanges());
     }
 
+    @Test
     public void testDefaultEqualsImpl() {
         ListDiff<Value> diff = new ListDiff<>(initialList, changedSecondValue);
 
         assertEquals(1, diff.getChangedItems().size());
     }
 
+    @Test
     public void testCustomEqualsImpl() {
         Equals<Value> ignoreSecondValueEquals = new Equals<Value>() {
             @Override
