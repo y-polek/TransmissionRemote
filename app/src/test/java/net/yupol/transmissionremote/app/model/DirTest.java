@@ -1,6 +1,6 @@
 package net.yupol.transmissionremote.app.model;
 
-import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.gson.Gson;
 
 import junit.framework.TestCase;
 
@@ -45,9 +45,10 @@ public class DirTest extends TestCase {
 
     @Override
     protected void setUp() throws Exception {
-        JacksonFactory jsonFactory = new JacksonFactory();
-        nestedFiles = jsonFactory.fromString(NESTED_FILES, File[].class);
-        singleFile = jsonFactory.fromString(SINGLE_FILE, File[].class);
+        super.setUp();
+        Gson gson = new Gson();
+        nestedFiles = gson.fromJson(NESTED_FILES, File[].class);
+        singleFile = gson.fromJson(SINGLE_FILE, File[].class);
     }
 
     public void testCreateFileTreeNestedFiles() {

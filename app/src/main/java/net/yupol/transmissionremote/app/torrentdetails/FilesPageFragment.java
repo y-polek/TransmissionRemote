@@ -1,12 +1,10 @@
 package net.yupol.transmissionremote.app.torrentdetails;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.AnimRes;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,14 +13,12 @@ import net.yupol.transmissionremote.app.ProgressbarFragment;
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.model.Dir;
 import net.yupol.transmissionremote.model.json.TorrentInfo;
-import net.yupol.transmissionremote.app.transport.BaseSpiceActivity;
 
 import java.util.ArrayList;
 import java.util.Stack;
 
 public class FilesPageFragment extends BasePageFragment implements DirectoryFragment.OnDirectorySelectedListener {
 
-    private static final String TAG = FilesPageFragment.class.getSimpleName();
     private static final String TAG_PROGRESSBAR_FRAGMENT = "tag_progressbar_fragment";
     private static final String TAG_DIRECTORY_FRAGMENT = "tag_directory_fragment";
     private static final String KEY_PATH = "key_path";
@@ -75,14 +71,6 @@ public class FilesPageFragment extends BasePageFragment implements DirectoryFrag
     public void onDestroyView() {
         super.onDestroyView();
         viewCreated = false;
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (!(getActivity() instanceof BaseSpiceActivity)) {
-            Log.e(TAG, "Fragment should be used with BaseSpiceActivity");
-        }
     }
 
     @Override

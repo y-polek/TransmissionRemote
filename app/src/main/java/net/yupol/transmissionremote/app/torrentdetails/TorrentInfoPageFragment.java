@@ -13,8 +13,6 @@ import net.yupol.transmissionremote.model.json.TorrentInfo;
 
 public class TorrentInfoPageFragment extends BasePageFragment {
 
-    private static final String TAG = TorrentInfoPageFragment.class.getSimpleName();
-
     private TorrentDetailsInfoPageFragmentBinding binding;
 
     @Override

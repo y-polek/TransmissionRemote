@@ -1,8 +1,6 @@
 package net.yupol.transmissionremote.app.notifications;
 
 import android.content.Context;
-import android.content.Intent;
-import android.os.Build;
 import android.preference.PreferenceManager;
 
 import net.yupol.transmissionremote.app.R;
@@ -15,12 +13,12 @@ public class BackgroundUpdater {
         BackgroundUpdateJob.schedule(onlyUnmeteredNetwork);
     }
 
-    public static void stop(Context context) {
+    public static void stop() {
         BackgroundUpdateJob.cancelAll();
     }
 
     public static void restart(Context context) {
-        stop(context);
+        stop();
         start(context);
     }
 }

@@ -1,7 +1,5 @@
 package net.yupol.transmissionremote.app.preferences;
 
-import android.app.Activity;
-import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -20,11 +18,11 @@ import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.TransmissionRemote;
 import net.yupol.transmissionremote.app.torrentdetails.BandwidthLimitFragment;
-import net.yupol.transmissionremote.app.transport.BaseSpiceActivity;
-import net.yupol.transmissionremote.app.transport.TransportManager;
 import net.yupol.transmissionremote.app.utils.IconUtils;
 import net.yupol.transmissionremote.model.Parameter;
 import net.yupol.transmissionremote.model.json.ServerSettings;
+import net.yupol.transmissionremote.transport.Transport;
+import net.yupol.transmissionremote.transport.rpc.RpcArgs;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -35,8 +33,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
-import net.yupol.transmissionremote.transport.rpc.RpcArgs;
-import net.yupol.transmissionremote.transport.Transport;
 
 import static net.yupol.transmissionremote.transport.rpc.SessionParameters.altSpeedLimitDown;
 import static net.yupol.transmissionremote.transport.rpc.SessionParameters.altSpeedLimitUp;
@@ -56,7 +52,6 @@ public class ServerPreferencesFragment extends Fragment {
     private BandwidthLimitFragment globalBandwidthLimitFragment;
     private BandwidthLimitFragment altBandwidthLimitFragment;
     private TextView altLimitHeader;
-    private TransportManager transportManager;
     private Menu menu;
     private CompositeDisposable requests = new CompositeDisposable();
 
@@ -64,15 +59,6 @@ public class ServerPreferencesFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        Activity activity = getActivity();
-        if (activity instanceof BaseSpiceActivity) {
-            transportManager = ((BaseSpiceActivity) activity).getTransportManager();
-        }
     }
 
     @Override
@@ -205,9 +191,6 @@ public class ServerPreferencesFragment extends Fragment {
     }
 
     private void sendUpdateOptionsRequest(List<Parameter<String, ?>> parameters) {
-        if (transportManager == null)
-            throw new RuntimeException("ServerPreferencesFragment should be used with BaseSpiceActivity.");
-
         saveStarted();
 
         new Transport(TransmissionRemote.getInstance().getActiveServer()).api().setServerSettings(RpcArgs.parameters(parameters))

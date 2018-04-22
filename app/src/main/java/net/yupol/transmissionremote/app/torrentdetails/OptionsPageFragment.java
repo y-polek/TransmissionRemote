@@ -12,7 +12,6 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.CompoundButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.common.collect.ImmutableMap;
 
@@ -371,28 +370,5 @@ public class OptionsPageFragment extends BasePageFragment implements
                 .observeOn(AndroidSchedulers.mainThread())
                 .onErrorComplete()
                 .subscribe();
-    }
-
-    private void sendTorrentUpdateRequest() {
-        transport.api().torrentInfo(getTorrent().getId())
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new SingleObserver<TorrentInfo>() {
-                    @Override
-                    public void onSubscribe(Disposable d) {
-                        requests.add(d);
-                    }
-
-                    @Override
-                    public void onSuccess(TorrentInfo torrentInfo) {
-                        setTorrentInfo(torrentInfo);
-                        Toast.makeText(getActivity(), getString(R.string.saved), Toast.LENGTH_SHORT).show();
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        Toast.makeText(getActivity(), getString(R.string.options_update_failed), Toast.LENGTH_LONG).show();
-                    }
-                });
     }
 }

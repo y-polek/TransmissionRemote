@@ -40,8 +40,6 @@ import net.yupol.transmissionremote.app.TransmissionRemote.OnSortingChangedListe
 import net.yupol.transmissionremote.app.TransmissionRemote.OnTorrentsUpdatedListener;
 import net.yupol.transmissionremote.app.filtering.Filter;
 import net.yupol.transmissionremote.app.filtering.NameFilter;
-import net.yupol.transmissionremote.app.transport.BaseSpiceActivity;
-import net.yupol.transmissionremote.app.transport.TransportManager;
 import net.yupol.transmissionremote.app.utils.ColorUtils;
 import net.yupol.transmissionremote.app.utils.DividerItemDecoration;
 import net.yupol.transmissionremote.app.utils.IconUtils;
@@ -89,7 +87,6 @@ public class TorrentListFragment extends Fragment implements ChooseLocationDialo
     private static final long ETA_INFINITE_THRESHOLD = TimeUnit.DAYS.toSeconds(7);
 
     private TransmissionRemote app;
-    private TransportManager transportManager;
     private Transport transport;
 
     private Collection<Torrent> allTorrents = Collections.emptyList();
@@ -247,9 +244,6 @@ public class TorrentListFragment extends Fragment implements ChooseLocationDialo
         app.addOnFilterSetListener(filterListener);
         app.addOnSortingChangedListeners(sortingListener);
 
-        if (!(activity instanceof BaseSpiceActivity))
-            throw new IllegalStateException("Fragment must be used with BaseSpiceActivity");
-        transportManager = ((BaseSpiceActivity) activity).getTransportManager();
         transport = new Transport(app.getActiveServer());
 
         if (activity instanceof OnTorrentSelectedListener) {

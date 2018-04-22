@@ -36,9 +36,6 @@ public class ServerTest extends TestCase {
     public void testJsonSerialization() {
         Server server = new Server("name", "192.168.1.1", 9091);
         assertEquals(server, Server.fromJson(server.toJson()));
-
-        server.setLastSessionId("a;ldskfja;lsdfkj");
-        assertEquals(server, Server.fromJson(server.toJson()));
     }
 
     public void testJsonSerializationWithLastUpdatedField() {
@@ -55,11 +52,9 @@ public class ServerTest extends TestCase {
         Server s2 = new Server("name", "192.168.1.1", 9091);
         assertFalse(s1.equals(s2));
 
-        s1.setLastSessionId("slfajsldfkajsfa;fa");
         Server deserializedS1 = Server.fromJson(s1.toJson());
         assertEquals(s1, deserializedS1);
 
-        deserializedS1.setLastSessionId(null);
         assertEquals(s1, deserializedS1);
     }
 

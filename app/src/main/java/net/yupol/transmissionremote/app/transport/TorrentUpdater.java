@@ -3,6 +3,8 @@ package net.yupol.transmissionremote.app.transport;
 import android.util.Log;
 
 import net.yupol.transmissionremote.model.json.Torrent;
+import net.yupol.transmissionremote.transport.NoNetworkException;
+import net.yupol.transmissionremote.transport.Transport;
 
 import java.net.HttpURLConnection;
 import java.util.List;
@@ -13,9 +15,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import retrofit2.HttpException;
-import net.yupol.transmissionremote.transport.NoNetworkException;
-import net.yupol.transmissionremote.transport.rpc.RpcArgs;
-import net.yupol.transmissionremote.transport.Transport;
 
 public class TorrentUpdater {
 

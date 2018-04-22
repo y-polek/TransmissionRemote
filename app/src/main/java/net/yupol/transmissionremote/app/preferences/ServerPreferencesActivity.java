@@ -9,14 +9,16 @@ import android.view.MenuItem;
 
 import com.google.common.collect.ImmutableMap;
 
+import net.yupol.transmissionremote.app.BaseActivity;
 import net.yupol.transmissionremote.app.ProgressbarFragment;
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.TransmissionRemote;
 import net.yupol.transmissionremote.app.torrentdetails.SaveChangesDialogFragment;
-import net.yupol.transmissionremote.app.transport.BaseSpiceActivity;
 import net.yupol.transmissionremote.model.Parameter;
 import net.yupol.transmissionremote.model.Server;
 import net.yupol.transmissionremote.model.json.ServerSettings;
+import net.yupol.transmissionremote.transport.Transport;
+import net.yupol.transmissionremote.transport.rpc.RpcArgs;
 
 import java.util.List;
 
@@ -25,10 +27,8 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
-import net.yupol.transmissionremote.transport.rpc.RpcArgs;
-import net.yupol.transmissionremote.transport.Transport;
 
-public class ServerPreferencesActivity extends BaseSpiceActivity implements SaveChangesDialogFragment.SaveDiscardListener {
+public class ServerPreferencesActivity extends BaseActivity implements SaveChangesDialogFragment.SaveDiscardListener {
 
     private static final String TAG = ServerPreferencesActivity.class.getSimpleName();
     private static final String TAG_SERVER_PREFERENCES_FRAGMENT = "tag_server_preferences_fragment";

@@ -4,7 +4,6 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
-import com.google.common.base.Strings;
 import com.google.gson.Gson;
 
 import java.util.Collections;
@@ -17,7 +16,7 @@ public class Server implements Parcelable {
     public static final String TAG = Server.class.getSimpleName();
     public static final String DEFAULT_RPC_URL = "transmission/rpc";
 
-    static int MAX_SAVED_DOWNLOAD_LOCATIONS = 5;
+    public static int MAX_SAVED_DOWNLOAD_LOCATIONS = 5;
 
     private UUID id;
     private String idStr;
@@ -28,8 +27,6 @@ public class Server implements Parcelable {
     private String userName;
     private String password;
     private String rpcUrl = DEFAULT_RPC_URL;
-    private String lastSessionId;
-    private String redirectLocation;
     private boolean useHttps;
     private boolean trustSelfSignedSslCert;
     private List<String> savedDownloadLocations = new LinkedList<>();
@@ -109,27 +106,11 @@ public class Server implements Parcelable {
     }
 
     public String getUrlPath() {
-        return redirectLocation == null ? rpcUrl : redirectLocation;
+        return rpcUrl;
     }
 
     public void setRpcUrl(@NonNull String url) {
         this.rpcUrl = url;
-    }
-
-    public void setLastSessionId(String sessionId) {
-        lastSessionId = sessionId;
-    }
-
-    public String getLastSessionId() {
-        return lastSessionId;
-    }
-
-    public void setRedirectLocation(String location) {
-        redirectLocation = location;
-    }
-
-    public String getRedirectLocation() {
-        return redirectLocation;
     }
 
     public void setUseHttps(boolean useHttps) {
@@ -234,7 +215,6 @@ public class Server implements Parcelable {
                 ", userHttps=" + useHttps +
                 ", useAuthentication=" + useAuthentication +
                 ", userName='" + userName + '\'' +
-                ", lastSessionId='" + lastSessionId + '\'' +
                 '}';
     }
 
@@ -255,7 +235,6 @@ public class Server implements Parcelable {
             dest.writeString(password);
         }
         dest.writeString(rpcUrl);
-        dest.writeString(Strings.nullToEmpty(lastSessionId));
         dest.writeByte((byte) (useHttps ? 1 : 0));
         dest.writeByte((byte) (trustSelfSignedSslCert ? 1 : 0));
         dest.writeStringList(savedDownloadLocations);
@@ -281,8 +260,6 @@ public class Server implements Parcelable {
             }
             server.setId(id);
             server.setRpcUrl(parcel.readString());
-            String sessionId = Strings.emptyToNull(parcel.readString());
-            server.setLastSessionId(sessionId);
             server.useHttps = parcel.readByte() != 0;
             server.trustSelfSignedSslCert = parcel.readByte() != 0;
             parcel.readStringList(server.savedDownloadLocations);

@@ -118,7 +118,7 @@ public class TransmissionRemote extends Application implements SharedPreferences
             if (isNotificationEnabled()) {
                 BackgroundUpdater.start(this);
             } else {
-                BackgroundUpdater.stop(this);
+                BackgroundUpdater.stop();
                 for (Server server : servers) {
                     server.setLastUpdateDate(0);
                 }

@@ -79,7 +79,6 @@ import net.yupol.transmissionremote.app.torrentdetails.TorrentDetailsActivity;
 import net.yupol.transmissionremote.app.torrentlist.EmptyServerFragment;
 import net.yupol.transmissionremote.app.torrentlist.RemoveTorrentsDialogFragment;
 import net.yupol.transmissionremote.app.torrentlist.TorrentListFragment;
-import net.yupol.transmissionremote.app.transport.BaseSpiceActivity;
 import net.yupol.transmissionremote.app.transport.NetworkError;
 import net.yupol.transmissionremote.app.transport.TorrentUpdater;
 import net.yupol.transmissionremote.app.utils.DialogUtils;
@@ -133,7 +132,7 @@ import static android.preference.PreferenceManager.getDefaultSharedPreferences;
 import static net.yupol.transmissionremote.transport.rpc.SessionParameters.altSpeedLimitEnabled;
 
 @RuntimePermissions
-public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.TorrentUpdateListener,
+public class MainActivity extends BaseActivity implements TorrentUpdater.TorrentUpdateListener,
         SharedPreferences.OnSharedPreferenceChangeListener, TransmissionRemote.OnSpeedLimitChangedListener,
         TorrentListFragment.OnTorrentSelectedListener, TorrentListFragment.ContextualActionBarListener,
         OpenByDialogFragment.OnOpenTorrentSelectedListener, OpenAddressDialogFragment.OnOpenMagnetListener,

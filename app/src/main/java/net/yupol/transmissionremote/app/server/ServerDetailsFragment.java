@@ -20,7 +20,7 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Spinner;
 
-import com.google.api.client.repackaged.com.google.common.base.Strings;
+import com.google.common.base.Strings;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 
 import net.yupol.transmissionremote.app.OnBackPressedListener;
@@ -35,7 +35,6 @@ public class ServerDetailsFragment extends Fragment implements OnBackPressedList
 
     public static final String ARGUMENT_SERVER = "argument_server";
 
-    private static final String TAG = ServerDetailsFragment.class.getSimpleName();
     private static final int DEFAULT_PORT = 9091;
     private static final int DEFAULT_HTTPS_PORT = 443;
     private static final String KEY_IS_AUTH_ENABLED = "key_is_auth_enabled";
@@ -207,9 +206,6 @@ public class ServerDetailsFragment extends Fragment implements OnBackPressedList
         server.setRpcUrl(getUiRpcUrl());
         server.setUseHttps(getUiUseHttps());
         server.setTrustSelfSignedSslCert(getUiTrustSelfSignedCert());
-
-        // clear redirect location after each sever settings change
-        server.setRedirectLocation(null);
     }
 
     public boolean hasChanges() {

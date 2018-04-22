@@ -129,9 +129,6 @@
             <meta-data android:name="android.support.PARENT_ACTIVITY" android:value=".preferences.PreferencesActivity"/>
         </activity>
 
-        <service android:name=".transport.NoCacheGoogleHttpClientSpiceService"
-            android:exported="false" />
-
         <receiver android:name=".notifications.BootCompleteBroadcastReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />

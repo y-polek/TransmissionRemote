@@ -50,16 +50,6 @@ public class TorrentDetailsPagerAdapter extends FragmentStatePagerAdapter {
         return fragment;
     }
 
-    public BasePageFragment findFragment(FragmentManager fragmentManager, int position) {
-        Class fragmentClass = fragmentsClasses[position];
-        for (Fragment fragment : fragmentManager.getFragments()) {
-            if (fragmentClass.isInstance(fragment)) {
-                return (BasePageFragment) fragment;
-            }
-        }
-        return null;
-    }
-
     @Override
     public int getCount() {
         return fragmentsClasses.length;

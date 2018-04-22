@@ -4,9 +4,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 
-import com.octo.android.robospice.persistence.exception.SpiceException;
-import com.octo.android.robospice.request.listener.RequestListener;
-
 import net.yupol.transmissionremote.model.json.TorrentInfo;
 import net.yupol.transmissionremote.transport.Transport;
 
@@ -18,7 +15,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
-public class TorrentInfoUpdater implements RequestListener<TorrentInfo> {
+public class TorrentInfoUpdater {
 
     private static final String TAG = TorrentInfoUpdater.class.getSimpleName();
     private static final String TIMER_NAME = TorrentInfoUpdater.class.getSimpleName();
@@ -77,18 +74,6 @@ public class TorrentInfoUpdater implements RequestListener<TorrentInfo> {
     public void updateNow(OnTorrentInfoUpdatedListener listener) {
         stop();
         start(listener);
-    }
-
-    @Override
-    public void onRequestSuccess(TorrentInfo torrentInfo) {
-        if (listener != null) listener.onTorrentInfoUpdated(torrentInfo);
-        if (timer != null) scheduleNexUpdate();
-    }
-
-    @Override
-    public void onRequestFailure(SpiceException spiceException) {
-        Log.d(TAG, "TorrentInfo request failed", spiceException);
-        if (timer != null) scheduleNexUpdate();
     }
 
     private void scheduleNexUpdate() {
