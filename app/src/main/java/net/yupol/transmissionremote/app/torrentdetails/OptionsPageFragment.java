@@ -1,40 +1,31 @@
 package net.yupol.transmissionremote.app.torrentdetails;
 
-import android.app.Activity;
-import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.text.InputFilter;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.CompoundButton;
 import android.widget.Toast;
 
 import com.google.common.collect.ImmutableMap;
-import com.mikepenz.google_material_typeface_library.GoogleMaterial;
-import com.octo.android.robospice.persistence.exception.SpiceException;
-import com.octo.android.robospice.request.listener.RequestListener;
 
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.TransmissionRemote;
 import net.yupol.transmissionremote.app.databinding.TorrentDetailsOptionsPageFragmentBinding;
-import net.yupol.transmissionremote.app.transport.BaseSpiceActivity;
-import net.yupol.transmissionremote.app.transport.TransportManager;
-import net.yupol.transmissionremote.app.transport.request.TorrentSetRequest;
-import net.yupol.transmissionremote.app.utils.IconUtils;
 import net.yupol.transmissionremote.app.utils.MinMaxTextWatcher;
+import net.yupol.transmissionremote.model.Parameter;
 import net.yupol.transmissionremote.model.json.ServerSettings;
 import net.yupol.transmissionremote.model.json.TorrentInfo;
 import net.yupol.transmissionremote.model.json.TransferPriority;
 import net.yupol.transmissionremote.model.limitmode.IdleLimitMode;
-import net.yupol.transmissionremote.model.limitmode.LimitMode;
 import net.yupol.transmissionremote.model.limitmode.RatioLimitMode;
 import net.yupol.transmissionremote.transport.Transport;
+import net.yupol.transmissionremote.transport.rpc.RpcArgs;
+import net.yupol.transmissionremote.transport.rpc.TorrentParameters;
 
 import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -42,50 +33,23 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
-public class OptionsPageFragment extends BasePageFragment implements AdapterView.OnItemSelectedListener,
-        OnActivityExitingListener<TorrentSetRequest.Builder> {
+import static net.yupol.transmissionremote.transport.rpc.TorrentParameters.transferPriority;
+
+public class OptionsPageFragment extends BasePageFragment implements
+        AdapterView.OnItemSelectedListener,
+        BandwidthLimitFragment.OnBandwidthLimitChangedListener {
 
     private static final String TAG = OptionsPageFragment.class.getSimpleName();
 
-    private TransportManager transportManager;
     private Transport transport;
 
     private ServerSettings serverSettings;
 
     private BandwidthLimitFragment bandwidthLimitFragment;
-    private MenuItem saveMenuItem;
 
     private boolean viewCreated;
     private TorrentDetailsOptionsPageFragmentBinding binding;
     private CompositeDisposable requests = new CompositeDisposable();
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        Activity activity = getActivity();
-        if (activity instanceof BaseSpiceActivity) {
-            transportManager = ((BaseSpiceActivity) activity).getTransportManager();
-        }
-        if (activity instanceof TorrentDetailsActivity) {
-            ((TorrentDetailsActivity) activity).addOnActivityExitingListener(this);
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-
-        requests.clear();
-
-        if (getActivity() instanceof TorrentDetailsActivity) {
-            TorrentDetailsActivity activity = (TorrentDetailsActivity) getActivity();
-            activity.removeOnActivityExitingListener(this);
-            if (getTorrentInfo() != null) {
-                TorrentSetRequest.Builder requestBuilder = getSaveOptionsRequestBuilder();
-                if (requestBuilder.isChanged()) activity.addSaveChangesRequest(requestBuilder);
-            }
-        }
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -126,7 +90,25 @@ public class OptionsPageFragment extends BasePageFragment implements AdapterView
         bandwidthLimitFragment = (BandwidthLimitFragment)
                 getChildFragmentManager().findFragmentById(R.id.bandwidth_limit_fragment);
 
-        binding.prioritySpinner.setAdapter(new TransferPrioritySpinnerAdapter());
+        final TransferPrioritySpinnerAdapter transferPriorityAdapter = new TransferPrioritySpinnerAdapter();
+        binding.prioritySpinner.setAdapter(transferPriorityAdapter);
+        binding.prioritySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                TransferPriority priority = transferPriorityAdapter.getItem(position);
+                sendSaveOptionRequest(transferPriority(priority));
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) { }
+        });
+
+        binding.stayWithGlobalBandwidthCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton button, boolean isChecked) {
+                sendSaveOptionRequest(TorrentParameters.honorSessionLimits(isChecked));
+            }
+        });
 
         binding.ratioLimitSpinner.setAdapter(new RatioLimitModeAdapter());
         binding.ratioLimitEdit.setFilters(new InputFilter[] { new InputFilter.LengthFilter(10)} );
@@ -165,6 +147,12 @@ public class OptionsPageFragment extends BasePageFragment implements AdapterView
     }
 
     @Override
+    public void onStop() {
+        requests.clear();
+        super.onStop();
+    }
+
+    @Override
     public void setTorrentInfo(TorrentInfo torrentInfo) {
         boolean isUpdate = getTorrentInfo() != null;
         super.setTorrentInfo(torrentInfo);
@@ -176,14 +164,6 @@ public class OptionsPageFragment extends BasePageFragment implements AdapterView
                 // TODO: implement UI updates
             }
         }
-        if (saveMenuItem != null) {
-            saveMenuItem.setEnabled(true);
-        }
-    }
-
-    @Override
-    public TorrentSetRequest.Builder onActivityExiting() {
-        return getSaveOptionsRequestBuilder();
     }
 
     private void showContent() {
@@ -297,28 +277,6 @@ public class OptionsPageFragment extends BasePageFragment implements AdapterView
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.torrent_options_menu, menu);
-        saveMenuItem = menu.findItem(R.id.action_save);
-        saveMenuItem.setEnabled(getTorrentInfo() != null);
-        IconUtils.setMenuIcon(getContext(), saveMenuItem, GoogleMaterial.Icon.gmd_save);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_save:
-                TorrentSetRequest.Builder requestBuilder = getSaveOptionsRequestBuilder();
-                if (requestBuilder.isChanged()) {
-                    sendUpdateOptionsRequest(requestBuilder.build());
-                }
-                return true;
-        }
-
-        return false;
-    }
-
-    @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         updateSeedingLimitsUi(false);
     }
@@ -326,84 +284,33 @@ public class OptionsPageFragment extends BasePageFragment implements AdapterView
     @Override
     public void onNothingSelected(AdapterView<?> parent) {}
 
-    /**
-     * @return optional which contain {@link TorrentSetRequest} or contain nothing if no options changed
-     */
-    public TorrentSetRequest.Builder getSaveOptionsRequestBuilder() {
-        TorrentInfo torrentInfo = getTorrentInfo();
-        TorrentSetRequest.Builder saveChangesRequestBuilder = TorrentSetRequest.builder(torrentInfo.getId());
-
-        TransferPriority priority = (TransferPriority) binding.prioritySpinner.getSelectedItem();
-        if (priority != torrentInfo.getTransferPriority()) {
-            saveChangesRequestBuilder.transferPriority(priority);
-        }
-
-        boolean honorsSessionLimits = binding.stayWithGlobalBandwidthCheckbox.isChecked();
-        if (honorsSessionLimits != torrentInfo.isSessionLimitsHonored()) {
-            saveChangesRequestBuilder.honorsSessionLimits(honorsSessionLimits);
-        }
-
-        boolean isDownloadLimited = bandwidthLimitFragment.isDownloadLimited();
-        if (isDownloadLimited != torrentInfo.isDownloadLimited()) {
-            saveChangesRequestBuilder.downloadLimited(isDownloadLimited);
-        }
-
-        long downloadLimit = bandwidthLimitFragment.getDownloadLimit();
-        if (downloadLimit != torrentInfo.getDownloadLimit()) {
-            saveChangesRequestBuilder.downloadLimit(downloadLimit);
-        }
-
-        boolean isUploadLimited = bandwidthLimitFragment.isUploadLimited();
-        if (isUploadLimited != torrentInfo.isUploadLimited()) {
-            saveChangesRequestBuilder.uploadLimited(isUploadLimited);
-        }
-
-        long uploadLimit = bandwidthLimitFragment.getUploadLimit();
-        if (uploadLimit != torrentInfo.getUploadLimit()) {
-            saveChangesRequestBuilder.uploadLimit(uploadLimit);
-        }
-
-        LimitMode ratioLimitMode = getRatioLimitMode();
-        if (ratioLimitMode != torrentInfo.getSeedRatioMode()) {
-            saveChangesRequestBuilder.seedRatioMode(ratioLimitMode);
-        }
-
-        double ratioLimit = getRatioLimit();
-        if (ratioLimit != torrentInfo.getSeedRatioLimit()) {
-            saveChangesRequestBuilder.seedRatioLimit(ratioLimit);
-        }
-
-        LimitMode idleLimitMode = getIdleLimitMode();
-        if (idleLimitMode != torrentInfo.getSeedIdleMode()) {
-            saveChangesRequestBuilder.seedIdleMode(idleLimitMode);
-        }
-
-        int idleLimit = getIdleLimit();
-        if (idleLimit != torrentInfo.getSeedIdleLimit()) {
-            saveChangesRequestBuilder.seedIdleLimit(idleLimit);
-        }
-
-        return saveChangesRequestBuilder;
+    @Override
+    public void onDownLimitEnabledChanged(boolean isEnabled) {
+        sendSaveOptionRequest(TorrentParameters.downloadLimited(isEnabled));
     }
 
-    private void sendUpdateOptionsRequest(TorrentSetRequest request) {
-        if (transportManager == null)
-            throw new RuntimeException("OptionsPageFragment should be used with BaseSpiceActivity.");
+    @Override
+    public void onDownLimitChanged(int limit) {
+        sendSaveOptionRequest(TorrentParameters.downloadLimit(limit));
+    }
 
-        saveStarted();
+    @Override
+    public void onUpLimitEnabledChanged(boolean isEnabled) {
+        sendSaveOptionRequest(TorrentParameters.uploadLimited(isEnabled));
+    }
 
-        transportManager.doRequest(request, new RequestListener<Void>() {
-            @Override
-            public void onRequestFailure(SpiceException spiceException) {
-                Toast.makeText(getActivity(), getString(R.string.options_update_failed), Toast.LENGTH_LONG).show();
-                saveFinished();
-            }
+    @Override
+    public void onUpLimitChanged(int limit) {
+        sendSaveOptionRequest(TorrentParameters.uploadLimit(limit));
+    }
 
-            @Override
-            public void onRequestSuccess(Void aVoid) {
-                sendTorrentUpdateRequest();
-            }
-        });
+    private void sendSaveOptionRequest(Parameter<String, ?> option) {
+        int torrentId = getTorrent().getId();
+        transport.api().setTorrentSettings(RpcArgs.parameters(torrentId, option))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .onErrorComplete()
+                .subscribe();
     }
 
     private void sendTorrentUpdateRequest() {
@@ -425,16 +332,7 @@ public class OptionsPageFragment extends BasePageFragment implements AdapterView
                     @Override
                     public void onError(Throwable e) {
                         Toast.makeText(getActivity(), getString(R.string.options_update_failed), Toast.LENGTH_LONG).show();
-                        saveFinished();
                     }
                 });
-    }
-
-    private void saveStarted() {
-        saveMenuItem.setEnabled(false);
-    }
-
-    private void saveFinished() {
-        saveMenuItem.setEnabled(true);
     }
 }

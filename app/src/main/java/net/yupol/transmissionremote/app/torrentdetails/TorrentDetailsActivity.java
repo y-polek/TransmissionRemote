@@ -9,7 +9,6 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.util.Log;
-import android.util.SparseArray;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -23,7 +22,6 @@ import net.yupol.transmissionremote.app.torrentlist.ChooseLocationDialogFragment
 import net.yupol.transmissionremote.app.torrentlist.RemoveTorrentsDialogFragment;
 import net.yupol.transmissionremote.app.torrentlist.RenameDialogFragment;
 import net.yupol.transmissionremote.app.transport.BaseSpiceActivity;
-import net.yupol.transmissionremote.app.transport.request.TorrentSetRequest;
 import net.yupol.transmissionremote.model.json.Torrent;
 import net.yupol.transmissionremote.model.json.TorrentInfo;
 import net.yupol.transmissionremote.transport.Transport;
@@ -40,7 +38,7 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
-public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveChangesDialogFragment.SaveDiscardListener,
+public class TorrentDetailsActivity extends BaseSpiceActivity implements
         RemoveTorrentsDialogFragment.OnRemoveTorrentSelectionListener, ChooseLocationDialogFragment.OnLocationSelectedListener,
         TorrentInfoUpdater.OnTorrentInfoUpdatedListener, SwipeRefreshLayout.OnRefreshListener, RenameDialogFragment.OnNameSelectedListener {
 
@@ -48,10 +46,8 @@ public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveCha
 
     public static final String EXTRA_TORRENT = "extra_key_torrent";
 
-    private static final String TAG_SAVE_CHANGES_DIALOG = "tag_save_changes_dialog";
     private static final String TAG_CHOOSE_LOCATION_DIALOG = "tag_choose_location_dialog";
 
-    private static final String KEY_OPTIONS_CHANGE_REQUEST = "key_options_request";
     private static final String KEY_TORRENT_INFO = "key_torrent_info";
     private static final String KEY_LAST_PAGE_POSITION = "key_last_position";
 
@@ -59,9 +55,7 @@ public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveCha
 
     private Torrent torrent;
     private TorrentInfo torrentInfo;
-    private SparseArray<TorrentSetRequest> saveChangesRequests = new SparseArray<>();
     private List<OnDataAvailableListener<TorrentInfo>> torrentInfoListeners = new LinkedList<>();
-    private List<OnActivityExitingListener<TorrentSetRequest.Builder>> activityExitingListeners = new LinkedList<>();
     private TorrentDetailsPagerAdapter pagerAdapter;
     private MenuItem setLocationMenuItem;
     private TorrentInfoUpdater torrentInfoUpdater;
@@ -146,15 +140,8 @@ public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveCha
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        outState.putSparseParcelableArray(KEY_OPTIONS_CHANGE_REQUEST, saveChangesRequests);
         outState.putParcelable(KEY_TORRENT_INFO, torrentInfo);
         super.onSaveInstanceState(outState);
-    }
-
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        saveChangesRequests = savedInstanceState.getSparseParcelableArray(KEY_OPTIONS_CHANGE_REQUEST);
-        super.onRestoreInstanceState(savedInstanceState);
     }
 
     public TorrentInfo getTorrentInfo() {
@@ -175,20 +162,6 @@ public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveCha
         for (OnDataAvailableListener<TorrentInfo> listener : torrentInfoListeners) {
             listener.onDataAvailable(torrentInfo);
         }
-    }
-
-    public void addOnActivityExitingListener(OnActivityExitingListener<TorrentSetRequest.Builder> listener) {
-        if (!activityExitingListeners.contains(listener)) {
-            activityExitingListeners.add(listener);
-        }
-    }
-
-    public void removeOnActivityExitingListener(OnActivityExitingListener<TorrentSetRequest.Builder> listener) {
-        activityExitingListeners.remove(listener);
-    }
-
-    public void addSaveChangesRequest(TorrentSetRequest.Builder requestBuilder) {
-        saveChangesRequests.put(requestBuilder.getTorrentId(), requestBuilder.build());
     }
 
     private void setupPager() {
@@ -225,36 +198,15 @@ public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveCha
 
     @Override
     public boolean onSupportNavigateUp() {
-        return handleExit();
+        finish();
+        return true;
     }
 
     @Override
     public void onBackPressed() {
         boolean handled = handleBackPressByFragments();
         if (handled) return;
-        handleExit();
-    }
-
-    private boolean handleExit() {
-        if (torrentInfo == null) {
-            finish();
-            return true;
-        }
-
-        for (OnActivityExitingListener<TorrentSetRequest.Builder> listener : activityExitingListeners) {
-            TorrentSetRequest.Builder saveChangesRequestBuilder = listener.onActivityExiting();
-            if (saveChangesRequestBuilder != null && saveChangesRequestBuilder.isChanged()) {
-                addSaveChangesRequest(saveChangesRequestBuilder);
-            }
-        }
-
-        if (saveChangesRequests.size() > 0) {
-            new SaveChangesDialogFragment().show(getFragmentManager(), TAG_SAVE_CHANGES_DIALOG);
-        } else {
-            finish();
-            return true;
-        }
-        return false;
+        finish();
     }
 
     @Override
@@ -315,20 +267,6 @@ public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveCha
                 return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void onSavePressed() {
-        for (int i=0; i<saveChangesRequests.size(); i++) {
-            TorrentSetRequest request = saveChangesRequests.valueAt(i);
-            getTransportManager().doRequest(request, null);
-        }
-        super.onBackPressed();
-    }
-
-    @Override
-    public void onDiscardPressed() {
-        super.onBackPressed();
     }
 
     @Override

@@ -31,7 +31,8 @@
             android:layout_gravity="center_vertical"
             android:paddingRight="@dimen/default_padding"
             android:inputType="number"
-            android:textSize="@dimen/abc_text_size_body_1_material"/>
+            android:imeOptions="actionDone"
+            android:textSize="@dimen/abc_text_size_body_1_material" />
         <TextView android:id="@+id/download_limit_units"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -66,6 +67,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:inputType="number"
+            android:imeOptions="actionDone"
             android:textSize="@dimen/abc_text_size_body_1_material"/>
         <TextView android:id="@+id/upload_limit_units"
             android:layout_width="wrap_content"

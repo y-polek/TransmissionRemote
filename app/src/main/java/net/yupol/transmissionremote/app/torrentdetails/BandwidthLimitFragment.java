@@ -1,15 +1,18 @@
 package net.yupol.transmissionremote.app.torrentdetails;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.InputFilter;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -35,6 +38,8 @@ public class BandwidthLimitFragment extends Fragment implements View.OnFocusChan
     private int currentUpLimit;
     private boolean disableableLimits;
 
+    private OnBandwidthLimitChangedListener listener;
+
     @Override
     public void onInflate(Activity activity, AttributeSet attrs, Bundle savedInstanceState) {
         super.onInflate(activity, attrs, savedInstanceState);
@@ -42,6 +47,15 @@ public class BandwidthLimitFragment extends Fragment implements View.OnFocusChan
         TypedArray a = activity.obtainStyledAttributes(attrs, R.styleable.BandwidthLimitFragment);
         disableableLimits = a.getBoolean(R.styleable.BandwidthLimitFragment_disableable_limits, true);
         a.recycle();
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        Fragment parentFragment = getParentFragment();
+        if (parentFragment instanceof OnBandwidthLimitChangedListener) {
+            listener = (OnBandwidthLimitChangedListener) parentFragment;
+        }
     }
 
     @Override
@@ -53,6 +67,16 @@ public class BandwidthLimitFragment extends Fragment implements View.OnFocusChan
         InputFilter[] limitFilters = {new InputFilter.LengthFilter((int) (Math.log10(LIMIT_MAX) + 1))};
         downLimitEdit.setFilters(limitFilters);
         downLimitEdit.setOnFocusChangeListener(this);
+        downLimitEdit.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    readLimitValues(downLimitEdit);
+                }
+                return false;
+            }
+        });
+
         downLimitUnits = view.findViewById(R.id.download_limit_units);
         downLimitUnits.setEnabled(!disableableLimits);
         downLimitCheckbox = view.findViewById(R.id.download_limit_checkbox);
@@ -63,6 +87,7 @@ public class BandwidthLimitFragment extends Fragment implements View.OnFocusChan
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     downLimitEdit.setEnabled(isChecked);
                     downLimitUnits.setEnabled(isChecked);
+                    notifyDownLimitEnabledChanged(isChecked);
                 }
             });
         }
@@ -73,17 +98,29 @@ public class BandwidthLimitFragment extends Fragment implements View.OnFocusChan
         upLimitEdit.setEnabled(!disableableLimits);
         upLimitEdit.setFilters(limitFilters);
         upLimitEdit.setOnFocusChangeListener(this);
+        upLimitEdit.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    readLimitValues(upLimitEdit);
+                }
+                return false;
+            }
+        });
         upLimitUnits = view.findViewById(R.id.upload_limit_units);
         upLimitUnits.setEnabled(!disableableLimits);
         upLimitCheckbox = view.findViewById(R.id.upload_limit_checkbox);
         upLimitCheckbox.setVisibility(disableableLimits ? View.VISIBLE : View.GONE);
-        upLimitCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                upLimitEdit.setEnabled(isChecked);
-                upLimitUnits.setEnabled(isChecked);
-            }
-        });
+        if (disableableLimits) {
+            upLimitCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    upLimitEdit.setEnabled(isChecked);
+                    upLimitUnits.setEnabled(isChecked);
+                    notifyUpLimitEnabledChanged(isChecked);
+                }
+            });
+        }
         TextView upLimitText = view.findViewById(R.id.upload_limit_text);
         upLimitText.setVisibility(disableableLimits ? View.GONE : View.VISIBLE);
 
@@ -92,29 +129,30 @@ public class BandwidthLimitFragment extends Fragment implements View.OnFocusChan
 
     @Override
     public void onFocusChange(View v, boolean hasFocus) {
-        if (hasFocus) return;
-
-        readLimitValues(v);
+        if (v instanceof EditText && !hasFocus) {
+            readLimitValues((EditText) v);
+        }
     }
 
-    private void readLimitValues(View v) {
-        EditText editText = (EditText) v;
+    private void readLimitValues(EditText editText) {
         String text = editText.getText().toString();
         try {
             int value = Integer.parseInt(text);
 
             if (value >= LIMIT_MIN && value <= LIMIT_MAX) {
-                if (v == downLimitEdit) {
+                if (editText == downLimitEdit) {
                     currentDownLimit = value;
-                } else if (v == upLimitEdit) {
+                    notifyDownLimitChanged(currentDownLimit);
+                } else if (editText == upLimitEdit) {
                     currentUpLimit = value;
+                    notifyUpLimitChanged(currentUpLimit);
                 }
             }
         } catch (NumberFormatException e) {
             Log.d(TAG, "Failed to parse integer: '" + text + "'");
         }
 
-        editText.setText(String.valueOf(v == downLimitEdit ? currentDownLimit : currentUpLimit));
+        editText.setText(String.valueOf(editText == downLimitEdit ? currentDownLimit : currentUpLimit));
     }
 
     public void setDownloadLimited(boolean isLimited) {
@@ -161,5 +199,36 @@ public class BandwidthLimitFragment extends Fragment implements View.OnFocusChan
     public long getUploadLimit() {
         readLimitValues(upLimitEdit);
         return currentUpLimit;
+    }
+
+    private void notifyDownLimitEnabledChanged(boolean isEnabled) {
+        if (listener != null) {
+            listener.onDownLimitEnabledChanged(isEnabled);
+        }
+    }
+
+    private void notifyDownLimitChanged(int limit) {
+        if (listener != null) {
+            listener.onDownLimitChanged(limit);
+        }
+    }
+
+    private void notifyUpLimitEnabledChanged(boolean isEnabled) {
+        if (listener != null) {
+            listener.onUpLimitEnabledChanged(isEnabled);
+        }
+    }
+
+    private void notifyUpLimitChanged(int limit) {
+        if (listener != null) {
+            listener.onUpLimitChanged(limit);
+        }
+    }
+
+    public interface OnBandwidthLimitChangedListener {
+        void onDownLimitEnabledChanged(boolean isEnabled);
+        void onDownLimitChanged(int limit);
+        void onUpLimitEnabledChanged(boolean isEnabled);
+        void onUpLimitChanged(int limit);
     }
 }
