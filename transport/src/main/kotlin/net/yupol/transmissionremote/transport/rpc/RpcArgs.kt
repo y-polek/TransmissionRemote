@@ -161,6 +161,6 @@ object TorrentParameters {
             Parameter("seedIdleMode", mode.value)
 
     @JvmStatic
-    fun seedIdleLimit(limit: Double) =
+    fun seedIdleLimit(limit: Int) =
             Parameter("seedIdleLimit", limit)
 }
