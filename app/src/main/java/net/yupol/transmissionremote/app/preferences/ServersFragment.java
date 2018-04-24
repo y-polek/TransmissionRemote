@@ -17,8 +17,10 @@ import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.TransmissionRemote;
-import net.yupol.transmissionremote.model.Server;
 import net.yupol.transmissionremote.app.utils.IconUtils;
+import net.yupol.transmissionremote.model.Server;
+
+import java.util.Locale;
 
 public class ServersFragment extends ListFragment {
 
@@ -47,7 +49,7 @@ public class ServersFragment extends ListFragment {
             public View getView(int position, View convertView, ViewGroup parent) {
                 View itemView = convertView;
                 if (itemView == null) {
-                    LayoutInflater li = (LayoutInflater) parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                    LayoutInflater li = LayoutInflater.from(parent.getContext());
                     itemView = li.inflate(R.layout.server_item_layout, parent, false);
                 }
 
@@ -57,7 +59,12 @@ public class ServersFragment extends ListFragment {
                 nameText.setText(server.getName());
 
                 TextView addressText = itemView.findViewById(R.id.address);
-                addressText.setText((server.useHttps() ? "https://" : "http://") + server.getHost() + ":" + server.getPort());
+                int port = server.getPort();
+                String url = String.format(Locale.ROOT, "%s://%s%s",
+                        server.useHttps() ? "https" : "http",
+                        server.getHost(),
+                        port >= 0 ? (":" + port) : "");
+                addressText.setText(url);
 
                 RadioButton radioButton = itemView.findViewById(R.id.radio_button);
                 radioButton.setChecked(server.equals(app.getActiveServer()));

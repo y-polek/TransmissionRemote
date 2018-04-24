@@ -7,6 +7,7 @@ import com.squareup.moshi.KotlinJsonAdapterFactory
 import com.squareup.moshi.Moshi
 import net.yupol.transmissionremote.model.Server
 import net.yupol.transmissionremote.transport.rpc.RpcRequestBodyConverterFactory
+import okhttp3.HttpUrl
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -15,7 +16,6 @@ import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
 import java.security.cert.X509Certificate
-import java.util.*
 import javax.net.ssl.SSLContext
 import javax.net.ssl.TrustManager
 import javax.net.ssl.X509TrustManager
@@ -47,11 +47,16 @@ class Transport(private val server: Server, vararg interceptors: Interceptor) {
             build()
         }
 
-        val baseUrl = String.format(Locale.ROOT, "%s://%s:%d/%s/",
-                if (server.useHttps()) "https" else "http",
-                server.host,
-                server.port,
-                server.urlPath)
+        val baseUrl = with (HttpUrl.Builder()) {
+            scheme(if (server.useHttps()) "https" else "http")
+            if (server.port >= 0) port(server.port)
+            host(server.host)
+            if (server.urlPath.isNotEmpty()) {
+                val path = server.urlPath.removePrefix("/").removeSuffix("/")
+                addPathSegments("$path/")
+            }
+            build()
+        }
 
         val retrofit = Retrofit.Builder()
                 .baseUrl(baseUrl)

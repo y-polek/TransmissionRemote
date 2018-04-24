@@ -25,8 +25,8 @@ import com.mikepenz.materialdrawer.view.BezelImageView;
 
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.TransmissionRemote;
-import net.yupol.transmissionremote.model.Server;
 import net.yupol.transmissionremote.app.utils.ColorUtils;
+import net.yupol.transmissionremote.model.Server;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -257,7 +257,7 @@ public class HeaderView extends RelativeLayout implements View.OnClickListener {
             PrimaryDrawerItem serverItem = new PrimaryDrawerItem()
                     .withName(server.getName())
                     .withIdentifier(i)
-                    .withDescription(server.getHost() + ":" + server.getPort())
+                    .withDescription(server.getHost() + (server.getPort() >= 0 ? ":" + server.getPort() : ""))
                     .withDescriptionTextColor(secondaryTextColor);
             serverSelectionItems.add(serverItem);
         }
