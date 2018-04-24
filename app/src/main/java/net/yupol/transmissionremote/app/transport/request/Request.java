@@ -94,10 +94,10 @@ public abstract class Request<RESULT> extends GoogleHttpClientSpiceRequest<RESUL
             throw new IllegalStateException("Server must be set before executing");
         }
 
-        url = String.format(Locale.ROOT, "%s://%s:%d/%s",
+        String address = server.getPort() >= 0 ? server.getHost() + ":" + server.getPort() : server.getHost();
+        url = String.format(Locale.ROOT, "%s://%s/%s",
                 server.useHttps() ? "https" : "http",
-                server.getHost(),
-                server.getPort(),
+                address,
                 server.getUrlPath());
 
         HttpRequestFactory requestFactory = getHttpRequestFactory();

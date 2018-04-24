@@ -163,8 +163,6 @@ public class ServerDetailsFragment extends Fragment implements OnBackPressedList
         return false;
     }
 
-
-
     public Server getNewServer() {
         if (!checkValidity())
             return null;
@@ -244,8 +242,9 @@ public class ServerDetailsFragment extends Fragment implements OnBackPressedList
         if (!getUiHost().equals(server.getHost())) {
             hostNameEdit.setText(server.getHost());
         }
-        if (getUiPort() != server.getPort()) {
-            portNumberEdit.setText(String.valueOf(server.getPort()));
+        int port = server.getPort();
+        if (getUiPort() != port) {
+            portNumberEdit.setText(port >= 0 ? String.valueOf(server.getPort()) : "");
         }
         if (isAuthEnabled != server.isAuthenticationEnabled()) {
             isAuthEnabled = server.isAuthenticationEnabled();
@@ -282,7 +281,8 @@ public class ServerDetailsFragment extends Fragment implements OnBackPressedList
             serverNameEdit.setText(server.getName());
             protocolSpinner.setSelection(server.useHttps() ? 1 : 0);
             hostNameEdit.setText(server.getHost());
-            portNumberEdit.setText(String.valueOf(server.getPort()));
+            int port = server.getPort();
+            portNumberEdit.setText(port >= 0 ? String.valueOf(port) : "");
             selfSignedSslCheckbox.setChecked(server.getTrustSelfSignedSslCert());
             updateAuth(server.isAuthenticationEnabled());
             userNameEdit.setText(server.getUserName());
@@ -320,8 +320,11 @@ public class ServerDetailsFragment extends Fragment implements OnBackPressedList
     }
 
     private int getUiPort() {
+        String portStr = portNumberEdit.getText().toString().trim();
+        if (portStr.isEmpty()) return -1;
+
         try {
-            return Integer.parseInt(portNumberEdit.getText().toString());
+            return Integer.parseInt(portStr);
         } catch (NumberFormatException e) {
             return getUiUseHttps() ? DEFAULT_HTTPS_PORT : DEFAULT_PORT;
         }
@@ -354,10 +357,6 @@ public class ServerDetailsFragment extends Fragment implements OnBackPressedList
         }
         if (TextUtils.getTrimmedLength(hostNameEdit.getText()) == 0) {
             hostNameEdit.setError(getString(R.string.host_name_error_message));
-            return false;
-        }
-        if (TextUtils.getTrimmedLength(portNumberEdit.getText()) == 0) {
-            portNumberEdit.setError(getString(R.string.port_number_error_message));
             return false;
         }
 
