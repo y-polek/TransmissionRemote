@@ -47,7 +47,6 @@ import net.yupol.transmissionremote.app.utils.TextUtils;
 import net.yupol.transmissionremote.app.utils.diff.Equals;
 import net.yupol.transmissionremote.app.utils.diff.ListDiff;
 import net.yupol.transmissionremote.app.utils.diff.Range;
-import net.yupol.transmissionremote.model.Torrents;
 import net.yupol.transmissionremote.model.json.Torrent;
 import net.yupol.transmissionremote.transport.Transport;
 import net.yupol.transmissionremote.transport.rpc.RpcArgs;
@@ -490,8 +489,8 @@ public class TorrentListFragment extends Fragment implements ChooseLocationDialo
                     btn.toggle();
 
                     Completable request = wasPaused
-                            ? transport.api().startTorrents(Torrents.ids(torrents))
-                            : transport.api().stopTorrents(Torrents.ids(torrents));
+                            ? transport.api().startTorrents(torrent.getId())
+                            : transport.api().stopTorrents(torrent.getId());
                     sendRequestAndUpdateTorrents(request, torrent.getId());
                 }
             });
