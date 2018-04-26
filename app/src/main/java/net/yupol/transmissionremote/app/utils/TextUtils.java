@@ -4,10 +4,12 @@ import com.google.common.base.Strings;
 
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.TransmissionRemote;
+import net.yupol.transmissionremote.utils.Texts;
 
 import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 import static java.util.Calendar.DAY_OF_YEAR;
 import static java.util.Calendar.YEAR;
@@ -25,7 +27,7 @@ public class TextUtils {
         int i = 0;
         while (i < words.length && builder.length() < 2) {
             String word = words[i].trim();
-            if (word.length() > 0) builder.append(Character.toUpperCase(word.charAt(0)));
+            if (word.length() > 0) builder.append(Texts.firstSymbol(word).toUpperCase(Locale.US));
             i++;
         }
 

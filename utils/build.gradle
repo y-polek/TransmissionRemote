@@ -16,4 +16,7 @@ dependencies {
 
     // Support Library
     implementation 'com.android.support:appcompat-v7:' + rootProject.support_version
+
+    // Emoji
+    implementation 'com.vdurmont:emoji-java:4.0.0'
 }
