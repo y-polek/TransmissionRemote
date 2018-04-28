@@ -2,7 +2,10 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 
 android {
-    compileSdkVersion 27
+    compileSdkVersion 26
+    defaultConfig {
+        minSdkVersion 15
+    }
 
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
