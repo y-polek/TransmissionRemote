@@ -1,9 +1,5 @@
 apply plugin: 'com.android.application'
-
-repositories {
-    maven { url 'https://maven.fabric.io/public' }
-    mavenCentral()
-}
+apply plugin: 'io.fabric'
 
 android {
     compileSdkVersion 26
@@ -11,8 +7,8 @@ android {
     defaultConfig {
         minSdkVersion 15
         targetSdkVersion 26
-        versionCode 16
-        versionName '0.9.11'
+        versionCode 17
+        versionName '0.9.12'
         applicationId 'net.yupol.transmissionremote.app'
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
