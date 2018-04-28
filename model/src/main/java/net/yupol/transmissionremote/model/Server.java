@@ -33,8 +33,6 @@ public class Server implements Parcelable {
     private long lastUpdateDate;
 
     public Server(@NonNull String name, @NonNull String host, int port) {
-        if (port <= 0 || port > 0xFFFF)
-            throw new IllegalArgumentException("Port number value must be in range [1, 65535], actual value: " + port);
         setId(UUID.randomUUID());
         this.name = name;
         this.host = host;
