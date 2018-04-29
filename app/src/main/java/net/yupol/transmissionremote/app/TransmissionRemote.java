@@ -1,6 +1,5 @@
 package net.yupol.transmissionremote.app;
 
-import android.app.Application;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
@@ -11,6 +10,7 @@ import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
+import android.support.multidex.MultiDexApplication;
 import android.support.v7.app.AppCompatDelegate;
 
 import com.crashlytics.android.Crashlytics;
@@ -23,13 +23,13 @@ import com.google.common.collect.FluentIterable;
 
 import net.yupol.transmissionremote.app.filtering.Filter;
 import net.yupol.transmissionremote.app.filtering.Filters;
-import net.yupol.transmissionremote.model.json.Torrent;
 import net.yupol.transmissionremote.app.notifications.BackgroundUpdateJob;
 import net.yupol.transmissionremote.app.notifications.BackgroundUpdater;
-import net.yupol.transmissionremote.model.Server;
 import net.yupol.transmissionremote.app.sorting.SortOrder;
 import net.yupol.transmissionremote.app.sorting.SortedBy;
 import net.yupol.transmissionremote.app.utils.ThemeUtils;
+import net.yupol.transmissionremote.model.Server;
+import net.yupol.transmissionremote.model.json.Torrent;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -45,7 +45,7 @@ import javax.annotation.Nonnull;
 
 import io.fabric.sdk.android.Fabric;
 
-public class TransmissionRemote extends Application implements SharedPreferences.OnSharedPreferenceChangeListener {
+public class TransmissionRemote extends MultiDexApplication implements SharedPreferences.OnSharedPreferenceChangeListener {
 
     private static final String SHARED_PREFS_NAME = "transmission_remote_shared_prefs";
     private static final String KEY_SERVERS = "key_servers";
