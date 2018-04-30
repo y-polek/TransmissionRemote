@@ -19,15 +19,15 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 
     // Retrofit
-    implementation 'com.squareup.retrofit2:retrofit:' + rootProject.retrofit_version
-    implementation 'com.squareup.retrofit2:converter-moshi:' + rootProject.retrofit_version
-    implementation 'com.squareup.retrofit2:converter-scalars:' + rootProject.retrofit_version
-    implementation 'com.squareup.retrofit2:adapter-rxjava2:' + rootProject.retrofit_version
+    implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
+    implementation "com.squareup.retrofit2:converter-moshi:$retrofit_version"
+    implementation "com.squareup.retrofit2:converter-scalars:$retrofit_version"
+    implementation "com.squareup.retrofit2:adapter-rxjava2:$retrofit_version"
     implementation 'com.squareup.okhttp3:logging-interceptor:3.9.1'
 
     // Moshi
-    implementation 'com.squareup.moshi:moshi:' + rootProject.moshi_version
-    implementation 'com.squareup.moshi:moshi-kotlin:' + rootProject.moshi_version
+    implementation "com.squareup.moshi:moshi:$moshi_version"
+    implementation "com.squareup.moshi:moshi-kotlin:$moshi_version"
     implementation 'com.serjltt.moshi:moshi-lazy-adapters:2.1'
 
     // Testing
