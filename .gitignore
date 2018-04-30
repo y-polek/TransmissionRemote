@@ -10,6 +10,7 @@ build/
 .idea
 .gradle
 /local.properties
+/api_keys.properties
 .DS_Store
 *.iml
 *.iws
