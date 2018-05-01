@@ -30,6 +30,7 @@ import com.google.common.collect.ImmutableMap;
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.TransmissionRemote;
 import net.yupol.transmissionremote.app.databinding.DownloadLocationDialogBinding;
+import net.yupol.transmissionremote.app.di.Injector;
 import net.yupol.transmissionremote.app.utils.SimpleTextWatcher;
 import net.yupol.transmissionremote.app.utils.TextUtils;
 import net.yupol.transmissionremote.model.FreeSpace;
@@ -60,6 +61,7 @@ public class DownloadLocationDialogFragment extends DialogFragment {
 
     private static final String KEY_LOADING_IN_PROGRESS = "key_loading_in_progress";
 
+    private Transport transport;
     private OnDownloadLocationSelectedListener listener;
     private Disposable currentRequest;
     private FreeSpace freeSpace;
@@ -72,17 +74,19 @@ public class DownloadLocationDialogFragment extends DialogFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        app = TransmissionRemote.getApplication(getContext());
+        Context context = requireContext();
+        app = TransmissionRemote.getApplication(context);
+        transport = Injector.transportComponent(context).transport();
     }
 
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
-        binding = DataBindingUtil.inflate(getActivity().getLayoutInflater(),
+        binding = DataBindingUtil.inflate(requireActivity().getLayoutInflater(),
                 R.layout.download_location_dialog, null, false);
 
-        AlertDialog dialog = new AlertDialog.Builder(getActivity())
+        AlertDialog dialog = new AlertDialog.Builder(requireActivity())
                 .setView(binding.getRoot())
                 .setPositiveButton(R.string.add, null)
                 .setNegativeButton(android.R.string.cancel, null)
@@ -105,7 +109,7 @@ public class DownloadLocationDialogFragment extends DialogFragment {
                 }
             });
 
-            new Transport(app.getActiveServer()).api().serverSettings(ImmutableMap.<String, Object>of())
+            transport.api().serverSettings(ImmutableMap.<String, Object>of())
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(new SingleObserver<ServerSettings>() {
@@ -180,10 +184,10 @@ public class DownloadLocationDialogFragment extends DialogFragment {
 
     private void showDownloadLocationSuggestions(Server server) {
         if (downloadLocationsPopup != null && downloadLocationsPopup.isShowing()) return;
-        downloadLocationsPopup = new ListPopupWindow(getContext());
+        downloadLocationsPopup = new ListPopupWindow(requireContext());
         downloadLocationsPopup.setModal(false);
 
-        final ArrayAdapter<String> downloadLocationAdapter = new ArrayAdapter<>(getContext(),
+        final ArrayAdapter<String> downloadLocationAdapter = new ArrayAdapter<>(requireContext(),
                 android.R.layout.simple_spinner_dropdown_item, server.getSavedDownloadLocations());
         downloadLocationsPopup.setAdapter(downloadLocationAdapter);
         downloadLocationsPopup.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -229,7 +233,7 @@ public class DownloadLocationDialogFragment extends DialogFragment {
                         notifyListener();
                         dialog.dismiss();
                     } else {
-                        new AlertDialog.Builder(getContext())
+                        new AlertDialog.Builder(requireContext())
                                 .setMessage(R.string.unknown_free_space_confirmation)
                                 .setPositiveButton(R.string.add, new DialogInterface.OnClickListener() {
                                     @Override
@@ -294,7 +298,7 @@ public class DownloadLocationDialogFragment extends DialogFragment {
         }
 
         final String path = binding.downloadLocationText.getText().toString();
-        new Transport(app.getActiveServer()).api().freeSpace(path)
+        transport.api().freeSpace(path)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new SingleObserver<FreeSpace>() {
@@ -318,7 +322,7 @@ public class DownloadLocationDialogFragment extends DialogFragment {
                                 clickify(binding.freeSpaceText, useDefaultText, new ClickSpan.OnClickListener() {
                                     @Override
                                     public void onClick() {
-                                        TransmissionRemote app = (TransmissionRemote) getActivity().getApplicationContext();
+                                        TransmissionRemote app = (TransmissionRemote) requireActivity().getApplicationContext();
                                         binding.downloadLocationText.setText(Strings.nullToEmpty(app.getDefaultDownloadDir()));
                                     }
                                 });

@@ -16,8 +16,8 @@ import android.widget.TextView;
 import com.google.common.collect.ImmutableMap;
 
 import net.yupol.transmissionremote.app.R;
-import net.yupol.transmissionremote.app.TransmissionRemote;
 import net.yupol.transmissionremote.app.databinding.TorrentDetailsOptionsPageFragmentBinding;
+import net.yupol.transmissionremote.app.di.Injector;
 import net.yupol.transmissionremote.app.utils.MinMaxTextWatcher;
 import net.yupol.transmissionremote.model.Parameter;
 import net.yupol.transmissionremote.model.json.ServerSettings;
@@ -56,10 +56,10 @@ public class OptionsPageFragment extends BasePageFragment implements
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        transport = Injector.transportComponent(requireContext()).transport();
 
         setHasOptionsMenu(true);
 
-        transport = new Transport(TransmissionRemote.getInstance().getActiveServer());
 
         transport.api().serverSettings(ImmutableMap.<String, Object>of())
                 .subscribeOn(Schedulers.io())

@@ -21,6 +21,12 @@ import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.google.common.collect.FluentIterable;
 
+import net.yupol.transmissionremote.app.di.ApplicationComponent;
+import net.yupol.transmissionremote.app.di.ApplicationModule;
+import net.yupol.transmissionremote.app.di.DaggerApplicationComponent;
+import net.yupol.transmissionremote.app.di.DaggerTransportComponent;
+import net.yupol.transmissionremote.app.di.TransportComponent;
+import net.yupol.transmissionremote.app.di.TransportModule;
 import net.yupol.transmissionremote.app.filtering.Filter;
 import net.yupol.transmissionremote.app.filtering.Filters;
 import net.yupol.transmissionremote.app.notifications.BackgroundUpdateJob;
@@ -66,13 +72,13 @@ public class TransmissionRemote extends MultiDexApplication implements SharedPre
             Filters.FINISHED
     };
 
+    private ApplicationComponent applicationComponent;
+    private TransportComponent transportComponent;
+
     private static TransmissionRemote instance;
 
     private List<Server> servers = new LinkedList<>();
     private Server activeServer;
-    private List<OnActiveServerChangedListener> activeServerListeners = new LinkedList<>();
-
-    private List<OnServerListChangedListener> serverListListeners = new LinkedList<>();
     private boolean speedLimitEnabled;
 
     private List<OnSpeedLimitChangedListener> speedLimitChangedListeners = new LinkedList<>();
@@ -97,6 +103,10 @@ public class TransmissionRemote extends MultiDexApplication implements SharedPre
         setupCrashlytics();
 
         AppCompatDelegate.setDefaultNightMode(ThemeUtils.isInNightMode(this) ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO);
+
+        applicationComponent = DaggerApplicationComponent.builder()
+                .applicationModule(new ApplicationModule(this))
+                .build();
 
         instance = this;
         restore();
@@ -123,7 +133,11 @@ public class TransmissionRemote extends MultiDexApplication implements SharedPre
                         .disabled(BuildConfig.DEBUG)
                         .build())
                 .build();
-        Fabric.with(this, crashlytics, new Crashlytics());
+        Fabric.with(this, crashlytics);
+    }
+
+    public TransportComponent getTransportComponent() {
+        return transportComponent;
     }
 
     @Override
@@ -166,9 +180,6 @@ public class TransmissionRemote extends MultiDexApplication implements SharedPre
     public void addServer(Server server) {
         servers.add(server);
         persistServers();
-        for (OnServerListChangedListener l : serverListListeners) {
-            l.serverAdded(server);
-        }
 
         if (isNotificationEnabled()) {
             BackgroundUpdater.start(this);
@@ -181,16 +192,10 @@ public class TransmissionRemote extends MultiDexApplication implements SharedPre
             setActiveServer(!servers.isEmpty() ? servers.get(0) : null);
         }
         persistServers();
-        for (OnServerListChangedListener l : serverListListeners) {
-            l.serverRemoved(server);
-        }
     }
 
     public void updateServer(Server server) {
         persistServers();
-        for (OnServerListChangedListener l : serverListListeners) {
-            l.serverUpdated(server);
-        }
     }
 
     public Server getActiveServer() {
@@ -200,34 +205,12 @@ public class TransmissionRemote extends MultiDexApplication implements SharedPre
     public void setActiveServer(Server server) {
         activeServer = server;
         persistActiveServer();
-        fireActiveServerChangedEvent();
         setSpeedLimitEnabled(speedLimitsCache.containsKey(server) ? speedLimitsCache.get(server) : false);
-    }
 
-    public void addOnActiveServerChangedListener(@Nonnull OnActiveServerChangedListener listener) {
-        if (!activeServerListeners.contains(listener)) {
-            activeServerListeners.add(listener);
-        }
-    }
-
-    public void removeOnActiveServerChangedListener(@Nonnull OnActiveServerChangedListener listener) {
-        activeServerListeners.remove(listener);
-    }
-
-    public void addOnServerListChangedListener(@Nonnull OnServerListChangedListener listener) {
-        if (!serverListListeners.contains(listener)) {
-            serverListListeners.add(listener);
-        }
-    }
-
-    public void removeOnServerListChangedListener(@Nonnull OnServerListChangedListener listener) {
-        serverListListeners.remove(listener);
-    }
-
-    private void fireActiveServerChangedEvent() {
-        for (OnActiveServerChangedListener listener : activeServerListeners) {
-            listener.serverChanged(activeServer);
-        }
+        transportComponent = DaggerTransportComponent.builder()
+                .applicationComponent(applicationComponent)
+                .transportModule(new TransportModule(server))
+                .build();
     }
 
     public int getUpdateInterval() {
@@ -377,7 +360,7 @@ public class TransmissionRemote extends MultiDexApplication implements SharedPre
     public void persistServers() {
         Set<String> serversInJson = FluentIterable.from(servers).transform(new Function<Server, String>() {
             @Override
-            public String apply(Server server) {
+            public String apply(@NonNull Server server) {
                 return server.toJson();
             }
         }).toSet();
@@ -393,7 +376,7 @@ public class TransmissionRemote extends MultiDexApplication implements SharedPre
 
         Set<String> serversInJson = sp.getStringSet(KEY_SERVERS, Collections.<String>emptySet());
         servers.addAll(FluentIterable.from(serversInJson).transform(new Function<String, Server>() {
-            @Override public Server apply(String serverInJson) {
+            @Override public Server apply(@NonNull String serverInJson) {
                 return Server.fromJson(serverInJson);
             }
         }).filter(Predicates.notNull()).toList());
@@ -403,11 +386,10 @@ public class TransmissionRemote extends MultiDexApplication implements SharedPre
             final Server persistedActiveServer = Server.fromJson(activeServerInJson);
             // active server should point to object in all servers list
             activeServer = FluentIterable.from(servers).firstMatch(new Predicate<Server>() {
-                @Override public boolean apply(Server server) {
+                @Override public boolean apply(@NonNull Server server) {
                     return server.equals(persistedActiveServer);
                 }
             }).orNull();
-            fireActiveServerChangedEvent();
         } else {
             activeServer = null;
         }
@@ -461,16 +443,6 @@ public class TransmissionRemote extends MultiDexApplication implements SharedPre
         NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         assert manager != null;
         manager.createNotificationChannel(channel);
-    }
-
-    public interface OnActiveServerChangedListener {
-        void serverChanged(Server newServer);
-    }
-
-    public interface OnServerListChangedListener {
-        void serverAdded(Server server);
-        void serverRemoved(Server server);
-        void serverUpdated(Server server);
     }
 
     public interface OnSpeedLimitChangedListener {

@@ -1,6 +1,7 @@
 package net.yupol.transmissionremote.app.preferences;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,7 +17,7 @@ import com.google.common.collect.ImmutableMap;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 
 import net.yupol.transmissionremote.app.R;
-import net.yupol.transmissionremote.app.TransmissionRemote;
+import net.yupol.transmissionremote.app.di.Injector;
 import net.yupol.transmissionremote.app.torrentdetails.BandwidthLimitFragment;
 import net.yupol.transmissionremote.app.utils.IconUtils;
 import net.yupol.transmissionremote.model.Parameter;
@@ -47,6 +48,7 @@ public class ServerPreferencesFragment extends Fragment {
 
     public static final String KEY_SERVER_SETTINGS = "extra_server_preferences";
 
+    private Transport transport;
     private ServerSettings serverSettings;
 
     private BandwidthLimitFragment globalBandwidthLimitFragment;
@@ -58,11 +60,12 @@ public class ServerPreferencesFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        transport = Injector.transportComponent(requireContext()).transport();
         setHasOptionsMenu(true);
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.server_preferences_fragment, container, false);
 
         globalBandwidthLimitFragment = (BandwidthLimitFragment)
@@ -95,7 +98,7 @@ public class ServerPreferencesFragment extends Fragment {
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelable(KEY_SERVER_SETTINGS, serverSettings);
     }
@@ -193,7 +196,7 @@ public class ServerPreferencesFragment extends Fragment {
     private void sendUpdateOptionsRequest(List<Parameter<String, ?>> parameters) {
         saveStarted();
 
-        new Transport(TransmissionRemote.getInstance().getActiveServer()).api().setServerSettings(RpcArgs.parameters(parameters))
+        transport.api().setServerSettings(RpcArgs.parameters(parameters))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new CompletableObserver() {
@@ -216,7 +219,7 @@ public class ServerPreferencesFragment extends Fragment {
     }
 
     private void sendPreferencesUpdateRequest() {
-        new Transport(TransmissionRemote.getInstance().getActiveServer()).api().serverSettings(ImmutableMap.<String, Object>of())
+        transport.api().serverSettings(ImmutableMap.<String, Object>of())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new SingleObserver<ServerSettings>() {

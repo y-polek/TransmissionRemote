@@ -1,6 +1,5 @@
 package net.yupol.transmissionremote.app.torrentlist;
 
-
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
@@ -18,6 +17,7 @@ import android.view.LayoutInflater;
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.TransmissionRemote;
 import net.yupol.transmissionremote.app.databinding.SetLocationDialogBinding;
+import net.yupol.transmissionremote.app.di.Injector;
 import net.yupol.transmissionremote.app.utils.SimpleTextWatcher;
 import net.yupol.transmissionremote.app.utils.TextUtils;
 import net.yupol.transmissionremote.model.FreeSpace;
@@ -33,6 +33,7 @@ public class ChooseLocationDialogFragment extends DialogFragment {
 
     public static final String ARG_INITIAL_LOCATION = "arg_initial_location";
 
+    private Transport transport;
     private OnLocationSelectedListener listener;
     private SetLocationDialogBinding binding;
     private Disposable runningFreeSpaceRequest;
@@ -56,6 +57,8 @@ public class ChooseLocationDialogFragment extends DialogFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        transport = Injector.transportComponent(requireContext()).transport();
+
         Bundle args = getArguments();
         if (args != null) {
             initialLocation = args.getString(ARG_INITIAL_LOCATION);
@@ -78,7 +81,7 @@ public class ChooseLocationDialogFragment extends DialogFragment {
         });
         binding.locationEdit.setText(initialLocation);
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
         builder.setTitle(R.string.choose_location);
         builder.setView(binding.getRoot());
         builder.setPositiveButton(R.string.apply, new DialogInterface.OnClickListener() {
@@ -105,7 +108,7 @@ public class ChooseLocationDialogFragment extends DialogFragment {
         if (runningFreeSpaceRequest != null) runningFreeSpaceRequest.dispose();
         binding.setLoadingInProgress(true);
 
-        new Transport(TransmissionRemote.getInstance().getActiveServer()).api().freeSpace(path)
+        transport.api().freeSpace(path)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new SingleObserver<FreeSpace>() {

@@ -19,6 +19,7 @@ import net.yupol.transmissionremote.app.BaseActivity;
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.TransmissionRemote;
 import net.yupol.transmissionremote.app.databinding.TorrentDetailsLayoutBinding;
+import net.yupol.transmissionremote.app.di.Injector;
 import net.yupol.transmissionremote.app.torrentlist.ChooseLocationDialogFragment;
 import net.yupol.transmissionremote.app.torrentlist.RemoveTorrentsDialogFragment;
 import net.yupol.transmissionremote.app.torrentlist.RenameDialogFragment;
@@ -68,10 +69,10 @@ public class TorrentDetailsActivity extends BaseActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         LayoutInflaterCompat.setFactory2(getLayoutInflater(), new IconicsLayoutInflater2(getDelegate()));
         super.onCreate(savedInstanceState);
+        transport = Injector.transportComponent(this).transport();
         binding = DataBindingUtil.setContentView(this, R.layout.torrent_details_layout);
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(TorrentDetailsActivity.this);
-        transport = new Transport(TransmissionRemote.getInstance().getActiveServer());
 
         if (savedInstanceState != null) {
             torrentInfo = savedInstanceState.getParcelable(KEY_TORRENT_INFO);

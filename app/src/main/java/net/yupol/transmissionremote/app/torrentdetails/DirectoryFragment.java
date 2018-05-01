@@ -1,6 +1,7 @@
 package net.yupol.transmissionremote.app.torrentdetails;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -12,9 +13,9 @@ import android.view.ViewGroup;
 import com.google.common.primitives.Ints;
 
 import net.yupol.transmissionremote.app.R;
-import net.yupol.transmissionremote.app.TransmissionRemote;
-import net.yupol.transmissionremote.model.Dir;
+import net.yupol.transmissionremote.app.di.Injector;
 import net.yupol.transmissionremote.app.utils.DividerItemDecoration;
+import net.yupol.transmissionremote.model.Dir;
 import net.yupol.transmissionremote.model.Priority;
 import net.yupol.transmissionremote.model.json.File;
 import net.yupol.transmissionremote.model.json.FileStat;
@@ -51,12 +52,13 @@ public class DirectoryFragment extends Fragment implements DirectoryAdapter.OnIt
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        transport = Injector.transportComponent(requireContext()).transport();
+
         Bundle args = getArguments();
+        if (args == null) throw new IllegalArgumentException("Arguments must be provided");
         torrentId = args.getInt(ARG_TORRENT_ID, -1);
         dir = args.getParcelable(ARG_DIRECTORY);
         files = Parcelables.toArrayOfType(File.class, args.getParcelableArray(ARG_FILES));
-
-        transport = new Transport(TransmissionRemote.getInstance().getActiveServer());
 
         if (savedInstanceState == null) {
             fileStats = Parcelables.toArrayOfType(FileStat.class, args.getParcelableArray(ARG_FILE_STATS));
@@ -72,7 +74,7 @@ public class DirectoryFragment extends Fragment implements DirectoryAdapter.OnIt
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
 
         View view = inflater.inflate(R.layout.directory_fragment, container, false);
@@ -86,7 +88,7 @@ public class DirectoryFragment extends Fragment implements DirectoryAdapter.OnIt
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelableArray(ARG_FILE_STATS, fileStats);
     }
