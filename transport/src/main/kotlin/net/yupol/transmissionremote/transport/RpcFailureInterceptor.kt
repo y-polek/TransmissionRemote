@@ -34,4 +34,4 @@ class RpcFailureInterceptor(moshi: Moshi) : Interceptor {
     }
 }
 
-private data class RpcResponse(@Json(name = "result") val result: String)
+data class RpcResponse(@Json(name = "result") val result: String)
