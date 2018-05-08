@@ -21,6 +21,8 @@ import android.widget.EditText;
 import android.widget.Spinner;
 
 import com.google.common.base.Strings;
+import com.google.common.net.InetAddresses;
+import com.google.common.net.InternetDomainName;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 
 import net.yupol.transmissionremote.app.OnBackPressedListener;
@@ -128,6 +130,9 @@ public class ServerDetailsFragment extends Fragment implements OnBackPressedList
         });
 
         updateUI(server);
+        if (server != null) {
+            checkValidity();
+        }
 
         return view;
     }
@@ -187,13 +192,13 @@ public class ServerDetailsFragment extends Fragment implements OnBackPressedList
         return server;
     }
 
-    public void saveServer() {
+    public boolean saveServer() {
         Server server = getServerArgument();
         if (server == null) {
             throw new IllegalStateException("No server argument, can't save server");
         }
 
-        if (!checkValidity()) return;
+        if (!checkValidity()) return false;
 
         server.setName(getUiName());
         server.setHost(getUiHost());
@@ -204,6 +209,8 @@ public class ServerDetailsFragment extends Fragment implements OnBackPressedList
         server.setRpcUrl(getUiRpcUrl());
         server.setUseHttps(getUiUseHttps());
         server.setTrustSelfSignedSslCert(getUiTrustSelfSignedCert());
+
+        return true;
     }
 
     public boolean hasChanges() {
@@ -316,6 +323,11 @@ public class ServerDetailsFragment extends Fragment implements OnBackPressedList
         return host.replaceFirst("(?i)^http(s)?://", "");
     }
 
+    private boolean isHostValid() {
+        String host = getUiHost();
+        return InternetDomainName.isValid(host) || InetAddresses.isInetAddress(host);
+    }
+
     private int getUiPort() {
         String portStr = portNumberEdit.getText().toString().trim();
         if (portStr.isEmpty()) return -1;
@@ -350,10 +362,16 @@ public class ServerDetailsFragment extends Fragment implements OnBackPressedList
     private boolean checkValidity() {
         if (TextUtils.getTrimmedLength(serverNameEdit.getText()) == 0) {
             serverNameEdit.setError(getString(R.string.server_name_error_message));
+            serverNameEdit.requestFocus();
             return false;
         }
         if (TextUtils.getTrimmedLength(hostNameEdit.getText()) == 0) {
-            hostNameEdit.setError(getString(R.string.host_name_error_message));
+            hostNameEdit.setError(getString(R.string.host_name_empty_message));
+            hostNameEdit.requestFocus();
+            return false;
+        } else if (!isHostValid()) {
+            hostNameEdit.setError(getString(R.string.host_name_invalid_message));
+            hostNameEdit.requestFocus();
             return false;
         }
 

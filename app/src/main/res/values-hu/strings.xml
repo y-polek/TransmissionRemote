@@ -67,7 +67,7 @@
     <string name="username">Felhasználónév</string>
     <string name="password">Jelszó</string>
     <string name="server_name_error_message">A név nem lehet üres</string>
-    <string name="host_name_error_message">Add meg az IP-t, vagy a hosztnevét annak a gépnek, ahol a Transmission fut</string>
+    <string name="host_name_empty_message">Add meg az IP-t, vagy a hosztnevét annak a gépnek, ahol a Transmission fut</string>
     <string name="port_number_error_message">Kérlek add meg a port számát. Azonosnak kell lennie azzal, amelyet a \'Listening Port\' mezőben adtál meg a \'Remote\' fülön a Transmission beállítások ablakában</string>
     <string name="servers">Szerverek</string>
     <string name="add_remove_servers">Új szerver hozzáadása, vagy régi törlése</string>

@@ -135,7 +135,7 @@
     <string name="limit_download">Límite de descarga:</string>
     <string name="limit_upload">Límite de subida:</string>
     <string name="have">Tiene:</string>
-    <string name="host_name_error_message">Ingrese el IP o el nombre donde corre el servidor de Transmission.</string>
+    <string name="host_name_empty_message">Ingrese el IP o el nombre donde corre el servidor de Transmission.</string>
     <string name="update_interval_title">Intervalo de actualización</string>
     <string name="upload_speed">Velocidad de subida</string>
     <string name="yesterday_time">Ayer a las %1$s</string>

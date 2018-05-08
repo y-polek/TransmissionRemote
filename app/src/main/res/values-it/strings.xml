@@ -66,7 +66,7 @@
     <string name="username">Username</string>
     <string name="password">Password</string>
     <string name="server_name_error_message">Il nome non può esser vuoto</string>
-    <string name="host_name_error_message">Inserisci l\'indirizzo IP o il nome host del computer su cui Trasmission è in esecuzione</string>
+    <string name="host_name_empty_message">Inserisci l\'indirizzo IP o il nome host del computer su cui Trasmission è in esecuzione</string>
     <string name="port_number_error_message">Inserisci la porta. Deve esser la stessa che è stata specificata nel campo \'Porta d\'ascolto\' del tab \'Remote\' della configurazione di Transmission</string>
     <string name="servers">Server</string>
     <string name="add_remove_servers">Aggiungi o rimuovi server</string>

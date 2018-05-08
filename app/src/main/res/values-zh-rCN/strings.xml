@@ -65,7 +65,7 @@
     <string name="username">用户名</string>
     <string name="password">密码</string>
     <string name="server_name_error_message">名称不能为空</string>
-    <string name="host_name_error_message">输入运行 Transmission 的计算机的 IP 或主机名</string>
+    <string name="host_name_empty_message">输入运行 Transmission 的计算机的 IP 或主机名</string>
     <string name="port_number_error_message">请输入端口号，必须与 Transmission 选项对话框“远程”选项卡中的“监听端口”一致。</string>
     <string name="servers">服务器</string>
     <string name="add_remove_servers">添加或删除服务器</string>
