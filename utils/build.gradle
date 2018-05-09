@@ -2,7 +2,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 
 android {
-    compileSdkVersion 26
+    compileSdkVersion 27
     defaultConfig {
         minSdkVersion 15
     }
@@ -18,7 +18,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
     // Support Library
-    implementation 'com.android.support:appcompat-v7:' + rootProject.support_version
+    implementation "com.android.support:appcompat-v7:$support_version"
 
     // Emoji
     implementation 'com.vdurmont:emoji-java:4.0.0'

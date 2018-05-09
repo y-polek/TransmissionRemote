@@ -24,6 +24,7 @@ inline fun <reified T> Array<Parcelable>?.toArrayOf() : Array<T>? {
  */
 fun <T> toArrayOfType(type: Class<T>, original: Array<Parcelable>?): Array<T>? {
     if (original == null) return null
+    @Suppress("UNCHECKED_CAST")
     val newArray = java.lang.reflect.Array.newInstance(type, original.size) as Array<T>
     System.arraycopy(original, 0, newArray, 0, original.size)
     return newArray

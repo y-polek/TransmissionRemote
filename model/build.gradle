@@ -3,7 +3,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
 android {
-    compileSdkVersion 26
+    compileSdkVersion 27
     defaultConfig {
         minSdkVersion 15
     }
@@ -24,26 +24,26 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     
     // Support Library
-    implementation 'com.android.support:support-v4:' + rootProject.support_version
+    implementation "com.android.support:support-v4:$support_version"
 
     // Moshi
-    implementation 'com.squareup.moshi:moshi:' + rootProject.moshi_version
+    implementation "com.squareup.moshi:moshi:$moshi_version"
 
     // GSON
-    implementation 'com.google.code.gson:gson:' + rootProject.gson_version
+    implementation "com.google.code.gson:gson:$gson_version"
 
     // Guava
-    implementation 'com.google.guava:guava:' + rootProject.guava_version
+    implementation "com.google.guava:guava:$guava_version"
 
     // Iconics
-    implementation 'com.mikepenz:iconics-core:' + rootProject.iconics_version
+    implementation "com.mikepenz:iconics-core:$iconics_version"
     implementation 'com.mikepenz:fontawesome-typeface:4.7.0.1@aar'
     implementation 'com.mikepenz:community-material-typeface:1.9.32.2@aar'
 
     // Testing
     testImplementation 'junit:junit:4.12'
     testImplementation 'org.hamcrest:hamcrest-library:1.3'
-    testImplementation 'io.kotlintest:kotlintest-runner-junit5:' + rootProject.kotlintest_version
+    testImplementation "io.kotlintest:kotlintest-runner-junit5:$kotlintest_version"
 }
 
 buildscript {
