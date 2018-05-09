@@ -67,7 +67,7 @@
     <string name="username">Nom d\'utilisateur</string>
     <string name="password">Mot de passe</string>
     <string name="server_name_error_message">Le nom de peut pas être vide</string>
-    <string name="host_name_error_message">Entrez le nom d\'hôte ou l\'adresse IP du serveur sur lequel Transmission est lancé</string>
+    <string name="host_name_empty_message">Entrez le nom d\'hôte ou l\'adresse IP du serveur sur lequel Transmission est lancé</string>
     <string name="port_number_error_message">Entrez le numéro du port. Il est spécifié dans le champ \'Listening port\' de l\'onglet \'Remote\' dans la fenêtre préférence de Transmission</string>
     <string name="servers">Serveurs</string>
     <string name="add_remove_servers">Ajouter ou supprimer des serveurs</string>

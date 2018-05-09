@@ -125,10 +125,12 @@ public class ServersActivity extends BaseActivity {
             case R.id.action_save:
                 ServerDetailsFragment detailsFragment = (ServerDetailsFragment) getSupportFragmentManager().findFragmentByTag(TAG_SERVER_DETAILS);
                 if (detailsFragment != null) {
-                    detailsFragment.saveServer();
-                    app.updateServer(detailsFragment.getServerArgument());
-                    onBackPressed();
-                    Toast.makeText(this, R.string.saved, Toast.LENGTH_SHORT).show();
+                    boolean saved = detailsFragment.saveServer();
+                    if (saved) {
+                        app.updateServer(detailsFragment.getServerArgument());
+                        onBackPressed();
+                        Toast.makeText(this, R.string.saved, Toast.LENGTH_SHORT).show();
+                    }
                 } else {
                     Log.e(TAG, "ServerDetailsFragment is not active while save server action performed");
                 }

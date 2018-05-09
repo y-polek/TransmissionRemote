@@ -61,7 +61,7 @@
     <string name="have_unverified_size_text">, %1$s непроверено</string>
     <string name="global_bandwidth_limits">Общие ограничения скорости</string>
     <string name="global_settings">Общие настройки</string>
-    <string name="host_name_error_message">Введите IP-адрес или имя хоста компьютера, на котором запущен Transmission</string>
+    <string name="host_name_empty_message">Введите IP-адрес или имя хоста компьютера, на котором запущен Transmission</string>
     <string name="kbps">КБ/с</string>
     <string name="info">Сведения</string>
     <string name="inactivity_limit">Ограничения неактивности</string>

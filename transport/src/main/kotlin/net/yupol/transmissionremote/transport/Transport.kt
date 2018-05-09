@@ -50,7 +50,15 @@ class Transport(private val server: Server, vararg interceptors: Interceptor) {
         val baseUrl = with (HttpUrl.Builder()) {
             scheme(if (server.useHttps()) "https" else "http")
             if (server.port >= 0) port(server.port)
-            host(server.host)
+            try {
+                host(server.host)
+            } catch (e: IllegalArgumentException) {
+                // Catching exception to prevent crashes caused by invalid host name saved in previous versions of the app.
+                // In later versions host name validation was added, so this exception should not be thrown.
+                // Invalid host name is replaced with "invalid_host" string to allow normal processing.
+                // After connection failure users are supposed to change host name to valid one in settings.
+                host("invalid_host")
+            }
             if (server.urlPath.isNotEmpty()) {
                 val path = server.urlPath.removePrefix("/").removeSuffix("/")
                 addPathSegments("$path/")

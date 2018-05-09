@@ -67,7 +67,7 @@
     <string name="username">ユーザ名</string>
     <string name="password">パスワード</string>
     <string name="server_name_error_message">サーバ名は空欄ではいけません</string>
-    <string name="host_name_error_message">Transmissionを起動したコンピュータのIPアドレスまたはホスト名を入力してください</string>
+    <string name="host_name_empty_message">Transmissionを起動したコンピュータのIPアドレスまたはホスト名を入力してください</string>
     <string name="port_number_error_message">ポート番号を指定してください。Transmissionの設定ダイアログの「リモート」>「HTTPポート」にある番号と同じである必要があります</string>
     <string name="servers">サーバ</string>
     <string name="add_remove_servers">サーバを追加・削除します</string>

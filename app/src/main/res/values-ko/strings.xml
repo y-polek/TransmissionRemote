@@ -67,7 +67,7 @@
     <string name="username">ID</string>
     <string name="password">암호</string>
     <string name="server_name_error_message">이름은 비울 수 없습니다.</string>
-    <string name="host_name_error_message">트랜스미션이 실행 중인 컴퓨터의 IP 주소 또는 호스트 이름을 입력하세요.</string>
+    <string name="host_name_empty_message">트랜스미션이 실행 중인 컴퓨터의 IP 주소 또는 호스트 이름을 입력하세요.</string>
     <string name="port_number_error_message">포트를 입력해주세요. 트랜스미션 설정 화면 \'Remote\' 탭의 \'Listening port\' 값과 같아야합니다.</string>
     <string name="servers">서버</string>
     <string name="add_remove_servers">서버를 추가하거나 제거</string>
