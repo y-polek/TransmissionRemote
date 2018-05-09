@@ -48,7 +48,6 @@ public class DirectoryFragment extends Fragment implements DirectoryAdapter.OnIt
     private DirectoryAdapter adapter;
     private Transport transport;
 
-    @SuppressWarnings("SuspiciousSystemArraycopy")
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
