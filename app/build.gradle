@@ -1,4 +1,6 @@
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
 apply plugin: 'io.fabric'
 
 android {
@@ -52,6 +54,10 @@ dependencies {
     implementation project(':model')
     implementation project(':transport')
     implementation project(':utils')
+
+    // Kotlin
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    implementation "androidx.core:core-ktx:$ktx_version"
 
     // Support Library
     implementation "com.android.support:appcompat-v7:$support_version"
