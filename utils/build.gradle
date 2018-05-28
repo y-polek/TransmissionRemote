@@ -9,6 +9,7 @@ android {
 
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
+        test.java.srcDirs += 'src/test/kotlin'
     }
 }
 
@@ -22,4 +23,7 @@ dependencies {
 
     // Emoji
     implementation 'com.vdurmont:emoji-java:4.0.0'
+
+    // Testing
+    testImplementation "io.kotlintest:kotlintest-runner-junit5:$kotlintest_version"
 }
