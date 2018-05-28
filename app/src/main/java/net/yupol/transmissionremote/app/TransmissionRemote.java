@@ -50,6 +50,7 @@ import java.util.WeakHashMap;
 import javax.annotation.Nonnull;
 
 import io.fabric.sdk.android.Fabric;
+import timber.log.Timber;
 
 public class TransmissionRemote extends MultiDexApplication implements SharedPreferences.OnSharedPreferenceChangeListener {
 
@@ -101,6 +102,7 @@ public class TransmissionRemote extends MultiDexApplication implements SharedPre
     public void onCreate() {
         super.onCreate();
         setupCrashlytics();
+        setupTimber();
 
         AppCompatDelegate.setDefaultNightMode(ThemeUtils.isInNightMode(this) ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO);
 
@@ -134,6 +136,19 @@ public class TransmissionRemote extends MultiDexApplication implements SharedPre
                         .build())
                 .build();
         Fabric.with(this, crashlytics);
+    }
+
+    private void setupTimber() {
+        if (BuildConfig.DEBUG) {
+            Timber.plant(new Timber.DebugTree());
+        } else {
+            Timber.plant(new Timber.Tree() {
+                @Override
+                protected void log(int priority, String tag, @NonNull String message, Throwable t) {
+                    // No logging
+                }
+            });
+        }
     }
 
     public TransportComponent getTransportComponent() {

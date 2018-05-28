@@ -117,6 +117,9 @@ dependencies {
     // Evernote Android Job
     implementation 'com.evernote:android-job:1.2.2'
 
+    // Timber
+    implementation "com.jakewharton.timber:timber:$timber_version"
+
     // Testing
     testImplementation 'junit:junit:4.12'
     testImplementation 'org.hamcrest:hamcrest-library:1.3'
