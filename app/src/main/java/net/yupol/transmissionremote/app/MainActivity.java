@@ -78,7 +78,7 @@ import net.yupol.transmissionremote.app.sorting.SortedBy;
 import net.yupol.transmissionremote.app.torrentdetails.TorrentDetailsActivity;
 import net.yupol.transmissionremote.app.torrentlist.EmptyServerFragment;
 import net.yupol.transmissionremote.app.torrentlist.RemoveTorrentsDialogFragment;
-import net.yupol.transmissionremote.app.torrentlist.TorrentListFragment;
+import net.yupol.transmissionremote.app.torrentlist.TorrentListFragment2;
 import net.yupol.transmissionremote.app.transport.NetworkError;
 import net.yupol.transmissionremote.app.transport.TorrentUpdater;
 import net.yupol.transmissionremote.app.utils.DialogUtils;
@@ -133,7 +133,7 @@ import static net.yupol.transmissionremote.transport.rpc.SessionParameters.altSp
 @RuntimePermissions
 public class MainActivity extends BaseActivity implements TorrentUpdater.TorrentUpdateListener,
         SharedPreferences.OnSharedPreferenceChangeListener, TransmissionRemote.OnSpeedLimitChangedListener,
-        TorrentListFragment.OnTorrentSelectedListener, TorrentListFragment.ContextualActionBarListener,
+        TorrentListFragment2.OnTorrentSelectedListener, TorrentListFragment2.ContextualActionBarListener,
         OpenByDialogFragment.OnOpenTorrentSelectedListener, OpenAddressDialogFragment.OnOpenMagnetListener,
         DownloadLocationDialogFragment.OnDownloadLocationSelectedListener,
         RemoveTorrentsDialogFragment.OnRemoveTorrentSelectionListener, NetworkErrorFragment.OnRefreshPressedListener {
@@ -770,7 +770,7 @@ public class MainActivity extends BaseActivity implements TorrentUpdater.Torrent
             public boolean onMenuItemActionCollapse(MenuItem item) {
                 searchView.setQuery("", false);
                 currentSearchQuery = null;
-                TorrentListFragment torrentListFragment = getTorrentListFragment();
+                TorrentListFragment2 torrentListFragment = getTorrentListFragment();
                 if (torrentListFragment != null) {
                     torrentListFragment.closeSearch();
                 }
@@ -809,7 +809,7 @@ public class MainActivity extends BaseActivity implements TorrentUpdater.Torrent
     private void handleSearch(String query) {
         if (!query.equals(currentSearchQuery)) {
             currentSearchQuery = query;
-            TorrentListFragment torrentListFragment = getTorrentListFragment();
+            TorrentListFragment2 torrentListFragment = getTorrentListFragment();
             if (torrentListFragment != null) {
                 torrentListFragment.search(query);
             }
@@ -817,8 +817,8 @@ public class MainActivity extends BaseActivity implements TorrentUpdater.Torrent
     }
 
     @Nullable
-    private TorrentListFragment getTorrentListFragment() {
-        return (TorrentListFragment) getSupportFragmentManager().findFragmentByTag(TAG_TORRENT_LIST);
+    private TorrentListFragment2 getTorrentListFragment() {
+        return (TorrentListFragment2) getSupportFragmentManager().findFragmentByTag(TAG_TORRENT_LIST);
     }
 
     @Override
@@ -1220,9 +1220,9 @@ public class MainActivity extends BaseActivity implements TorrentUpdater.Torrent
 
     private void showTorrentListFragment() {
         FragmentManager fm = getSupportFragmentManager();
-        TorrentListFragment torrentListFragment = (TorrentListFragment) fm.findFragmentByTag(TAG_TORRENT_LIST);
+        TorrentListFragment2 torrentListFragment = (TorrentListFragment2) fm.findFragmentByTag(TAG_TORRENT_LIST);
         if (torrentListFragment == null) {
-            torrentListFragment = new TorrentListFragment();
+            torrentListFragment = new TorrentListFragment2();
             FragmentTransaction ft = fm.beginTransaction();
             ft.replace(R.id.torrent_list_container, torrentListFragment, TAG_TORRENT_LIST);
             ft.commit();

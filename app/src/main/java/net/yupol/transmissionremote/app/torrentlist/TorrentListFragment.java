@@ -261,7 +261,7 @@ public class TorrentListFragment extends Fragment implements ChooseLocationDialo
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.torrent_list_layout, container, false);
 
-        recyclerView = view.findViewById(R.id.torrent_list_recycler_view);
+        recyclerView = view.findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.addItemDecoration(new DividerItemDecoration(container.getContext()));
         recyclerView.setItemAnimator(null);
@@ -274,7 +274,7 @@ public class TorrentListFragment extends Fragment implements ChooseLocationDialo
         });
         recyclerView.setAdapter(adapter);
 
-        emptyText = view.findViewById(R.id.torrent_list_empty_text);
+        emptyText = view.findViewById(R.id.emptyTextView);
 
         if (savedInstanceState != null) {
             if (savedInstanceState.getBoolean(KEY_ACTION_MODE, false)) {
