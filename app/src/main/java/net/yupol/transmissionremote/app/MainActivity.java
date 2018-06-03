@@ -78,7 +78,7 @@ import net.yupol.transmissionremote.app.sorting.SortedBy;
 import net.yupol.transmissionremote.app.torrentdetails.TorrentDetailsActivity;
 import net.yupol.transmissionremote.app.torrentlist.EmptyServerFragment;
 import net.yupol.transmissionremote.app.torrentlist.RemoveTorrentsDialogFragment;
-import net.yupol.transmissionremote.app.torrentlist.TorrentListFragment2;
+import net.yupol.transmissionremote.app.home.TorrentListFragment2;
 import net.yupol.transmissionremote.app.transport.NetworkError;
 import net.yupol.transmissionremote.app.transport.TorrentUpdater;
 import net.yupol.transmissionremote.app.utils.DialogUtils;

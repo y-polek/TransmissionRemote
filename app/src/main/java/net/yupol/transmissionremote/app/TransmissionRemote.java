@@ -21,12 +21,7 @@ import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.google.common.collect.FluentIterable;
 
-import net.yupol.transmissionremote.app.di.ApplicationComponent;
-import net.yupol.transmissionremote.app.di.ApplicationModule;
-import net.yupol.transmissionremote.app.di.DaggerApplicationComponent;
-import net.yupol.transmissionremote.app.di.DaggerTransportComponent;
-import net.yupol.transmissionremote.app.di.TransportComponent;
-import net.yupol.transmissionremote.app.di.TransportModule;
+import net.yupol.transmissionremote.app.di.DiHelper;
 import net.yupol.transmissionremote.app.filtering.Filter;
 import net.yupol.transmissionremote.app.filtering.Filters;
 import net.yupol.transmissionremote.app.notifications.BackgroundUpdateJob;
@@ -73,10 +68,8 @@ public class TransmissionRemote extends MultiDexApplication implements SharedPre
             Filters.FINISHED
     };
 
-    private ApplicationComponent applicationComponent;
-    private TransportComponent transportComponent;
-
     private static TransmissionRemote instance;
+    public final DiHelper di = new DiHelper(this);
 
     private List<Server> servers = new LinkedList<>();
     private Server activeServer;
@@ -105,10 +98,6 @@ public class TransmissionRemote extends MultiDexApplication implements SharedPre
         setupTimber();
 
         AppCompatDelegate.setDefaultNightMode(ThemeUtils.isInNightMode(this) ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO);
-
-        applicationComponent = DaggerApplicationComponent.builder()
-                .applicationModule(new ApplicationModule(this))
-                .build();
 
         instance = this;
         restore();
@@ -149,10 +138,6 @@ public class TransmissionRemote extends MultiDexApplication implements SharedPre
                 }
             });
         }
-    }
-
-    public TransportComponent getTransportComponent() {
-        return transportComponent;
     }
 
     @Override
@@ -222,10 +207,7 @@ public class TransmissionRemote extends MultiDexApplication implements SharedPre
         persistActiveServer();
         setSpeedLimitEnabled(speedLimitsCache.containsKey(server) ? speedLimitsCache.get(server) : false);
 
-        transportComponent = DaggerTransportComponent.builder()
-                .applicationComponent(applicationComponent)
-                .transportModule(new TransportModule(server))
-                .build();
+        di.initNetworkComponent(server);
     }
 
     public int getUpdateInterval() {
@@ -410,6 +392,10 @@ public class TransmissionRemote extends MultiDexApplication implements SharedPre
         }
         if (activeServer == null && !servers.isEmpty()) {
             activeServer = servers.get(0);
+        }
+
+        if (activeServer != null) {
+            di.initNetworkComponent(activeServer);
         }
     }
 

@@ -1,4 +1,4 @@
-package net.yupol.transmissionremote.app.di;
+package net.yupol.transmissionremote.transport.di;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

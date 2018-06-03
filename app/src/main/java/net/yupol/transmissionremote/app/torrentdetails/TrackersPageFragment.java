@@ -24,13 +24,13 @@ import android.widget.Toast;
 import com.mikepenz.community_material_typeface_library.CommunityMaterial;
 
 import net.yupol.transmissionremote.app.R;
+import net.yupol.transmissionremote.app.TransmissionRemote;
 import net.yupol.transmissionremote.app.databinding.TorrentDetailsTrackersPageFragmentBinding;
-import net.yupol.transmissionremote.app.di.Injector;
 import net.yupol.transmissionremote.app.utils.DividerItemDecoration;
 import net.yupol.transmissionremote.app.utils.IconUtils;
 import net.yupol.transmissionremote.model.json.TorrentInfo;
 import net.yupol.transmissionremote.model.json.TrackerStats;
-import net.yupol.transmissionremote.transport.Transport;
+import net.yupol.transmissionremote.transport.TransmissionRpcApi;
 import net.yupol.transmissionremote.transport.rpc.RpcArgs;
 
 import org.apache.commons.lang3.StringUtils;
@@ -46,18 +46,20 @@ public class TrackersPageFragment extends BasePageFragment implements TrackersAd
 
     private static final String TAG_EDIT_URL_DIALOG = "tag_edit_url_dialog";
 
+    private TransmissionRpcApi api;
+
     private TrackersAdapter adapter = new TrackersAdapter(this);
     private TorrentDetailsTrackersPageFragmentBinding binding;
     private boolean viewCreated;
     private ClipboardManager clipboardManager;
-    private Transport transport;
     private CompositeDisposable requests = new CompositeDisposable();
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        transport = Injector.transportComponent(requireContext()).transport();
         setHasOptionsMenu(true);
+
+        api = TransmissionRemote.getInstance().di.getNetworkComponent().api();
     }
 
     @Override
@@ -167,7 +169,7 @@ public class TrackersPageFragment extends BasePageFragment implements TrackersAd
     private void removeTracker(int trackerId) {
         binding.swipeRefresh.setRefreshing(true);
 
-        transport.api().removeTracker(RpcArgs.removeTracker(getTorrent().getId(), trackerId))
+        api.removeTracker(RpcArgs.removeTracker(getTorrent().getId(), trackerId))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new CompletableObserver() {
@@ -192,7 +194,7 @@ public class TrackersPageFragment extends BasePageFragment implements TrackersAd
 
     private void addTracker(String url) {
         binding.swipeRefresh.setRefreshing(true);
-        transport.api().addTracker(RpcArgs.addTracker(getTorrent().getId(), url))
+        api.addTracker(RpcArgs.addTracker(getTorrent().getId(), url))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new CompletableObserver() {
@@ -218,7 +220,7 @@ public class TrackersPageFragment extends BasePageFragment implements TrackersAd
     private void editTracker(@NonNull TrackerStats tracker, String url) {
         binding.swipeRefresh.setRefreshing(true);
 
-        transport.api().editTracker(RpcArgs.editTracker(getTorrent().getId(), tracker.id, url))
+        api.editTracker(RpcArgs.editTracker(getTorrent().getId(), tracker.id, url))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new CompletableObserver() {

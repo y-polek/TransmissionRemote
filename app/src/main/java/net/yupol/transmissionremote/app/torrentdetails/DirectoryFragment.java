@@ -13,17 +13,19 @@ import android.view.ViewGroup;
 import com.google.common.primitives.Ints;
 
 import net.yupol.transmissionremote.app.R;
-import net.yupol.transmissionremote.app.di.Injector;
+import net.yupol.transmissionremote.app.TransmissionRemote;
 import net.yupol.transmissionremote.app.utils.DividerItemDecoration;
 import net.yupol.transmissionremote.model.Dir;
 import net.yupol.transmissionremote.model.Priority;
 import net.yupol.transmissionremote.model.json.File;
 import net.yupol.transmissionremote.model.json.FileStat;
-import net.yupol.transmissionremote.transport.Transport;
+import net.yupol.transmissionremote.transport.TransmissionRpcApi;
 import net.yupol.transmissionremote.transport.rpc.RpcArgs;
 import net.yupol.transmissionremote.utils.Parcelables;
 
 import java.util.Map;
+
+import javax.inject.Inject;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
@@ -46,12 +48,14 @@ public class DirectoryFragment extends Fragment implements DirectoryAdapter.OnIt
     private FileStat[] fileStats;
 
     private DirectoryAdapter adapter;
-    private Transport transport;
+
+    private TransmissionRpcApi api;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        transport = Injector.transportComponent(requireContext()).transport();
+
+        api = TransmissionRemote.getInstance().di.getNetworkComponent().api();
 
         Bundle args = getArguments();
         if (args == null) throw new IllegalArgumentException("Arguments must be provided");
@@ -113,7 +117,7 @@ public class DirectoryFragment extends Fragment implements DirectoryAdapter.OnIt
                 torrentId,
                 isChecked ? filesWanted(fileIndices) : filesUnwanted(fileIndices)
         );
-        transport.api().setTorrentSettings(parameters)
+        api.setTorrentSettings(parameters)
                 .subscribeOn(Schedulers.io())
                 .onErrorComplete()
                 .subscribe();
@@ -127,7 +131,7 @@ public class DirectoryFragment extends Fragment implements DirectoryAdapter.OnIt
         Map<String, Object> parameters = RpcArgs.parameters(
                 torrentId,
                 fileStat.isWanted() ? filesWanted(fileIndex) : filesUnwanted(fileIndex));
-        transport.api().setTorrentSettings(parameters)
+        api.setTorrentSettings(parameters)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .onErrorComplete()
@@ -140,7 +144,7 @@ public class DirectoryFragment extends Fragment implements DirectoryAdapter.OnIt
         int[] fileIndices = toArray(Dir.filesInDirRecursively(changedDir));
 
         Map<String, Object> parameters = RpcArgs.parameters(torrentId, filesWithPriority(priority, fileIndices));
-        transport.api().setTorrentSettings(parameters)
+        api.setTorrentSettings(parameters)
                 .subscribeOn(Schedulers.io())
                 .onErrorComplete()
                 .subscribe();
@@ -149,7 +153,7 @@ public class DirectoryFragment extends Fragment implements DirectoryAdapter.OnIt
     @Override
     public void onFilePriorityChanged(int fileIndex, Priority priority) {
         Map<String, Object> parameters = RpcArgs.parameters(torrentId, filesWithPriority(priority, fileIndex));
-        transport.api().setTorrentSettings(parameters)
+        api.setTorrentSettings(parameters)
                 .subscribeOn(Schedulers.io())
                 .onErrorComplete()
                 .subscribe();

@@ -3,6 +3,7 @@ package net.yupol.transmissionremote.app.torrentlist
 import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.view.ViewGroup
+import kotlinx.android.synthetic.main.torrent_list_item.view.*
 import net.yupol.transmissionremote.app.R
 import net.yupol.transmissionremote.app.torrentlist.TorrentsAdapter.ViewHolder
 import net.yupol.transmissionremote.model.json.Torrent
@@ -10,7 +11,11 @@ import net.yupol.transmissionremote.utils.inflater
 
 class TorrentsAdapter: RecyclerView.Adapter<ViewHolder>() {
 
-    private var torrents = listOf<Torrent>()
+    var torrents = listOf<Torrent>()
+        set(value) {
+            field = value
+            notifyDataSetChanged()
+        }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = parent.inflater().inflate(R.layout.torrent_list_item, parent, false)
@@ -29,7 +34,7 @@ class TorrentsAdapter: RecyclerView.Adapter<ViewHolder>() {
     class ViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
 
         fun bind(torrent: Torrent) {
-
+            itemView.name.text = torrent.name
         }
     }
 }

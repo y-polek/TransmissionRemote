@@ -29,6 +29,7 @@ ext {
     dagger_version = '2.14.1'
     rxjava_version = '2.1.9'
     moshi_version = '1.5.0'
+    moshi_lazy_adapters_version = '2.2'
     gson_version = '2.8.2'
     guava_version = '23.6-android'
     retrofit_version = '2.4.0'

@@ -17,12 +17,12 @@ import com.google.common.collect.ImmutableMap;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 
 import net.yupol.transmissionremote.app.R;
-import net.yupol.transmissionremote.app.di.Injector;
+import net.yupol.transmissionremote.app.TransmissionRemote;
 import net.yupol.transmissionremote.app.torrentdetails.BandwidthLimitFragment;
 import net.yupol.transmissionremote.app.utils.IconUtils;
 import net.yupol.transmissionremote.model.Parameter;
 import net.yupol.transmissionremote.model.json.ServerSettings;
-import net.yupol.transmissionremote.transport.Transport;
+import net.yupol.transmissionremote.transport.TransmissionRpcApi;
 import net.yupol.transmissionremote.transport.rpc.RpcArgs;
 
 import java.util.LinkedList;
@@ -48,7 +48,8 @@ public class ServerPreferencesFragment extends Fragment {
 
     public static final String KEY_SERVER_SETTINGS = "extra_server_preferences";
 
-    private Transport transport;
+    private TransmissionRpcApi api;
+
     private ServerSettings serverSettings;
 
     private BandwidthLimitFragment globalBandwidthLimitFragment;
@@ -60,8 +61,9 @@ public class ServerPreferencesFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        transport = Injector.transportComponent(requireContext()).transport();
         setHasOptionsMenu(true);
+
+        api = TransmissionRemote.getInstance().di.getNetworkComponent().api();
     }
 
     @Override
@@ -196,7 +198,7 @@ public class ServerPreferencesFragment extends Fragment {
     private void sendUpdateOptionsRequest(List<Parameter<String, ?>> parameters) {
         saveStarted();
 
-        transport.api().setServerSettings(RpcArgs.parameters(parameters))
+        api.setServerSettings(RpcArgs.parameters(parameters))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new CompletableObserver() {
@@ -219,7 +221,7 @@ public class ServerPreferencesFragment extends Fragment {
     }
 
     private void sendPreferencesUpdateRequest() {
-        transport.api().serverSettings(ImmutableMap.<String, Object>of())
+        api.serverSettings(ImmutableMap.<String, Object>of())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new SingleObserver<ServerSettings>() {

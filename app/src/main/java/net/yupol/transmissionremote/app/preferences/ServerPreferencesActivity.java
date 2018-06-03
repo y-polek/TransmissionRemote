@@ -13,11 +13,10 @@ import net.yupol.transmissionremote.app.BaseActivity;
 import net.yupol.transmissionremote.app.ProgressbarFragment;
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.TransmissionRemote;
-import net.yupol.transmissionremote.app.di.Injector;
 import net.yupol.transmissionremote.app.torrentdetails.SaveChangesDialogFragment;
 import net.yupol.transmissionremote.model.Parameter;
 import net.yupol.transmissionremote.model.json.ServerSettings;
-import net.yupol.transmissionremote.transport.Transport;
+import net.yupol.transmissionremote.transport.TransmissionRpcApi;
 import net.yupol.transmissionremote.transport.rpc.RpcArgs;
 
 import java.util.List;
@@ -34,7 +33,7 @@ public class ServerPreferencesActivity extends BaseActivity implements SaveChang
     private static final String TAG_SERVER_PREFERENCES_FRAGMENT = "tag_server_preferences_fragment";
     private static final String TAG_SAVE_CHANGES_DIALOG = "tag_save_changes_dialog";
 
-    private Transport transport;
+    private TransmissionRpcApi api;
     private CompositeDisposable requests = new CompositeDisposable();
 
     @Override
@@ -42,7 +41,7 @@ public class ServerPreferencesActivity extends BaseActivity implements SaveChang
         super.onCreate(savedInstanceState);
         setContentView(R.layout.server_preferences_activity);
 
-        transport = Injector.transportComponent(this).transport();
+        api = TransmissionRemote.getInstance().di.getNetworkComponent().api();
 
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -54,7 +53,7 @@ public class ServerPreferencesActivity extends BaseActivity implements SaveChang
             showProgressbarFragment();
 
             final TransmissionRemote app = (TransmissionRemote) getApplication();
-            transport.api().serverSettings(ImmutableMap.<String, Object>of())
+            api.serverSettings(ImmutableMap.<String, Object>of())
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(new SingleObserver<ServerSettings>() {
@@ -130,7 +129,7 @@ public class ServerPreferencesActivity extends BaseActivity implements SaveChang
         ServerPreferencesFragment fragment = (ServerPreferencesFragment)
                 getSupportFragmentManager().findFragmentByTag(TAG_SERVER_PREFERENCES_FRAGMENT);
         if (fragment != null) {
-            transport.api().setServerSettings(RpcArgs.parameters(fragment.getSessionParameters()))
+            api.setServerSettings(RpcArgs.parameters(fragment.getSessionParameters()))
                     .subscribeOn(Schedulers.io())
                     .onErrorComplete()
                     .subscribe();

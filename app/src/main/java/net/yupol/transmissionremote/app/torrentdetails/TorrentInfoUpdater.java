@@ -5,7 +5,7 @@ import android.os.Looper;
 import android.util.Log;
 
 import net.yupol.transmissionremote.model.json.TorrentInfo;
-import net.yupol.transmissionremote.transport.Transport;
+import net.yupol.transmissionremote.transport.TransmissionRpcApi;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -25,10 +25,10 @@ public class TorrentInfoUpdater {
     private Disposable request;
     private Timer timer;
     private OnTorrentInfoUpdatedListener listener;
-    private Transport transport;
+    private TransmissionRpcApi api;
 
-    public TorrentInfoUpdater(Transport transport, int torrentId, long timeoutMillis) {
-        this.transport = transport;
+    public TorrentInfoUpdater(TransmissionRpcApi api, int torrentId, long timeoutMillis) {
+        this.api = api;
         this.torrentId = torrentId;
         this.timeoutMillis = timeoutMillis;
     }
@@ -40,7 +40,7 @@ public class TorrentInfoUpdater {
     }
 
     private void loadTorrentInfoAndReschedule() {
-        transport.api().torrentInfo(torrentId)
+        api.torrentInfo(torrentId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new SingleObserver<TorrentInfo>() {

@@ -1,6 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
 apply plugin: 'io.fabric'
 
 android {
@@ -42,12 +43,6 @@ android {
     dataBinding {
         enabled true
     }
-
-    useLibrary 'org.apache.http.legacy'
-
-    configurations {
-        compile.exclude group: 'org.jetbrains' , module:'annotations'
-    }
 }
 
 dependencies {
@@ -67,7 +62,7 @@ dependencies {
 
     // Dagger 2
     implementation "com.google.dagger:dagger:$dagger_version"
-    annotationProcessor "com.google.dagger:dagger-compiler:$dagger_version"
+    kapt "com.google.dagger:dagger-compiler:$dagger_version"
 
     // RxJava
     implementation "io.reactivex.rxjava2:rxjava:$rxjava_version"
@@ -75,6 +70,11 @@ dependencies {
 
     // Retrofit
     implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
+
+    // Moshi
+    implementation "com.squareup.moshi:moshi:$moshi_version"
+    implementation "com.squareup.moshi:moshi-kotlin:$moshi_version"
+    implementation "com.serjltt.moshi:moshi-lazy-adapters:$moshi_lazy_adapters_version"
 
     // Guava
     implementation "com.google.guava:guava:$guava_version"
@@ -109,7 +109,7 @@ dependencies {
 
     // Permissions Dispatcher
     implementation 'com.github.hotchemi:permissionsdispatcher:2.2.0'
-    annotationProcessor 'com.github.hotchemi:permissionsdispatcher-processor:2.2.0'
+    kapt 'com.github.hotchemi:permissionsdispatcher-processor:2.2.0'
 
     // Floating Action Button
     implementation 'com.getbase:floatingactionbutton:1.10.1'

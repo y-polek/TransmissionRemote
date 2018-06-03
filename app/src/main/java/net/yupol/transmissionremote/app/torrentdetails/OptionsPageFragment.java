@@ -16,8 +16,8 @@ import android.widget.TextView;
 import com.google.common.collect.ImmutableMap;
 
 import net.yupol.transmissionremote.app.R;
+import net.yupol.transmissionremote.app.TransmissionRemote;
 import net.yupol.transmissionremote.app.databinding.TorrentDetailsOptionsPageFragmentBinding;
-import net.yupol.transmissionremote.app.di.Injector;
 import net.yupol.transmissionremote.app.utils.MinMaxTextWatcher;
 import net.yupol.transmissionremote.model.Parameter;
 import net.yupol.transmissionremote.model.json.ServerSettings;
@@ -26,7 +26,7 @@ import net.yupol.transmissionremote.model.json.TransferPriority;
 import net.yupol.transmissionremote.model.limitmode.IdleLimitMode;
 import net.yupol.transmissionremote.model.limitmode.LimitMode;
 import net.yupol.transmissionremote.model.limitmode.RatioLimitMode;
-import net.yupol.transmissionremote.transport.Transport;
+import net.yupol.transmissionremote.transport.TransmissionRpcApi;
 import net.yupol.transmissionremote.transport.rpc.RpcArgs;
 import net.yupol.transmissionremote.transport.rpc.TorrentParameters;
 
@@ -43,7 +43,7 @@ public class OptionsPageFragment extends BasePageFragment implements
 
     private static final String TAG = OptionsPageFragment.class.getSimpleName();
 
-    private Transport transport;
+    private TransmissionRpcApi api;
 
     private ServerSettings serverSettings;
 
@@ -56,12 +56,12 @@ public class OptionsPageFragment extends BasePageFragment implements
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        transport = Injector.transportComponent(requireContext()).transport();
+
+        api = TransmissionRemote.getInstance().di.getNetworkComponent().api();
 
         setHasOptionsMenu(true);
 
-
-        transport.api().serverSettings(ImmutableMap.<String, Object>of())
+        api.serverSettings(ImmutableMap.<String, Object>of())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new SingleObserver<ServerSettings>() {
@@ -365,7 +365,7 @@ public class OptionsPageFragment extends BasePageFragment implements
 
     private void sendSaveOptionRequest(Parameter<String, ?> option) {
         int torrentId = getTorrent().getId();
-        transport.api().setTorrentSettings(RpcArgs.parameters(torrentId, option))
+        api.setTorrentSettings(RpcArgs.parameters(torrentId, option))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .onErrorComplete()

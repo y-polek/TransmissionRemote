@@ -39,7 +39,6 @@ import net.yupol.transmissionremote.app.TransmissionRemote;
 import net.yupol.transmissionremote.app.TransmissionRemote.OnFilterSelectedListener;
 import net.yupol.transmissionremote.app.TransmissionRemote.OnSortingChangedListener;
 import net.yupol.transmissionremote.app.TransmissionRemote.OnTorrentsUpdatedListener;
-import net.yupol.transmissionremote.app.di.Injector;
 import net.yupol.transmissionremote.app.filtering.Filter;
 import net.yupol.transmissionremote.app.filtering.NameFilter;
 import net.yupol.transmissionremote.app.utils.ColorUtils;
@@ -50,7 +49,7 @@ import net.yupol.transmissionremote.app.utils.diff.Equals;
 import net.yupol.transmissionremote.app.utils.diff.ListDiff;
 import net.yupol.transmissionremote.app.utils.diff.Range;
 import net.yupol.transmissionremote.model.json.Torrent;
-import net.yupol.transmissionremote.transport.Transport;
+import net.yupol.transmissionremote.transport.TransmissionRpcApi;
 import net.yupol.transmissionremote.transport.rpc.RpcArgs;
 
 import java.util.ArrayList;
@@ -88,7 +87,7 @@ public class TorrentListFragment extends Fragment implements ChooseLocationDialo
     private static final long ETA_INFINITE_THRESHOLD = TimeUnit.DAYS.toSeconds(7);
 
     private TransmissionRemote app;
-    private Transport transport;
+    private TransmissionRpcApi api;
 
     private Collection<Torrent> allTorrents = Collections.emptyList();
     private Set<Integer/*torrent ID*/> updateRequests = new HashSet<>();
@@ -202,14 +201,14 @@ public class TorrentListFragment extends Fragment implements ChooseLocationDialo
                     showChooseLocationDialog();
                     return true;
                 case R.id.action_verify:
-                    transport.api().verifyTorrents(adapter.getSelectedItemsIds())
+                    api.verifyTorrents(adapter.getSelectedItemsIds())
                             .subscribeOn(Schedulers.io())
                             .onErrorComplete()
                             .subscribe();
                     mode.finish();
                     return true;
                 case R.id.action_reannounce:
-                    transport.api().reannounceTorrents(adapter.getSelectedItemsIds())
+                    api.reannounceTorrents(adapter.getSelectedItemsIds())
                             .subscribeOn(Schedulers.io())
                             .onErrorComplete()
                             .subscribe();
@@ -239,13 +238,13 @@ public class TorrentListFragment extends Fragment implements ChooseLocationDialo
     public void onAttach(Context context) {
         super.onAttach(context);
 
+        app = TransmissionRemote.getInstance();
+        api = app.di.getNetworkComponent().api();
+
         Activity activity = getActivity();
 
-        app = (TransmissionRemote) requireContext().getApplicationContext();
         app.addOnFilterSetListener(filterListener);
         app.addOnSortingChangedListeners(sortingListener);
-
-        transport = Injector.transportComponent(requireContext()).transport();
 
         if (activity instanceof OnTorrentSelectedListener) {
             torrentSelectedListener = (OnTorrentSelectedListener) activity;
@@ -339,7 +338,7 @@ public class TorrentListFragment extends Fragment implements ChooseLocationDialo
             actionMode.finish();
         }
 
-        transport.api().setTorrentLocation(RpcArgs.setLocation(path, moveData, torrentIds))
+        api.setTorrentLocation(RpcArgs.setLocation(path, moveData, torrentIds))
                 .subscribeOn(Schedulers.io())
                 .onErrorComplete()
                 .subscribe();
@@ -347,7 +346,7 @@ public class TorrentListFragment extends Fragment implements ChooseLocationDialo
 
     @Override
     public void onNameSelected(int torrentId, String path, String name) {
-        transport.api().renameTorrent(RpcArgs.renameTorrent(torrentId, path, name))
+        api.renameTorrent(RpcArgs.renameTorrent(torrentId, path, name))
                 .subscribeOn(Schedulers.io())
                 .onErrorComplete()
                 .subscribe();
@@ -492,8 +491,8 @@ public class TorrentListFragment extends Fragment implements ChooseLocationDialo
                     btn.toggle();
 
                     Completable request = wasPaused
-                            ? transport.api().startTorrents(torrent.getId())
-                            : transport.api().stopTorrents(torrent.getId());
+                            ? api.startTorrents(torrent.getId())
+                            : api.stopTorrents(torrent.getId());
                     sendRequestAndUpdateTorrents(request, torrent.getId());
                 }
             });
@@ -722,7 +721,7 @@ public class TorrentListFragment extends Fragment implements ChooseLocationDialo
             updateRequests.add(id);
         }
 
-        transport.api().torrentList(torrentIds)
+        api.torrentList(torrentIds)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .delaySubscription(UPDATE_REQUEST_DELAY, TimeUnit.MILLISECONDS)
@@ -755,13 +754,13 @@ public class TorrentListFragment extends Fragment implements ChooseLocationDialo
     }
 
     private void sendStopTorrentsRequest(final int... ids) {
-        sendRequestAndUpdateTorrents(transport.api().stopTorrents(ids), ids);
+        sendRequestAndUpdateTorrents(api.stopTorrents(ids), ids);
     }
 
     private void sendStartTorrentsRequest(final int[] ids, boolean noQueue) {
         Completable request = noQueue
-                ? transport.api().startTorrentsNoQueue(ids)
-                : transport.api().startTorrents(ids);
+                ? api.startTorrentsNoQueue(ids)
+                : api.startTorrents(ids);
         sendRequestAndUpdateTorrents(request, ids);
     }
 

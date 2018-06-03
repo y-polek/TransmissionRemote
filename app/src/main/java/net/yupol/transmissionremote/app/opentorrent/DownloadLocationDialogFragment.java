@@ -30,13 +30,12 @@ import com.google.common.collect.ImmutableMap;
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.TransmissionRemote;
 import net.yupol.transmissionremote.app.databinding.DownloadLocationDialogBinding;
-import net.yupol.transmissionremote.app.di.Injector;
 import net.yupol.transmissionremote.app.utils.SimpleTextWatcher;
 import net.yupol.transmissionremote.app.utils.TextUtils;
 import net.yupol.transmissionremote.model.FreeSpace;
 import net.yupol.transmissionremote.model.Server;
 import net.yupol.transmissionremote.model.json.ServerSettings;
-import net.yupol.transmissionremote.transport.Transport;
+import net.yupol.transmissionremote.transport.TransmissionRpcApi;
 import net.yupol.transmissionremote.transport.rpc.RpcFailureException;
 
 import java.util.List;
@@ -61,12 +60,13 @@ public class DownloadLocationDialogFragment extends DialogFragment {
 
     private static final String KEY_LOADING_IN_PROGRESS = "key_loading_in_progress";
 
-    private Transport transport;
+    private TransmissionRpcApi api;
+    private TransmissionRemote app;
+
     private OnDownloadLocationSelectedListener listener;
     private Disposable currentRequest;
     private FreeSpace freeSpace;
     private DownloadLocationDialogBinding binding;
-    private TransmissionRemote app;
     private CompositeDisposable requests = new CompositeDisposable();
 
     private ListPopupWindow downloadLocationsPopup;
@@ -74,9 +74,8 @@ public class DownloadLocationDialogFragment extends DialogFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Context context = requireContext();
-        app = TransmissionRemote.getApplication(context);
-        transport = Injector.transportComponent(context).transport();
+        app = TransmissionRemote.getInstance();
+        api = app.di.getNetworkComponent().api();
     }
 
     @NonNull
@@ -109,7 +108,7 @@ public class DownloadLocationDialogFragment extends DialogFragment {
                 }
             });
 
-            transport.api().serverSettings(ImmutableMap.<String, Object>of())
+            api.serverSettings(ImmutableMap.<String, Object>of())
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(new SingleObserver<ServerSettings>() {
@@ -298,7 +297,7 @@ public class DownloadLocationDialogFragment extends DialogFragment {
         }
 
         final String path = binding.downloadLocationText.getText().toString();
-        transport.api().freeSpace(path)
+        api.freeSpace(path)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new SingleObserver<FreeSpace>() {

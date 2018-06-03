@@ -17,11 +17,10 @@ import android.view.LayoutInflater;
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.TransmissionRemote;
 import net.yupol.transmissionremote.app.databinding.SetLocationDialogBinding;
-import net.yupol.transmissionremote.app.di.Injector;
 import net.yupol.transmissionremote.app.utils.SimpleTextWatcher;
 import net.yupol.transmissionremote.app.utils.TextUtils;
 import net.yupol.transmissionremote.model.FreeSpace;
-import net.yupol.transmissionremote.transport.Transport;
+import net.yupol.transmissionremote.transport.TransmissionRpcApi;
 import net.yupol.transmissionremote.transport.rpc.RpcFailureException;
 
 import io.reactivex.SingleObserver;
@@ -33,7 +32,8 @@ public class ChooseLocationDialogFragment extends DialogFragment {
 
     public static final String ARG_INITIAL_LOCATION = "arg_initial_location";
 
-    private Transport transport;
+    private TransmissionRpcApi api;
+
     private OnLocationSelectedListener listener;
     private SetLocationDialogBinding binding;
     private Disposable runningFreeSpaceRequest;
@@ -57,7 +57,7 @@ public class ChooseLocationDialogFragment extends DialogFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        transport = Injector.transportComponent(requireContext()).transport();
+        api = TransmissionRemote.getInstance().di.getNetworkComponent().api();
 
         Bundle args = getArguments();
         if (args != null) {
@@ -108,7 +108,7 @@ public class ChooseLocationDialogFragment extends DialogFragment {
         if (runningFreeSpaceRequest != null) runningFreeSpaceRequest.dispose();
         binding.setLoadingInProgress(true);
 
-        transport.api().freeSpace(path)
+        api.freeSpace(path)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new SingleObserver<FreeSpace>() {

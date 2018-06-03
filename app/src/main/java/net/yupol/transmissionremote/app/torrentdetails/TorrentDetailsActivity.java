@@ -19,13 +19,12 @@ import net.yupol.transmissionremote.app.BaseActivity;
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.TransmissionRemote;
 import net.yupol.transmissionremote.app.databinding.TorrentDetailsLayoutBinding;
-import net.yupol.transmissionremote.app.di.Injector;
 import net.yupol.transmissionremote.app.torrentlist.ChooseLocationDialogFragment;
 import net.yupol.transmissionremote.app.torrentlist.RemoveTorrentsDialogFragment;
 import net.yupol.transmissionremote.app.torrentlist.RenameDialogFragment;
 import net.yupol.transmissionremote.model.json.Torrent;
 import net.yupol.transmissionremote.model.json.TorrentInfo;
-import net.yupol.transmissionremote.transport.Transport;
+import net.yupol.transmissionremote.transport.TransmissionRpcApi;
 import net.yupol.transmissionremote.transport.rpc.RpcArgs;
 
 import java.util.LinkedList;
@@ -54,6 +53,8 @@ public class TorrentDetailsActivity extends BaseActivity implements
 
     private static final String RENAME_TORRENT_FRAGMENT_TAG = "rename_torrent_fragment_tag";
 
+    private TransmissionRpcApi api;
+    
     private Torrent torrent;
     private TorrentInfo torrentInfo;
     private List<OnDataAvailableListener<TorrentInfo>> torrentInfoListeners = new LinkedList<>();
@@ -62,15 +63,15 @@ public class TorrentDetailsActivity extends BaseActivity implements
     private TorrentInfoUpdater torrentInfoUpdater;
     private TorrentDetailsLayoutBinding binding;
     private SharedPreferences sharedPreferences;
-    private Transport transport;
     private CompositeDisposable requests = new CompositeDisposable();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         LayoutInflaterCompat.setFactory2(getLayoutInflater(), new IconicsLayoutInflater2(getDelegate()));
         super.onCreate(savedInstanceState);
-        transport = Injector.transportComponent(this).transport();
         binding = DataBindingUtil.setContentView(this, R.layout.torrent_details_layout);
+
+        api = TransmissionRemote.getInstance().di.getNetworkComponent().api();
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(TorrentDetailsActivity.this);
 
@@ -173,7 +174,7 @@ public class TorrentDetailsActivity extends BaseActivity implements
             torrentInfoUpdater.stop();
             restartUpdater = true;
         }
-        torrentInfoUpdater = new TorrentInfoUpdater(transport, torrent.getId(),
+        torrentInfoUpdater = new TorrentInfoUpdater(api, torrent.getId(),
                 1000 * TransmissionRemote.getInstance().getUpdateInterval());
         if (restartUpdater) torrentInfoUpdater.start(this);
 
@@ -226,19 +227,19 @@ public class TorrentDetailsActivity extends BaseActivity implements
                         .show(getSupportFragmentManager(), RemoveTorrentsDialogFragment.TAG_REMOVE_TORRENTS_DIALOG);
                 return true;
             case R.id.action_pause:
-                transport.api().stopTorrents(torrent.getId())
+                api.stopTorrents(torrent.getId())
                         .subscribeOn(Schedulers.io())
                         .onErrorComplete()
                         .subscribe();
                 return true;
             case R.id.action_start:
-                transport.api().startTorrents(torrent.getId())
+                api.startTorrents(torrent.getId())
                         .subscribeOn(Schedulers.io())
                         .onErrorComplete()
                         .subscribe();
                 return true;
             case R.id.action_start_now:
-                transport.api().startTorrentsNoQueue(torrent.getId())
+                api.startTorrentsNoQueue(torrent.getId())
                         .subscribeOn(Schedulers.io())
                         .onErrorComplete()
                         .subscribe();
@@ -255,13 +256,13 @@ public class TorrentDetailsActivity extends BaseActivity implements
                 dialog.show(getSupportFragmentManager(), TAG_CHOOSE_LOCATION_DIALOG);
                 return true;
             case R.id.action_verify:
-                transport.api().verifyTorrents(torrent.getId())
+                api.verifyTorrents(torrent.getId())
                         .subscribeOn(Schedulers.io())
                         .onErrorComplete()
                         .subscribe();
                 return true;
             case R.id.action_reannounce:
-                transport.api().reannounceTorrents(torrent.getId())
+                api.reannounceTorrents(torrent.getId())
                         .subscribeOn(Schedulers.io())
                         .onErrorComplete()
                         .subscribe();
@@ -274,9 +275,9 @@ public class TorrentDetailsActivity extends BaseActivity implements
     public void onRemoveTorrentsSelected(int[] torrentsToRemove, boolean removeData) {
         Completable removeTorrent;
         if (removeData) {
-            removeTorrent = transport.api().removeTorrentsAndDeleteData(torrentsToRemove);
+            removeTorrent = api.removeTorrentsAndDeleteData(torrentsToRemove);
         } else {
-            removeTorrent = transport.api().removeTorrents(torrentsToRemove);
+            removeTorrent = api.removeTorrents(torrentsToRemove);
         }
         removeTorrent
                 .subscribeOn(Schedulers.io())
@@ -302,7 +303,7 @@ public class TorrentDetailsActivity extends BaseActivity implements
 
     @Override
     public void onLocationSelected(String path, boolean moveData) {
-        transport.api().setTorrentLocation(RpcArgs.setLocation(path, moveData, torrent.getId()))
+        api.setTorrentLocation(RpcArgs.setLocation(path, moveData, torrent.getId()))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new CompletableObserver() {
@@ -325,7 +326,7 @@ public class TorrentDetailsActivity extends BaseActivity implements
 
     @Override
     public void onNameSelected(final int torrentId, String path, String name) {
-        transport.api().renameTorrent(RpcArgs.renameTorrent(torrentId, path, name))
+        api.renameTorrent(RpcArgs.renameTorrent(torrentId, path, name))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new CompletableObserver() {
@@ -352,7 +353,7 @@ public class TorrentDetailsActivity extends BaseActivity implements
     }
 
     private void updateTorrentAndTorrentInfo(int torrentId) {
-        transport.api().torrentList(torrentId)
+        api.torrentList(torrentId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new SingleObserver<List<Torrent>>() {
@@ -379,7 +380,7 @@ public class TorrentDetailsActivity extends BaseActivity implements
     }
 
     private void updateTorrentInfo(final Torrent torrent) {
-        transport.api().torrentInfo(torrent.getId())
+        api.torrentInfo(torrent.getId())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new SingleObserver<TorrentInfo>() {
