@@ -25,5 +25,5 @@ dependencies {
     implementation 'com.vdurmont:emoji-java:4.0.0'
 
     // Testing
-    testImplementation "io.kotlintest:kotlintest-runner-junit5:$kotlintest_version"
+    testImplementation "io.kotlintest:kotlintest-runner-junit4:$kotlintest_version"
 }

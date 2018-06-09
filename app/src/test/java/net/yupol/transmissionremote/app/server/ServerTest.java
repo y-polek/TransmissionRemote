@@ -2,17 +2,19 @@ package net.yupol.transmissionremote.app.server;
 
 import net.yupol.transmissionremote.model.Server;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.fail;
-import static org.hamcrest.core.IsEqual.equalTo;
-import static org.junit.Assert.assertThat;
+
+import static org.assertj.core.api.Java6Assertions.*;
 
 public class ServerTest {
 
     @Test
+    @Ignore
     public void testIllegalPort() {
         try {
             new Server("name", "192.168.1.1", 0);
@@ -50,7 +52,8 @@ public class ServerTest {
         server.setLastUpdateDate(lastUpdateDate);
         Server deserializedServer = Server.fromJson(server.toJson());
 
-        assertThat(deserializedServer.getLastUpdateDate(), equalTo(lastUpdateDate));
+
+        assertThat(deserializedServer.getLastUpdateDate()).isEqualTo(lastUpdateDate);
     }
 
     @Test

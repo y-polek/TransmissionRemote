@@ -36,7 +36,8 @@ dependencies {
     implementation "com.serjltt.moshi:moshi-lazy-adapters:$moshi_lazy_adapters_version"
 
     // Testing
-    testImplementation 'junit:junit:4.12'
+    testImplementation "junit:junit:$junit_version"
+    testImplementation "org.assertj:assertj-core:$assertj_version"
     testImplementation 'com.squareup.okhttp3:mockwebserver:3.8.1'
 }
 
