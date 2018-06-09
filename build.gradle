@@ -37,4 +37,5 @@ ext {
     kotlintest_version = '3.1.4'
     ktx_version = '0.3'
     timber_version = '4.7.0'
+    butterknife_version = '8.8.1'
 }

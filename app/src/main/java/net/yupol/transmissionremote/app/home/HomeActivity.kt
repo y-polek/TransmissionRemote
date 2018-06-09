@@ -12,15 +12,17 @@ import net.yupol.transmissionremote.app.preferences.ServersActivity
 import net.yupol.transmissionremote.app.server.AddServerActivity
 import net.yupol.transmissionremote.app.sorting.SortOrder
 import net.yupol.transmissionremote.app.sorting.SortedBy
+import net.yupol.transmissionremote.app.torrentlist.EmptyServerFragment
 import net.yupol.transmissionremote.app.utils.ThemeUtils
 import net.yupol.transmissionremote.model.Server
 
-class HomeActivity: BaseActivity(), Drawer.Listener {
+class HomeActivity: BaseActivity(), Drawer.Listener, EmptyServerFragment.OnAddServerClickListener {
 
     companion object {
         const val REQUEST_CODE_SERVER_PARAMS = 1
 
         const val FRAGMENT_TAG_TORRENT_LIST = "fragment_tag_torrent_list"
+        const val FRAGMENT_TAG_NO_SERVER = "fragment_tag_no_server"
     }
 
     private lateinit var app: TransmissionRemote
@@ -42,6 +44,22 @@ class HomeActivity: BaseActivity(), Drawer.Listener {
             supportFragmentManager.beginTransaction()
                     .replace(R.id.fragment_container, TorrentListFragment2.newInstance(), FRAGMENT_TAG_TORRENT_LIST)
                     .commit()
+        } else {
+            supportFragmentManager.beginTransaction()
+                    .replace(R.id.fragment_container, EmptyServerFragment(), FRAGMENT_TAG_NO_SERVER)
+                    .commit()
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        when (requestCode) {
+            REQUEST_CODE_SERVER_PARAMS -> {
+                if (resultCode == RESULT_OK && data != null) {
+                    val server = data.getParcelableExtra<Server>(AddServerActivity.EXTRA_SEVER)
+                    app.addServer(server)
+                    app.activeServer = server
+                }
+            }
         }
     }
 
@@ -73,5 +91,9 @@ class HomeActivity: BaseActivity(), Drawer.Listener {
     override fun onThemeSwitched(nightMode: Boolean) {
         ThemeUtils.setIsInNightMode(this, nightMode)
         recreate()
+    }
+
+    override fun onAddServerButtonClicked() {
+        startActivityForResult(AddServerActivity.intent(this), REQUEST_CODE_SERVER_PARAMS)
     }
 }
