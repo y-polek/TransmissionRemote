@@ -10,15 +10,25 @@ import org.junit.Test
 
 class ServersRepositoryTest {
 
+    companion object {
+        val servers = arrayListOf(
+                Server("1", "host1", 1),
+                Server("2", "host2", 2),
+                Server("3", "host3", 3),
+                Server("4", "host4", 4),
+                Server("5", "host5", 5)
+        )
+    }
+
     @Rule
     @JvmField
     val instantTaskExecutorRule = InstantTaskExecutorRule()
 
-    lateinit var repo: ServersRepository
+    private lateinit var repo: ServersRepository
 
     @Before
     fun setUp() {
-        repo = ServersRepository()
+        repo = ServersRepository(FakeServersStorage())
     }
 
     @Test
@@ -30,43 +40,35 @@ class ServersRepositoryTest {
 
     @Test
     fun testAddServer() {
-        val server = Server("test", "192.168.1.1", 9091)
+        repo.addServer(servers[0])
 
-        repo.addServer(server)
-
-        assertThat(repo.getServers().value).containsOnly(server)
+        assertThat(repo.getServers().value).containsOnly(servers[0])
     }
 
     @Test
     fun testRemoveServer() {
-        val server1 = Server("1", "host1", 1)
-        val server2 = Server("2", "host2", 2)
-        val server3 = Server("3", "host3", 3)
         repo.apply {
-            addServer(server1)
-            addServer(server2)
-            addServer(server3)
+            addServer(servers[0])
+            addServer(servers[1])
+            addServer(servers[2])
         }
 
-        repo.removeServer(server2)
+        repo.removeServer(servers[1])
 
-        assertThat(repo.getServers().value).containsOnly(server1, server3)
+        assertThat(repo.getServers().value).containsOnly(servers[0], servers[2])
     }
 
     @Test
     fun testServerListIsEmptyAfterRemovingAll() {
-        val server1 = Server("1", "host1", 1)
-        val server2 = Server("2", "host2", 2)
-        val server3 = Server("3", "host3", 3)
         repo.apply {
-            addServer(server1)
-            addServer(server2)
-            addServer(server3)
+            addServer(servers[0])
+            addServer(servers[1])
+            addServer(servers[2])
         }
 
-        repo.removeServer(server1)
-        repo.removeServer(server2)
-        repo.removeServer(server3)
+        repo.removeServer(servers[0])
+        repo.removeServer(servers[1])
+        repo.removeServer(servers[2])
 
         assertThat(repo.getServers().value).isEmpty()
     }
@@ -83,5 +85,45 @@ class ServersRepositoryTest {
         repo.setActiveServer(server)
 
         assertThat(repo.getActiveServer().value).isEqualTo(server)
+    }
+
+    @Test
+    fun testRestoreServersFromStorage() {
+        val repo = ServersRepository(FakeServersStorage(servers[0], servers[1]))
+
+        assertThat(repo.getServers().value).containsOnly(servers[0], servers[1])
+    }
+
+    @Test
+    fun testSaveServersToStorageOnceAddedToRepo() {
+        val storage = FakeServersStorage()
+
+        ServersRepository(storage).apply {
+            addServer(servers[0])
+            addServer(servers[1])
+            addServer(servers[2])
+        }
+
+        assertThat(storage.readServers()).containsOnly(servers[0], servers[1], servers[2])
+    }
+
+    @Test
+    fun testRemoveServersFromStorageOnceRemovedFromRepo() {
+        val storage = FakeServersStorage(servers[0], servers[1], servers[2])
+
+        ServersRepository(storage).apply {
+            removeServer(servers[1])
+        }
+
+        assertThat(storage.readServers()).containsOnly(servers[0], servers[2])
+    }
+
+    @Test
+    fun testSaveActiveServerToStorageOnceSetOnRepo() {
+        val storage = FakeServersStorage()
+
+        ServersRepository(storage).setActiveServer(servers[0])
+
+        assertThat(storage.readActiveServer()).isEqualTo(servers[0])
     }
 }
