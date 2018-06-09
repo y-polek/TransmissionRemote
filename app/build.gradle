@@ -71,6 +71,9 @@ dependencies {
     // Retrofit
     implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
 
+    // Architecture Components
+    implementation "android.arch.lifecycle:extensions:$lifecycle_version"
+
     // Moshi
     implementation "com.squareup.moshi:moshi:$moshi_version"
     implementation "com.squareup.moshi:moshi-kotlin:$moshi_version"
@@ -127,6 +130,7 @@ dependencies {
     // Testing
     testImplementation "junit:junit:$junit_version"
     testImplementation "org.assertj:assertj-core:$assertj_version"
+    testImplementation "android.arch.core:core-testing:$lifecycle_version"
 }
 
 def property(String fileName, String propertyName) {
