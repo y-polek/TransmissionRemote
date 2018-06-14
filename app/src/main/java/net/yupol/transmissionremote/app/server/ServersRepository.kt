@@ -17,20 +17,23 @@ class ServersRepository @Inject constructor(private val storage: ServersStorage)
     fun getServers(): LiveData<List<Server>> = servers
 
     fun addServer(server: Server) {
-        val newServers = servers.value!! + server
+        val newServers = (servers.value ?: listOf()) + server
         servers.value = newServers
         storage.writeServers(newServers)
     }
 
     fun removeServer(server: Server) {
-        val newServers = servers.value!! - server
+        val newServers = (servers.value ?: listOf()) - server
+        if (server == activeServer.value) {
+            setActiveServer(newServers.firstOrNull())
+        }
         servers.value = newServers
         storage.writeServers(newServers)
     }
 
     fun getActiveServer(): LiveData<Server> = activeServer
 
-    fun setActiveServer(server: Server) {
+    fun setActiveServer(server: Server?) {
         activeServer.value = server
         storage.writeActiveServer(server)
     }

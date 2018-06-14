@@ -88,6 +88,36 @@ class ServersRepositoryTest {
     }
 
     @Test
+    fun testFirstServerBecomesActiveOnceActiveServerRemoved() {
+        repo.apply {
+            addServer(servers[0])
+            addServer(servers[1])
+            addServer(servers[2])
+        }
+        repo.setActiveServer(servers[1])
+
+        repo.removeServer(servers[1])
+
+        assertThat(repo.getActiveServer().value).isEqualTo(servers[0])
+    }
+
+    @Test
+    fun testActiveServerBecomesNullOnAllServersRemoved() {
+        repo.apply {
+            addServer(servers[0])
+            addServer(servers[1])
+            addServer(servers[2])
+        }
+        repo.setActiveServer(servers[1])
+
+        repo.removeServer(servers[2])
+        repo.removeServer(servers[1])
+        repo.removeServer(servers[0])
+
+        assertThat(repo.getActiveServer().value).isNull()
+    }
+
+    @Test
     fun testRestoreServersFromStorage() {
         val repo = ServersRepository(FakeServersStorage(servers[0], servers[1]))
 
