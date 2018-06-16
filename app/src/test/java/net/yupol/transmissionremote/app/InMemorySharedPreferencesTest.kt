@@ -106,4 +106,134 @@ class InMemorySharedPreferencesTest {
         assertThat(prefs.contains("user")).isTrue()
         assertThat(prefs.contains("server")).isFalse()
     }
+
+    @Test
+    fun testEditMethodReturnsNewEditor() {
+        assertThat(prefs.edit()).isNotEqualTo(prefs.edit())
+    }
+
+    @Test
+    fun testPreferencesNotSavedIfCommitOrApplyNotCalled() {
+        prefs.edit()
+                .putString("string", "Jon Snow")
+                .putBoolean("bool", true)
+                .putInt("int", 42)
+                .putLong("long", 43L)
+                .putFloat("float", 4.3f)
+                .putStringSet("string set", setOf("str"))
+
+        assertThat(prefs.contains("string")).isFalse()
+        assertThat(prefs.contains("bool")).isFalse()
+        assertThat(prefs.contains("int")).isFalse()
+        assertThat(prefs.contains("long")).isFalse()
+        assertThat(prefs.contains("float")).isFalse()
+        assertThat(prefs.contains("string set")).isFalse()
+    }
+
+    @Test
+    fun testPreferenceSavesIfCommitCalled() {
+        prefs.edit()
+                .putString("string", "Jon Snow")
+                .putBoolean("bool", true)
+                .putInt("int", 42)
+                .putLong("long", 43L)
+                .putFloat("float", 4.3f)
+                .putStringSet("string set", setOf("str"))
+                .commit()
+
+        assertThat(prefs.contains("string")).isTrue()
+        assertThat(prefs.contains("bool")).isTrue()
+        assertThat(prefs.contains("int")).isTrue()
+        assertThat(prefs.contains("long")).isTrue()
+        assertThat(prefs.contains("float")).isTrue()
+        assertThat(prefs.contains("string set")).isTrue()
+    }
+
+    @Test
+    fun testKeyNotRemovedIfCommitOrApplyNotCalled() {
+        prefs.edit()
+                .putString("user", "Jon Snow")
+                .putInt("age", 42)
+                .apply()
+
+        prefs.edit().remove("user")
+
+        assertThat(prefs.contains("user")).isTrue()
+    }
+
+    @Test
+    fun testKeyRemovedWhenCommitCalled() {
+        prefs.edit()
+                .putString("first name", "Jon")
+                .putString("last name", "Snow")
+                .putInt("age", 42)
+                .apply()
+
+        prefs.edit()
+                .remove("last name")
+                .remove("age")
+                .apply()
+
+        assertThat(prefs.contains("first name")).isTrue()
+        assertThat(prefs.contains("last name")).isFalse()
+        assertThat(prefs.contains("age")).isFalse()
+    }
+
+    @Test
+    fun testRemovedIsDoneFirst() {
+        prefs.edit()
+                .putString("first name", "Jon")
+                .putString("last name", "Snow")
+                .putInt("age", 42)
+                .apply()
+
+        prefs.edit()
+                .putInt("age", 50)
+                .remove("age")
+                .apply()
+
+        assertThat(prefs.getInt("age", 0)).isEqualTo(50)
+    }
+
+    @Test
+    fun testKeysNotClearedIfCommitOrApplyNotCalled() {
+        prefs.edit()
+                .putString("name", "Jon")
+                .putInt("age", 42)
+                .apply()
+
+        prefs.edit().clear()
+
+        assertThat(prefs.contains("name")).isTrue()
+        assertThat(prefs.contains("age")).isTrue()
+    }
+
+    @Test
+    fun testKeysClearedIfCommitCalled() {
+        prefs.edit()
+                .putString("name", "Jon")
+                .putInt("age", 42)
+                .apply()
+
+        prefs.edit().clear().commit()
+
+        assertThat(prefs.contains("name")).isFalse()
+        assertThat(prefs.contains("age")).isFalse()
+    }
+
+    @Test
+    fun testClearIsDoneFirst() {
+        prefs.edit()
+                .putString("name", "Jon")
+                .putInt("age", 42)
+                .apply()
+
+        prefs.edit()
+                .putInt("age", 50)
+                .clear()
+                .apply()
+
+        assertThat(prefs.contains("name")).isFalse()
+        assertThat(prefs.getInt("age", 0)).isEqualTo(50)
+    }
 }
