@@ -1,12 +1,13 @@
 package net.yupol.transmissionremote.app
 
+import android.content.SharedPreferences
 import org.junit.Test
 
 import org.assertj.core.api.Java6Assertions.*
 
 class InMemorySharedPreferencesTest {
 
-    private val prefs = InMemorySharedPreferences()
+    private val prefs: SharedPreferences = InMemorySharedPreferences()
 
     @Test
     fun testGetString() {
@@ -235,5 +236,23 @@ class InMemorySharedPreferencesTest {
 
         assertThat(prefs.contains("name")).isFalse()
         assertThat(prefs.getInt("age", 0)).isEqualTo(50)
+    }
+
+    @Test
+    fun testPutNullStringClearsValue() {
+        prefs.edit().putString("name", "Jon Snow").apply()
+
+        prefs.edit().putString("name", null).apply()
+
+        assertThat(prefs.getString("name", null)).isNull()
+    }
+
+    @Test
+    fun testPutNullStringSetClearsValue() {
+        prefs.edit().putStringSet("names", setOf("Jon Snow", "Arya Stark")).apply()
+
+        prefs.edit().putStringSet("names", null).apply()
+
+        assertThat(prefs.getStringSet("names", null)).isNull()
     }
 }

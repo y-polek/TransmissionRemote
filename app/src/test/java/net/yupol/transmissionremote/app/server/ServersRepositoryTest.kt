@@ -79,6 +79,19 @@ class ServersRepositoryTest {
     }
 
     @Test
+    fun testActiveServerIsFirstServerIfNotSet() {
+        repo.apply {
+            addServer(servers[0])
+            addServer(servers[1])
+            addServer(servers[2])
+        }
+
+        val activeServer = repo.getActiveServer().value
+
+        assertThat(activeServer).isEqualTo(servers[0])
+    }
+
+    @Test
     fun testSetActiveServer() {
         val server = Server("test", "host", 1)
 

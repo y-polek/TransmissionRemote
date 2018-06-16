@@ -19,6 +19,9 @@ class ServersRepository @Inject constructor(private val storage: ServersStorage)
     fun addServer(server: Server) {
         val newServers = (servers.value ?: listOf()) + server
         servers.value = newServers
+        if (activeServer.value == null) {
+            activeServer.value = server
+        }
         storage.writeServers(newServers)
     }
 

@@ -52,8 +52,12 @@ class InMemorySharedPreferences: SharedPreferences {
         private val removals = mutableSetOf<String>()
         private var clear = false
 
-        override fun putString(key: String, value: String): SharedPreferences.Editor {
-            additions[key] = value
+        override fun putString(key: String, value: String?): SharedPreferences.Editor {
+            if (value != null) {
+                additions[key] = value
+            } else {
+                remove(key)
+            }
             return this
         }
 
@@ -77,8 +81,12 @@ class InMemorySharedPreferences: SharedPreferences {
             return this
         }
 
-        override fun putStringSet(key: String, values: Set<String>): SharedPreferences.Editor {
-            additions[key] = values
+        override fun putStringSet(key: String, values: Set<String>?): SharedPreferences.Editor {
+            if (values != null) {
+                additions[key] = values
+            } else {
+                remove(key)
+            }
             return this
         }
 
