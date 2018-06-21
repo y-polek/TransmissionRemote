@@ -15,6 +15,7 @@ import net.yupol.transmissionremote.app.BaseActivity;
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.TransmissionRemote;
 import net.yupol.transmissionremote.app.server.AddServerActivity;
+import net.yupol.transmissionremote.app.server.ServersRepository;
 import net.yupol.transmissionremote.model.Server;
 import net.yupol.transmissionremote.app.server.ServerDetailsFragment;
 
@@ -30,6 +31,7 @@ public class ServersActivity extends BaseActivity {
     public static final String KEY_SERVER_UUID = "key_server_uuid";
 
     private TransmissionRemote app;
+    private ServersRepository serversRepository;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +39,7 @@ public class ServersActivity extends BaseActivity {
         setContentView(R.layout.servers_activity_layout);
 
         app = TransmissionRemote.getApplication(this);
+        serversRepository = app.di.getApplicationComponent().serversRepository();
 
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -48,7 +51,7 @@ public class ServersActivity extends BaseActivity {
         if (savedInstanceState == null) {
             if (getIntent().hasExtra(KEY_SERVER_UUID)) {
                 String id = getIntent().getStringExtra(KEY_SERVER_UUID);
-                showServerDetails(app.getServerById(id), false);
+                showServerDetails(serversRepository.getServerById(id), false);
             } else {
                 ServersFragment serversFragment = (ServersFragment) fm.findFragmentByTag(TAG_SERVERS);
                 if (serversFragment == null) {
@@ -113,7 +116,7 @@ public class ServersActivity extends BaseActivity {
                             if (detailsFragment != null) {
                                 Server server = detailsFragment.getServerArgument();
                                 if (server != null) {
-                                    app.removeServer(server);
+                                    serversRepository.removeServer(server);
                                     onBackPressed();
                                 }
                             }
@@ -127,7 +130,7 @@ public class ServersActivity extends BaseActivity {
                 if (detailsFragment != null) {
                     boolean saved = detailsFragment.saveServer();
                     if (saved) {
-                        app.updateServer(detailsFragment.getServerArgument());
+                        serversRepository.updateServer(detailsFragment.getServerArgument());
                         onBackPressed();
                         Toast.makeText(this, R.string.saved, Toast.LENGTH_SHORT).show();
                     }
@@ -161,8 +164,8 @@ public class ServersActivity extends BaseActivity {
         if (requestCode == REQUEST_CODE_NEW_SERVER) {
             if (resultCode == RESULT_OK) {
                 Server server = data.getParcelableExtra(AddServerActivity.EXTRA_SEVER);
-                app.addServer(server);
-                app.setActiveServer(server);
+                serversRepository.addServer(server);
+                serversRepository.setActiveServer(server);
             }
         }
     }

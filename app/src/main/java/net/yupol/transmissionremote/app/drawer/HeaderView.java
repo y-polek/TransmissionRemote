@@ -24,7 +24,7 @@ import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.mikepenz.materialdrawer.view.BezelImageView;
 
 import net.yupol.transmissionremote.app.R;
-import net.yupol.transmissionremote.app.TransmissionRemote;
+import net.yupol.transmissionremote.app.server.ServersRepository;
 import net.yupol.transmissionremote.app.utils.ColorUtils;
 import net.yupol.transmissionremote.model.Server;
 
@@ -68,6 +68,8 @@ public class HeaderView extends RelativeLayout implements View.OnClickListener {
     private int primaryInverseTextColor;
     private int secondaryTextColor;
 
+    private ServersRepository serversRepository;
+
     private Drawer.OnDrawerItemClickListener drawerItemClickListener = new Drawer.OnDrawerItemClickListener() {
         @Override
         public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
@@ -93,12 +95,13 @@ public class HeaderView extends RelativeLayout implements View.OnClickListener {
         }
     };
 
-    public HeaderView(Context context) {
-        this(context, null);
+    public HeaderView(Context context, ServersRepository serversRepository) {
+        this(context, null, serversRepository);
     }
 
-    public HeaderView(Context context, AttributeSet attrs) {
+    public HeaderView(Context context, AttributeSet attrs, ServersRepository serversRepository) {
         super(context, attrs);
+        this.serversRepository = serversRepository;
         inflate(context, R.layout.drawer_header, this);
 
         primaryInverseTextColor = ColorUtils.resolveColor(context, android.R.attr.textColorPrimaryInverse, R.color.text_primary_inverse);
@@ -152,7 +155,6 @@ public class HeaderView extends RelativeLayout implements View.OnClickListener {
             return;
         }
 
-        TransmissionRemote app = TransmissionRemote.getApplication(getContext());
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getContext());
         List<String> orderedServers;
         if (sp.contains(KEY_ORDERED_SERVERS)) {
@@ -160,7 +162,7 @@ public class HeaderView extends RelativeLayout implements View.OnClickListener {
             // remove servers which are not in server list from ordered server list
             Iterator<String> it = orderedServers.iterator();
             while (it.hasNext()) {
-                if (app.getServerById(it.next()) == null) it.remove();
+                if (serversRepository.getServerById(it.next()) == null) it.remove();
             }
             // add new servers to ordered server list
             for (Server server : servers) {
@@ -189,7 +191,7 @@ public class HeaderView extends RelativeLayout implements View.OnClickListener {
         int i = 0;
         Iterator<String> it = orderedServers.iterator();
         while (it.hasNext() && i < serversInCircles.length) {
-            serversInCircles[i++] = app.getServerById(it.next());
+            serversInCircles[i++] = serversRepository.getServerById(it.next());
         }
 
         nameText.setText(serversInCircles[0].getName());

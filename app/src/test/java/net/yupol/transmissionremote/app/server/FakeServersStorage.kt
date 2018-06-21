@@ -15,7 +15,7 @@ class FakeServersStorage(vararg initServers: Server): ServersStorage {
 
     override fun writeServers(servers: List<Server>) {
         this.servers.clear()
-        this.servers.addAll(servers)
+        this.servers.addAll(servers.map { Server.fromJson(it.toJson()) })
     }
 
     override fun readActiveServer() = activeServer

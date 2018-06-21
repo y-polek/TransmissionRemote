@@ -15,11 +15,9 @@ import javax.inject.Singleton
 class ApplicationModule(private val application: TransmissionRemote) {
 
     @Provides
-    @Singleton
     fun provideApplication(): TransmissionRemote = application
 
     @Provides
-    @Singleton
     fun provideContext(): Context = application
 
     @Provides

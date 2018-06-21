@@ -1,5 +1,6 @@
 package net.yupol.transmissionremote.app.home
 
+import android.arch.lifecycle.Observer
 import android.content.Intent
 import android.os.Bundle
 import kotlinx.android.synthetic.main.home_activity.*
@@ -10,11 +11,13 @@ import net.yupol.transmissionremote.app.preferences.PreferencesActivity
 import net.yupol.transmissionremote.app.preferences.ServerPreferencesActivity
 import net.yupol.transmissionremote.app.preferences.ServersActivity
 import net.yupol.transmissionremote.app.server.AddServerActivity
+import net.yupol.transmissionremote.app.server.ServersRepository
 import net.yupol.transmissionremote.app.sorting.SortOrder
 import net.yupol.transmissionremote.app.sorting.SortedBy
 import net.yupol.transmissionremote.app.torrentlist.EmptyServerFragment
 import net.yupol.transmissionremote.app.utils.ThemeUtils
 import net.yupol.transmissionremote.model.Server
+import javax.inject.Inject
 
 class HomeActivity: BaseActivity(), Drawer.Listener, EmptyServerFragment.OnAddServerClickListener {
 
@@ -26,21 +29,29 @@ class HomeActivity: BaseActivity(), Drawer.Listener, EmptyServerFragment.OnAddSe
     }
 
     private lateinit var app: TransmissionRemote
+    @Inject lateinit var serversRepository: ServersRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.home_activity)
 
         app = TransmissionRemote.getInstance()
+        app.di.applicationComponent.inject(this)
 
-        val drawer = Drawer(this)
-        val servers = app.servers
-        val activeServer = app.activeServer
-        val sortedBy = app.sortedBy
-        val sortOrder = app.sortOrder
-        drawer.setupDrawer(this, toolbar, servers, activeServer, sortedBy, sortOrder)
+        serversRepository.getServers().observe(this, Observer { servers ->
+            servers ?: return@Observer
 
-        if (app.activeServer != null) {
+
+        })
+
+        LivedataUti
+
+        val drawer = Drawer(this, serversRepository)
+        val servers = serversRepository.getServers().value ?: listOf()
+        val activeServer = serversRepository.getActiveServer().value
+        drawer.setupDrawer(this, toolbar, servers, activeServer, app.sortedBy, app.sortOrder)
+
+        if (activeServer != null) {
             supportFragmentManager.beginTransaction()
                     .replace(R.id.fragment_container, TorrentListFragment2.newInstance(), FRAGMENT_TAG_TORRENT_LIST)
                     .commit()
@@ -56,8 +67,8 @@ class HomeActivity: BaseActivity(), Drawer.Listener, EmptyServerFragment.OnAddSe
             REQUEST_CODE_SERVER_PARAMS -> {
                 if (resultCode == RESULT_OK && data != null) {
                     val server = data.getParcelableExtra<Server>(AddServerActivity.EXTRA_SEVER)
-                    app.addServer(server)
-                    app.activeServer = server
+                    serversRepository.addServer(server)
+                    serversRepository.setActiveServer(server)
                 }
             }
         }

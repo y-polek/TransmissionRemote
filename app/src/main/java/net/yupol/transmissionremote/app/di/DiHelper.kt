@@ -6,7 +6,7 @@ import net.yupol.transmissionremote.transport.di.NetworkModule
 
 class DiHelper(private val application: TransmissionRemote) {
 
-    private val applicationComponent: ApplicationComponent by lazy {
+    val applicationComponent: ApplicationComponent by lazy {
         DaggerApplicationComponent.builder()
                 .applicationModule(ApplicationModule(application))
                 .build()

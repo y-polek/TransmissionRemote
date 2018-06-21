@@ -30,6 +30,7 @@ import com.google.common.collect.ImmutableMap;
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.TransmissionRemote;
 import net.yupol.transmissionremote.app.databinding.DownloadLocationDialogBinding;
+import net.yupol.transmissionremote.app.server.ServersRepository;
 import net.yupol.transmissionremote.app.utils.SimpleTextWatcher;
 import net.yupol.transmissionremote.app.utils.TextUtils;
 import net.yupol.transmissionremote.model.FreeSpace;
@@ -39,6 +40,8 @@ import net.yupol.transmissionremote.transport.TransmissionRpcApi;
 import net.yupol.transmissionremote.transport.rpc.RpcFailureException;
 
 import java.util.List;
+
+import javax.inject.Inject;
 
 import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -71,10 +74,13 @@ public class DownloadLocationDialogFragment extends DialogFragment {
 
     private ListPopupWindow downloadLocationsPopup;
 
+    @Inject ServersRepository serversRepository;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         app = TransmissionRemote.getInstance();
+        app.di.getApplicationComponent().inject(this);
         api = app.di.getNetworkComponent().api();
     }
 
@@ -138,7 +144,7 @@ public class DownloadLocationDialogFragment extends DialogFragment {
             @Override
             public void onClick(View v) {
                 if (!isDownloadLocationSuggestionsShown()) {
-                    showDownloadLocationSuggestions(app.getActiveServer());
+                    showDownloadLocationSuggestions(serversRepository.getActiveServer().getValue());
                 } else {
                     hideDownloadLocationSuggestions();
                 }
@@ -154,9 +160,9 @@ public class DownloadLocationDialogFragment extends DialogFragment {
             }
         });
 
-        List<Server> servers = app.getServers();
+        List<Server> servers = serversRepository.getServers().getValue();
         if (servers.size() > 1) {
-            Server activeServer = app.getActiveServer();
+            Server activeServer = serversRepository.getActiveServer().getValue();
             final ServerSpinnerAdapter serverAdapter = new ServerSpinnerAdapter(getContext(), servers);
             binding.serverSpinner.setAdapter(serverAdapter);
             binding.serverSpinner.setSelection(servers.indexOf(activeServer));
@@ -253,7 +259,7 @@ public class DownloadLocationDialogFragment extends DialogFragment {
                             downloadDir,
                             binding.startWhenAddedCheckbox.isChecked());
 
-                    Server activeServer = app.getActiveServer();
+                    Server activeServer = serversRepository.getActiveServer().getValue();
                     activeServer.addSavedDownloadLocations(downloadDir);
                 }
             });

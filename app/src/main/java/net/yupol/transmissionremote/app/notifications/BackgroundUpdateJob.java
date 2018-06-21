@@ -11,35 +11,44 @@ import com.evernote.android.job.JobManager;
 import com.evernote.android.job.JobRequest;
 
 import net.yupol.transmissionremote.app.TransmissionRemote;
+import net.yupol.transmissionremote.app.server.ServersRepository;
 import net.yupol.transmissionremote.model.Server;
 import net.yupol.transmissionremote.model.json.Torrent;
+import net.yupol.transmissionremote.transport.Transport;
 
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+import javax.inject.Inject;
+
 import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
-import net.yupol.transmissionremote.transport.rpc.RpcArgs;
-import net.yupol.transmissionremote.transport.Transport;
 
 public class BackgroundUpdateJob extends Job {
 
     private static final String TAG_UPDATE_TORRENTS = "tag_update_torrents";
     private static final String TAG = BackgroundUpdateJob.class.getSimpleName();
 
+    private ServersRepository serversRepository;
+
+    BackgroundUpdateJob(ServersRepository serversRepository) {
+        this.serversRepository = serversRepository;
+    }
+
     @NonNull
     @Override
     protected Result onRunJob(@NonNull Params params) {
         Context context = getContext();
 
-        List<Server> servers = TransmissionRemote.getApplication(context).getServers();
+        List<Server> servers = serversRepository.getServers().getValue();
         final CountDownLatch countDownLatch = new CountDownLatch(servers.size());
-        final FinishedTorrentsNotificationManager finishedTorrentsNotificationManager = new FinishedTorrentsNotificationManager(context);
+        TransmissionRemote app = TransmissionRemote.getInstance();
+        final FinishedTorrentsNotificationManager finishedTorrentsNotificationManager = new FinishedTorrentsNotificationManager(app, serversRepository);
 
         final CompositeDisposable requests = new CompositeDisposable();
         for (final Server server : servers) {
@@ -102,12 +111,19 @@ public class BackgroundUpdateJob extends Job {
 
     public static class Creator implements JobCreator {
 
+        private ServersRepository repository;
+
+        @Inject
+        public Creator(ServersRepository serversRepository) {
+            repository = serversRepository;
+        }
+
         @Nullable
         @Override
         public Job create(@NonNull String tag) {
             switch (tag) {
                 case TAG_UPDATE_TORRENTS:
-                    return new BackgroundUpdateJob();
+                    return new BackgroundUpdateJob(repository);
                 default:
                     return null;
 

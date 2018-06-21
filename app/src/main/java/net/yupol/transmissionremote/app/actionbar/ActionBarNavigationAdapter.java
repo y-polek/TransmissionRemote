@@ -14,8 +14,11 @@ import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.TransmissionRemote;
 import net.yupol.transmissionremote.app.filtering.Filter;
 import net.yupol.transmissionremote.app.filtering.Filters;
+import net.yupol.transmissionremote.app.server.ServersRepository;
 import net.yupol.transmissionremote.model.Server;
 import net.yupol.transmissionremote.app.utils.ColorUtils;
+
+import java.util.List;
 
 public class ActionBarNavigationAdapter extends BaseAdapter {
 
@@ -26,16 +29,18 @@ public class ActionBarNavigationAdapter extends BaseAdapter {
     private static final int ID_SERVER_TITLE = 2;
     private static final int ID_FILTER_TITLE = 3;
 
-    private Context context;
     private TransmissionRemote app;
+    private Context context;
+    private ServersRepository serversRepository;
     private int textColorPrimary;
     private int accentColor;
     private int alternativeAccentColor;
     private int textColorPrimaryInverse;
 
-    public ActionBarNavigationAdapter(Context context) {
+    public ActionBarNavigationAdapter(Context context, ServersRepository serversRepository) {
         this.context = context;
-        app = (TransmissionRemote) context.getApplicationContext();
+        this.serversRepository = serversRepository;
+        app = TransmissionRemote.getInstance();
 
         textColorPrimary = ColorUtils.resolveColor(context, android.R.attr.textColorPrimary, R.color.text_primary);
         textColorPrimaryInverse = ColorUtils.resolveColor(context, android.R.attr.textColorPrimaryInverse, R.color.text_primary_inverse);
@@ -46,37 +51,41 @@ public class ActionBarNavigationAdapter extends BaseAdapter {
     @Override
     public int getCount() {
         // server title + servers + filter title + filters
-        return 1 + app.getServers().size() + 1 + app.getAllFilters().length;
+        List<Server> servers = serversRepository.getServers().getValue();
+        return 1 + servers.size() + 1 + app.getAllFilters().length;
     }
 
     @Override
     public Object getItem(int position) {
+        List<Server> servers = serversRepository.getServers().getValue();
         long id = getItemId(position);
         switch ((int) id) {
             case ID_SERVER_TITLE:
             case ID_FILTER_TITLE:
                 return null;
             case ID_SERVER:
-                return app.getServers().get(position - 1);
+                return servers.get(position - 1);
             case ID_FILTER:
-                return app.getAllFilters()[position - app.getServers().size() - 2];
+                return app.getAllFilters()[position - servers.size() - 2];
         }
         Log.e(TAG, "Unknown item at position " + position +
-                ". Number of servers: " + app.getServers().size() +
+                ". Number of servers: " + servers.size() +
                 ", number of filters: " + app.getAllFilters().length);
         return null;
     }
 
     public int getServerPosition(Server server) {
-        int serverIndex = app.getServers().indexOf(server);
+        List<Server> servers = serversRepository.getServers().getValue();
+        int serverIndex = servers.indexOf(server);
         return serverIndex >= 0 ? 1 + serverIndex : -1;
     }
 
     @Override
     public long getItemId(int position) {
         if (position == 0) return ID_SERVER_TITLE;
-        if (position <= app.getServers().size()) return ID_SERVER;
-        if (position == app.getServers().size() + 1) return ID_FILTER_TITLE;
+        List<Server> servers = serversRepository.getServers().getValue();
+        if (position <= servers.size()) return ID_SERVER;
+        if (position == servers.size() + 1) return ID_FILTER_TITLE;
         return ID_FILTER;
     }
 
@@ -116,7 +125,7 @@ public class ActionBarNavigationAdapter extends BaseAdapter {
                 countText.setVisibility(View.GONE);
                 Server server = (Server) getItem(position);
                 text.setText(server.getName());
-                text.setTextColor(dropDownTextColor(server.equals(app.getActiveServer())));
+                text.setTextColor(dropDownTextColor(server.equals(serversRepository.getActiveServer().getValue())));
             } else if (id == ID_FILTER) {
                 countText.setVisibility(View.VISIBLE);
                 Filter filter = (Filter) getItem(position);
@@ -145,7 +154,7 @@ public class ActionBarNavigationAdapter extends BaseAdapter {
         }
 
         TextView serverName = view.findViewById(R.id.server_name);
-        Server activeServer = app.getActiveServer();
+        Server activeServer = serversRepository.getActiveServer().getValue();
         serverName.setText(activeServer != null ? activeServer.getName() : "");
         serverName.setTextColor(textColorPrimaryInverse);
 

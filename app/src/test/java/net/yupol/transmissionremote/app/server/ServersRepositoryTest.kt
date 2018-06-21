@@ -18,6 +18,10 @@ class ServersRepositoryTest {
                 Server("4", "host4", 4),
                 Server("5", "host5", 5)
         )
+
+        val raspberryPi = Server("RaspberryPi", "192.168.1.2", 9091)
+        val router = Server("Router", "192.168.1.1", 443)
+        val laptop = Server("Laptop", "192.168.1.30", 9091)
     }
 
     @Rule
@@ -168,5 +172,90 @@ class ServersRepositoryTest {
         ServersRepository(storage).setActiveServer(servers[0])
 
         assertThat(storage.readActiveServer()).isEqualTo(servers[0])
+    }
+
+    @Test
+    fun testGetServerById() {
+        repo.apply {
+            addServer(raspberryPi)
+            addServer(router)
+            addServer(laptop)
+        }
+
+        assertThat(repo.getServerById(raspberryPi.id)).isEqualTo(raspberryPi)
+        assertThat(repo.getServerById(router.id)).isEqualTo(router)
+        assertThat(repo.getServerById(laptop.id)).isEqualTo(laptop)
+    }
+
+    @Test
+    fun testGetServerByIdReturnNullIfNotFound() {
+        assertThat(repo.getServerById("fake_id")).isNull()
+    }
+
+    @Test
+    fun testUpdateServer() {
+        val server = Server("init name", "192.168.1.1", 9091)
+        repo.addServer(server)
+
+        val modifiedServer = Server.fromJson(server.toJson())
+        modifiedServer.name = "new name"
+        repo.updateServer(modifiedServer)
+
+        val servers = repo.getServers().value
+        assertThat(servers).doesNotContain(server)
+        assertThat(servers).containsExactly(modifiedServer)
+        assertThat(repo.getServerById(server.id)?.name).isEqualTo("new name")
+    }
+
+    @Test(expected = IllegalStateException::class)
+    fun testUpdateServerThrowsExceptionIfNoServerFound() {
+        repo.addServer(raspberryPi)
+
+        repo.updateServer(laptop)
+    }
+
+    @Test
+    fun testServerListPersistedAfterUpdate() {
+        val storage = FakeServersStorage()
+        val server = Server("init name", "192.168.1.1", 9091)
+        val repo = ServersRepository(storage).apply {
+            addServer(server)
+        }
+
+        server.name = "new name"
+        repo.updateServer(server)
+
+        assertThat(storage.readServers()[0].name).isEqualTo("new name")
+    }
+
+    @Test
+    fun testUpdateServerUpdatesActiveServer() {
+        val server = Server("init name", "192.168.1.1", 9091)
+        repo.apply {
+            addServer(raspberryPi)
+            addServer(server)
+            setActiveServer(server)
+        }
+
+        val modifiedServer = Server.fromJson(server.toJson())
+        modifiedServer.name = "new name"
+        repo.updateServer(modifiedServer)
+
+        assertThat(repo.getActiveServer().value?.name).isEqualTo("new name")
+    }
+
+    @Test
+    fun testPersistServers() {
+        val storage = FakeServersStorage()
+        val server = Server("init name", "192.168.1.1", 9091)
+        val repo = ServersRepository(storage).apply {
+            addServer(server)
+        }
+
+        server.name = "new name"
+        assertThat(storage.readServers()[0].name).isEqualTo("init name")
+        repo.persistServers()
+
+        assertThat(storage.readServers()[0].name).isEqualTo("new name")
     }
 }

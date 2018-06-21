@@ -73,6 +73,7 @@ import net.yupol.transmissionremote.app.preferences.PreferencesActivity;
 import net.yupol.transmissionremote.app.preferences.ServerPreferencesActivity;
 import net.yupol.transmissionremote.app.preferences.ServersActivity;
 import net.yupol.transmissionremote.app.server.AddServerActivity;
+import net.yupol.transmissionremote.app.server.ServersRepository;
 import net.yupol.transmissionremote.app.sorting.SortOrder;
 import net.yupol.transmissionremote.app.sorting.SortedBy;
 import net.yupol.transmissionremote.app.torrentdetails.TorrentDetailsActivity;
@@ -109,6 +110,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
+
+import javax.inject.Inject;
 
 import io.reactivex.Completable;
 import io.reactivex.CompletableObserver;
@@ -241,6 +244,8 @@ public class MainActivity extends BaseActivity implements TorrentUpdater.Torrent
     private CompositeDisposable serverSettingsRequests = new CompositeDisposable();
     private CompositeDisposable requests = new CompositeDisposable();
 
+    @Inject ServersRepository serversRepository;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         LayoutInflaterCompat.setFactory2(getLayoutInflater(), new IconicsLayoutInflater2(getDelegate()));
@@ -249,7 +254,9 @@ public class MainActivity extends BaseActivity implements TorrentUpdater.Torrent
         binding = DataBindingUtil.setContentView(this, R.layout.main_activity);
 
         application = TransmissionRemote.getApplication(this);
-        finishedTorrentsNotificationManager = new FinishedTorrentsNotificationManager(this);
+        application.di.getApplicationComponent().inject(this);
+
+        finishedTorrentsNotificationManager = new FinishedTorrentsNotificationManager(application, serversRepository);
 
         setupActionBar();
         setupBottomToolbar();
@@ -283,14 +290,14 @@ public class MainActivity extends BaseActivity implements TorrentUpdater.Torrent
         Toolbar.LayoutParams lp = new Toolbar.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         binding.toolbar.addView(spinnerContainer, lp);
         toolbarSpinner = spinnerContainer.findViewById(R.id.toolbar_spinner);
-        toolbarSpinnerAdapter = new ActionBarNavigationAdapter(this);
+        toolbarSpinnerAdapter = new ActionBarNavigationAdapter(this, serversRepository);
         toolbarSpinner.setAdapter(toolbarSpinnerAdapter);
         toolbarSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if (id == ActionBarNavigationAdapter.ID_SERVER) {
                     Server server = (Server) toolbarSpinnerAdapter.getItem(position);
-                    if (!server.equals(application.getActiveServer())) {
+                    if (!server.equals(serversRepository.getActiveServer().getValue())) {
                         switchServer(server);
                     }
                 } else if (id == ActionBarNavigationAdapter.ID_FILTER) {
@@ -348,7 +355,7 @@ public class MainActivity extends BaseActivity implements TorrentUpdater.Torrent
                     }
                 });
 
-        headerView = new HeaderView(this);
+        headerView = new HeaderView(this, serversRepository);
         headerView.setHeaderListener(new HeaderView.HeaderListener() {
             @Override
             public void onSettingsPressed() {
@@ -426,8 +433,8 @@ public class MainActivity extends BaseActivity implements TorrentUpdater.Torrent
                 }).build();
 
         headerView.setDrawer(drawer);
-        List<Server> servers = application.getServers();
-        headerView.setServers(servers, servers.indexOf(application.getActiveServer()));
+        List<Server> servers = serversRepository.getServers().getValue();
+        headerView.setServers(servers, servers.indexOf(serversRepository.getActiveServer().getValue()));
 
         SortedBy persistedSortedBy = application.getSortedBy();
         SortOrder persistedSortOrder = application.getSortOrder();
@@ -527,7 +534,7 @@ public class MainActivity extends BaseActivity implements TorrentUpdater.Torrent
 
         getIntent().setData(null);
 
-        if (application.getActiveServer() == null) {
+        if (serversRepository.getActiveServer().getValue() == null) {
             new AlertDialog.Builder(this)
                     .setMessage(R.string.error_msg_open_torrent_no_server)
                     .setPositiveButton(android.R.string.ok, null)
@@ -632,14 +639,14 @@ public class MainActivity extends BaseActivity implements TorrentUpdater.Torrent
         isActivityResumed = true;
         getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
 
-        List<Server> servers = application.getServers();
+        List<Server> servers = serversRepository.getServers().getValue();
         if (servers.isEmpty()) {
             showEmptyServerFragment();
             drawer.getDrawerLayout().setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
             binding.toolbar.setVisibility(View.GONE);
             if (bottomToolbar != null) bottomToolbar.setVisibility(View.GONE);
         } else {
-            switchServer(application.getActiveServer());
+            switchServer(serversRepository.getActiveServer().getValue());
             drawer.getDrawerLayout().setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
             binding.toolbar.setVisibility(View.VISIBLE);
             if (bottomToolbar != null) bottomToolbar.setVisibility(View.VISIBLE);
@@ -914,7 +921,7 @@ public class MainActivity extends BaseActivity implements TorrentUpdater.Torrent
         hasTorrentList = true;
 
         if (application.isNotificationEnabled()) {
-            finishedTorrentsNotificationManager.checkForFinishedTorrents(application.getActiveServer(), torrents);
+            finishedTorrentsNotificationManager.checkForFinishedTorrents(serversRepository.getActiveServer().getValue(), torrents);
         }
 
         if (getTorrentListFragment() == null) {
@@ -1118,14 +1125,14 @@ public class MainActivity extends BaseActivity implements TorrentUpdater.Torrent
     }
 
     private void addNewServer(Server server) {
-        application.addServer(server);
+        serversRepository.addServer(server);
     }
 
     private void switchServer(Server server) {
-        if (!server.equals(application.getActiveServer())) {
+        if (!server.equals(serversRepository.getActiveServer().getValue())) {
             hasTorrentList = false;
         }
-        application.setActiveServer(server);
+        serversRepository.setActiveServer(server);
         toolbarSpinner.setSelection(toolbarSpinnerAdapter.getServerPosition(server));
 
         // Stop old server connections
@@ -1140,7 +1147,7 @@ public class MainActivity extends BaseActivity implements TorrentUpdater.Torrent
         }
 
         // Start new server connections
-        List<Server> servers = application.getServers();
+        List<Server> servers = serversRepository.getServers().getValue();
         headerView.setServers(servers, servers.indexOf(server));
 
         transport = new Transport(server, new ConnectivityInterceptor(getBaseContext()));
@@ -1235,10 +1242,7 @@ public class MainActivity extends BaseActivity implements TorrentUpdater.Torrent
         FragmentManager fm = getSupportFragmentManager();
         NetworkErrorFragment fragment = (NetworkErrorFragment) fm.findFragmentByTag(TAG_NETWORK_ERROR);
         if (fragment == null) {
-            fragment = new NetworkErrorFragment();
-            Bundle args = new Bundle();
-            args.putString(NetworkErrorFragment.KEY_MESSAGE, message);
-            fragment.setArguments(args);
+            fragment = NetworkErrorFragment.newInstance(serversRepository.getActiveServer().getValue().getId(), message);
             FragmentTransaction ft = fm.beginTransaction();
             ft.replace(R.id.torrent_list_container, fragment, TAG_NETWORK_ERROR);
             ft.commitAllowingStateLoss();

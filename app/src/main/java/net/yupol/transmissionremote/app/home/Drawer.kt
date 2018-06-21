@@ -15,12 +15,13 @@ import net.yupol.transmissionremote.app.R
 import net.yupol.transmissionremote.app.drawer.FreeSpaceFooterDrawerItem
 import net.yupol.transmissionremote.app.drawer.HeaderView
 import net.yupol.transmissionremote.app.drawer.SortDrawerItem
+import net.yupol.transmissionremote.app.server.ServersRepository
 import net.yupol.transmissionremote.app.sorting.SortOrder
 import net.yupol.transmissionremote.app.sorting.SortedBy
 import net.yupol.transmissionremote.app.utils.ThemeUtils
 import net.yupol.transmissionremote.model.Server
 
-class Drawer(val listener: Listener) {
+class Drawer(val listener: Listener, val serversRepository: ServersRepository) {
 
     companion object {
         private const val DRAWER_ITEM_ID_SETTINGS = 101
@@ -47,7 +48,7 @@ class Drawer(val listener: Listener) {
                 .withChecked(ThemeUtils.isInNightMode(activity))
                 .withOnCheckedChangeListener { _, _, isChecked -> listener.onThemeSwitched(isChecked) }
 
-        val headerView = HeaderView(activity)
+        val headerView = HeaderView(activity, serversRepository)
         headerView.setHeaderListener(object : HeaderView.HeaderListener {
             override fun onSettingsPressed() {
                 listener.onServerSettingsPressed()

@@ -1,6 +1,5 @@
 package net.yupol.transmissionremote.app.preferences;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.view.LayoutInflater;
@@ -17,6 +16,7 @@ import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.TransmissionRemote;
+import net.yupol.transmissionremote.app.server.ServersRepository;
 import net.yupol.transmissionremote.app.utils.IconUtils;
 import net.yupol.transmissionremote.model.Server;
 
@@ -25,6 +25,7 @@ import java.util.Locale;
 public class ServersFragment extends ListFragment {
 
     private TransmissionRemote app;
+    private ServersRepository serversRepository;
 
     private OnServerSelectedListener serverSelectedListener;
 
@@ -32,12 +33,12 @@ public class ServersFragment extends ListFragment {
         setListAdapter(new BaseAdapter() {
             @Override
             public int getCount() {
-                return app.getServers().size();
+                return serversRepository.getServers().getValue().size();
             }
 
             @Override
             public Server getItem(int position) {
-                return app.getServers().get(position);
+                return serversRepository.getServers().getValue().get(position);
             }
 
             @Override
@@ -67,7 +68,7 @@ public class ServersFragment extends ListFragment {
                 addressText.setText(url);
 
                 RadioButton radioButton = itemView.findViewById(R.id.radio_button);
-                radioButton.setChecked(server.equals(app.getActiveServer()));
+                radioButton.setChecked(server.equals(serversRepository.getActiveServer().getValue()));
 
                 return itemView;
             }
@@ -78,6 +79,8 @@ public class ServersFragment extends ListFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+        app = TransmissionRemote.getInstance();
+        serversRepository = app.di.getApplicationComponent().serversRepository();
     }
 
     @Override
@@ -93,12 +96,6 @@ public class ServersFragment extends ListFragment {
     }
 
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        app = (TransmissionRemote) getActivity().getApplication();
-    }
-
-    @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.servers_menu, menu);
         IconUtils.setMenuIcon(getActivity(), menu, R.id.action_add, GoogleMaterial.Icon.gmd_add);
@@ -108,8 +105,8 @@ public class ServersFragment extends ListFragment {
     public void onListItemClick(ListView l, View v, int position, long id) {
         BaseAdapter adapter = (BaseAdapter) getListAdapter();
         Server server = (Server) adapter.getItem(position);
-        if (!server.equals(app.getActiveServer())) {
-            app.setActiveServer(server);
+        if (!server.equals(serversRepository.getActiveServer().getValue())) {
+            serversRepository.setActiveServer(server);
         }
         ((BaseAdapter) getListAdapter()).notifyDataSetChanged();
 

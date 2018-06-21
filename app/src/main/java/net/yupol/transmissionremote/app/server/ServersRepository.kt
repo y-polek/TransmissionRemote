@@ -22,7 +22,7 @@ class ServersRepository @Inject constructor(private val storage: ServersStorage)
         if (activeServer.value == null) {
             activeServer.value = server
         }
-        storage.writeServers(newServers)
+        persistServers()
     }
 
     fun removeServer(server: Server) {
@@ -31,7 +31,7 @@ class ServersRepository @Inject constructor(private val storage: ServersStorage)
             setActiveServer(newServers.firstOrNull())
         }
         servers.value = newServers
-        storage.writeServers(newServers)
+        persistServers()
     }
 
     fun getActiveServer(): LiveData<Server> = activeServer
@@ -39,5 +39,31 @@ class ServersRepository @Inject constructor(private val storage: ServersStorage)
     fun setActiveServer(server: Server?) {
         activeServer.value = server
         storage.writeActiveServer(server)
+    }
+
+    fun persistServers() {
+        storage.writeServers(servers.value!!)
+    }
+
+    fun getServerById(id: String): Server? {
+        return servers.value?.firstOrNull { it.id == id }
+    }
+
+    fun updateServer(server: Server) {
+        val currentServers = servers.value ?: throw IllegalStateException("Repo not initialized")
+
+        val idx = currentServers.indexOfFirst { it.id == server.id }
+        if (idx < 0) throw IllegalStateException("Server $server not found in repository")
+
+        servers.value = currentServers.toMutableList().apply {
+            this[idx] = server
+        }
+
+        persistServers()
+
+        if (activeServer.value?.id == server.id) {
+            activeServer.value = server
+            storage.writeActiveServer(server)
+        }
     }
 }
