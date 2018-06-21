@@ -24,6 +24,13 @@ dependencies {
     // Emoji
     implementation 'com.vdurmont:emoji-java:4.0.0'
 
+    // LiveData
+    implementation "android.arch.lifecycle:livedata:$lifecycle_version"
+
     // Testing
+    testImplementation "junit:junit:$junit_version"
     testImplementation "io.kotlintest:kotlintest-runner-junit4:$kotlintest_version"
+    testImplementation "android.arch.core:core-testing:$lifecycle_version"
+    testImplementation "org.assertj:assertj-core:$assertj_version"
+    testImplementation "org.mockito:mockito-core:$mockito_version"
 }
