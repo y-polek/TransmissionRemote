@@ -55,7 +55,6 @@ import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.SectionDrawerItem;
 import com.mikepenz.materialdrawer.model.SwitchDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
-import com.mikepenz.materialdrawer.util.KeyboardUtil;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
 
@@ -205,8 +204,6 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
         }
     };
 
-    private KeyboardUtil keyboardUtil;
-
     private MenuItem bottomBarDownSpeedMenuItem;
     private MenuItem bottomBarUpSpeedMenuItem;
 
@@ -249,10 +246,6 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
         setupFloatingActionButton();
 
         application.addOnSpeedLimitEnabledChangedListener(this);
-
-        // Workaround for bug https://code.google.com/p/android/issues/detail?id=63777
-        keyboardUtil = new KeyboardUtil(this, findViewById(android.R.id.content));
-        keyboardUtil.enable();
 
         if (savedInstanceState != null) {
             openTorrentUri = savedInstanceState.getParcelable(KEY_OPEN_TORRENT_URI);
@@ -484,7 +477,6 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
     protected void onDestroy() {
         application.removeOnSpeedLimitEnabledChangedListener(this);
         turtleModeButton = null;
-        keyboardUtil.disable();
         super.onDestroy();
     }
 
