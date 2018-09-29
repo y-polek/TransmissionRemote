@@ -43,8 +43,8 @@ public class HeaderView extends RelativeLayout implements View.OnClickListener {
 
     private static final float CIRCLE_TEXT_PADDING_RATIO = 0.35f;
 
-    private static final int DRAWER_ITEM_ID_ADD_SERVER = -1;
-    private static final int DRAWER_ITEM_ID_MANAGE_SERVERS = -2;
+    private static final int DRAWER_ITEM_ID_ADD_SERVER = -101;
+    private static final int DRAWER_ITEM_ID_MANAGE_SERVERS = -102;
 
     private static final String KEY_ORDERED_SERVERS = "key_ordered_servers";
 
@@ -302,7 +302,8 @@ public class HeaderView extends RelativeLayout implements View.OnClickListener {
         serverListExpanded = true;
         expandIcon.icon(MaterialDrawerFont.Icon.mdf_arrow_drop_up);
         drawer.switchDrawerContent(drawerItemClickListener, null, serverSelectionItems,
-                servers.indexOf(serversInCircles[0]) + drawer.getAdapter().getHeaderOffset());
+                servers.indexOf(serversInCircles[0]) + 1);
+
     }
 
     private void hideServersList() {
