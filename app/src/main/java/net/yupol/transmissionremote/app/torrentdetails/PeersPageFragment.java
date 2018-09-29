@@ -84,7 +84,7 @@ public class PeersPageFragment extends BasePageFragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.torrent_peers_menu, menu);
-        IconUtils.setMenuIcon(getContext(), menu, R.id.action_sort_peers, CommunityMaterial.Icon.cmd_sort_variant);
+        IconUtils.setMenuIcon(getContext(), menu, R.id.action_sort_peers, CommunityMaterial.Icon2.cmd_sort_variant);
     }
 
     @Override
@@ -98,7 +98,7 @@ public class PeersPageFragment extends BasePageFragment {
     }
 
     private void showSortingList() {
-        ListPopupWindow popup = new ListPopupWindow(getContext());
+        ListPopupWindow popup = new ListPopupWindow(requireContext());
         popup.setModal(true);
 
         final PeersSortingListAdapter sortingAdapter = new PeersSortingListAdapter();

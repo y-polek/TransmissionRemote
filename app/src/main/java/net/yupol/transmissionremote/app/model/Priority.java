@@ -11,7 +11,7 @@ import net.yupol.transmissionremote.app.R;
 public enum Priority {
 
     HIGH(1, R.string.priority_high, FontAwesome.Icon.faw_angle_up),
-    NORMAL(0, R.string.priority_normal, CommunityMaterial.Icon.cmd_minus),
+    NORMAL(0, R.string.priority_normal, CommunityMaterial.Icon2.cmd_minus),
     LOW(-1, R.string.priority_low, FontAwesome.Icon.faw_angle_down);
 
     public final int value;

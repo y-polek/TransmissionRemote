@@ -105,7 +105,7 @@ public class TrackersPageFragment extends BasePageFragment implements TrackersAd
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.torrent_trackers_menu, menu);
-        IconUtils.setMenuIcon(getContext(), menu, R.id.action_add, CommunityMaterial.Icon.cmd_plus);
+        IconUtils.setMenuIcon(getContext(), menu, R.id.action_add, CommunityMaterial.Icon2.cmd_plus);
     }
 
     @Override
@@ -131,7 +131,7 @@ public class TrackersPageFragment extends BasePageFragment implements TrackersAd
 
     @Override
     public void onRemoveTrackerClicked(final TrackerStats tracker) {
-        new AlertDialog.Builder(getContext())
+        new AlertDialog.Builder(requireContext())
                 .setTitle(R.string.trackers_remove_confirmation_title)
                 .setMessage(R.string.trackers_remove_confirmation_message)
                 .setPositiveButton(R.string.remove, new DialogInterface.OnClickListener() {
@@ -219,7 +219,7 @@ public class TrackersPageFragment extends BasePageFragment implements TrackersAd
 
     private void showEditTrackerUrlDialog(@Nullable TrackerStats tracker) {
         FragmentTransaction ft = getChildFragmentManager().beginTransaction();
-        Fragment prev = getFragmentManager().findFragmentByTag(TAG_EDIT_URL_DIALOG);
+        Fragment prev = requireFragmentManager().findFragmentByTag(TAG_EDIT_URL_DIALOG);
         if (prev != null) {
             ft.remove(prev);
         }
@@ -232,12 +232,12 @@ public class TrackersPageFragment extends BasePageFragment implements TrackersAd
 
     private ClipboardManager clipboardManager() {
         if (clipboardManager == null) {
-            clipboardManager = (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
+            clipboardManager = (ClipboardManager) requireContext().getSystemService(Context.CLIPBOARD_SERVICE);
         }
         return clipboardManager;
     }
 
     private void refresh() {
-        ((SwipeRefreshLayout.OnRefreshListener) getActivity()).onRefresh();
+        ((SwipeRefreshLayout.OnRefreshListener) requireActivity()).onRefresh();
     }
 }

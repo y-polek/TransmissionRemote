@@ -5,12 +5,13 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.mikepenz.materialdrawer.model.BaseDrawerItem;
-import com.mikepenz.materialdrawer.model.utils.ViewHolderFactory;
 
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.utils.TextUtils;
 
-public class FreeSpaceFooterDrawerItem extends BaseDrawerItem {
+import java.util.List;
+
+public class FreeSpaceFooterDrawerItem extends BaseDrawerItem<FreeSpaceFooterDrawerItem, FreeSpaceFooterDrawerItem.ViewHolder> {
 
     private long freeSpace = -1L;
 
@@ -20,8 +21,8 @@ public class FreeSpaceFooterDrawerItem extends BaseDrawerItem {
     }
 
     @Override
-    public String getType() {
-        return "FOOTER_ITEM";
+    public int getType() {
+        return R.id.drawer_item_free_space;
     }
 
     @Override
@@ -30,27 +31,20 @@ public class FreeSpaceFooterDrawerItem extends BaseDrawerItem {
     }
 
     @Override
-    public void bindView(RecyclerView.ViewHolder holder) {
-        ViewHolder viewHolder = (ViewHolder) holder;
-
-        boolean freeSpaceAvailable = freeSpace >= 0L;
-        viewHolder.freeSpaceText.setText(viewHolder.freeSpaceText.getResources()
-                .getString(R.string.free_space_title, freeSpaceAvailable ? TextUtils.displayableSize(freeSpace) : "…"));
+    public ViewHolder getViewHolder(View v) {
+        return new ViewHolder(v);
     }
 
     @Override
-    public ViewHolderFactory getFactory() {
-        return new ItemFactory();
+    public void bindView(ViewHolder holder, List<Object> payloads) {
+        super.bindView(holder, payloads);
+
+        boolean freeSpaceAvailable = freeSpace >= 0L;
+        holder.freeSpaceText.setText(holder.freeSpaceText.getResources()
+                .getString(R.string.free_space_title, freeSpaceAvailable ? TextUtils.displayableSize(freeSpace) : "…"));
     }
 
-    public static class ItemFactory implements ViewHolderFactory<FreeSpaceFooterDrawerItem.ViewHolder> {
-        @Override
-        public FreeSpaceFooterDrawerItem.ViewHolder factory(View v) {
-            return new FreeSpaceFooterDrawerItem.ViewHolder(v);
-        }
-    }
-
-    private static class ViewHolder extends RecyclerView.ViewHolder {
+    static class ViewHolder extends RecyclerView.ViewHolder {
 
         final TextView freeSpaceText;
 

@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import com.mikepenz.iconics.IconicsDrawable;
 import com.mikepenz.iconics.view.IconicsImageView;
 
 import net.yupol.transmissionremote.app.R;
@@ -30,8 +31,8 @@ public class PriorityListAdapter extends ArrayAdapter<Priority> {
         Priority priority = getItem(position);
         assert priority != null;
         IconicsImageView imageView = view.findViewById(R.id.icon);
-        imageView.setColor(ColorUtils.resolveColor(getContext(), android.R.attr.textColorPrimary, R.color.text_color_primary));
-        imageView.setIcon(priority.icon);
+        imageView.setColorFilter(ColorUtils.resolveColor(getContext(), android.R.attr.textColorPrimary, R.color.text_color_primary));
+        imageView.setIcon(new IconicsDrawable(view.getContext(), priority.icon));
         TextView textView = view.findViewById(R.id.text);
         textView.setText(priority.nameResId);
         return view;

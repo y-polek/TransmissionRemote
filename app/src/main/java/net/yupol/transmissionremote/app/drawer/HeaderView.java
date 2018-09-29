@@ -73,7 +73,7 @@ public class HeaderView extends RelativeLayout implements View.OnClickListener {
         public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
             if (listener == null) return false;
 
-            int id = drawerItem.getIdentifier();
+            int id = (int) drawerItem.getIdentifier();
             switch (id) {
                 case DRAWER_ITEM_ID_ADD_SERVER:
                     listener.onAddServerPressed();
@@ -171,7 +171,7 @@ public class HeaderView extends RelativeLayout implements View.OnClickListener {
         } else {
             orderedServers = FluentIterable.from(servers).transform(new Function<Server, String>() {
                 @Override
-                public String apply(Server server) {
+                public String apply(@NonNull Server server) {
                     return server.getId();
                 }
             }).copyInto(new LinkedList<String>());

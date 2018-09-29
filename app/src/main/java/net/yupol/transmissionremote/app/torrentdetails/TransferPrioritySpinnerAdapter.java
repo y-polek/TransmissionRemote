@@ -59,7 +59,7 @@ public class TransferPrioritySpinnerAdapter extends BaseAdapter {
                 icon = FontAwesome.Icon.faw_angle_up;
                 break;
             case NORMAL:
-                icon = CommunityMaterial.Icon.cmd_minus;
+                icon = CommunityMaterial.Icon2.cmd_minus;
                 break;
             case LOW:
                 icon = FontAwesome.Icon.faw_angle_down;

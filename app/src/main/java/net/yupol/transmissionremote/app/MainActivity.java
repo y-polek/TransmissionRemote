@@ -167,6 +167,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
     private static final String KEY_FAB_EXPANDED = "key_fab_expanded";
 
     private static final int DRAWER_ITEM_ID_SETTINGS = 101;
+    private static final int DRAWER_ITEM_FREE_SPACE = 102;
 
     private TransmissionRemote application;
     private TorrentUpdater torrentUpdater;
@@ -316,7 +317,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
                 .withSelectable(false);
 
         SwitchDrawerItem nightModeItem = new SwitchDrawerItem().withName(R.string.night_mode)
-                .withIcon(CommunityMaterial.Icon.cmd_theme_light_dark)
+                .withIcon(CommunityMaterial.Icon2.cmd_theme_light_dark)
                 .withSelectable(false)
                 .withChecked(ThemeUtils.isInNightMode(this))
                 .withOnCheckedChangeListener(new OnCheckedChangeListener() {
@@ -361,6 +362,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
 
         freeSpaceFooterDrawerItem = new FreeSpaceFooterDrawerItem();
         freeSpaceFooterDrawerItem.withSelectable(false);
+        freeSpaceFooterDrawerItem.withIdentifier(DRAWER_ITEM_FREE_SPACE);
 
         drawer = new DrawerBuilder()
                 .withActivity(this)
@@ -399,6 +401,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
                             }
                         }
                         selectedItem.setSortOrder(sortOrder);
+                        drawer.updateItem(selectedItem);
                         application.setSorting(selectedItem.getSortedBy(), sortOrder);
                     }
                 }).build();
@@ -442,7 +445,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
                         .colorRes(R.color.text_primary_inverse));
 
         binding.addTorrentByMagnetButton.setIconDrawable(
-                new IconicsDrawable(this, CommunityMaterial.Icon.cmd_magnet)
+                new IconicsDrawable(this, CommunityMaterial.Icon2.cmd_magnet)
                         .paddingRes(R.dimen.fab_icon_padding)
                         .colorRes(R.color.text_primary_inverse));
 
@@ -699,8 +702,8 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.torrent_list_menu, menu);
 
-        IconUtils.setMenuIcon(this, menu, R.id.action_start_all_torrents, FontAwesome.Icon.faw_play);
-        IconUtils.setMenuIcon(this, menu, R.id.action_pause_all_torrents, FontAwesome.Icon.faw_pause);
+        IconUtils.setMenuIcon(this, menu, R.id.action_start_all_torrents, CommunityMaterial.Icon2.cmd_play);
+        IconUtils.setMenuIcon(this, menu, R.id.action_pause_all_torrents, CommunityMaterial.Icon2.cmd_pause);
 
         turtleModeItem = menu.findItem(R.id.action_turtle_mode);
         updateTurtleModeActionIcon();

@@ -3,6 +3,7 @@ package net.yupol.transmissionremote.app.torrentdetails;
 import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.ListPopupWindow;
@@ -59,8 +60,9 @@ public class DirectoryAdapter extends RecyclerView.Adapter<DirectoryAdapter.View
         notifyItemRangeChanged(0, getItemCount());
     }
 
+    @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         FileItemBinding binding = DataBindingUtil.inflate(
                 LayoutInflater.from(parent.getContext()),
                 R.layout.file_item, parent, false);
@@ -68,7 +70,7 @@ public class DirectoryAdapter extends RecyclerView.Adapter<DirectoryAdapter.View
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         final int viewType = getItemViewType(position);
         Drawable icon = null;
         long bytesCompleted = 0;
@@ -89,7 +91,7 @@ public class DirectoryAdapter extends RecyclerView.Adapter<DirectoryAdapter.View
                 bytesCompleted = calculateBytesCompletedInDir(dir);
                 filesLength = calculateFilesLengthInDir(dir);
 
-                icon = new IconicsDrawable(context, FontAwesome.Icon.faw_folder_o)
+                icon = new IconicsDrawable(context, FontAwesome.Icon.faw_folder)
                         .color(ContextCompat.getColor(context, R.color.text_color_primary));
                 break;
             case R.id.view_type_file:
