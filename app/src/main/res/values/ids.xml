@@ -3,4 +3,5 @@
     <item type="id" name="TAG_FILE_INDEX"/>
     <item type="id" name="view_type_file"/>
     <item type="id" name="view_type_directory"/>
+    <item type="id" name="drawer_item_free_space"/>
 </resources>

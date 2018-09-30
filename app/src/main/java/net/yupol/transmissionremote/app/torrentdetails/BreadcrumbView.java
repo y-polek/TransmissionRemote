@@ -14,6 +14,7 @@ import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.mikepenz.iconics.IconicsDrawable;
 import com.mikepenz.iconics.view.IconicsButton;
 import com.mikepenz.iconics.view.IconicsImageView;
 import com.mikepenz.ionicons_typeface_library.Ionicons;
@@ -126,8 +127,8 @@ public class BreadcrumbView extends LinearLayout {
 
     private void addSeparator() {
         IconicsImageView dividerView = new IconicsImageView(getContext());
-        dividerView.setIcon(Ionicons.Icon.ion_ios_arrow_right);
-        dividerView.setColor(secondaryColor);
+        dividerView.setIcon(new IconicsDrawable(getContext(), Ionicons.Icon.ion_ios_arrow_right));
+        dividerView.setColorFilter(secondaryColor);
         LayoutParams dividerLayoutParams = new LayoutParams(arrowIconSize, arrowIconSize);
         dividerLayoutParams.gravity = Gravity.CENTER_VERTICAL;
         pathLayout.addView(dividerView, dividerLayoutParams);

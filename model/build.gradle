@@ -37,8 +37,8 @@ dependencies {
 
     // Iconics
     implementation "com.mikepenz:iconics-core:$iconics_version"
-    implementation 'com.mikepenz:fontawesome-typeface:4.7.0.1@aar'
-    implementation 'com.mikepenz:community-material-typeface:1.9.32.2@aar'
+    implementation "com.mikepenz:fontawesome-typeface:$iconics_font_awesome_version"
+    implementation "com.mikepenz:community-material-typeface:$iconics_community_material_version"
 
     // Testing
     testImplementation 'junit:junit:4.12'

@@ -5,6 +5,7 @@
 bin/
 gen/
 build/
+captures/
 .classpath
 .project
 .idea
@@ -17,4 +18,5 @@ build/
 *.ipr
 *~
 *swp
+api_keys.properties
 

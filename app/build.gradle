@@ -3,12 +3,12 @@ apply plugin: 'io.fabric'
 
 android {
     compileSdkVersion 27
-    buildToolsVersion '27.0.3'
+    buildToolsVersion '28.0.2'
     defaultConfig {
         minSdkVersion 15
         targetSdkVersion 27
-        versionCode 20
-        versionName '0.9.13'
+        versionCode 91400
+        versionName '0.9.14'
         applicationId 'net.yupol.transmissionremote.app'
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
@@ -71,23 +71,23 @@ dependencies {
 
     // Apache Commons
     implementation 'org.apache.commons:commons-io:1.3.2'
-    implementation 'org.apache.commons:commons-lang3:3.4'
+    implementation 'org.apache.commons:commons-lang3:3.5'
 
     // GSON
     implementation "com.google.code.gson:gson:$gson_version"
 
     // Material Drawer
-    implementation('com.mikepenz:materialdrawer:4.6.4@aar') {
+    implementation('com.mikepenz:materialdrawer:6.0.8@aar') {
         transitive = true
     }
 
     // Iconics
     implementation "com.mikepenz:iconics-core:$iconics_version"
-    implementation "com.mikepenz:iconics-views:2.9.2@aar"
-    implementation 'com.mikepenz:google-material-typeface:3.0.1.1.original@aar'
-    implementation 'com.mikepenz:fontawesome-typeface:4.7.0.1@aar'
-    implementation 'com.mikepenz:community-material-typeface:1.9.32.2@aar'
-    implementation 'com.mikepenz:ionicons-typeface:2.0.1.3@aar'
+    implementation "com.mikepenz:iconics-views:$iconics_version"
+    implementation 'com.mikepenz:google-material-typeface:3.0.1.3.original@aar'
+    implementation "com.mikepenz:fontawesome-typeface:$iconics_font_awesome_version"
+    implementation "com.mikepenz:community-material-typeface:$iconics_community_material_version"
+    implementation 'com.mikepenz:ionicons-typeface:2.0.1.5@aar'
 
     // Indeterminate Checkbox
     implementation 'com.github.sevar83:indeterminate-checkbox:1.0.5@aar'
