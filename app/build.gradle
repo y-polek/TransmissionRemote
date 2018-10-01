@@ -2,13 +2,13 @@ apply plugin: 'com.android.application'
 apply plugin: 'io.fabric'
 
 android {
-    compileSdkVersion 27
+    compileSdkVersion compile_sdk_version
     buildToolsVersion '28.0.2'
     defaultConfig {
-        minSdkVersion 15
-        targetSdkVersion 27
-        versionCode 91400
-        versionName '0.9.14'
+        minSdkVersion min_sdk_version
+        targetSdkVersion target_sdk_version
+        versionCode version_code
+        versionName "$version_name"
         applicationId 'net.yupol.transmissionremote.app'
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
