@@ -54,7 +54,7 @@ import com.mikepenz.materialdrawer.model.SectionDrawerItem;
 import com.mikepenz.materialdrawer.model.SwitchDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
-import net.yupol.transmissionremote.app.BaseActivity;
+import net.yupol.transmissionremote.app.BaseMvpActivity;
 import net.yupol.transmissionremote.app.NetworkErrorFragment;
 import net.yupol.transmissionremote.app.ProgressbarFragment;
 import net.yupol.transmissionremote.app.R;
@@ -133,7 +133,8 @@ import static android.preference.PreferenceManager.getDefaultSharedPreferences;
 import static net.yupol.transmissionremote.transport.rpc.SessionParameters.altSpeedLimitEnabled;
 
 @RuntimePermissions
-public class MainActivity extends BaseActivity implements TorrentUpdater.TorrentUpdateListener,
+public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivityPresenter> implements MainActivityView,
+        TorrentUpdater.TorrentUpdateListener,
         SharedPreferences.OnSharedPreferenceChangeListener, TransmissionRemote.OnSpeedLimitChangedListener,
         TorrentListFragment.OnTorrentSelectedListener, TorrentListFragment.ContextualActionBarListener,
         OpenByDialogFragment.OnOpenTorrentSelectedListener, OpenAddressDialogFragment.OnOpenMagnetListener,
@@ -271,6 +272,12 @@ public class MainActivity extends BaseActivity implements TorrentUpdater.Torrent
         requests.clear();
         serverSettingsRequests.clear();
         super.onStop();
+    }
+
+    @NonNull
+    @Override
+    public MainActivityPresenter createPresenter() {
+        return new MainActivityPresenter();
     }
 
     private void setupActionBar() {

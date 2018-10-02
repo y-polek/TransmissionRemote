@@ -9,4 +9,5 @@ ext {
     iconics_community_material_version = '2.7.94.1@aar'
     iconics_font_awesome_version = '5.3.1.1@aar'
     kotlintest_version = '3.0.4'
+    mosby_version = '3.1.0'
 }
