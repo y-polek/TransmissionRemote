@@ -1,6 +1,6 @@
 ext {
     support_version = '27.1.1'
-    rxjava_version = '2.1.9'
+    rxjava_version = '2.2.0'
     moshi_version = '1.5.0'
     gson_version = '2.8.2'
     guava_version = '23.6-android'
