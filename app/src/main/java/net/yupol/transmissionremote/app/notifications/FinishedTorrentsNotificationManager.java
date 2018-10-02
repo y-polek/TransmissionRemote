@@ -13,7 +13,7 @@ import android.support.v4.app.TaskStackBuilder;
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
 
-import net.yupol.transmissionremote.app.MainActivity;
+import net.yupol.transmissionremote.app.home.MainActivity;
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.TransmissionRemote;
 import net.yupol.transmissionremote.model.json.Torrent;

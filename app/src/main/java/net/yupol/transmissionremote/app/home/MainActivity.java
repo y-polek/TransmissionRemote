@@ -1,9 +1,8 @@
-package net.yupol.transmissionremote.app;
+package net.yupol.transmissionremote.app.home;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.app.SearchManager;
 import android.content.ActivityNotFoundException;
 import android.content.ContentResolver;
@@ -18,7 +17,6 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.provider.OpenableColumns;
-import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
@@ -56,6 +54,11 @@ import com.mikepenz.materialdrawer.model.SectionDrawerItem;
 import com.mikepenz.materialdrawer.model.SwitchDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
+import net.yupol.transmissionremote.app.BaseActivity;
+import net.yupol.transmissionremote.app.NetworkErrorFragment;
+import net.yupol.transmissionremote.app.ProgressbarFragment;
+import net.yupol.transmissionremote.app.R;
+import net.yupol.transmissionremote.app.TransmissionRemote;
 import net.yupol.transmissionremote.app.actionbar.ActionBarNavigationAdapter;
 import net.yupol.transmissionremote.app.actionbar.SpeedTextView;
 import net.yupol.transmissionremote.app.actionbar.TurtleModeButton;
@@ -1356,26 +1359,5 @@ public class MainActivity extends BaseActivity implements TorrentUpdater.Torrent
                 .onErrorComplete()
                 .subscribe();
         torrentUpdater.scheduleUpdate(UPDATE_REQUEST_DELAY);
-    }
-
-    public static class StoragePermissionNeverAskAgainDialog extends DialogFragment {
-        @NonNull
-        @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
-            return new AlertDialog.Builder(getContext())
-                    .setMessage(R.string.storage_permission_never_ask_again_message)
-                    .setPositiveButton(R.string.app_settings, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            Intent intent = new Intent();
-                            intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                            Uri uri = Uri.fromParts("package", getContext().getPackageName(), null);
-                            intent.setData(uri);
-                            startActivity(intent);
-                        }
-                    })
-                    .setNegativeButton(android.R.string.cancel, null)
-                    .create();
-        }
     }
 }
