@@ -50,8 +50,9 @@ android {
 }
 
 dependencies {
+    implementation project(':data')
+    implementation project(':domain')
     implementation project(':model')
-    implementation project(':transport')
     implementation project(':utils')
 
     // Kotlin

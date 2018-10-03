@@ -19,10 +19,10 @@ import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.TransmissionRemote;
 import net.yupol.transmissionremote.app.torrentdetails.BandwidthLimitFragment;
 import net.yupol.transmissionremote.app.utils.IconUtils;
-import net.yupol.transmissionremote.model.Parameter;
+import net.yupol.transmissionremote.data.api.rpc.Parameter;
 import net.yupol.transmissionremote.model.json.ServerSettings;
-import net.yupol.transmissionremote.transport.Transport;
-import net.yupol.transmissionremote.transport.rpc.RpcArgs;
+import net.yupol.transmissionremote.data.api.Transport;
+import net.yupol.transmissionremote.data.api.rpc.RpcArgs;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -34,12 +34,12 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
-import static net.yupol.transmissionremote.transport.rpc.SessionParameters.altSpeedLimitDown;
-import static net.yupol.transmissionremote.transport.rpc.SessionParameters.altSpeedLimitUp;
-import static net.yupol.transmissionremote.transport.rpc.SessionParameters.speedLimitDown;
-import static net.yupol.transmissionremote.transport.rpc.SessionParameters.speedLimitDownEnabled;
-import static net.yupol.transmissionremote.transport.rpc.SessionParameters.speedLimitUp;
-import static net.yupol.transmissionremote.transport.rpc.SessionParameters.speedLimitUpEnabled;
+import static net.yupol.transmissionremote.data.api.rpc.SessionParameters.altSpeedLimitDown;
+import static net.yupol.transmissionremote.data.api.rpc.SessionParameters.altSpeedLimitUp;
+import static net.yupol.transmissionremote.data.api.rpc.SessionParameters.speedLimitDown;
+import static net.yupol.transmissionremote.data.api.rpc.SessionParameters.speedLimitDownEnabled;
+import static net.yupol.transmissionremote.data.api.rpc.SessionParameters.speedLimitUp;
+import static net.yupol.transmissionremote.data.api.rpc.SessionParameters.speedLimitUpEnabled;
 
 public class ServerPreferencesFragment extends Fragment {
 

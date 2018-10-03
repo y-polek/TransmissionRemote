@@ -24,8 +24,8 @@ import net.yupol.transmissionremote.app.torrentlist.RemoveTorrentsDialogFragment
 import net.yupol.transmissionremote.app.torrentlist.RenameDialogFragment;
 import net.yupol.transmissionremote.model.json.Torrent;
 import net.yupol.transmissionremote.model.json.TorrentInfo;
-import net.yupol.transmissionremote.transport.Transport;
-import net.yupol.transmissionremote.transport.rpc.RpcArgs;
+import net.yupol.transmissionremote.data.api.Transport;
+import net.yupol.transmissionremote.data.api.rpc.RpcArgs;
 
 import java.util.LinkedList;
 import java.util.List;

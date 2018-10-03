@@ -48,8 +48,8 @@ import net.yupol.transmissionremote.app.utils.diff.Equals;
 import net.yupol.transmissionremote.app.utils.diff.ListDiff;
 import net.yupol.transmissionremote.app.utils.diff.Range;
 import net.yupol.transmissionremote.model.json.Torrent;
-import net.yupol.transmissionremote.transport.Transport;
-import net.yupol.transmissionremote.transport.rpc.RpcArgs;
+import net.yupol.transmissionremote.data.api.Transport;
+import net.yupol.transmissionremote.data.api.rpc.RpcArgs;
 
 import java.util.ArrayList;
 import java.util.Collection;

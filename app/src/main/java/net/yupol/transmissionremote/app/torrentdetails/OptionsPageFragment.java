@@ -19,16 +19,16 @@ import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.TransmissionRemote;
 import net.yupol.transmissionremote.app.databinding.TorrentDetailsOptionsPageFragmentBinding;
 import net.yupol.transmissionremote.app.utils.MinMaxTextWatcher;
-import net.yupol.transmissionremote.model.Parameter;
+import net.yupol.transmissionremote.data.api.rpc.Parameter;
 import net.yupol.transmissionremote.model.json.ServerSettings;
 import net.yupol.transmissionremote.model.json.TorrentInfo;
 import net.yupol.transmissionremote.model.json.TransferPriority;
 import net.yupol.transmissionremote.model.limitmode.IdleLimitMode;
 import net.yupol.transmissionremote.model.limitmode.LimitMode;
 import net.yupol.transmissionremote.model.limitmode.RatioLimitMode;
-import net.yupol.transmissionremote.transport.Transport;
-import net.yupol.transmissionremote.transport.rpc.RpcArgs;
-import net.yupol.transmissionremote.transport.rpc.TorrentParameters;
+import net.yupol.transmissionremote.data.api.Transport;
+import net.yupol.transmissionremote.data.api.rpc.RpcArgs;
+import net.yupol.transmissionremote.data.api.rpc.TorrentParameters;
 
 import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -36,7 +36,7 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
-import static net.yupol.transmissionremote.transport.rpc.TorrentParameters.transferPriority;
+import static net.yupol.transmissionremote.data.api.rpc.TorrentParameters.transferPriority;
 
 public class OptionsPageFragment extends BasePageFragment implements
         BandwidthLimitFragment.OnBandwidthLimitChangedListener {

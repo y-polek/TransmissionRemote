@@ -5,7 +5,7 @@ import android.os.Looper;
 import android.util.Log;
 
 import net.yupol.transmissionremote.model.json.TorrentInfo;
-import net.yupol.transmissionremote.transport.Transport;
+import net.yupol.transmissionremote.data.api.Transport;
 
 import java.util.Timer;
 import java.util.TimerTask;

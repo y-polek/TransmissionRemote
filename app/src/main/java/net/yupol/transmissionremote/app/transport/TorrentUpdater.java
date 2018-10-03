@@ -3,8 +3,8 @@ package net.yupol.transmissionremote.app.transport;
 import android.util.Log;
 
 import net.yupol.transmissionremote.model.json.Torrent;
-import net.yupol.transmissionremote.transport.NoNetworkException;
-import net.yupol.transmissionremote.transport.Transport;
+import net.yupol.transmissionremote.data.api.NoNetworkException;
+import net.yupol.transmissionremote.data.api.Transport;
 
 import java.net.HttpURLConnection;
 import java.util.List;

@@ -1,0 +1,41 @@
+package net.yupol.transmissionremote.data.api.model
+
+import com.squareup.moshi.Json
+
+data class TorrentInfoEntity(
+        @Json(name = "id") val id: Int,
+        @Json(name = "files") val files: Array<FileEntity>,
+        @Json(name = "fileStats") val fileStats: Array<FileStatEntity>,
+        @Json(name = "bandwidthPriority") val transferPriorityValue: Int,
+        @Json(name = "honorsSessionLimits") val honorsSessionLimits: Boolean,
+        @Json(name = "downloadLimited") val downloadLimited: Boolean,
+        @Json(name = "downloadLimit") val downloadLimit: Long,
+        @Json(name = "uploadLimited") val uploadLimited: Boolean,
+        @Json(name = "uploadLimit") val uploadLimit: Long,
+        @Json(name = "seedRatioLimit") val seedRatioLimit: Double,
+        @Json(name = "seedRatioMode") val seedRatioModeValue: Int,
+        @Json(name = "seedIdleLimit") val seedIdleLimit: Int,
+        @Json(name = "seedIdleMode") val seedIdleModeValue: Int,
+        @Json(name = "haveUnchecked") val haveUnchecked: Long,
+        @Json(name = "haveValid") val haveValid: Long,
+        @Json(name = "sizeWhenDone") val sizeWhenDone: Long,
+        @Json(name = "leftUntilDone") val leftUntilDone: Long,
+        @Json(name = "desiredAvailable") val desiredAvailable: Long,
+        @Json(name = "pieceCount") val pieceCount: Long,
+        @Json(name = "pieceSize") val pieceSize: Long,
+        @Json(name = "downloadDir") val downloadDir: String,
+        @Json(name = "isPrivate") val isPrivate: Boolean,
+        @Json(name = "creator") val creator: String,
+        @Json(name = "dateCreated") val dateCreated: Long,
+        @Json(name = "comment") val comment: String,
+        @Json(name = "downloadedEver") val downloadedEver: Long,
+        @Json(name = "corruptEver") val corruptEver: Long,
+        @Json(name = "uploadedEver") val uploadedEver: Long,
+        @Json(name = "addedDate") val addedDate: Long,
+        @Json(name = "activityDate") val activityDate: Long,
+        @Json(name = "secondsDownloading") val secondsDownloading: Long,
+        @Json(name = "secondsSeeding") val secondsSeeding: Long,
+        @Json(name = "peers") val peers: Array<PeerEntity>?,
+        @Json(name = "trackers") val trackers: Array<TrackerEntity>?,
+        @Json(name = "trackerStats") val trackerStats: Array<TrackerStatsEntity>?
+)

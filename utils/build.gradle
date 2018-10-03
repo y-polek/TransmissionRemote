@@ -1,25 +1,27 @@
-apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
-
-android {
-    compileSdkVersion 27
-    defaultConfig {
-        minSdkVersion 15
-    }
-
-    sourceSets {
-        main.java.srcDirs += 'src/main/kotlin'
-    }
-}
+apply plugin: 'java-library'
+apply plugin: 'kotlin'
 
 dependencies {
 
     // Kotlin
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-
-    // Support Library
-    implementation "com.android.support:appcompat-v7:$support_version"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 
     // Emoji
-    implementation 'com.vdurmont:emoji-java:4.0.0'
+    implementation "com.vdurmont:emoji-java:$emoji_java_version"
+}
+
+sourceCompatibility = "7"
+targetCompatibility = "7"
+repositories {
+    mavenCentral()
+}
+compileKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
+compileTestKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
 }

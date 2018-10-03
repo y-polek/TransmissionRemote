@@ -32,11 +32,11 @@ import net.yupol.transmissionremote.app.TransmissionRemote;
 import net.yupol.transmissionremote.app.databinding.DownloadLocationDialogBinding;
 import net.yupol.transmissionremote.app.utils.SimpleTextWatcher;
 import net.yupol.transmissionremote.app.utils.TextUtils;
-import net.yupol.transmissionremote.model.FreeSpace;
+import net.yupol.transmissionremote.data.api.model.FreeSpaceEntity;
 import net.yupol.transmissionremote.model.Server;
 import net.yupol.transmissionremote.model.json.ServerSettings;
-import net.yupol.transmissionremote.transport.Transport;
-import net.yupol.transmissionremote.transport.rpc.RpcFailureException;
+import net.yupol.transmissionremote.data.api.Transport;
+import net.yupol.transmissionremote.data.api.rpc.RpcFailureException;
 
 import java.util.List;
 
@@ -62,7 +62,7 @@ public class DownloadLocationDialogFragment extends DialogFragment {
 
     private OnDownloadLocationSelectedListener listener;
     private Disposable currentRequest;
-    private FreeSpace freeSpace;
+    private FreeSpaceEntity freeSpace;
     private DownloadLocationDialogBinding binding;
     private TransmissionRemote app;
     private CompositeDisposable requests = new CompositeDisposable();
@@ -297,14 +297,14 @@ public class DownloadLocationDialogFragment extends DialogFragment {
         new Transport(app.getActiveServer()).api().freeSpace(path)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new SingleObserver<FreeSpace>() {
+                .subscribe(new SingleObserver<FreeSpaceEntity>() {
                     @Override
                     public void onSubscribe(Disposable d) {
                         currentRequest = d;
                     }
 
                     @Override
-                    public void onSuccess(FreeSpace freeSpace) {
+                    public void onSuccess(FreeSpaceEntity freeSpace) {
                         DownloadLocationDialogFragment.this.freeSpace = freeSpace;
                         AlertDialog dialog = (AlertDialog) getDialog();
                         if (dialog != null) {

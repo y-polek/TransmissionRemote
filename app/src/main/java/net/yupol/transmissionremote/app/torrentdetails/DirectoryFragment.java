@@ -18,8 +18,8 @@ import net.yupol.transmissionremote.app.utils.DividerItemDecoration;
 import net.yupol.transmissionremote.model.Priority;
 import net.yupol.transmissionremote.model.json.File;
 import net.yupol.transmissionremote.model.json.FileStat;
-import net.yupol.transmissionremote.transport.Transport;
-import net.yupol.transmissionremote.transport.rpc.RpcArgs;
+import net.yupol.transmissionremote.data.api.Transport;
+import net.yupol.transmissionremote.data.api.rpc.RpcArgs;
 import net.yupol.transmissionremote.utils.Parcelables;
 
 import java.util.Map;
@@ -27,9 +27,9 @@ import java.util.Map;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
-import static net.yupol.transmissionremote.transport.rpc.TorrentParameters.filesUnwanted;
-import static net.yupol.transmissionremote.transport.rpc.TorrentParameters.filesWanted;
-import static net.yupol.transmissionremote.transport.rpc.TorrentParameters.filesWithPriority;
+import static net.yupol.transmissionremote.data.api.rpc.TorrentParameters.filesUnwanted;
+import static net.yupol.transmissionremote.data.api.rpc.TorrentParameters.filesWanted;
+import static net.yupol.transmissionremote.data.api.rpc.TorrentParameters.filesWithPriority;
 import static net.yupol.transmissionremote.utils.Collections.toArray;
 
 public class DirectoryFragment extends Fragment implements DirectoryAdapter.OnItemSelectedListener {

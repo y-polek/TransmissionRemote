@@ -88,13 +88,13 @@ import net.yupol.transmissionremote.app.utils.IconUtils;
 import net.yupol.transmissionremote.app.utils.ThemeUtils;
 import net.yupol.transmissionremote.model.Server;
 import net.yupol.transmissionremote.model.Torrents;
-import net.yupol.transmissionremote.model.json.AddTorrentResult;
+import net.yupol.transmissionremote.data.api.model.AddTorrentResult;
 import net.yupol.transmissionremote.model.json.ServerSettings;
 import net.yupol.transmissionremote.model.json.Torrent;
-import net.yupol.transmissionremote.transport.ConnectivityInterceptor;
-import net.yupol.transmissionremote.transport.Transport;
-import net.yupol.transmissionremote.transport.rpc.RpcArgs;
-import net.yupol.transmissionremote.transport.rpc.RpcFailureException;
+import net.yupol.transmissionremote.data.api.ConnectivityInterceptor;
+import net.yupol.transmissionremote.data.api.Transport;
+import net.yupol.transmissionremote.data.api.rpc.RpcArgs;
+import net.yupol.transmissionremote.data.api.rpc.RpcFailureException;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -130,7 +130,7 @@ import permissions.dispatcher.PermissionRequest;
 import permissions.dispatcher.RuntimePermissions;
 
 import static android.preference.PreferenceManager.getDefaultSharedPreferences;
-import static net.yupol.transmissionremote.transport.rpc.SessionParameters.altSpeedLimitEnabled;
+import static net.yupol.transmissionremote.data.api.rpc.SessionParameters.altSpeedLimitEnabled;
 
 @RuntimePermissions
 public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivityPresenter> implements MainActivityView,
