@@ -2,9 +2,11 @@ package net.yupol.transmissionremote.app.transport;
 
 import android.util.Log;
 
+import net.yupol.transmissionremote.data.api.model.TorrentEntity;
 import net.yupol.transmissionremote.model.json.Torrent;
 import net.yupol.transmissionremote.data.api.NoNetworkException;
 import net.yupol.transmissionremote.data.api.Transport;
+import net.yupol.transmissionremote.model.mapper.TorrentMapper;
 
 import java.net.HttpURLConnection;
 import java.util.List;
@@ -103,17 +105,17 @@ public class TorrentUpdater {
             transport.api().torrentList()
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(new SingleObserver<List<Torrent>>() {
+                    .subscribe(new SingleObserver<List<TorrentEntity>>() {
                         @Override
                         public void onSubscribe(Disposable d) {
                             currentRequest = d;
                         }
 
                         @Override
-                        public void onSuccess(List<Torrent> torrents) {
+                        public void onSuccess(List<TorrentEntity> torrents) {
                             responseReceived = Boolean.TRUE;
                             if (!canceled) {
-                                listener.onTorrentUpdate(torrents);
+                                listener.onTorrentUpdate(TorrentMapper.toViewModel(torrents));
                             }
                         }
 

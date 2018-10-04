@@ -19,10 +19,12 @@ import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.TransmissionRemote;
 import net.yupol.transmissionremote.app.torrentdetails.BandwidthLimitFragment;
 import net.yupol.transmissionremote.app.utils.IconUtils;
+import net.yupol.transmissionremote.data.api.model.ServerSettingsEntity;
 import net.yupol.transmissionremote.data.api.rpc.Parameter;
 import net.yupol.transmissionremote.model.json.ServerSettings;
 import net.yupol.transmissionremote.data.api.Transport;
 import net.yupol.transmissionremote.data.api.rpc.RpcArgs;
+import net.yupol.transmissionremote.model.mapper.ServerMapper;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -193,7 +195,7 @@ public class ServerPreferencesFragment extends Fragment {
     private void sendUpdateOptionsRequest(List<Parameter<String, ?>> parameters) {
         saveStarted();
 
-        new Transport(TransmissionRemote.getInstance().getActiveServer()).api().setServerSettings(RpcArgs.parameters(parameters))
+        new Transport(ServerMapper.toDomain(TransmissionRemote.getInstance().getActiveServer())).api().setServerSettings(RpcArgs.parameters(parameters))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new CompletableObserver() {
@@ -216,18 +218,18 @@ public class ServerPreferencesFragment extends Fragment {
     }
 
     private void sendPreferencesUpdateRequest() {
-        new Transport(TransmissionRemote.getInstance().getActiveServer()).api().serverSettings(ImmutableMap.<String, Object>of())
+        new Transport(ServerMapper.toDomain(TransmissionRemote.getInstance().getActiveServer())).api().serverSettings(ImmutableMap.<String, Object>of())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new SingleObserver<ServerSettings>() {
+                .subscribe(new SingleObserver<ServerSettingsEntity>() {
                     @Override
                     public void onSubscribe(Disposable d) {
                         requests.add(d);
                     }
 
                     @Override
-                    public void onSuccess(ServerSettings settings) {
-                        serverSettings = settings;
+                    public void onSuccess(ServerSettingsEntity settings) {
+                        serverSettings = ServerMapper.toViewModel(settings);
                         updateUi();
                         Toast.makeText(getActivity(), getString(R.string.saved), Toast.LENGTH_SHORT).show();
                         saveFinished();

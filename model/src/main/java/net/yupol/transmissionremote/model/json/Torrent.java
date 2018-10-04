@@ -5,6 +5,7 @@ import android.os.Parcelable;
 
 import com.squareup.moshi.Json;
 
+import net.yupol.transmissionremote.data.api.model.TorrentEntity;
 import net.yupol.transmissionremote.model.ID;
 
 public class Torrent implements ID, Parcelable {
@@ -229,6 +230,33 @@ public class Torrent implements ID, Parcelable {
                 ", isFinished=" + isFinished +
                 ", doneDate=" + doneDate +
                 '}';
+    }
+
+    public static Torrent fromEntity(TorrentEntity entity) {
+        Torrent torrent = new Torrent();
+        torrent.id = entity.id;
+        torrent.name = entity.name;
+        torrent.addedDate = entity.addedDate;
+        torrent.totalSize = entity.totalSize;
+        torrent.percentDone = entity.percentDone;
+        torrent.status = entity.status;
+        torrent.downloadRate = entity.downloadRate;
+        torrent.uploadRate = entity.uploadRate;
+        torrent.eta = entity.eta;
+        torrent.uploadedSize = entity.uploadedSize;
+        torrent.uploadRatio = entity.uploadRatio;
+        torrent.errorId = entity.errorId;
+        torrent.errorString = entity.errorString;
+        torrent.isFinished = entity.isFinished;
+        torrent.sizeWhenDone = entity.sizeWhenDone;
+        torrent.leftUntilDone = entity.leftUntilDone;
+        torrent.peersGettingFromUs = entity.peersGettingFromUs;
+        torrent.peersSendingToUs = entity.peersSendingToUs;
+        torrent.webseedsSendingToUs = entity.webseedsSendingToUs;
+        torrent.queuePosition = entity.queuePosition;
+        torrent.recheckProgress = entity.recheckProgress;
+        torrent.doneDate = entity.doneDate;
+        return torrent;
     }
 
     public enum Status {

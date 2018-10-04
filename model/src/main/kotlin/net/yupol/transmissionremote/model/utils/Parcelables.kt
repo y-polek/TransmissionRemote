@@ -1,6 +1,6 @@
 @file:JvmName(name = "Parcelables")
 
-package net.yupol.transmissionremote.utils
+package net.yupol.transmissionremote.model.utils
 
 import android.os.Parcelable
 

@@ -43,67 +43,67 @@ interface TransmissionRpcApi {
     @RpcMethod("session-set")
     fun setServerSettings(@Body args: Map<String, @JvmSuppressWildcards Any>): Completable
 
-    @POST("")
+    @POST(".")
     @RpcMethod("torrent-start")
     fun startTorrents(@Body @RpcArg("ids") vararg ids: Int): Completable
 
-    @POST("")
+    @POST(".")
     @RpcMethod("torrent-start-now")
     fun startTorrentsNoQueue(@Body @RpcArg("ids") vararg ids: Int): Completable
 
-    @POST("")
+    @POST(".")
     @RpcMethod("torrent-stop")
     fun stopTorrents(@Body @RpcArg("ids") vararg ids: Int): Completable
 
-    @POST("")
+    @POST(".")
     @RpcMethod("torrent-reannounce")
     fun reannounceTorrents(@Body @RpcArg("ids") vararg ids: Int): Completable
 
-    @POST("")
+    @POST(".")
     @RpcMethod("torrent-verify")
     fun verifyTorrents(@Body @RpcArg("ids") vararg ids: Int): Completable
 
-    @POST("")
+    @POST(".")
     @RpcMethod("torrent-rename-path")
     fun renameTorrent(@Body args: Map<String, @JvmSuppressWildcards Any>): Completable
 
-    @POST("")
+    @POST(".")
     @RpcMethod("torrent-set-location")
     fun setTorrentLocation(@Body args: Map<String, @JvmSuppressWildcards Any>): Completable
 
-    @POST("")
+    @POST(".")
     @RpcMethod("free-space")
     @Wrapped(path = ["arguments"])
     fun freeSpace(@Body @RpcArg("path") path: String): Single<FreeSpaceEntity>
 
-    @POST("")
+    @POST(".")
     @RpcMethod("torrent-remove")
     @RpcBooleanArg(name = "delete-local-data", value = false)
     fun removeTorrents(@Body @RpcArg("ids") vararg ids: Int): Completable
 
-    @POST("")
+    @POST(".")
     @RpcMethod("torrent-remove")
     @RpcBooleanArg(name = "delete-local-data", value = true)
     fun removeTorrentsAndDeleteData(@Body @RpcArg("ids") vararg ids: Int): Completable
 
-    @POST("")
+    @POST(".")
     @RpcMethod("torrent-set")
     fun addTracker(@Body args: Map<String, @JvmSuppressWildcards Any>): Completable
 
-    @POST("")
+    @POST(".")
     @RpcMethod("torrent-set")
     fun removeTracker(@Body args: Map<String, @JvmSuppressWildcards Any>): Completable
 
-    @POST("")
+    @POST(".")
     @RpcMethod("torrent-set")
     fun editTracker(@Body args: Map<String, @JvmSuppressWildcards Any>): Completable
 
-    @POST("")
+    @POST(".")
     @RpcMethod("torrent-add")
     @Wrapped(path = ["arguments"])
     fun addTorrent(@Body args: Map<String, @JvmSuppressWildcards Any>): Single<AddTorrentResult>
 
-    @POST("")
+    @POST(".")
     @RpcMethod("torrent-set")
     fun setTorrentSettings(@Body args: Map<String, @JvmSuppressWildcards Any>): Completable
 }

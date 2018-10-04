@@ -4,8 +4,10 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 
+import net.yupol.transmissionremote.data.api.model.TorrentInfoEntity;
 import net.yupol.transmissionremote.model.json.TorrentInfo;
 import net.yupol.transmissionremote.data.api.Transport;
+import net.yupol.transmissionremote.model.mapper.TorrentMapper;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -43,15 +45,15 @@ public class TorrentInfoUpdater {
         transport.api().torrentInfo(torrentId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new SingleObserver<TorrentInfo>() {
+                .subscribe(new SingleObserver<TorrentInfoEntity>() {
                     @Override
                     public void onSubscribe(Disposable d) {
                         request = d;
                     }
 
                     @Override
-                    public void onSuccess(TorrentInfo torrentInfo) {
-                        if (listener != null) listener.onTorrentInfoUpdated(torrentInfo);
+                    public void onSuccess(TorrentInfoEntity torrentInfo) {
+                        if (listener != null) listener.onTorrentInfoUpdated(TorrentMapper.toViewModel(torrentInfo));
                         if (timer != null) scheduleNexUpdate();
                     }
 

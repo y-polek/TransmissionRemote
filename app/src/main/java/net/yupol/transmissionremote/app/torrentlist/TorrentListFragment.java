@@ -7,6 +7,7 @@ import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -47,9 +48,12 @@ import net.yupol.transmissionremote.app.utils.TextUtils;
 import net.yupol.transmissionremote.app.utils.diff.Equals;
 import net.yupol.transmissionremote.app.utils.diff.ListDiff;
 import net.yupol.transmissionremote.app.utils.diff.Range;
+import net.yupol.transmissionremote.data.api.model.TorrentEntity;
 import net.yupol.transmissionremote.model.json.Torrent;
 import net.yupol.transmissionremote.data.api.Transport;
 import net.yupol.transmissionremote.data.api.rpc.RpcArgs;
+import net.yupol.transmissionremote.model.mapper.ServerMapper;
+import net.yupol.transmissionremote.model.mapper.TorrentMapper;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -166,7 +170,7 @@ public class TorrentListFragment extends Fragment implements ChooseLocationDialo
                 case R.id.action_remove_torrents:
                     int[] torrentsToRemove = adapter.getSelectedItemsIds();
                     RemoveTorrentsDialogFragment.newInstance(torrentsToRemove)
-                            .show(getFragmentManager(), RemoveTorrentsDialogFragment.TAG_REMOVE_TORRENTS_DIALOG);
+                            .show(requireFragmentManager(), RemoveTorrentsDialogFragment.TAG_REMOVE_TORRENTS_DIALOG);
                     mode.finish();
                     return true;
                 case R.id.action_select_all:
@@ -222,7 +226,7 @@ public class TorrentListFragment extends Fragment implements ChooseLocationDialo
             adapter.clearSelection();
             actionMode = null;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                getActivity().getWindow().setStatusBarColor(Color.TRANSPARENT);
+                requireActivity().getWindow().setStatusBarColor(Color.TRANSPARENT);
             }
 
             if (cabListener != null) cabListener.onCABClose();
@@ -239,11 +243,11 @@ public class TorrentListFragment extends Fragment implements ChooseLocationDialo
 
         Activity activity = getActivity();
 
-        app = (TransmissionRemote) getActivity().getApplication();
+        app = (TransmissionRemote) requireActivity().getApplication();
         app.addOnFilterSetListener(filterListener);
         app.addOnSortingChangedListeners(sortingListener);
 
-        transport = new Transport(app.getActiveServer());
+        transport = new Transport(ServerMapper.toDomain(app.getActiveServer()));
 
         if (activity instanceof OnTorrentSelectedListener) {
             torrentSelectedListener = (OnTorrentSelectedListener) activity;
@@ -256,7 +260,7 @@ public class TorrentListFragment extends Fragment implements ChooseLocationDialo
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.torrent_list_layout, container, false);
 
         recyclerView = view.findViewById(R.id.torrent_list_recycler_view);
@@ -276,7 +280,7 @@ public class TorrentListFragment extends Fragment implements ChooseLocationDialo
 
         if (savedInstanceState != null) {
             if (savedInstanceState.getBoolean(KEY_ACTION_MODE, false)) {
-                actionMode = getActivity().startActionMode(actionModeCallback);
+                actionMode = requireActivity().startActionMode(actionModeCallback);
             }
             restoredSelection = savedInstanceState.getIntArray(KEY_SELECTION);
         }
@@ -324,7 +328,7 @@ public class TorrentListFragment extends Fragment implements ChooseLocationDialo
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putBoolean(KEY_ACTION_MODE, actionMode != null);
         outState.putIntArray(KEY_SELECTION, adapter.getSelectedItemsPositions());
@@ -410,7 +414,7 @@ public class TorrentListFragment extends Fragment implements ChooseLocationDialo
     private void showChooseLocationDialog() {
         ChooseLocationDialogFragment dialog = new ChooseLocationDialogFragment();
         dialog.setTargetFragment(this, 0);
-        dialog.show(getFragmentManager(), CHOOSE_LOCATION_FRAGMENT_TAG);
+        dialog.show(requireFragmentManager(), CHOOSE_LOCATION_FRAGMENT_TAG);
     }
 
     private class TorrentsAdapter extends RecyclerView.Adapter<ViewHolder> {
@@ -442,8 +446,9 @@ public class TorrentListFragment extends Fragment implements ChooseLocationDialo
             return torrents.get(position);
         }
 
+        @NonNull
         @Override
-        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.torrent_list_item, parent, false);
             final ViewHolder viewHolder = new ViewHolder(itemView);
 
@@ -468,7 +473,7 @@ public class TorrentListFragment extends Fragment implements ChooseLocationDialo
                         return false;
                     }
 
-                    actionMode = getActivity().startActionMode(actionModeCallback);
+                    actionMode = requireActivity().startActionMode(actionModeCallback);
                     toggleSelection(viewHolder.getAdapterPosition());
                     return true;
                 }
@@ -478,7 +483,7 @@ public class TorrentListFragment extends Fragment implements ChooseLocationDialo
         }
 
         @Override
-        public void onBindViewHolder(ViewHolder holder, int position) {
+        public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
             final Torrent torrent = getItemAtPosition(position);
             holder.setTorrent(torrent);
             holder.pauseResumeBtn.setOnClickListener(new View.OnClickListener() {
@@ -579,7 +584,7 @@ public class TorrentListFragment extends Fragment implements ChooseLocationDialo
                 if (errorMsg != null && !errorMsg.trim().isEmpty()) {
                     holder.errorMsgView.setVisibility(View.VISIBLE);
                     holder.errorMsgView.setText(errorMsg);
-                    IconicsDrawable msgIcon = new IconicsDrawable(getContext(),
+                    IconicsDrawable msgIcon = new IconicsDrawable(requireContext(),
                             error.isWarning() ? GoogleMaterial.Icon.gmd_warning : GoogleMaterial.Icon.gmd_error);
                     msgIcon.color(ColorUtils.resolveColor(context, android.R.attr.textColorSecondary, R.color.text_secondary));
                     int size = context.getResources().getDimensionPixelSize(R.dimen.torrent_list_error_icon_size);
@@ -723,17 +728,17 @@ public class TorrentListFragment extends Fragment implements ChooseLocationDialo
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .delaySubscription(UPDATE_REQUEST_DELAY, TimeUnit.MILLISECONDS)
-                .subscribe(new SingleObserver<List<Torrent>>() {
+                .subscribe(new SingleObserver<List<TorrentEntity>>() {
                     @Override
                     public void onSubscribe(Disposable d) {
                         requests.add(d);
                     }
 
                     @Override
-                    public void onSuccess(List<Torrent> torrents) {
+                    public void onSuccess(List<TorrentEntity> torrents) {
                         removeIds();
-                        for (Torrent torrent : torrents) {
-                            adapter.updateTorrent(torrent);
+                        for (TorrentEntity torrent : torrents) {
+                            adapter.updateTorrent(TorrentMapper.toViewModel(torrent));
                         }
                     }
 

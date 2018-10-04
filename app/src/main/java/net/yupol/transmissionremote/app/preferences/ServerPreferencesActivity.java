@@ -14,11 +14,13 @@ import net.yupol.transmissionremote.app.ProgressbarFragment;
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.TransmissionRemote;
 import net.yupol.transmissionremote.app.torrentdetails.SaveChangesDialogFragment;
+import net.yupol.transmissionremote.data.api.model.ServerSettingsEntity;
 import net.yupol.transmissionremote.data.api.rpc.Parameter;
 import net.yupol.transmissionremote.model.Server;
 import net.yupol.transmissionremote.model.json.ServerSettings;
 import net.yupol.transmissionremote.data.api.Transport;
 import net.yupol.transmissionremote.data.api.rpc.RpcArgs;
+import net.yupol.transmissionremote.model.mapper.ServerMapper;
 
 import java.util.List;
 
@@ -53,19 +55,20 @@ public class ServerPreferencesActivity extends BaseActivity implements SaveChang
 
             final TransmissionRemote app = (TransmissionRemote) getApplication();
             Server activeServer = app.getActiveServer();
-            new Transport(activeServer).api().serverSettings(ImmutableMap.<String, Object>of())
+            new Transport(ServerMapper.toDomain(activeServer)).api().serverSettings(ImmutableMap.<String, Object>of())
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(new SingleObserver<ServerSettings>() {
+                    .subscribe(new SingleObserver<ServerSettingsEntity>() {
                         @Override
                         public void onSubscribe(Disposable d) {
                             requests.add(d);
                         }
 
                         @Override
-                        public void onSuccess(ServerSettings serverSettings) {
-                            app.setSpeedLimitEnabled(serverSettings.isAltSpeedLimitEnabled());
-                            showPreferencesFragment(serverSettings);
+                        public void onSuccess(ServerSettingsEntity entity) {
+                            ServerSettings settings = ServerMapper.toViewModel(entity);
+                            app.setSpeedLimitEnabled(settings.isAltSpeedLimitEnabled());
+                            showPreferencesFragment(settings);
                         }
 
                         @Override
@@ -129,7 +132,7 @@ public class ServerPreferencesActivity extends BaseActivity implements SaveChang
         ServerPreferencesFragment fragment = (ServerPreferencesFragment)
                 getSupportFragmentManager().findFragmentByTag(TAG_SERVER_PREFERENCES_FRAGMENT);
         if (fragment != null) {
-            new Transport(TransmissionRemote.getInstance().getActiveServer()).api().setServerSettings(RpcArgs.parameters(fragment.getSessionParameters()))
+            new Transport(ServerMapper.toDomain(TransmissionRemote.getInstance().getActiveServer())).api().setServerSettings(RpcArgs.parameters(fragment.getSessionParameters()))
                     .subscribeOn(Schedulers.io())
                     .onErrorComplete()
                     .subscribe();

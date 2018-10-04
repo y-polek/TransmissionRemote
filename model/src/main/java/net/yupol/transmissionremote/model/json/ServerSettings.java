@@ -5,6 +5,8 @@ import android.os.Parcelable;
 
 import com.squareup.moshi.Json;
 
+import net.yupol.transmissionremote.data.api.model.ServerSettingsEntity;
+
 public class ServerSettings implements Parcelable {
 
     public static final String SPEED_LIMIT_DOWN = "speed-limit-down";
@@ -194,5 +196,24 @@ public class ServerSettings implements Parcelable {
         dest.writeInt(seedIdleLimit);
         dest.writeLong(downloadDirFreeSpace);
         dest.writeString(version);
+    }
+
+    public static ServerSettings fromEntity(ServerSettingsEntity entity) {
+        ServerSettings settings = new ServerSettings();
+        settings.speedLimitDown = entity.speedLimitDown;
+        settings.speedLimitDownEnabled = entity.speedLimitDownEnabled;
+        settings.speedLimitUp = entity.speedLimitUp;
+        settings.speedLimitUpEnabled = entity.speedLimitUpEnabled;
+        settings.altSpeedLimitDown = entity.altSpeedLimitDown;
+        settings.altSpeedLimitUp = entity.altSpeedLimitUp;
+        settings.altSpeedLimitEnabled = entity.altSpeedLimitEnabled;
+        settings.downloadDir = entity.downloadDir;
+        settings.seedRatioLimited = entity.seedRatioLimited;
+        settings.seedRatioLimit = entity.seedRatioLimit;
+        settings.seedIdleLimited = entity.seedIdleLimited;
+        settings.seedIdleLimit = entity.seedIdleLimit;
+        settings.downloadDirFreeSpace = entity.downloadDirFreeSpace;
+        settings.version = entity.version;
+        return settings;
     }
 }

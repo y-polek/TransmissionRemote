@@ -5,6 +5,8 @@ import android.os.Parcelable;
 
 import com.squareup.moshi.Json;
 
+import net.yupol.transmissionremote.data.api.model.TrackerEntity;
+
 public class Tracker implements Parcelable {
 
     @Json(name = "id") public int id;
@@ -40,5 +42,14 @@ public class Tracker implements Parcelable {
         parcel.writeInt(tier);
         parcel.writeString(announce);
         parcel.writeString(scrape);
+    }
+
+    public static Tracker fromEntity(TrackerEntity entity) {
+        Tracker tracker = new Tracker();
+        tracker.id = entity.id;
+        tracker.tier = entity.tier;
+        tracker.announce = entity.announce;
+        tracker.scrape = entity.scrape;
+        return tracker;
     }
 }

@@ -32,11 +32,12 @@ import net.yupol.transmissionremote.app.TransmissionRemote;
 import net.yupol.transmissionremote.app.databinding.DownloadLocationDialogBinding;
 import net.yupol.transmissionremote.app.utils.SimpleTextWatcher;
 import net.yupol.transmissionremote.app.utils.TextUtils;
-import net.yupol.transmissionremote.data.api.model.FreeSpaceEntity;
-import net.yupol.transmissionremote.model.Server;
-import net.yupol.transmissionremote.model.json.ServerSettings;
 import net.yupol.transmissionremote.data.api.Transport;
+import net.yupol.transmissionremote.data.api.model.FreeSpaceEntity;
+import net.yupol.transmissionremote.data.api.model.ServerSettingsEntity;
 import net.yupol.transmissionremote.data.api.rpc.RpcFailureException;
+import net.yupol.transmissionremote.model.Server;
+import net.yupol.transmissionremote.model.mapper.ServerMapper;
 
 import java.util.List;
 
@@ -105,19 +106,19 @@ public class DownloadLocationDialogFragment extends DialogFragment {
                 }
             });
 
-            new Transport(app.getActiveServer()).api().serverSettings(ImmutableMap.<String, Object>of())
+            new Transport(ServerMapper.toDomain(app.getActiveServer())).api().serverSettings(ImmutableMap.<String, Object>of())
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(new SingleObserver<ServerSettings>() {
+                    .subscribe(new SingleObserver<ServerSettingsEntity>() {
                         @Override
                         public void onSubscribe(Disposable d) {
                             requests.add(d);
                         }
 
                         @Override
-                        public void onSuccess(ServerSettings serverSettings) {
+                        public void onSuccess(ServerSettingsEntity serverSettings) {
                             binding.setLoadingInProgress(false);
-                            binding.downloadLocationText.setText(Strings.nullToEmpty(serverSettings.getDownloadDir()));
+                            binding.downloadLocationText.setText(Strings.nullToEmpty(serverSettings.downloadDir));
                             AlertDialog dialog = (AlertDialog) getDialog();
                             if (dialog != null) dialog.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(true);
                         }
@@ -294,7 +295,7 @@ public class DownloadLocationDialogFragment extends DialogFragment {
         }
 
         final String path = binding.downloadLocationText.getText().toString();
-        new Transport(app.getActiveServer()).api().freeSpace(path)
+        new Transport(ServerMapper.toDomain(app.getActiveServer())).api().freeSpace(path)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new SingleObserver<FreeSpaceEntity>() {

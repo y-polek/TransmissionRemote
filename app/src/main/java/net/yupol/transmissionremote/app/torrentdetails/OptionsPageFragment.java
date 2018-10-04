@@ -18,7 +18,9 @@ import com.google.common.collect.ImmutableMap;
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.TransmissionRemote;
 import net.yupol.transmissionremote.app.databinding.TorrentDetailsOptionsPageFragmentBinding;
+import net.yupol.transmissionremote.model.mapper.ServerMapper;
 import net.yupol.transmissionremote.app.utils.MinMaxTextWatcher;
+import net.yupol.transmissionremote.data.api.model.ServerSettingsEntity;
 import net.yupol.transmissionremote.data.api.rpc.Parameter;
 import net.yupol.transmissionremote.model.json.ServerSettings;
 import net.yupol.transmissionremote.model.json.TorrentInfo;
@@ -29,6 +31,8 @@ import net.yupol.transmissionremote.model.limitmode.RatioLimitMode;
 import net.yupol.transmissionremote.data.api.Transport;
 import net.yupol.transmissionremote.data.api.rpc.RpcArgs;
 import net.yupol.transmissionremote.data.api.rpc.TorrentParameters;
+import net.yupol.transmissionremote.model.mapper.LimitModeMapper;
+import net.yupol.transmissionremote.model.mapper.PriorityMapper;
 
 import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -59,20 +63,20 @@ public class OptionsPageFragment extends BasePageFragment implements
 
         setHasOptionsMenu(true);
 
-        transport = new Transport(TransmissionRemote.getInstance().getActiveServer());
+        transport = new Transport(ServerMapper.toDomain(TransmissionRemote.getInstance().getActiveServer()));
 
         transport.api().serverSettings(ImmutableMap.<String, Object>of())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new SingleObserver<ServerSettings>() {
+                .subscribe(new SingleObserver<ServerSettingsEntity>() {
                     @Override
                     public void onSubscribe(Disposable d) {
                         requests.add(d);
                     }
 
                     @Override
-                    public void onSuccess(ServerSettings settings) {
-                        serverSettings = settings;
+                    public void onSuccess(ServerSettingsEntity settings) {
+                        serverSettings = ServerMapper.toViewModel(settings);
                         updateSeedingLimitsUi(false);
                     }
 
@@ -98,7 +102,7 @@ public class OptionsPageFragment extends BasePageFragment implements
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 TransferPriority priority = transferPriorityAdapter.getItem(position);
-                sendSaveOptionRequest(transferPriority(priority));
+                sendSaveOptionRequest(transferPriority(PriorityMapper.toDomain(priority)));
             }
 
             @Override
@@ -171,7 +175,7 @@ public class OptionsPageFragment extends BasePageFragment implements
                     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                         updateSeedingLimitsUi(false);
                         LimitMode mode = (LimitMode) parent.getAdapter().getItem(position);
-                        sendSaveOptionRequest(TorrentParameters.seedRatioMode(mode));
+                        sendSaveOptionRequest(TorrentParameters.seedRatioMode(LimitModeMapper.toRatioLimitMode(mode)));
                     }
 
                     @Override
@@ -183,7 +187,7 @@ public class OptionsPageFragment extends BasePageFragment implements
                     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                         updateSeedingLimitsUi(false);
                         LimitMode mode = (LimitMode) parent.getAdapter().getItem(position);
-                        sendSaveOptionRequest(TorrentParameters.seedIdleMode(mode));
+                        sendSaveOptionRequest(TorrentParameters.seedIdleMode(LimitModeMapper.toIdleLimitMode(mode)));
                     }
 
                     @Override

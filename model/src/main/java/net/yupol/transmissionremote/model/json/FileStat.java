@@ -10,7 +10,11 @@ public class FileStat implements Parcelable {
     @Json(name = "priority") private int priority;
     @Json(name = "bytesCompleted") private long bytesCompleted;
 
-    public FileStat() {}
+    public FileStat(boolean wanted, int priority, long bytesCompleted) {
+        this.wanted = wanted;
+        this.priority = priority;
+        this.bytesCompleted = bytesCompleted;
+    }
 
     public FileStat(Parcel in) {
         wanted = in.readInt() != 0;

@@ -10,7 +10,10 @@ public class File implements Parcelable {
     transient private String name;
     @Json(name = "length") private long length;
 
-    public File() {}
+    public File(String path, long length) {
+        this.path = path;
+        this.length = length;
+    }
 
     public File(Parcel in) {
         path = in.readString();

@@ -1,6 +1,7 @@
 package net.yupol.transmissionremote.app.torrentdetails;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -13,6 +14,7 @@ import com.google.common.primitives.Ints;
 
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.TransmissionRemote;
+import net.yupol.transmissionremote.model.mapper.ServerMapper;
 import net.yupol.transmissionremote.model.Dir;
 import net.yupol.transmissionremote.app.utils.DividerItemDecoration;
 import net.yupol.transmissionremote.model.Priority;
@@ -20,7 +22,8 @@ import net.yupol.transmissionremote.model.json.File;
 import net.yupol.transmissionremote.model.json.FileStat;
 import net.yupol.transmissionremote.data.api.Transport;
 import net.yupol.transmissionremote.data.api.rpc.RpcArgs;
-import net.yupol.transmissionremote.utils.Parcelables;
+import net.yupol.transmissionremote.model.mapper.PriorityMapper;
+import net.yupol.transmissionremote.model.utils.Parcelables;
 
 import java.util.Map;
 
@@ -56,7 +59,7 @@ public class DirectoryFragment extends Fragment implements DirectoryAdapter.OnIt
         dir = args.getParcelable(ARG_DIRECTORY);
         files = Parcelables.toArrayOfType(File.class, args.getParcelableArray(ARG_FILES));
 
-        transport = new Transport(TransmissionRemote.getInstance().getActiveServer());
+        transport = new Transport(ServerMapper.toDomain(TransmissionRemote.getInstance().getActiveServer()));
 
         if (savedInstanceState == null) {
             fileStats = Parcelables.toArrayOfType(FileStat.class, args.getParcelableArray(ARG_FILE_STATS));
@@ -72,7 +75,7 @@ public class DirectoryFragment extends Fragment implements DirectoryAdapter.OnIt
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
 
         View view = inflater.inflate(R.layout.directory_fragment, container, false);
@@ -86,7 +89,7 @@ public class DirectoryFragment extends Fragment implements DirectoryAdapter.OnIt
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelableArray(ARG_FILE_STATS, fileStats);
     }
@@ -138,7 +141,7 @@ public class DirectoryFragment extends Fragment implements DirectoryAdapter.OnIt
         Dir changedDir = dir.getDirs().get(position);
         int[] fileIndices = toArray(Dir.filesInDirRecursively(changedDir));
 
-        Map<String, Object> parameters = RpcArgs.parameters(torrentId, filesWithPriority(priority, fileIndices));
+        Map<String, Object> parameters = RpcArgs.parameters(torrentId, filesWithPriority(PriorityMapper.toDomain(priority), fileIndices));
         transport.api().setTorrentSettings(parameters)
                 .subscribeOn(Schedulers.io())
                 .onErrorComplete()
@@ -147,7 +150,7 @@ public class DirectoryFragment extends Fragment implements DirectoryAdapter.OnIt
 
     @Override
     public void onFilePriorityChanged(int fileIndex, Priority priority) {
-        Map<String, Object> parameters = RpcArgs.parameters(torrentId, filesWithPriority(priority, fileIndex));
+        Map<String, Object> parameters = RpcArgs.parameters(torrentId, filesWithPriority(PriorityMapper.toDomain(priority), fileIndex));
         transport.api().setTorrentSettings(parameters)
                 .subscribeOn(Schedulers.io())
                 .onErrorComplete()

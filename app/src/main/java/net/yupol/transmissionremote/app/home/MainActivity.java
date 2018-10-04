@@ -86,15 +86,16 @@ import net.yupol.transmissionremote.app.transport.TorrentUpdater;
 import net.yupol.transmissionremote.app.utils.DialogUtils;
 import net.yupol.transmissionremote.app.utils.IconUtils;
 import net.yupol.transmissionremote.app.utils.ThemeUtils;
-import net.yupol.transmissionremote.model.Server;
-import net.yupol.transmissionremote.model.Torrents;
-import net.yupol.transmissionremote.data.api.model.AddTorrentResult;
-import net.yupol.transmissionremote.model.json.ServerSettings;
-import net.yupol.transmissionremote.model.json.Torrent;
 import net.yupol.transmissionremote.data.api.ConnectivityInterceptor;
 import net.yupol.transmissionremote.data.api.Transport;
+import net.yupol.transmissionremote.data.api.model.AddTorrentResult;
+import net.yupol.transmissionremote.data.api.model.ServerSettingsEntity;
 import net.yupol.transmissionremote.data.api.rpc.RpcArgs;
 import net.yupol.transmissionremote.data.api.rpc.RpcFailureException;
+import net.yupol.transmissionremote.model.Server;
+import net.yupol.transmissionremote.model.Torrents;
+import net.yupol.transmissionremote.model.json.Torrent;
+import net.yupol.transmissionremote.model.mapper.ServerMapper;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -1148,7 +1149,7 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
         List<Server> servers = application.getServers();
         headerView.setServers(servers, servers.indexOf(server));
 
-        transport = new Transport(server, new ConnectivityInterceptor(getBaseContext()));
+        transport = new Transport(ServerMapper.toDomain(server), new ConnectivityInterceptor(getBaseContext()));
         torrentUpdater = new TorrentUpdater(transport, MainActivity.this, application.getUpdateInterval());
         torrentUpdater.start();
 
@@ -1166,7 +1167,7 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
                 transport.api().serverSettings(ImmutableMap.<String, Object>of())
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(new SingleObserver<ServerSettings>() {
+                        .subscribe(new SingleObserver<ServerSettingsEntity>() {
                             @Override
                             public void onSubscribe(Disposable d) {
                                 serverSettingsRequests.clear();
@@ -1174,11 +1175,11 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
                             }
 
                             @Override
-                            public void onSuccess(ServerSettings serverSettings) {
-                                application.setSpeedLimitEnabled(serverSettings.isAltSpeedLimitEnabled());
-                                application.setDefaultDownloadDir(serverSettings.getDownloadDir());
+                            public void onSuccess(ServerSettingsEntity serverSettings) {
+                                application.setSpeedLimitEnabled(serverSettings.altSpeedLimitEnabled);
+                                application.setDefaultDownloadDir(serverSettings.downloadDir);
                                 if (drawer != null && !drawer.switchedDrawerContent()) {
-                                    drawer.updateStickyFooterItem(freeSpaceFooterDrawerItem.withFreeSpace(serverSettings.getDownloadDirFreeSpace()));
+                                    drawer.updateStickyFooterItem(freeSpaceFooterDrawerItem.withFreeSpace(serverSettings.downloadDirFreeSpace));
                                 }
                             }
 

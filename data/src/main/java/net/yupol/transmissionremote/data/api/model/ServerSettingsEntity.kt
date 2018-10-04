@@ -3,20 +3,20 @@ package net.yupol.transmissionremote.data.api.model
 import com.squareup.moshi.Json
 
 data class ServerSettingsEntity(
-        @Json(name = SPEED_LIMIT_DOWN) val speedLimitDown: Int,
-        @Json(name = SPEED_LIMIT_DOWN_ENABLED) val speedLimitDownEnabled: Boolean,
-        @Json(name = SPEED_LIMIT_UP)  val speedLimitUp: Int,
-        @Json(name = SPEED_LIMIT_UP_ENABLED)  val speedLimitUpEnabled: Boolean,
-        @Json(name = ALT_SPEED_LIMIT_DOWN)  val altSpeedLimitDown: Int,
-        @Json(name = ALT_SPEED_LIMIT_UP)  val altSpeedLimitUp: Int,
-        @Json(name = ALT_SPEED_LIMIT_ENABLED)  val altSpeedLimitEnabled: Boolean,
-        @Json(name = DOWNLOAD_DIR)  val downloadDir: String,
-        @Json(name = SEED_RATIO_LIMITED)  val seedRatioLimited: Boolean,
-        @Json(name = SEED_RATIO_LIMIT)  val seedRatioLimit: Double,
-        @Json(name = SEED_IDLE_LIMITED)  val seedIdleLimited: Boolean,
-        @Json(name = SEED_IDLE_LIMIT)  val seedIdleLimit: Int,
-        @Json(name = DOWNLOAD_DIR_FREE_SPACE)  val downloadDirFreeSpace: Long,
-        @Json(name = VERSION)  val version: String)
+        @JvmField @Json(name = SPEED_LIMIT_DOWN) val speedLimitDown: Int,
+        @JvmField @Json(name = SPEED_LIMIT_DOWN_ENABLED) val speedLimitDownEnabled: Boolean,
+        @JvmField @Json(name = SPEED_LIMIT_UP)  val speedLimitUp: Int,
+        @JvmField @Json(name = SPEED_LIMIT_UP_ENABLED)  val speedLimitUpEnabled: Boolean,
+        @JvmField @Json(name = ALT_SPEED_LIMIT_DOWN)  val altSpeedLimitDown: Int,
+        @JvmField @Json(name = ALT_SPEED_LIMIT_UP)  val altSpeedLimitUp: Int,
+        @JvmField @Json(name = ALT_SPEED_LIMIT_ENABLED)  val altSpeedLimitEnabled: Boolean,
+        @JvmField @Json(name = DOWNLOAD_DIR)  val downloadDir: String,
+        @JvmField @Json(name = SEED_RATIO_LIMITED)  val seedRatioLimited: Boolean,
+        @JvmField @Json(name = SEED_RATIO_LIMIT)  val seedRatioLimit: Double,
+        @JvmField @Json(name = SEED_IDLE_LIMITED)  val seedIdleLimited: Boolean,
+        @JvmField @Json(name = SEED_IDLE_LIMIT)  val seedIdleLimit: Int,
+        @JvmField @Json(name = DOWNLOAD_DIR_FREE_SPACE)  val downloadDirFreeSpace: Long,
+        @JvmField @Json(name = VERSION)  val version: String)
 {
     companion object {
         const val SPEED_LIMIT_DOWN = "speed-limit-down"

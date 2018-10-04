@@ -5,10 +5,14 @@ import android.os.Parcelable;
 
 import com.squareup.moshi.Json;
 
+import net.yupol.transmissionremote.data.api.model.TorrentInfoEntity;
 import net.yupol.transmissionremote.model.limitmode.IdleLimitMode;
 import net.yupol.transmissionremote.model.limitmode.LimitMode;
 import net.yupol.transmissionremote.model.limitmode.RatioLimitMode;
-import net.yupol.transmissionremote.utils.Parcelables;
+import net.yupol.transmissionremote.model.mapper.FileMapper;
+import net.yupol.transmissionremote.model.mapper.PeerMapper;
+import net.yupol.transmissionremote.model.mapper.TrackerMapper;
+import net.yupol.transmissionremote.model.utils.Parcelables;
 
 public class TorrentInfo implements Parcelable {
 
@@ -50,11 +54,6 @@ public class TorrentInfo implements Parcelable {
     @Json(name = "peers") private Peer[] peers;
     @Json(name = "trackers") private Tracker[] trackers;
     @Json(name = "trackerStats") private TrackerStats[] trackerStats;
-    
-    
-    
-    
-    
 
     public TorrentInfo() {}
 
@@ -296,6 +295,46 @@ public class TorrentInfo implements Parcelable {
         out.writeParcelableArray(peers, flags);
         out.writeParcelableArray(trackers, flags);
         out.writeParcelableArray(trackerStats, flags);
+    }
+
+    public static TorrentInfo fromEntity(TorrentInfoEntity entity) {
+        TorrentInfo info = new TorrentInfo();
+        info.id = entity.id;
+        info.files = FileMapper.toViewModel(entity.files);
+        info.fileStats = FileMapper.toViewModel(entity.fileStats);
+        info.transferPriorityValue = entity.transferPriorityValue;
+        info.honorsSessionLimits = entity.honorsSessionLimits;
+        info.downloadLimited = entity.downloadLimited;
+        info.downloadLimit = entity.downloadLimit;
+        info.uploadLimited = entity.uploadLimited;
+        info.uploadLimit = entity.uploadLimit;
+        info.seedRatioLimit = entity.seedRatioLimit;
+        info.seedRatioModeValue = entity.seedRatioModeValue;
+        info.seedIdleLimit = entity.seedIdleLimit;
+        info.seedIdleModeValue = entity.seedIdleModeValue;
+        info.haveUnchecked = entity.haveUnchecked;
+        info.haveValid = entity.haveValid;
+        info.sizeWhenDone = entity.sizeWhenDone;
+        info.leftUntilDone = entity.leftUntilDone;
+        info.desiredAvailable = entity.desiredAvailable;
+        info.pieceCount = entity.pieceCount;
+        info.pieceSize = entity.pieceSize;
+        info.downloadDir = entity.downloadDir;
+        info.isPrivate = entity.isPrivate;
+        info.creator = entity.creator;
+        info.dateCreated = entity.dateCreated;
+        info.comment = entity.comment;
+        info.downloadedEver = entity.downloadedEver;
+        info.corruptEver = entity.corruptEver;
+        info.uploadedEver = entity.uploadedEver;
+        info.addedDate = entity.addedDate;
+        info.activityDate = entity.activityDate;
+        info.secondsDownloading = entity.secondsDownloading;
+        info.secondsSeeding = entity.secondsSeeding;
+        info.peers = PeerMapper.toViewModel(entity.peers);
+        info.trackers = TrackerMapper.toViewModel(entity.trackers);
+        info.trackerStats = TrackerMapper.toViewModel(entity.trackerStats);
+        return info;
     }
 
     public static final Creator<TorrentInfo> CREATOR = new Creator<TorrentInfo>() {

@@ -14,7 +14,6 @@ import android.support.multidex.MultiDexApplication;
 import android.support.v7.app.AppCompatDelegate;
 
 import com.crashlytics.android.Crashlytics;
-import com.crashlytics.android.core.CrashlyticsCore;
 import com.evernote.android.job.JobManager;
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
@@ -118,12 +117,9 @@ public class TransmissionRemote extends MultiDexApplication implements SharedPre
     }
 
     private void setupCrashlytics() {
-        Crashlytics crashlytics = new Crashlytics.Builder()
-                .core(new CrashlyticsCore.Builder()
-                        .disabled(BuildConfig.DEBUG)
-                        .build())
-                .build();
-        Fabric.with(this, crashlytics, new Crashlytics());
+        if (!BuildConfig.DEBUG) {
+            Fabric.with(this, new Crashlytics());
+        }
     }
 
     @Override

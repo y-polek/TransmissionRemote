@@ -5,6 +5,8 @@ import android.os.Parcelable;
 
 import com.squareup.moshi.Json;
 
+import net.yupol.transmissionremote.data.api.model.PeerEntity;
+
 public class Peer implements Parcelable {
 
     @Json(name = "address") public String address;
@@ -82,5 +84,26 @@ public class Peer implements Parcelable {
         parcel.writeDouble(progress);
         parcel.writeLong(rateToClient);
         parcel.writeLong(rateToPeer);
+    }
+
+    public static Peer fromEntity(PeerEntity entity) {
+        Peer peer = new Peer();
+        peer.address = entity.address;
+        peer.clientName = entity.clientName;
+        peer.clientIsChoked = entity.clientIsChoked;
+        peer.clientIsInterested = entity.clientIsInterested;
+        peer.flagStr = entity.flagStr;
+        peer.isDownloadingFrom = entity.isDownloadingFrom;
+        peer.isEncrypted = entity.isEncrypted;
+        peer.isIncoming = entity.isIncoming;
+        peer.isUploadingTo = entity.isUploadingTo;
+        peer.isUTP = entity.isUTP;
+        peer.peerIsChoked = entity.peerIsChoked;
+        peer.peerIsInterested = entity.peerIsInterested;
+        peer.port = entity.port;
+        peer.progress = entity.progress;
+        peer.rateToClient = entity.rateToClient;
+        peer.rateToPeer = entity.rateToPeer;
+        return peer;
     }
 }

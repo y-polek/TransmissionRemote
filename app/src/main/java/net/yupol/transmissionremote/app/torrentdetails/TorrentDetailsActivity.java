@@ -19,13 +19,17 @@ import net.yupol.transmissionremote.app.BaseActivity;
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.TransmissionRemote;
 import net.yupol.transmissionremote.app.databinding.TorrentDetailsLayoutBinding;
+import net.yupol.transmissionremote.model.mapper.ServerMapper;
 import net.yupol.transmissionremote.app.torrentlist.ChooseLocationDialogFragment;
 import net.yupol.transmissionremote.app.torrentlist.RemoveTorrentsDialogFragment;
 import net.yupol.transmissionremote.app.torrentlist.RenameDialogFragment;
+import net.yupol.transmissionremote.data.api.Transport;
+import net.yupol.transmissionremote.data.api.model.TorrentEntity;
+import net.yupol.transmissionremote.data.api.model.TorrentInfoEntity;
+import net.yupol.transmissionremote.data.api.rpc.RpcArgs;
 import net.yupol.transmissionremote.model.json.Torrent;
 import net.yupol.transmissionremote.model.json.TorrentInfo;
-import net.yupol.transmissionremote.data.api.Transport;
-import net.yupol.transmissionremote.data.api.rpc.RpcArgs;
+import net.yupol.transmissionremote.model.mapper.TorrentMapper;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -71,7 +75,7 @@ public class TorrentDetailsActivity extends BaseActivity implements
         binding = DataBindingUtil.setContentView(this, R.layout.torrent_details_layout);
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(TorrentDetailsActivity.this);
-        transport = new Transport(TransmissionRemote.getInstance().getActiveServer());
+        transport = new Transport(ServerMapper.toDomain(TransmissionRemote.getInstance().getActiveServer()));
 
         if (savedInstanceState != null) {
             torrentInfo = savedInstanceState.getParcelable(KEY_TORRENT_INFO);
@@ -354,20 +358,20 @@ public class TorrentDetailsActivity extends BaseActivity implements
         transport.api().torrentList(torrentId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new SingleObserver<List<Torrent>>() {
+                .subscribe(new SingleObserver<List<TorrentEntity>>() {
                     @Override
                     public void onSubscribe(Disposable d) {
                         requests.add(d);
                     }
 
                     @Override
-                    public void onSuccess(List<Torrent> torrents) {
+                    public void onSuccess(List<TorrentEntity> torrents) {
                         if (torrents.size() != 1) {
                             Log.e(TAG, "Wrong number of torrents");
                             return;
                         }
 
-                        updateTorrentInfo(torrents.get(0));
+                        updateTorrentInfo(TorrentMapper.INSTANCE.toViewModel(torrents.get(0)));
                     }
 
                     @Override
@@ -381,15 +385,15 @@ public class TorrentDetailsActivity extends BaseActivity implements
         transport.api().torrentInfo(torrent.getId())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new SingleObserver<TorrentInfo>() {
+                .subscribe(new SingleObserver<TorrentInfoEntity>() {
                     @Override
                     public void onSubscribe(Disposable d) {
                         requests.add(d);
                     }
 
                     @Override
-                    public void onSuccess(TorrentInfo torrentInfo) {
-                        onTorrentInfoUpdated(torrentInfo);
+                    public void onSuccess(TorrentInfoEntity torrentInfo) {
+                        onTorrentInfoUpdated(TorrentMapper.toViewModel(torrentInfo));
                         TorrentDetailsActivity.this.torrent = torrent;
                         getIntent().putExtra(EXTRA_TORRENT, torrent);
                         setupPager();

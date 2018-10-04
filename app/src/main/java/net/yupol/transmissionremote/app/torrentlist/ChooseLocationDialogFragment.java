@@ -20,9 +20,10 @@ import net.yupol.transmissionremote.app.TransmissionRemote;
 import net.yupol.transmissionremote.app.databinding.SetLocationDialogBinding;
 import net.yupol.transmissionremote.app.utils.SimpleTextWatcher;
 import net.yupol.transmissionremote.app.utils.TextUtils;
-import net.yupol.transmissionremote.data.api.model.FreeSpaceEntity;
 import net.yupol.transmissionremote.data.api.Transport;
+import net.yupol.transmissionremote.data.api.model.FreeSpaceEntity;
 import net.yupol.transmissionremote.data.api.rpc.RpcFailureException;
+import net.yupol.transmissionremote.model.mapper.ServerMapper;
 
 import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -105,7 +106,7 @@ public class ChooseLocationDialogFragment extends DialogFragment {
         if (runningFreeSpaceRequest != null) runningFreeSpaceRequest.dispose();
         binding.setLoadingInProgress(true);
 
-        new Transport(TransmissionRemote.getInstance().getActiveServer()).api().freeSpace(path)
+        new Transport(ServerMapper.toDomain(TransmissionRemote.getInstance().getActiveServer())).api().freeSpace(path)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new SingleObserver<FreeSpaceEntity>() {

@@ -11,8 +11,11 @@ import com.evernote.android.job.JobManager;
 import com.evernote.android.job.JobRequest;
 
 import net.yupol.transmissionremote.app.TransmissionRemote;
+import net.yupol.transmissionremote.model.mapper.ServerMapper;
+import net.yupol.transmissionremote.data.api.Transport;
+import net.yupol.transmissionremote.data.api.model.TorrentEntity;
+import net.yupol.transmissionremote.model.mapper.TorrentMapper;
 import net.yupol.transmissionremote.model.Server;
-import net.yupol.transmissionremote.model.json.Torrent;
 
 import java.util.List;
 import java.util.Set;
@@ -24,8 +27,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
-
-import net.yupol.transmissionremote.data.api.Transport;
 
 public class BackgroundUpdateJob extends Job {
 
@@ -43,18 +44,18 @@ public class BackgroundUpdateJob extends Job {
 
         final CompositeDisposable requests = new CompositeDisposable();
         for (final Server server : servers) {
-            new Transport(server).api().torrentList()
+            new Transport(ServerMapper.toDomain(server)).api().torrentList()
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(new SingleObserver<List<Torrent>>() {
+                    .subscribe(new SingleObserver<List<TorrentEntity>>() {
                         @Override
                         public void onSubscribe(Disposable d) {
                             requests.add(d);
                         }
 
                         @Override
-                        public void onSuccess(List<Torrent> torrents) {
-                            finishedTorrentsNotificationManager.checkForFinishedTorrents(server, torrents);
+                        public void onSuccess(List<TorrentEntity> torrents) {
+                            finishedTorrentsNotificationManager.checkForFinishedTorrents(server, TorrentMapper.toViewModel(torrents));
                             countDownLatch.countDown();
                         }
 

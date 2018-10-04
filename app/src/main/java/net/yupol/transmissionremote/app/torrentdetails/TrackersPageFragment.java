@@ -26,6 +26,7 @@ import com.mikepenz.community_material_typeface_library.CommunityMaterial;
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.TransmissionRemote;
 import net.yupol.transmissionremote.app.databinding.TorrentDetailsTrackersPageFragmentBinding;
+import net.yupol.transmissionremote.model.mapper.ServerMapper;
 import net.yupol.transmissionremote.app.utils.DividerItemDecoration;
 import net.yupol.transmissionremote.app.utils.IconUtils;
 import net.yupol.transmissionremote.model.json.TorrentInfo;
@@ -57,7 +58,7 @@ public class TrackersPageFragment extends BasePageFragment implements TrackersAd
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        transport = new Transport(TransmissionRemote.getInstance().getActiveServer());
+        transport = new Transport(ServerMapper.toDomain(TransmissionRemote.getInstance().getActiveServer()));
     }
 
     @Override

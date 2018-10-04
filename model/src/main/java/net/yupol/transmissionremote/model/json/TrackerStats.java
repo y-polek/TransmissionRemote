@@ -5,6 +5,9 @@ import android.os.Parcelable;
 
 import com.squareup.moshi.Json;
 
+import net.yupol.transmissionremote.data.api.model.TrackerEntity;
+import net.yupol.transmissionremote.data.api.model.TrackerStatsEntity;
+
 public class TrackerStats implements Parcelable {
 
     @Json(name = "id") public int id;
@@ -106,6 +109,37 @@ public class TrackerStats implements Parcelable {
         parcel.writeInt(scrapeState);
         parcel.writeInt(seederCount);
         parcel.writeInt(tier);
+    }
+
+    public static TrackerStats fromEntity(TrackerStatsEntity entity) {
+        TrackerStats stats = new TrackerStats();
+        stats.id = entity.id;
+        stats.announce = entity.announce;
+        stats.announceState = entity.announceState;
+        stats.downloadCount = entity.downloadCount;
+        stats.hasAnnounced = entity.hasAnnounced;
+        stats.hasScraped = entity.hasScraped;
+        stats.host = entity.host;
+        stats.isBackup = entity.isBackup;
+        stats.lastAnnouncePeerCount = entity.lastAnnouncePeerCount;
+        stats.lastAnnounceResult = entity.lastAnnounceResult;
+        stats.lastAnnounceStartTime = entity.lastAnnounceStartTime;
+        stats.lastAnnounceSucceeded = entity.lastAnnounceSucceeded;
+        stats.lastAnnounceTime = entity.lastAnnounceTime;
+        stats.lastAnnounceTimedOut = entity.lastAnnounceTimedOut;
+        stats.lastScrapeResult = entity.lastScrapeResult;
+        stats.lastScrapeStartTime = entity.lastScrapeStartTime;
+        stats.lastScrapeSucceeded = entity.lastScrapeSucceeded;
+        stats.lastScrapeTime = entity.lastScrapeTime;
+        stats.lastScrapeTimedOut = entity.lastScrapeTimedOut;
+        stats.leecherCount = entity.leecherCount;
+        stats.nextAnnounceTime = entity.nextAnnounceTime;
+        stats.nextScrapeTime = entity.nextScrapeTime;
+        stats.scrape = entity.scrape;
+        stats.scrapeState = entity.scrapeState;
+        stats.seederCount = entity.seederCount;
+        stats.tier = entity.tier;
+        return stats;
     }
 }
 
