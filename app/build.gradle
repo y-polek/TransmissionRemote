@@ -116,6 +116,9 @@ dependencies {
     implementation "com.hannesdorfmann.mosby3:mvp:$mosby_version"
     implementation "com.hannesdorfmann.mosby3:mvp-nullobject-presenter:$mosby_version"
 
+    // Emoji
+    implementation "com.vdurmont:emoji-java:$emoji_java_version"
+
     // Testing
     testImplementation 'junit:junit:4.12'
     testImplementation 'org.hamcrest:hamcrest-library:1.3'
