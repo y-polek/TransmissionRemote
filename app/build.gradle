@@ -119,6 +119,9 @@ dependencies {
     // Emoji
     implementation "com.vdurmont:emoji-java:$emoji_java_version"
 
+    // Constraint Layout
+    implementation "com.android.support.constraint:constraint-layout:$constraint_layout_version"
+
     // Testing
     testImplementation 'junit:junit:4.12'
     testImplementation 'org.hamcrest:hamcrest-library:1.3'

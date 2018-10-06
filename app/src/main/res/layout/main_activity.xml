@@ -1,77 +1,95 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout>
-    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-        <LinearLayout
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
-            <android.support.v7.widget.Toolbar
-                android:id="@+id/toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                android:minHeight="?attr/actionBarSize"
-                android:background="?attr/colorPrimary"
-                android:theme="@style/ActionBarTheme"/>
-            <FrameLayout android:id="@+id/torrent_list_container"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"/>
-            <android.support.v7.widget.Toolbar
-                android:id="@+id/bottom_toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                android:minHeight="?attr/actionBarSize"
-                android:background="?attr/colorPrimary"
-                android:theme="@style/ActionBarTheme">
-                <net.yupol.transmissionremote.app.actionbar.TurtleModeButton
-                    xmlns:custom="http://schemas.android.com/apk/res-auto"
-                    android:id="@+id/turtle_mode_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@null"
-                    custom:src_enabled="@drawable/ic_turtle_active"
-                    custom:src_disabled="@drawable/ic_turtle_default"
-                    custom:enabled="true"/>
-            </android.support.v7.widget.Toolbar>
-        </LinearLayout>
+            android:layout_height="?attr/actionBarSize"
+            android:minHeight="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            android:theme="@style/ActionBarTheme"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
 
-        <View android:id="@+id/fab_overlay"
+        <FrameLayout
+            android:id="@+id/torrent_list_container"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            app:layout_constraintBottom_toTopOf="@+id/bottom_toolbar"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/toolbar" />
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/bottom_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:minHeight="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            android:theme="@style/ActionBarTheme"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
+            <net.yupol.transmissionremote.app.actionbar.TurtleModeButton
+                xmlns:custom="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/turtle_mode_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@null"
+                custom:src_enabled="@drawable/ic_turtle_active"
+                custom:src_disabled="@drawable/ic_turtle_default"
+                custom:enabled="true"/>
+        </android.support.v7.widget.Toolbar>
+
+        <View
+            android:id="@+id/fab_overlay"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:background="@color/fab_overlay_color"
             android:clickable="true"
-            android:background="@color/fab_overlay_color" />
+            android:focusable="true"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
 
-        <com.getbase.floatingactionbutton.FloatingActionsMenu android:id="@+id/add_torrent_button"
+        <com.getbase.floatingactionbutton.FloatingActionsMenu
+            android:id="@+id/add_torrent_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom|right"
-            android:layout_marginBottom="?attr/actionBarSize"
+            android:layout_gravity="bottom|end"
             app:background="?attr/selectableItemBackgroundBorderless"
             app:fab_addButtonColorNormal="?attr/colorAccent"
             app:fab_addButtonColorPressed="?attr/colorAccent"
             app:fab_addButtonSize="normal"
+            app:fab_labelStyle="@style/FabMenuLabelsStyle"
             app:fab_labelsPosition="left"
-            app:fab_labelStyle="@style/FabMenuLabelsStyle">
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/bottom_toolbar">
 
-            <com.getbase.floatingactionbutton.FloatingActionButton android:id="@+id/add_torrent_by_file_button"
+            <com.getbase.floatingactionbutton.FloatingActionButton
+                android:id="@+id/add_torrent_by_file_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:fab_colorNormal="?attr/colorAccent"
                 app:fab_colorPressed="?attr/colorAccent"
                 app:fab_size="mini"
-                app:fab_title="@string/add_torrent_by_file"/>
+                app:fab_title="@string/add_torrent_by_file" />
 
-            <com.getbase.floatingactionbutton.FloatingActionButton android:id="@+id/add_torrent_by_magnet_button"
+            <com.getbase.floatingactionbutton.FloatingActionButton
+                android:id="@+id/add_torrent_by_magnet_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:fab_colorNormal="?attr/colorAccent"
                 app:fab_colorPressed="?attr/colorAccent"
                 app:fab_size="mini"
-                app:fab_title="@string/add_torrent_by_address"/>
+                app:fab_title="@string/add_torrent_by_address" />
 
         </com.getbase.floatingactionbutton.FloatingActionsMenu>
-    </FrameLayout>
+    </android.support.constraint.ConstraintLayout>
 </layout>

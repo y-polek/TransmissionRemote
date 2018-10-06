@@ -1,42 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout>
-    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-        <LinearLayout
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
-            <android.support.v7.widget.Toolbar
-                android:id="@+id/toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                android:minHeight="?attr/actionBarSize"
-                android:background="?attr/colorPrimary"
-                android:theme="@style/ActionBarTheme"/>
-            <FrameLayout android:id="@+id/torrent_list_container"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"/>
-        </LinearLayout>
+            android:layout_height="?attr/actionBarSize"
+            android:minHeight="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            android:theme="@style/ActionBarTheme"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+        <FrameLayout android:id="@+id/torrent_list_container"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/toolbar"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
 
         <View android:id="@+id/fab_overlay"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:clickable="true"
-            android:background="@color/fab_overlay_color" />
+            android:focusable="true"
+            android:background="@color/fab_overlay_color"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
 
         <com.getbase.floatingactionbutton.FloatingActionsMenu android:id="@+id/add_torrent_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom|right"
+            android:layout_gravity="bottom|end"
             app:background="?attr/selectableItemBackgroundBorderless"
             app:fab_addButtonColorNormal="?attr/colorAccent"
             app:fab_addButtonColorPressed="?attr/colorAccent"
             app:fab_addButtonSize="normal"
             app:fab_labelsPosition="left"
-            app:fab_labelStyle="@style/FabMenuLabelsStyle">
+            app:fab_labelStyle="@style/FabMenuLabelsStyle"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
 
             <com.getbase.floatingactionbutton.FloatingActionButton android:id="@+id/add_torrent_by_file_button"
                 android:layout_width="wrap_content"
@@ -56,5 +68,5 @@
 
         </com.getbase.floatingactionbutton.FloatingActionsMenu>
 
-    </FrameLayout>
+    </android.support.constraint.ConstraintLayout>
 </layout>

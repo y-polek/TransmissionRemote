@@ -13,4 +13,5 @@ ext {
     kotlintest_version = '3.0.4'
     mosby_version = '3.1.0'
     emoji_java_version = '4.0.0'
+    constraint_layout_version = '1.1.2'
 }
