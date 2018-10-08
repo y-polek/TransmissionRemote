@@ -6,6 +6,9 @@ dependencies {
 
     // RxKotlin
     implementation "io.reactivex.rxjava2:rxkotlin:$rxjava_version"
+
+    // Inject annotation
+    implementation "javax.inject:javax.inject:$javax_inject_version"
 }
 
 sourceCompatibility = "7"

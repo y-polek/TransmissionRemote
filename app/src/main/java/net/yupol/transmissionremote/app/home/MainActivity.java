@@ -88,10 +88,14 @@ import net.yupol.transmissionremote.app.utils.IconUtils;
 import net.yupol.transmissionremote.app.utils.ThemeUtils;
 import net.yupol.transmissionremote.data.api.ConnectivityInterceptor;
 import net.yupol.transmissionremote.data.api.Transport;
+import net.yupol.transmissionremote.data.api.mapper.TorrentMapper;
 import net.yupol.transmissionremote.data.api.model.AddTorrentResult;
 import net.yupol.transmissionremote.data.api.model.ServerSettingsEntity;
 import net.yupol.transmissionremote.data.api.rpc.RpcArgs;
 import net.yupol.transmissionremote.data.api.rpc.RpcFailureException;
+import net.yupol.transmissionremote.data.repository.TorrentListRepositoryImpl;
+import net.yupol.transmissionremote.domain.usecase.LoadTorrentList;
+import net.yupol.transmissionremote.domain.usecase.TorrentListInteractor;
 import net.yupol.transmissionremote.model.Server;
 import net.yupol.transmissionremote.model.Torrents;
 import net.yupol.transmissionremote.model.json.Torrent;
@@ -278,7 +282,15 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
     @NonNull
     @Override
     public MainActivityPresenter createPresenter() {
-        return new MainActivityPresenter();
+        TorrentListInteractor interactor = new TorrentListInteractor(
+                new LoadTorrentList(
+                        new TorrentListRepositoryImpl(
+                                new Transport(
+                                        ServerMapper.toDomain(TransmissionRemote.getApplication(this).getActiveServer()),
+                                        new ConnectivityInterceptor(getBaseContext()))
+                                        .api(),
+                                new TorrentMapper())));
+        return new MainActivityPresenter(interactor);
     }
 
     private void setupActionBar() {
@@ -1153,7 +1165,7 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
         torrentUpdater = new TorrentUpdater(transport, MainActivity.this, application.getUpdateInterval());
         torrentUpdater.start();
 
-        startPreferencesUpdateTimer();
+        //startPreferencesUpdateTimer();
 
         toolbarSpinnerAdapter.notifyDataSetChanged();
     }
@@ -1199,7 +1211,7 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
     }
 
     private void showEmptyServerFragment() {
-        FragmentManager fm = getSupportFragmentManager();
+        /*FragmentManager fm = getSupportFragmentManager();
         EmptyServerFragment emptyServerFragment = (EmptyServerFragment) fm.findFragmentByTag(TAG_EMPTY_SERVER);
         if (emptyServerFragment == null) {
             emptyServerFragment = new EmptyServerFragment();
@@ -1208,11 +1220,11 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
             ft.commit();
         }
 
-        binding.addTorrentButton.setVisibility(View.GONE);
+        binding.addTorrentButton.setVisibility(View.GONE);*/
     }
 
     private void showProgressbarFragment() {
-        FragmentManager fm = getSupportFragmentManager();
+        /*FragmentManager fm = getSupportFragmentManager();
         ProgressbarFragment progressbarFragment = (ProgressbarFragment) fm.findFragmentByTag(TAG_PROGRESSBAR);
         if (progressbarFragment == null) {
             progressbarFragment = new ProgressbarFragment();
@@ -1221,11 +1233,11 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
             ft.commitAllowingStateLoss();
         }
 
-        binding.addTorrentButton.setVisibility(View.GONE);
+        binding.addTorrentButton.setVisibility(View.GONE);*/
     }
 
     private void showTorrentListFragment() {
-        FragmentManager fm = getSupportFragmentManager();
+        /*FragmentManager fm = getSupportFragmentManager();
         TorrentListFragment torrentListFragment = (TorrentListFragment) fm.findFragmentByTag(TAG_TORRENT_LIST);
         if (torrentListFragment == null) {
             torrentListFragment = new TorrentListFragment();
@@ -1234,11 +1246,11 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
             ft.commit();
         }
 
-        binding.addTorrentButton.setVisibility(showFab ? View.VISIBLE : View.GONE);
+        binding.addTorrentButton.setVisibility(showFab ? View.VISIBLE : View.GONE);*/
     }
 
     private void showNetworkErrorFragment(String message) {
-        FragmentManager fm = getSupportFragmentManager();
+        /*FragmentManager fm = getSupportFragmentManager();
         NetworkErrorFragment fragment = (NetworkErrorFragment) fm.findFragmentByTag(TAG_NETWORK_ERROR);
         if (fragment == null) {
             fragment = new NetworkErrorFragment();
@@ -1252,7 +1264,7 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
             fragment.setErrorMessage(message);
         }
 
-        binding.addTorrentButton.setVisibility(View.GONE);
+        binding.addTorrentButton.setVisibility(View.GONE);*/
     }
 
     private void updateTurtleModeActionIcon() {

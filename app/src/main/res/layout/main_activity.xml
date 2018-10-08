@@ -16,15 +16,21 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>
 
-        <FrameLayout
-            android:id="@+id/torrent_list_container"
+        <android.support.v4.widget.SwipeRefreshLayout
+            android:id="@+id/swipe_refresh"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"
             app:layout_constraintBottom_toTopOf="@+id/bottom_toolbar"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/toolbar" />
+            app:layout_constraintTop_toBottomOf="@id/toolbar">
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scrollbars="vertical"/>
+        </android.support.v4.widget.SwipeRefreshLayout>
+
         <android.support.v7.widget.Toolbar
             android:id="@+id/bottom_toolbar"
             android:layout_width="match_parent"
@@ -36,14 +42,13 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent">
             <net.yupol.transmissionremote.app.actionbar.TurtleModeButton
-                xmlns:custom="http://schemas.android.com/apk/res-auto"
                 android:id="@+id/turtle_mode_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@null"
-                custom:src_enabled="@drawable/ic_turtle_active"
-                custom:src_disabled="@drawable/ic_turtle_default"
-                custom:enabled="true"/>
+                app:src_enabled="@drawable/ic_turtle_active"
+                app:src_disabled="@drawable/ic_turtle_default"
+                app:enabled="true"/>
         </android.support.v7.widget.Toolbar>
 
         <View
