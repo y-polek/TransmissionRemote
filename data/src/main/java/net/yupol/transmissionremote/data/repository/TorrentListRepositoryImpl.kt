@@ -1,5 +1,6 @@
 package net.yupol.transmissionremote.data.repository
 
+import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
 import net.yupol.transmissionremote.data.api.TransmissionRpcApi
@@ -18,5 +19,22 @@ class TorrentListRepositoryImpl(
                 }
                 .map(mapper::toDomain)
                 .toList()
+    }
+
+    override fun getTorrent(id: Int): Single<Torrent> {
+        return api.torrentList(id)
+                .flatMapObservable {
+                    Observable.fromIterable(it)
+                }
+                .firstOrError()
+                .map(mapper::toDomain)
+    }
+
+    override fun pauseTorrent(id: Int): Completable {
+        return api.stopTorrents(id)
+    }
+
+    override fun resumeTorrent(id: Int): Completable {
+        return api.startTorrents(id)
     }
 }

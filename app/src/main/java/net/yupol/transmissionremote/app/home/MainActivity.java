@@ -20,10 +20,9 @@ import android.provider.OpenableColumns;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.LayoutInflaterCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -56,7 +55,6 @@ import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
 import net.yupol.transmissionremote.app.BaseMvpActivity;
 import net.yupol.transmissionremote.app.NetworkErrorFragment;
-import net.yupol.transmissionremote.app.ProgressbarFragment;
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.TransmissionRemote;
 import net.yupol.transmissionremote.app.actionbar.ActionBarNavigationAdapter;
@@ -67,6 +65,7 @@ import net.yupol.transmissionremote.app.drawer.FreeSpaceFooterDrawerItem;
 import net.yupol.transmissionremote.app.drawer.HeaderView;
 import net.yupol.transmissionremote.app.drawer.SortDrawerItem;
 import net.yupol.transmissionremote.app.filtering.Filter;
+import net.yupol.transmissionremote.app.model.TorrentViewModel;
 import net.yupol.transmissionremote.app.notifications.FinishedTorrentsNotificationManager;
 import net.yupol.transmissionremote.app.opentorrent.DownloadLocationDialogFragment;
 import net.yupol.transmissionremote.app.opentorrent.OpenAddressDialogFragment;
@@ -78,12 +77,12 @@ import net.yupol.transmissionremote.app.server.AddServerActivity;
 import net.yupol.transmissionremote.app.sorting.SortOrder;
 import net.yupol.transmissionremote.app.sorting.SortedBy;
 import net.yupol.transmissionremote.app.torrentdetails.TorrentDetailsActivity;
-import net.yupol.transmissionremote.app.torrentlist.EmptyServerFragment;
 import net.yupol.transmissionremote.app.torrentlist.RemoveTorrentsDialogFragment;
 import net.yupol.transmissionremote.app.torrentlist.TorrentListFragment;
 import net.yupol.transmissionremote.app.transport.NetworkError;
 import net.yupol.transmissionremote.app.transport.TorrentUpdater;
 import net.yupol.transmissionremote.app.utils.DialogUtils;
+import net.yupol.transmissionremote.app.utils.DividerItemDecoration;
 import net.yupol.transmissionremote.app.utils.IconUtils;
 import net.yupol.transmissionremote.app.utils.ThemeUtils;
 import net.yupol.transmissionremote.data.api.ConnectivityInterceptor;
@@ -94,7 +93,9 @@ import net.yupol.transmissionremote.data.api.model.ServerSettingsEntity;
 import net.yupol.transmissionremote.data.api.rpc.RpcArgs;
 import net.yupol.transmissionremote.data.api.rpc.RpcFailureException;
 import net.yupol.transmissionremote.data.repository.TorrentListRepositoryImpl;
+import net.yupol.transmissionremote.domain.repository.TorrentListRepository;
 import net.yupol.transmissionremote.domain.usecase.LoadTorrentList;
+import net.yupol.transmissionremote.domain.usecase.PauseResumeTorrent;
 import net.yupol.transmissionremote.domain.usecase.TorrentListInteractor;
 import net.yupol.transmissionremote.model.Server;
 import net.yupol.transmissionremote.model.Torrents;
@@ -248,6 +249,8 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
     private CompositeDisposable serverSettingsRequests = new CompositeDisposable();
     private CompositeDisposable requests = new CompositeDisposable();
 
+    private TorrentAdapter adapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         LayoutInflaterCompat.setFactory2(getLayoutInflater(), new IconicsLayoutInflater2(getDelegate()));
@@ -257,6 +260,21 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
 
         application = TransmissionRemote.getApplication(this);
         finishedTorrentsNotificationManager = new FinishedTorrentsNotificationManager(this);
+
+        binding.recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        binding.recyclerView.addItemDecoration(new DividerItemDecoration(this));
+        adapter = new TorrentAdapter(new TorrentAdapter.ClickListener() {
+            @Override
+            public void onPauseClicked(int torrentId) {
+                presenter.pauseClicked(torrentId);
+            }
+
+            @Override
+            public void onResumeClicked(int torrentId) {
+                presenter.resumeClicked(torrentId);
+            }
+        });
+        binding.recyclerView.setAdapter(adapter);
 
         setupActionBar();
         setupBottomToolbar();
@@ -282,15 +300,15 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
     @NonNull
     @Override
     public MainActivityPresenter createPresenter() {
+        Server server = TransmissionRemote.getApplication(this).getActiveServer();
+        TorrentListRepository repo = new TorrentListRepositoryImpl(
+                new Transport(ServerMapper.toDomain(server), new ConnectivityInterceptor(getBaseContext())).api(),
+                new TorrentMapper());
         TorrentListInteractor interactor = new TorrentListInteractor(
-                new LoadTorrentList(
-                        new TorrentListRepositoryImpl(
-                                new Transport(
-                                        ServerMapper.toDomain(TransmissionRemote.getApplication(this).getActiveServer()),
-                                        new ConnectivityInterceptor(getBaseContext()))
-                                        .api(),
-                                new TorrentMapper())));
-        return new MainActivityPresenter(interactor);
+                new LoadTorrentList(repo),
+                new PauseResumeTorrent(repo));
+
+        return new MainActivityPresenter(interactor, new net.yupol.transmissionremote.app.model.mapper.TorrentMapper());
     }
 
     private void setupActionBar() {
@@ -1379,5 +1397,35 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
                 .onErrorComplete()
                 .subscribe();
         torrentUpdater.scheduleUpdate(UPDATE_REQUEST_DELAY);
+    }
+
+    @Override
+    public void showLoading() {
+        binding.swipeRefresh.setRefreshing(true);
+    }
+
+    @Override
+    public void hideLoading() {
+        binding.swipeRefresh.setRefreshing(false);
+    }
+
+    @Override
+    public void showTorrents(@NonNull List<TorrentViewModel> torrents) {
+        adapter.setTorrents(torrents);
+    }
+
+    @Override
+    public void showUpdatedTorrents(@NonNull TorrentViewModel... torrents) {
+        adapter.updateTorrents(torrents);
+    }
+
+    @Override
+    public void showError(@NonNull Throwable error) {
+        Toast.makeText(this, error.getMessage(), Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void showErrorAlert(@NonNull Throwable error) {
+        Toast.makeText(this, error.getMessage(), Toast.LENGTH_LONG).show();
     }
 }

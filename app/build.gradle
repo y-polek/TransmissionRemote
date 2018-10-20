@@ -1,6 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'io.fabric'
+apply plugin: 'kotlin-kapt'
 
 android {
     compileSdkVersion compile_sdk_version
@@ -104,7 +105,7 @@ dependencies {
 
     // Permissions Dispatcher
     implementation 'com.github.hotchemi:permissionsdispatcher:2.2.0'
-    annotationProcessor 'com.github.hotchemi:permissionsdispatcher-processor:2.2.0'
+    kapt 'com.github.hotchemi:permissionsdispatcher-processor:2.2.0'
 
     // Floating Action Button
     implementation 'com.getbase:floatingactionbutton:1.10.1'
@@ -121,6 +122,10 @@ dependencies {
 
     // Constraint Layout
     implementation "com.android.support.constraint:constraint-layout:$constraint_layout_version"
+
+    // ButterKnife
+    implementation "com.jakewharton:butterknife:$butterknife_version"
+    kapt "com.jakewharton:butterknife-compiler:$butterknife_version"
 
     // Testing
     testImplementation 'junit:junit:4.12'

@@ -240,8 +240,8 @@ public class Torrent implements ID, Parcelable {
         torrent.totalSize = entity.totalSize;
         torrent.percentDone = entity.percentDone;
         torrent.status = entity.status;
-        torrent.downloadRate = entity.downloadRate;
-        torrent.uploadRate = entity.uploadRate;
+        torrent.downloadRate = (int) entity.downloadRate;
+        torrent.uploadRate = (int) entity.uploadRate;
         torrent.eta = entity.eta;
         torrent.uploadedSize = entity.uploadedSize;
         torrent.uploadRatio = entity.uploadRatio;
