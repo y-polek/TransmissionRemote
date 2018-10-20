@@ -24,6 +24,7 @@ import net.yupol.transmissionremote.app.filtering.Filter;
 import net.yupol.transmissionremote.app.filtering.Filters;
 import net.yupol.transmissionremote.app.notifications.BackgroundUpdateJob;
 import net.yupol.transmissionremote.app.notifications.BackgroundUpdater;
+import net.yupol.transmissionremote.app.preferences.Preferences;
 import net.yupol.transmissionremote.app.sorting.SortOrder;
 import net.yupol.transmissionremote.app.sorting.SortedBy;
 import net.yupol.transmissionremote.app.utils.ThemeUtils;
@@ -89,6 +90,7 @@ public class TransmissionRemote extends MultiDexApplication implements SharedPre
 
     private Map<Server, Boolean> speedLimitsCache = new WeakHashMap<>();
     private SharedPreferences sharedPreferences;
+    private Preferences preferences;
 
     @Override
     public void onCreate() {
@@ -102,6 +104,7 @@ public class TransmissionRemote extends MultiDexApplication implements SharedPre
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         sharedPreferences.registerOnSharedPreferenceChangeListener(this);
+        preferences = new Preferences(this);
 
         JobManager.create(this)
                 .addJobCreator(new BackgroundUpdateJob.Creator());
@@ -114,6 +117,10 @@ public class TransmissionRemote extends MultiDexApplication implements SharedPre
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             createNotificationChannel();
         }
+    }
+
+    public Preferences preferences() {
+        return preferences;
     }
 
     private void setupCrashlytics() {
@@ -224,11 +231,6 @@ public class TransmissionRemote extends MultiDexApplication implements SharedPre
         for (OnActiveServerChangedListener listener : activeServerListeners) {
             listener.serverChanged(activeServer);
         }
-    }
-
-    public int getUpdateInterval() {
-        return Integer.parseInt(sharedPreferences.getString(getString(R.string.update_interval_key),
-                getString(R.string.update_interval_default_value)));
     }
 
     public boolean isNotificationEnabled() {

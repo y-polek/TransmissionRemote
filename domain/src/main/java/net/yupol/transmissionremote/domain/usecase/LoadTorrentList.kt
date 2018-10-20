@@ -6,10 +6,10 @@ import net.yupol.transmissionremote.domain.repository.TorrentListRepository
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
-class LoadTorrentList @Inject constructor(private val repo: TorrentListRepository) {
+class LoadTorrentList @Inject constructor(private val repo: TorrentListRepository, private val updateInterval: Int) {
 
     fun execute(): Observable<List<Torrent>> {
-        return Observable.interval(0,15, TimeUnit.SECONDS)
+        return Observable.interval(0, updateInterval.toLong(), TimeUnit.SECONDS)
                 .switchMap {
                     repo.getTorrents().toObservable()
                 }

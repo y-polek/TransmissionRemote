@@ -2,6 +2,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'io.fabric'
 apply plugin: 'kotlin-kapt'
+apply plugin: 'kotlin-android-extensions'
 
 android {
     compileSdkVersion compile_sdk_version
@@ -126,6 +127,9 @@ dependencies {
     // ButterKnife
     implementation "com.jakewharton:butterknife:$butterknife_version"
     kapt "com.jakewharton:butterknife-compiler:$butterknife_version"
+
+    // Android KTX
+    implementation "androidx.core:core-ktx:$ktx_version"
 
     // Testing
     testImplementation 'junit:junit:4.12'

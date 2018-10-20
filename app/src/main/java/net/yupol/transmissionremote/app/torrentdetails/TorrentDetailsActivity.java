@@ -19,7 +19,6 @@ import net.yupol.transmissionremote.app.BaseActivity;
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.TransmissionRemote;
 import net.yupol.transmissionremote.app.databinding.TorrentDetailsLayoutBinding;
-import net.yupol.transmissionremote.model.mapper.ServerMapper;
 import net.yupol.transmissionremote.app.torrentlist.ChooseLocationDialogFragment;
 import net.yupol.transmissionremote.app.torrentlist.RemoveTorrentsDialogFragment;
 import net.yupol.transmissionremote.app.torrentlist.RenameDialogFragment;
@@ -29,6 +28,7 @@ import net.yupol.transmissionremote.data.api.model.TorrentInfoEntity;
 import net.yupol.transmissionremote.data.api.rpc.RpcArgs;
 import net.yupol.transmissionremote.model.json.Torrent;
 import net.yupol.transmissionremote.model.json.TorrentInfo;
+import net.yupol.transmissionremote.model.mapper.ServerMapper;
 import net.yupol.transmissionremote.model.mapper.TorrentMapper;
 
 import java.util.LinkedList;
@@ -177,7 +177,7 @@ public class TorrentDetailsActivity extends BaseActivity implements
             restartUpdater = true;
         }
         torrentInfoUpdater = new TorrentInfoUpdater(transport, torrent.getId(),
-                1000 * TransmissionRemote.getInstance().getUpdateInterval());
+                1000 * TransmissionRemote.getInstance().preferences().getUpdateInterval());
         if (restartUpdater) torrentInfoUpdater.start(this);
 
         if (torrentInfo != null) pagerAdapter.setTorrentInfo(torrentInfo);

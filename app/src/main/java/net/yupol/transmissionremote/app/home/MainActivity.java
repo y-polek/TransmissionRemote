@@ -9,7 +9,6 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.databinding.DataBindingUtil;
 import android.net.Uri;
@@ -134,13 +133,11 @@ import permissions.dispatcher.OnShowRationale;
 import permissions.dispatcher.PermissionRequest;
 import permissions.dispatcher.RuntimePermissions;
 
-import static android.preference.PreferenceManager.getDefaultSharedPreferences;
 import static net.yupol.transmissionremote.data.api.rpc.SessionParameters.altSpeedLimitEnabled;
 
 @RuntimePermissions
 public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivityPresenter> implements MainActivityView,
-        TorrentUpdater.TorrentUpdateListener,
-        SharedPreferences.OnSharedPreferenceChangeListener, TransmissionRemote.OnSpeedLimitChangedListener,
+        TorrentUpdater.TorrentUpdateListener, TransmissionRemote.OnSpeedLimitChangedListener,
         TorrentListFragment.OnTorrentSelectedListener, TorrentListFragment.ContextualActionBarListener,
         OpenByDialogFragment.OnOpenTorrentSelectedListener, OpenAddressDialogFragment.OnOpenMagnetListener,
         DownloadLocationDialogFragment.OnDownloadLocationSelectedListener,
@@ -304,7 +301,7 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
                 new Transport(ServerMapper.toDomain(server), new ConnectivityInterceptor(getBaseContext())).api(),
                 new TorrentMapper());
         TorrentListInteractor interactor = new TorrentListInteractor(
-                new LoadTorrentList(repo),
+                new LoadTorrentList(repo, application.preferences().getUpdateInterval()),
                 new PauseResumeTorrent(repo));
 
         return new MainActivityPresenter(interactor, new net.yupol.transmissionremote.app.model.mapper.TorrentMapper());
@@ -665,7 +662,6 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
     protected void onResume() {
         super.onResume();
         isActivityResumed = true;
-        getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
 
         List<Server> servers = application.getServers();
         if (servers.isEmpty()) {
@@ -708,7 +704,6 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
 
         stopPreferencesUpdateTimer();
 
-        getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(this);
         application.persist();
     }
 
@@ -994,15 +989,6 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
     }
 
     @Override
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        if (key.equals(getString(R.string.update_interval_key))) {
-            if (torrentUpdater != null) {
-                torrentUpdater.setTimeout(application.getUpdateInterval());
-            }
-        }
-    }
-
-    @Override
     public void onCABOpen() {
         drawer.getDrawerLayout().setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
     }
@@ -1179,7 +1165,7 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
         headerView.setServers(servers, servers.indexOf(server));
 
         transport = new Transport(ServerMapper.toDomain(server), new ConnectivityInterceptor(getBaseContext()));
-        torrentUpdater = new TorrentUpdater(transport, MainActivity.this, application.getUpdateInterval());
+        torrentUpdater = new TorrentUpdater(transport, MainActivity.this, application.preferences().getUpdateInterval());
         torrentUpdater.start();
 
         //startPreferencesUpdateTimer();
@@ -1218,7 +1204,7 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
                             }
                         });
             }
-        }, 0, TimeUnit.SECONDS.toMillis(Math.max(application.getUpdateInterval(), MIN_PREFS_UPDATE_INTERVAL)));
+        }, 0, TimeUnit.SECONDS.toMillis(Math.max(application.preferences().getUpdateInterval(), MIN_PREFS_UPDATE_INTERVAL)));
     }
 
     private void stopPreferencesUpdateTimer() {
