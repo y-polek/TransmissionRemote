@@ -37,4 +37,12 @@ class TorrentListRepositoryImpl(
     override fun resumeTorrent(id: Int): Completable {
         return api.startTorrents(id)
     }
+
+    override fun pauseAll(): Completable {
+        return api.stopTorrents()
+    }
+
+    override fun resumeAll(): Completable {
+        return api.startTorrents()
+    }
 }

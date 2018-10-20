@@ -1,5 +1,6 @@
 package net.yupol.transmissionremote.domain.usecase
 
+import io.reactivex.Completable
 import io.reactivex.Single
 import net.yupol.transmissionremote.domain.model.Torrent
 import net.yupol.transmissionremote.domain.repository.TorrentListRepository
@@ -21,5 +22,13 @@ class PauseResumeTorrent(private val repo: TorrentListRepository) {
                     repo.getTorrent(torrentId)
                             .delaySubscription(500, TimeUnit.MILLISECONDS)
                 })
+    }
+
+    fun pauseAll(): Completable {
+        return repo.pauseAll()
+    }
+
+    fun resumeAll(): Completable {
+        return repo.resumeAll()
     }
 }

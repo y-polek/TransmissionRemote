@@ -13,4 +13,8 @@ interface TorrentListRepository {
     fun pauseTorrent(id: Int): Completable
 
     fun resumeTorrent(id: Int): Completable
+
+    fun pauseAll(): Completable
+
+    fun resumeAll(): Completable
 }

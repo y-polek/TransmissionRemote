@@ -1,5 +1,6 @@
 package net.yupol.transmissionremote.domain.usecase
 
+import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
 import net.yupol.transmissionremote.domain.model.Torrent
@@ -19,5 +20,13 @@ class TorrentListInteractor @Inject constructor(
 
     fun resumeTorrent(torrentId: Int): Single<Torrent> {
         return pauseResumeTorrent.resume(torrentId)
+    }
+
+    fun pauseAllTorrents(): Completable {
+        return pauseResumeTorrent.pauseAll()
+    }
+
+    fun resumeAllTorrents(): Completable {
+        return pauseResumeTorrent.resumeAll()
     }
 }

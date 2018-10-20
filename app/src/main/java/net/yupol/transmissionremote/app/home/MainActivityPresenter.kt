@@ -7,6 +7,7 @@ import io.reactivex.schedulers.Schedulers
 import net.yupol.transmissionremote.app.model.mapper.TorrentMapper
 import net.yupol.transmissionremote.app.mvp.MvpViewCallback
 import net.yupol.transmissionremote.domain.usecase.TorrentListInteractor
+import java.util.concurrent.TimeUnit
 
 class MainActivityPresenter(
         private val interactor: TorrentListInteractor,
@@ -20,22 +21,16 @@ class MainActivityPresenter(
 
     override fun viewStarted() {
         view.showLoading()
-
-        torrentListDisposable = interactor.loadTorrentList()
-                .map(torrentMapper::toViewMode)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ torrents ->
-                    view.hideLoading()
-                    view.showTorrents(torrents)
-                }, { error ->
-                    view.hideLoading()
-                    view.showError(error)
-                })
+        refresh()
     }
 
     override fun viewStopped() {
         torrentListDisposable?.dispose()
+    }
+
+    fun refresh() {
+        view.showLoading()
+        startTorrentListLoading()
     }
 
     fun pauseClicked(torrentId: Int) {
@@ -59,6 +54,52 @@ class MainActivityPresenter(
                     view.showUpdatedTorrents(torrent)
                 }, { error ->
                     view.showErrorAlert(error)
+                })
+    }
+
+    fun pauseAllClicked() {
+        view.showLoading()
+
+        val d = interactor.pauseAllTorrents()
+                .delay(500, TimeUnit.MILLISECONDS)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    refresh()
+                }, { error ->
+                    view.hideLoading()
+                    view.showErrorAlert(error)
+                })
+    }
+
+    fun resumeAllClicked() {
+        view.showLoading()
+
+        val d = interactor.resumeAllTorrents()
+                .delay(500, TimeUnit.MILLISECONDS)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    refresh()
+                }, { error ->
+                    view.hideLoading()
+                    view.showErrorAlert(error)
+                })
+    }
+
+    private fun startTorrentListLoading() {
+        torrentListDisposable?.dispose()
+
+        torrentListDisposable = interactor.loadTorrentList()
+                .map(torrentMapper::toViewMode)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({ torrents ->
+                    view.hideLoading()
+                    view.showTorrents(torrents)
+                }, { error ->
+                    view.hideLoading()
+                    view.showError(error)
                 })
     }
 }

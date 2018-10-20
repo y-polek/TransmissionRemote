@@ -98,7 +98,6 @@ import net.yupol.transmissionremote.domain.usecase.LoadTorrentList;
 import net.yupol.transmissionremote.domain.usecase.PauseResumeTorrent;
 import net.yupol.transmissionremote.domain.usecase.TorrentListInteractor;
 import net.yupol.transmissionremote.model.Server;
-import net.yupol.transmissionremote.model.Torrents;
 import net.yupol.transmissionremote.model.json.Torrent;
 import net.yupol.transmissionremote.model.mapper.ServerMapper;
 
@@ -869,10 +868,10 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
                 new OpenByDialogFragment().show(getFragmentManager(), TAG_OPEN_TORRENT_DIALOG);
                 return true;
             case R.id.action_start_all_torrents:
-                startAllTorrents();
+                presenter.resumeAllClicked();
                 return true;
             case R.id.action_pause_all_torrents:
-                pauseAllTorrents();
+                presenter.pauseAllClicked();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -1381,22 +1380,6 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
         bundle.putString(DownloadLocationDialogFragment.KEY_MAGNET_URI, magnetUri);
         dialog.setArguments(bundle);
         dialog.show(getSupportFragmentManager(), TAG_DOWNLOAD_LOCATION_DIALOG);
-    }
-
-    private void startAllTorrents() {
-        transport.api().startTorrents(Torrents.ids(application.getTorrents()))
-                .subscribeOn(Schedulers.io())
-                .onErrorComplete()
-                .subscribe();
-        torrentUpdater.scheduleUpdate(UPDATE_REQUEST_DELAY);
-    }
-
-    private void pauseAllTorrents() {
-        transport.api().stopTorrents(Torrents.ids(application.getTorrents()))
-                .subscribeOn(Schedulers.io())
-                .onErrorComplete()
-                .subscribe();
-        torrentUpdater.scheduleUpdate(UPDATE_REQUEST_DELAY);
     }
 
     @Override

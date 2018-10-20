@@ -9,7 +9,7 @@ import javax.inject.Inject
 class LoadTorrentList @Inject constructor(private val repo: TorrentListRepository) {
 
     fun execute(): Observable<List<Torrent>> {
-        return Observable.interval(15, TimeUnit.SECONDS)
+        return Observable.interval(0,15, TimeUnit.SECONDS)
                 .switchMap {
                     repo.getTorrents().toObservable()
                 }
