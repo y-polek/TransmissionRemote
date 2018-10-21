@@ -46,6 +46,11 @@ class TorrentAdapter(private val listener: TorrentAdapter.ClickListener): Recycl
         }
     }
 
+    fun updateTorrentWithId(id: Int) {
+        val idx = torrents.indexOfFirst { it.id == id }
+        if (idx >= 0) notifyItemChanged(idx)
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.torrent_list_item, parent, false)
         return ViewHolder(view, listener)

@@ -42,8 +42,9 @@ class MainActivityPresenter(
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ torrent ->
-                    view.showUpdatedTorrents(torrent)
+                    view.updateTorrents(torrent)
                 }, { error ->
+                    view.updateTorrent(torrentId)
                     view.showErrorAlert(error)
                 })
     }
@@ -54,8 +55,9 @@ class MainActivityPresenter(
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ torrent ->
-                    view.showUpdatedTorrents(torrent)
+                    view.updateTorrents(torrent)
                 }, { error ->
+                    view.updateTorrent(torrentId)
                     view.showErrorAlert(error)
                 })
     }

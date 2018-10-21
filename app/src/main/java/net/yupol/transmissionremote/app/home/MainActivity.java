@@ -1386,8 +1386,13 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
     }
 
     @Override
-    public void showUpdatedTorrents(@NonNull TorrentViewModel... torrents) {
+    public void updateTorrents(@NonNull TorrentViewModel... torrents) {
         adapter.updateTorrents(torrents);
+    }
+
+    @Override
+    public void updateTorrent(int torrentId) {
+        adapter.updateTorrentWithId(torrentId);
     }
 
     @Override
