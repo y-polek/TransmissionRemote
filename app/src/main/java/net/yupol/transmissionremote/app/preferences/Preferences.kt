@@ -13,13 +13,12 @@ class Preferences(context: Context) {
     }
 
     private val prefs = PreferenceManager.getDefaultSharedPreferences(context.applicationContext)
+    private val updateIntervalKey = context.getString(R.string.update_interval_key)
+    private val updateIntervalDefaultValue = context.resources.getInteger(R.integer.update_interval_default_value)
 
     init {
         migratePreferences()
     }
-
-    private val updateIntervalKey = context.getString(R.string.update_interval_key)
-    private val updateIntervalDefaultValue = context.resources.getInteger(R.integer.update_interval_default_value)
 
     var updateInterval: Int by IntPreferenceDelegate(prefs, updateIntervalKey, updateIntervalDefaultValue)
 
