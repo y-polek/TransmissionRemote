@@ -10,16 +10,6 @@
         <item>60 秒</item>
     </array>
 
-    <string-array name="pref_update_interval_entry_values">
-        <item>1</item>
-        <item>2</item>
-        <item>5</item>
-        <item>10</item>
-        <item>15</item>
-        <item>30</item>
-        <item>60</item>
-    </string-array>
-
     <string-array name="open_torrent_by_entries">
         <item>文件</item>
         <item>地址</item>

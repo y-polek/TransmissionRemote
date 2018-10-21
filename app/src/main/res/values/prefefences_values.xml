@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="update_interval_key" translatable="false">update_interval</string>
-    <integer name="update_interval_default_value">2</integer>
+    <string name="update_interval_default_value" translatable="false">2</string>
 
     <string name="torrent_finished_notification_enabled_key" translatable="false">torrent_finished_notification_enabled_key</string>
     <string name="torrent_finished_notification_enabled_default_value" translatable="false">true</string>
