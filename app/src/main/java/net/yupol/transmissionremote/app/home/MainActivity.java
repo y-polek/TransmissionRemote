@@ -257,6 +257,8 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
         application = TransmissionRemote.getApplication(this);
         finishedTorrentsNotificationManager = new FinishedTorrentsNotificationManager(this);
 
+        binding.swipeRefresh.setOnRefreshListener(presenter::refresh);
+
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(this));
         binding.recyclerView.addItemDecoration(new DividerItemDecoration(this));
         adapter = new TorrentAdapter(new TorrentAdapter.ClickListener() {
@@ -301,7 +303,7 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
                 new Transport(ServerMapper.toDomain(server), new ConnectivityInterceptor(getBaseContext())).api(),
                 new TorrentMapper());
         TorrentListInteractor interactor = new TorrentListInteractor(
-                new LoadTorrentList(repo, application.preferences().getUpdateInterval()),
+                new LoadTorrentList(repo, TransmissionRemote.getApplication(this).preferences().getUpdateInterval()),
                 new PauseResumeTorrent(repo));
 
         return new MainActivityPresenter(interactor, new net.yupol.transmissionremote.app.model.mapper.TorrentMapper());

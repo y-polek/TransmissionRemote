@@ -4,6 +4,9 @@ import com.hannesdorfmann.mosby3.mvp.MvpNullObjectBasePresenter
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
+import net.yupol.transmissionremote.app.model.ListResource
+import net.yupol.transmissionremote.app.model.Status.ERROR
+import net.yupol.transmissionremote.app.model.Status.SUCCESS
 import net.yupol.transmissionremote.app.model.mapper.TorrentMapper
 import net.yupol.transmissionremote.app.mvp.MvpViewCallback
 import net.yupol.transmissionremote.domain.usecase.TorrentListInteractor
@@ -92,14 +95,29 @@ class MainActivityPresenter(
 
         torrentListDisposable = interactor.loadTorrentList()
                 .map(torrentMapper::toViewMode)
+                .map {
+                    ListResource.success(it)
+                }
+                .onErrorReturn {
+                    ListResource.error(it)
+                }
+                .repeatWhen { completed ->
+                    completed.delay(5, TimeUnit.SECONDS)
+                }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ torrents ->
-                    view.hideLoading()
-                    view.showTorrents(torrents)
-                }, { error ->
-                    view.hideLoading()
-                    view.showError(error)
-                })
+                .subscribe { result ->
+                    when (result.status) {
+                        SUCCESS -> {
+                            view.hideLoading()
+                            view.showTorrents(result.data!!)
+                        }
+                        ERROR -> {
+                            view.hideLoading()
+                            view.showError(result.error!!)
+                        }
+                        else -> throw IllegalStateException("Unknown status: ${result.status}")
+                    }
+                }
     }
 }
