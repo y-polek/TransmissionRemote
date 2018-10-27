@@ -22,7 +22,9 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.view.LayoutInflaterCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -34,6 +36,7 @@ import android.widget.AdapterView;
 import android.widget.CompoundButton;
 import android.widget.SearchView;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
@@ -72,6 +75,7 @@ import net.yupol.transmissionremote.app.opentorrent.OpenByDialogFragment;
 import net.yupol.transmissionremote.app.preferences.PreferencesActivity;
 import net.yupol.transmissionremote.app.preferences.ServerPreferencesActivity;
 import net.yupol.transmissionremote.app.preferences.ServersActivity;
+import net.yupol.transmissionremote.app.res.StringResourcesImpl;
 import net.yupol.transmissionremote.app.server.AddServerActivity;
 import net.yupol.transmissionremote.app.sorting.SortOrder;
 import net.yupol.transmissionremote.app.sorting.SortedBy;
@@ -92,6 +96,8 @@ import net.yupol.transmissionremote.data.api.model.ServerSettingsEntity;
 import net.yupol.transmissionremote.data.api.rpc.RpcArgs;
 import net.yupol.transmissionremote.data.api.rpc.RpcFailureException;
 import net.yupol.transmissionremote.data.repository.TorrentListRepositoryImpl;
+import net.yupol.transmissionremote.device.clipboard.Clipboard;
+import net.yupol.transmissionremote.device.connectivity.Connectivity;
 import net.yupol.transmissionremote.domain.repository.TorrentListRepository;
 import net.yupol.transmissionremote.domain.usecase.LoadTorrentList;
 import net.yupol.transmissionremote.domain.usecase.PauseResumeTorrent;
@@ -116,6 +122,9 @@ import java.util.TimerTask;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnLongClick;
 import io.reactivex.Completable;
 import io.reactivex.CompletableObserver;
 import io.reactivex.Observable;
@@ -133,6 +142,8 @@ import permissions.dispatcher.OnShowRationale;
 import permissions.dispatcher.PermissionRequest;
 import permissions.dispatcher.RuntimePermissions;
 
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
 import static net.yupol.transmissionremote.data.api.rpc.SessionParameters.altSpeedLimitEnabled;
 
 @RuntimePermissions
@@ -247,14 +258,23 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
 
     private TorrentAdapter adapter;
 
+    private Clipboard clipboard;
+
+    @BindView(R.id.recycler_view) RecyclerView recyclerView;
+    @BindView(R.id.error_layout) View errorLayout;
+    @BindView(R.id.error_text) TextView errorText;
+    @BindView(R.id.detailed_error_text) TextView detailedErrorText;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         LayoutInflaterCompat.setFactory2(getLayoutInflater(), new IconicsLayoutInflater2(getDelegate()));
         super.onCreate(savedInstanceState);
 
         binding = DataBindingUtil.setContentView(this, R.layout.main_activity);
+        ButterKnife.bind(this);
 
         application = TransmissionRemote.getApplication(this);
+        clipboard = new Clipboard(application);
         finishedTorrentsNotificationManager = new FinishedTorrentsNotificationManager(this);
 
         binding.swipeRefresh.setOnRefreshListener(presenter::refresh);
@@ -273,6 +293,8 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
             }
         });
         binding.recyclerView.setAdapter(adapter);
+
+        detailedErrorText.setMovementMethod(new ScrollingMovementMethod());
 
         setupActionBar();
         setupBottomToolbar();
@@ -300,13 +322,23 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
     public MainActivityPresenter createPresenter() {
         Server server = TransmissionRemote.getApplication(this).getActiveServer();
         TorrentListRepository repo = new TorrentListRepositoryImpl(
-                new Transport(ServerMapper.toDomain(server), new ConnectivityInterceptor(getBaseContext())).api(),
+                new Transport(ServerMapper.toDomain(server), new ConnectivityInterceptor(new Connectivity(getApplication()))).api(),
                 new TorrentMapper());
         TorrentListInteractor interactor = new TorrentListInteractor(
                 new LoadTorrentList(repo, TransmissionRemote.getApplication(this).preferences().getUpdateInterval()),
                 new PauseResumeTorrent(repo));
 
-        return new MainActivityPresenter(interactor, new net.yupol.transmissionremote.app.model.mapper.TorrentMapper());
+        return new MainActivityPresenter(
+                interactor,
+                new net.yupol.transmissionremote.app.model.mapper.TorrentMapper(),
+                new StringResourcesImpl(getResources()));
+    }
+
+    @OnLongClick(R.id.detailed_error_text)
+    boolean onErrorDetailsLongClicked() {
+        clipboard.setPlainTextClip("Error text", detailedErrorText.getText());
+        Toast.makeText(this, R.string.copied, Toast.LENGTH_SHORT).show();
+        return true;
     }
 
     private void setupActionBar() {
@@ -506,12 +538,12 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
         binding.addTorrentButton.setOnFloatingActionsMenuUpdateListener(new FloatingActionsMenu.OnFloatingActionsMenuUpdateListener() {
             @Override
             public void onMenuExpanded() {
-                binding.fabOverlay.setVisibility(View.VISIBLE);
+                binding.fabOverlay.setVisibility(VISIBLE);
             }
 
             @Override
             public void onMenuCollapsed() {
-                binding.fabOverlay.setVisibility(View.GONE);
+                binding.fabOverlay.setVisibility(GONE);
             }
         });
 
@@ -522,7 +554,7 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
             }
         });
 
-        binding.fabOverlay.setVisibility(binding.addTorrentButton.isExpanded() ? View.VISIBLE : View.GONE);
+        binding.fabOverlay.setVisibility(binding.addTorrentButton.isExpanded() ? VISIBLE : GONE);
     }
 
     private void switchTheme(boolean nightMode) {
@@ -669,13 +701,13 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
         if (servers.isEmpty()) {
             showEmptyServerFragment();
             drawer.getDrawerLayout().setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
-            binding.toolbar.setVisibility(View.GONE);
-            if (bottomToolbar != null) bottomToolbar.setVisibility(View.GONE);
+            binding.toolbar.setVisibility(GONE);
+            if (bottomToolbar != null) bottomToolbar.setVisibility(GONE);
         } else {
             switchServer(application.getActiveServer());
             drawer.getDrawerLayout().setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
-            binding.toolbar.setVisibility(View.VISIBLE);
-            if (bottomToolbar != null) bottomToolbar.setVisibility(View.VISIBLE);
+            binding.toolbar.setVisibility(VISIBLE);
+            if (bottomToolbar != null) bottomToolbar.setVisibility(VISIBLE);
         }
 
         binding.addTorrentButton.collapseImmediately();
@@ -683,7 +715,7 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
         showFab = PreferenceManager.getDefaultSharedPreferences(this)
                 .getBoolean(getString(R.string.show_add_torrent_fab_key), true);
         boolean isListVisible = getTorrentListFragment() != null;
-        binding.addTorrentButton.setVisibility(showFab && isListVisible ? View.VISIBLE : View.GONE);
+        binding.addTorrentButton.setVisibility(showFab && isListVisible ? VISIBLE : GONE);
     }
 
     @Override
@@ -747,7 +779,7 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
         } else {
             binding.addTorrentButton.collapseImmediately();
         }
-        binding.fabOverlay.setVisibility(isFabExpanded ? View.VISIBLE : View.GONE);
+        binding.fabOverlay.setVisibility(isFabExpanded ? VISIBLE : GONE);
     }
 
     @Override
@@ -1166,7 +1198,7 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
         List<Server> servers = application.getServers();
         headerView.setServers(servers, servers.indexOf(server));
 
-        transport = new Transport(ServerMapper.toDomain(server), new ConnectivityInterceptor(getBaseContext()));
+        transport = new Transport(ServerMapper.toDomain(server), new ConnectivityInterceptor(new Connectivity(getApplication())));
         torrentUpdater = new TorrentUpdater(transport, MainActivity.this, application.preferences().getUpdateInterval());
         torrentUpdater.start();
 
@@ -1383,6 +1415,12 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
     @Override
     public void showTorrents(@NonNull List<TorrentViewModel> torrents) {
         adapter.setTorrents(torrents);
+        recyclerView.setVisibility(VISIBLE);
+    }
+
+    @Override
+    public void hideTorrents() {
+        recyclerView.setVisibility(GONE);
     }
 
     @Override
@@ -1396,8 +1434,18 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
     }
 
     @Override
-    public void showError(@NonNull Throwable error) {
-        Toast.makeText(this, error.getMessage(), Toast.LENGTH_LONG).show();
+    public void showError(@NonNull String summary, @Nullable String details) {
+        Toast.makeText(this, summary, Toast.LENGTH_SHORT).show();
+
+        binding.errorLayout.setVisibility(VISIBLE);
+        errorText.setText(summary);
+        detailedErrorText.setVisibility(details != null ? VISIBLE : GONE);
+        if (details != null) detailedErrorText.setText(details);
+    }
+
+    @Override
+    public void hideError() {
+        errorLayout.setVisibility(GONE);
     }
 
     @Override

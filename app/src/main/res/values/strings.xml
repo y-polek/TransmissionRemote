@@ -260,6 +260,7 @@
     <string name="server_settings">Server settings</string>
     <string name="network_settings">Network settings</string>
     <string name="network_error_message_no_network">Failed to connect to the server. Check network settings.</string>
+    <string name="network_error_message_no_network_in_airplane_mode">You are in Airplane Mode.</string>
     <string name="network_error_message_connection_error">Failed to connect to the server. Check server settings.</string>
     <string name="network_error_message_unauthorized">Unauthorized access. Check username and password in server settings.</string>
     <string name="error_retrieve_torrent_details">Can\'t retrieve torrent details. Try again</string>

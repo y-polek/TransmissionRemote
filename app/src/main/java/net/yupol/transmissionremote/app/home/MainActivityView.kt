@@ -11,11 +11,15 @@ interface MainActivityView: MvpView {
 
     fun showTorrents(torrents: List<TorrentViewModel>)
 
+    fun hideTorrents()
+
     fun updateTorrents(vararg torrents: TorrentViewModel)
 
     fun updateTorrent(torrentId: Int)
 
-    fun showError(error: Throwable)
+    fun showError(summary: String, details: String? = null)
+
+    fun hideError()
 
     fun showErrorAlert(error: Throwable)
 }

@@ -24,6 +24,7 @@ android {
 
 dependencies {
     implementation project(':domain')
+    implementation project(':device')
     implementation project(':utils')
 
     // Kotlin
@@ -43,6 +44,9 @@ dependencies {
     implementation "com.squareup.moshi:moshi:$moshi_version"
     implementation "com.squareup.moshi:moshi-kotlin:$moshi_version"
     implementation "com.serjltt.moshi:moshi-lazy-adapters:$moshi_lazy_adapters_version"
+
+    // Inject annotation
+    implementation "javax.inject:javax.inject:$javax_inject_version"
 
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'

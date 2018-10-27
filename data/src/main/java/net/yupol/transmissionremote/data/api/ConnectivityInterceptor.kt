@@ -1,24 +1,18 @@
 package net.yupol.transmissionremote.data.api
 
-import android.content.Context
+import net.yupol.transmissionremote.device.connectivity.Connectivity
 import okhttp3.Interceptor
 import okhttp3.Response
-import android.net.NetworkInfo
-import android.net.ConnectivityManager
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class ConnectivityInterceptor(val context: Context) : Interceptor {
+@Singleton
+class ConnectivityInterceptor @Inject constructor(private val connectivity: Connectivity) : Interceptor {
 
     override fun intercept(chain: Interceptor.Chain): Response {
-        if (!isConnected()) {
-            throw NoNetworkException()
+        if (!connectivity.isConnected()) {
+            throw NoNetworkException(connectivity.isAirplaneModeOn())
         }
         return chain.proceed(chain.request())
-    }
-
-    private fun isConnected(): Boolean {
-        val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val activeNetwork: NetworkInfo? = cm.activeNetworkInfo
-
-        return activeNetwork?.isConnectedOrConnecting ?: false
     }
 }

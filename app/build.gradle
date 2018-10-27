@@ -52,8 +52,9 @@ android {
 }
 
 dependencies {
-    implementation project(':data')
     implementation project(':domain')
+    implementation project(':data')
+    implementation project(':device')
     implementation project(':model')
     implementation project(':utils')
 
@@ -130,6 +131,9 @@ dependencies {
 
     // Android KTX
     implementation "androidx.core:core-ktx:$ktx_version"
+
+    // Inject annotation
+    implementation "javax.inject:javax.inject:$javax_inject_version"
 
     // Testing
     testImplementation 'junit:junit:4.12'

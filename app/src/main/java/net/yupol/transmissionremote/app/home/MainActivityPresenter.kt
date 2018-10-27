@@ -5,25 +5,22 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import net.yupol.transmissionremote.app.model.ListResource
-import net.yupol.transmissionremote.app.model.Status.ERROR
-import net.yupol.transmissionremote.app.model.Status.SUCCESS
+import net.yupol.transmissionremote.app.model.Status.*
 import net.yupol.transmissionremote.app.model.mapper.TorrentMapper
 import net.yupol.transmissionremote.app.mvp.MvpViewCallback
+import net.yupol.transmissionremote.app.res.StringResources
+import net.yupol.transmissionremote.data.api.NoNetworkException
 import net.yupol.transmissionremote.domain.usecase.TorrentListInteractor
 import java.util.concurrent.TimeUnit
 
 class MainActivityPresenter(
         private val interactor: TorrentListInteractor,
-        private val torrentMapper: TorrentMapper): MvpNullObjectBasePresenter<MainActivityView>(), MvpViewCallback
+        private val torrentMapper: TorrentMapper,
+        private val strRes: StringResources): MvpNullObjectBasePresenter<MainActivityView>(), MvpViewCallback
 {
-    companion object {
-        private const val TAG = "MainActivityPresenter"
-    }
-
     private var torrentListDisposable: Disposable? = null
 
     override fun viewStarted() {
-        view.showLoading()
         refresh()
     }
 
@@ -100,8 +97,12 @@ class MainActivityPresenter(
                 .map {
                     ListResource.success(it)
                 }
-                .onErrorReturn {
-                    ListResource.error(it)
+                .onErrorReturn { error ->
+                    return@onErrorReturn if (error is NoNetworkException) {
+                        ListResource.noNetwork(error.inAirplaneMode)
+                    } else {
+                        ListResource.error(error)
+                    }
                 }
                 .repeatWhen { completed ->
                     completed.delay(5, TimeUnit.SECONDS)
@@ -109,14 +110,19 @@ class MainActivityPresenter(
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe { result ->
+                    view.hideLoading()
                     when (result.status) {
                         SUCCESS -> {
-                            view.hideLoading()
                             view.showTorrents(result.data!!)
+                            view.hideError()
+                        }
+                        NO_NETWORK -> {
+                            view.hideTorrents()
+                            view.showError(if (result.inAirplaneMode) strRes.networkErrorNoNetworkInAirplaneMode else strRes.networkErrorNoNetwork)
                         }
                         ERROR -> {
-                            view.hideLoading()
-                            view.showError(result.error!!)
+                            view.hideTorrents()
+                            view.showError(strRes.networkErrorNoConnection, result.error?.message)
                         }
                         else -> throw IllegalStateException("Unknown status: ${result.status}")
                     }
