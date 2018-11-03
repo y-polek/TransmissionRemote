@@ -163,7 +163,7 @@ public class DownloadLocationDialogFragment extends DialogFragment {
                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                     Server server = serverAdapter.getItem(position);
                     if (server != null) {
-                        listener.onServerSelected(server);
+                        listener.onServerSelected(ServerMapper.toDomain(server));
                         updateFreeSpaceInfo();
                     }
                 }
@@ -354,7 +354,7 @@ public class DownloadLocationDialogFragment extends DialogFragment {
 
     public interface OnDownloadLocationSelectedListener {
         void onDownloadLocationSelected(Bundle args, String downloadDir, boolean startWhenAdded);
-        void onServerSelected(Server server);
+        void onServerSelected(net.yupol.transmissionremote.domain.model.Server server);
     }
 
     private static void clickify(TextView view, String clickableText,

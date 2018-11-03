@@ -1,20 +1,15 @@
 package net.yupol.transmissionremote.app.drawer;
 
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.google.common.base.Function;
-import com.google.common.collect.FluentIterable;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.iconics.IconicsDrawable;
 import com.mikepenz.materialdrawer.Drawer;
@@ -26,16 +21,15 @@ import com.mikepenz.materialdrawer.view.BezelImageView;
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.TransmissionRemote;
 import net.yupol.transmissionremote.app.utils.ColorUtils;
-import net.yupol.transmissionremote.model.Server;
-
-import org.json.JSONArray;
-import org.json.JSONException;
+import net.yupol.transmissionremote.domain.model.Server;
+import net.yupol.transmissionremote.domain.repository.ServerRepository;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
+
+import javax.inject.Inject;
 
 public class HeaderView extends RelativeLayout implements View.OnClickListener {
 
@@ -45,8 +39,6 @@ public class HeaderView extends RelativeLayout implements View.OnClickListener {
 
     private static final int DRAWER_ITEM_ID_ADD_SERVER = -101;
     private static final int DRAWER_ITEM_ID_MANAGE_SERVERS = -102;
-
-    private static final String KEY_ORDERED_SERVERS = "key_ordered_servers";
 
     private Drawer drawer;
     private List<Server> servers;
@@ -67,6 +59,8 @@ public class HeaderView extends RelativeLayout implements View.OnClickListener {
 
     private int primaryInverseTextColor;
     private int secondaryTextColor;
+
+    @Inject ServerRepository repo;
 
     private Drawer.OnDrawerItemClickListener drawerItemClickListener = new Drawer.OnDrawerItemClickListener() {
         @Override
@@ -99,6 +93,9 @@ public class HeaderView extends RelativeLayout implements View.OnClickListener {
 
     public HeaderView(Context context, AttributeSet attrs) {
         super(context, attrs);
+
+        TransmissionRemote.getInstance().appComponent().inject(this);
+
         inflate(context, R.layout.drawer_header, this);
 
         primaryInverseTextColor = ColorUtils.resolveColor(context, android.R.attr.textColorPrimaryInverse, R.color.text_primary_inverse);
@@ -114,14 +111,11 @@ public class HeaderView extends RelativeLayout implements View.OnClickListener {
                 .paddingRes(R.dimen.material_drawer_account_header_dropdown_padding);
         serverListButton.setImageDrawable(expandIcon);
         View serverTextSection = findViewById(R.id.header_text_section);
-        serverTextSection.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (serverListExpanded) {
-                    hideServersList();
-                } else {
-                    showServersList();
-                }
+        serverTextSection.setOnClickListener(v -> {
+            if (serverListExpanded) {
+                hideServersList();
+            } else {
+                showServersList();
             }
         });
 
@@ -130,11 +124,8 @@ public class HeaderView extends RelativeLayout implements View.OnClickListener {
                 .color(primaryInverseTextColor)
                 .sizeRes(R.dimen.header_settings_size)
                 .paddingRes(R.dimen.header_settings_padding));
-        settingsButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (listener != null) listener.onSettingsPressed();
-            }
+        settingsButton.setOnClickListener(v -> {
+            if (listener != null) listener.onSettingsPressed();
         });
 
         serverCircleCurrent = findViewById(R.id.circle_current);
@@ -145,51 +136,19 @@ public class HeaderView extends RelativeLayout implements View.OnClickListener {
         serverCircleSmallSecond.setOnClickListener(this);
     }
 
-    public void setServers(List<Server> servers, int currentServerPosition) {
+    public void setServers(List<Server> servers, Server activeServer) {
         this.servers = servers;
+        int currentServerPosition = servers.indexOf(activeServer);
         if (currentServerPosition < 0) {
             Arrays.fill(serversInCircles, null);
             return;
         }
 
-        TransmissionRemote app = TransmissionRemote.getApplication(getContext());
-        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getContext());
-        List<String> orderedServers;
-        if (sp.contains(KEY_ORDERED_SERVERS)) {
-            orderedServers = serversFromJson(sp.getString(KEY_ORDERED_SERVERS, ""));
-            // remove servers which are not in server list from ordered server list
-            Iterator<String> it = orderedServers.iterator();
-            while (it.hasNext()) {
-                if (app.getServerById(it.next()) == null) it.remove();
-            }
-            // add new servers to ordered server list
-            for (Server server : servers) {
-                if (orderedServers.indexOf(server.getId()) < 0) {
-                    orderedServers.add(server.getId());
-                }
-            }
-        } else {
-            orderedServers = FluentIterable.from(servers).transform(new Function<Server, String>() {
-                @Override
-                public String apply(@NonNull Server server) {
-                    return server.getId();
-                }
-            }).copyInto(new LinkedList<String>());
-        }
-
-        String currentServerId = servers.get(currentServerPosition).getId();
-        orderedServers.remove(currentServerId);
-        orderedServers.add(0, currentServerId);
-
-        SharedPreferences.Editor editor = sp.edit();
-        editor.putString(KEY_ORDERED_SERVERS, serversToJson(orderedServers));
-        editor.apply();
-
         Arrays.fill(serversInCircles, null);
         int i = 0;
-        Iterator<String> it = orderedServers.iterator();
+        Iterator<Server> it = servers.iterator();
         while (it.hasNext() && i < serversInCircles.length) {
-            serversInCircles[i++] = app.getServerById(it.next());
+            serversInCircles[i++] = it.next();
         }
 
         nameText.setText(serversInCircles[0].getName());
@@ -200,23 +159,6 @@ public class HeaderView extends RelativeLayout implements View.OnClickListener {
         if (drawer.switchedDrawerContent()) {
             showServersList(); // show updated server list
         }
-    }
-
-    private String serversToJson(List<String> servers) {
-        return new JSONArray(servers).toString();
-    }
-
-    private List<String> serversFromJson(String serversJson) {
-        List<String> servers = new LinkedList<>();
-        try {
-            JSONArray serversArray = new JSONArray(serversJson);
-            for (int i=0; i<serversArray.length(); i++) {
-                servers.add(serversArray.getString(i));
-            }
-        } catch (JSONException e) {
-            Log.e(TAG, "Failed to parse servers list");
-        }
-        return servers;
     }
 
     private void updateServerCircles() {
@@ -257,7 +199,7 @@ public class HeaderView extends RelativeLayout implements View.OnClickListener {
             PrimaryDrawerItem serverItem = new PrimaryDrawerItem()
                     .withName(server.getName())
                     .withIdentifier(i)
-                    .withDescription(server.getHost() + (server.getPort() >= 0 ? ":" + server.getPort() : ""))
+                    .withDescription(server.getHost().getValue() + (server.getPort() >= 0 ? ":" + server.getPort() : ""))
                     .withDescriptionTextColor(secondaryTextColor);
             serverSelectionItems.add(serverItem);
         }

@@ -6,8 +6,9 @@ import net.yupol.transmissionremote.data.api.rpc.RpcFailureException
 import okhttp3.Interceptor
 import okhttp3.Response
 import java.nio.charset.Charset
+import javax.inject.Inject
 
-class RpcFailureInterceptor(moshi: Moshi) : Interceptor {
+class RpcFailureInterceptor @Inject constructor(moshi: Moshi) : Interceptor {
 
     companion object {
         private val UTF8 = Charset.forName("UTF-8")

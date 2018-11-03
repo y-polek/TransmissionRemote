@@ -12,24 +12,27 @@ import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.multidex.MultiDexApplication;
 import android.support.v7.app.AppCompatDelegate;
+import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
 import com.evernote.android.job.JobManager;
-import com.google.common.base.Function;
-import com.google.common.base.Predicate;
-import com.google.common.base.Predicates;
-import com.google.common.collect.FluentIterable;
 
+import net.yupol.transmissionremote.app.di.AppComponent;
+import net.yupol.transmissionremote.app.di.DaggerAppComponent;
 import net.yupol.transmissionremote.app.filtering.Filter;
 import net.yupol.transmissionremote.app.filtering.Filters;
 import net.yupol.transmissionremote.app.notifications.BackgroundUpdateJob;
 import net.yupol.transmissionremote.app.notifications.BackgroundUpdater;
-import net.yupol.transmissionremote.app.preferences.Preferences;
+import net.yupol.transmissionremote.app.server.ServerManager;
 import net.yupol.transmissionremote.app.sorting.SortOrder;
 import net.yupol.transmissionremote.app.sorting.SortedBy;
 import net.yupol.transmissionremote.app.utils.ThemeUtils;
+import net.yupol.transmissionremote.domain.repository.ServerRepository;
 import net.yupol.transmissionremote.model.Server;
 import net.yupol.transmissionremote.model.json.Torrent;
+import net.yupol.transmissionremote.model.mapper.ServerMapper;
+
+import org.apache.commons.lang3.NotImplementedException;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -42,11 +45,15 @@ import java.util.Set;
 import java.util.WeakHashMap;
 
 import javax.annotation.Nonnull;
+import javax.inject.Inject;
 
 import io.fabric.sdk.android.Fabric;
+import io.reactivex.Observable;
+import io.reactivex.disposables.Disposable;
 
 public class TransmissionRemote extends MultiDexApplication implements SharedPreferences.OnSharedPreferenceChangeListener {
 
+    private static final String TAG = "TransmissionRemote";
     private static final String SHARED_PREFS_NAME = "transmission_remote_shared_prefs";
     private static final String KEY_SERVERS = "key_servers";
     private static final String KEY_ACTIVE_SERVER = "key_active_server";
@@ -68,8 +75,6 @@ public class TransmissionRemote extends MultiDexApplication implements SharedPre
 
     private static TransmissionRemote instance;
 
-    private List<Server> servers = new LinkedList<>();
-    private Server activeServer;
     private List<OnActiveServerChangedListener> activeServerListeners = new LinkedList<>();
 
     private List<OnServerListChangedListener> serverListListeners = new LinkedList<>();
@@ -90,21 +95,28 @@ public class TransmissionRemote extends MultiDexApplication implements SharedPre
 
     private Map<Server, Boolean> speedLimitsCache = new WeakHashMap<>();
     private SharedPreferences sharedPreferences;
-    private Preferences preferences;
+
+    private AppComponent appComponent;
+
+    @Inject ServerRepository serverRepository;
+    @Inject ServerManager serverManager;
 
     @Override
     public void onCreate() {
         super.onCreate();
         setupCrashlytics();
+        setupDi();
+        appComponent.inject(this);
 
         AppCompatDelegate.setDefaultNightMode(ThemeUtils.isInNightMode(this) ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO);
 
         instance = this;
         restore();
+        migrateServersPreferences();
+        setupServerComponent();
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         sharedPreferences.registerOnSharedPreferenceChangeListener(this);
-        preferences = new Preferences(this);
 
         JobManager.create(this)
                 .addJobCreator(new BackgroundUpdateJob.Creator());
@@ -117,10 +129,110 @@ public class TransmissionRemote extends MultiDexApplication implements SharedPre
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             createNotificationChannel();
         }
+
+        serverRepository.servers()
+                .subscribe(servers -> {
+                    if (servers.size() > 0 && isNotificationEnabled()) {
+                        BackgroundUpdater.start(this);
+                    }
+                });
     }
 
-    public Preferences preferences() {
-        return preferences;
+    public AppComponent appComponent() {
+        return appComponent;
+    }
+
+    private void setupDi() {
+        appComponent = DaggerAppComponent.builder()
+                .application(this)
+                .build();
+    }
+
+    private void setupServerComponent() {
+        Disposable d = serverRepository.activeServer()
+                .subscribe(
+                        serverManager::startServerSession,
+                        error -> {
+                            Log.e(TAG, "Active Server subscription error", error);
+                            if (!BuildConfig.DEBUG) Crashlytics.logException(error);
+                        },
+                        () -> {
+                            serverManager.finishServerSession();
+                            setupServerComponent();
+                        });
+    }
+
+    private void migrateServersPreferences() {
+        SharedPreferences sp = getSharedPreferences(SHARED_PREFS_NAME, MODE_PRIVATE);
+
+        Set<String> serversInJson = sp.getStringSet(KEY_SERVERS, Collections.emptySet());
+        for (String serverInJson : serversInJson) {
+            Server server = Server.fromJson(serverInJson);
+            if (server == null) continue;
+            serverRepository.addServer(ServerMapper.toDomain(server));
+        }
+
+        String activeServerInJson = sp.getString(KEY_ACTIVE_SERVER, null);
+        if (activeServerInJson != null) {
+            Server persistedActiveServer = Server.fromJson(activeServerInJson);
+            if (persistedActiveServer != null) {
+                serverRepository.setActiveServer(ServerMapper.toDomain(persistedActiveServer));
+            }
+        }
+
+        if (serverRepository.servers().blockingFirst().size() > 0 && serverRepository.activeServer().blockingFirst() == null) {
+            serverRepository.setActiveServer(serverRepository.servers().blockingFirst().get(0));
+        }
+    }
+
+    @Deprecated
+    public Server getActiveServer() {
+        return serverRepository.activeServer().map(ServerMapper::toModel).blockingFirst();
+    }
+
+    @Deprecated
+    public List<Server> getServers() {
+        return serverRepository.servers().map(ServerMapper::toModel).blockingFirst();
+    }
+
+    @Deprecated
+    public void setActiveServer(Server server) {
+        serverRepository.setActiveServer(ServerMapper.toDomain(server));
+    }
+
+    @Deprecated
+    public void addServer(Server server) {
+        serverRepository.addServer(ServerMapper.toDomain(server));
+    }
+
+    @Deprecated
+    public void removeServer(Server server) {
+        serverRepository.removeServer(ServerMapper.toDomain(server));
+    }
+
+    @Deprecated
+    public void updateServer(Server server) {
+        throw new NotImplementedException("Not implemented");
+    }
+
+    @Deprecated
+    public Server getServerById(String id) {
+        return serverRepository.servers()
+                .firstOrError()
+                .flatMapObservable(Observable::fromIterable)
+                .filter(s -> s.getName().equals(id))
+                .map(ServerMapper::toModel)
+                .blockingFirst();
+    }
+
+    @Deprecated
+    public void setSpeedLimitEnabled(boolean isEnabled) {
+        throw new NotImplementedException("Not implemented");
+    }
+
+    @Deprecated
+    public void persistServers() {
+        throw new NotImplementedException("Not implemented");
     }
 
     private void setupCrashlytics() {
@@ -136,10 +248,6 @@ public class TransmissionRemote extends MultiDexApplication implements SharedPre
                 BackgroundUpdater.start(this);
             } else {
                 BackgroundUpdater.stop();
-                for (Server server : servers) {
-                    server.setLastUpdateDate(0);
-                }
-                persistServers();
             }
         } else if (key.equals(getString(R.string.background_update_only_unmetered_wifi_key))) {
             BackgroundUpdater.restart(this);
@@ -152,85 +260,6 @@ public class TransmissionRemote extends MultiDexApplication implements SharedPre
 
     public static TransmissionRemote getInstance() {
         return instance;
-    }
-
-    public List<Server> getServers() {
-        return servers;
-    }
-
-    @Nullable
-    public Server getServerById(@NonNull final String id) {
-        for (Server server : servers) {
-            if (id.equals(server.getId())) return server;
-        }
-        return null;
-    }
-
-    public void addServer(Server server) {
-        servers.add(server);
-        persistServers();
-        for (OnServerListChangedListener l : serverListListeners) {
-            l.serverAdded(server);
-        }
-
-        if (isNotificationEnabled()) {
-            BackgroundUpdater.start(this);
-        }
-    }
-
-    public void removeServer(Server server) {
-        servers.remove(server);
-        if (server.equals(getActiveServer())) {
-            setActiveServer(!servers.isEmpty() ? servers.get(0) : null);
-        }
-        persistServers();
-        for (OnServerListChangedListener l : serverListListeners) {
-            l.serverRemoved(server);
-        }
-    }
-
-    public void updateServer(Server server) {
-        persistServers();
-        for (OnServerListChangedListener l : serverListListeners) {
-            l.serverUpdated(server);
-        }
-    }
-
-    public Server getActiveServer() {
-        return activeServer;
-    }
-
-    public void setActiveServer(Server server) {
-        activeServer = server;
-        persistActiveServer();
-        fireActiveServerChangedEvent();
-        setSpeedLimitEnabled(speedLimitsCache.containsKey(server) ? speedLimitsCache.get(server) : false);
-    }
-
-    public void addOnActiveServerChangedListener(@Nonnull OnActiveServerChangedListener listener) {
-        if (!activeServerListeners.contains(listener)) {
-            activeServerListeners.add(listener);
-        }
-    }
-
-    public void removeOnActiveServerChangedListener(@Nonnull OnActiveServerChangedListener listener) {
-        activeServerListeners.remove(listener);
-    }
-
-    public void addOnServerListChangedListener(@Nonnull OnServerListChangedListener listener) {
-        if (!serverListListeners.contains(listener)) {
-            serverListListeners.add(listener);
-        }
-    }
-
-    public void removeOnServerListChangedListener(@Nonnull OnServerListChangedListener listener) {
-        serverListListeners.remove(listener);
-    }
-
-    private void fireActiveServerChangedEvent() {
-        for (OnActiveServerChangedListener listener : activeServerListeners) {
-            listener.serverChanged(activeServer);
-        }
     }
 
     public boolean isNotificationEnabled() {
@@ -250,14 +279,6 @@ public class TransmissionRemote extends MultiDexApplication implements SharedPre
 
     public boolean isFreeSpaceCheckDisabled() {
         return sharedPreferences.getBoolean(getString(R.string.disable_free_space_check_key), false);
-    }
-
-    public void setSpeedLimitEnabled(boolean isEnabled) {
-        speedLimitEnabled = isEnabled;
-        speedLimitsCache.put(activeServer, isEnabled);
-        for (OnSpeedLimitChangedListener l : speedLimitChangedListeners) {
-            l.speedLimitEnabledChanged(speedLimitEnabled);
-        }
     }
 
     public boolean isSpeedLimitEnabled() {
@@ -361,66 +382,13 @@ public class TransmissionRemote extends MultiDexApplication implements SharedPre
     }
 
     public void persist() {
-        persistServers();
         persistFilter();
         persistSorting();
     }
 
     private void restore() {
-        restoreServers();
         restoreFilter();
         restoreSorting();
-    }
-
-    public void persistServers() {
-        Set<String> serversInJson = FluentIterable.from(servers).transform(new Function<Server, String>() {
-            @Override
-            public String apply(Server server) {
-                return server.toJson();
-            }
-        }).toSet();
-
-        SharedPreferences sp = getSharedPreferences(SHARED_PREFS_NAME, MODE_PRIVATE);
-        SharedPreferences.Editor editor = sp.edit();
-        editor.putStringSet(KEY_SERVERS, serversInJson);
-        editor.apply();
-    }
-
-    private void restoreServers() {
-        SharedPreferences sp = getSharedPreferences(SHARED_PREFS_NAME, MODE_PRIVATE);
-
-        Set<String> serversInJson = sp.getStringSet(KEY_SERVERS, Collections.<String>emptySet());
-        servers.addAll(FluentIterable.from(serversInJson).transform(new Function<String, Server>() {
-            @Override public Server apply(String serverInJson) {
-                return Server.fromJson(serverInJson);
-            }
-        }).filter(Predicates.notNull()).toList());
-
-        String activeServerInJson = sp.getString(KEY_ACTIVE_SERVER, null);
-        if (activeServerInJson != null) {
-            final Server persistedActiveServer = Server.fromJson(activeServerInJson);
-            // active server should point to object in all servers list
-            activeServer = FluentIterable.from(servers).firstMatch(new Predicate<Server>() {
-                @Override public boolean apply(Server server) {
-                    return server.equals(persistedActiveServer);
-                }
-            }).orNull();
-            fireActiveServerChangedEvent();
-        } else {
-            activeServer = null;
-        }
-        if (activeServer == null && !servers.isEmpty()) {
-            activeServer = servers.get(0);
-        }
-    }
-
-    private void persistActiveServer() {
-        String serverInJson = activeServer != null ? activeServer.toJson() : null;
-
-        SharedPreferences sp = getSharedPreferences(SHARED_PREFS_NAME, MODE_PRIVATE);
-        SharedPreferences.Editor editor = sp.edit();
-        editor.putString(KEY_ACTIVE_SERVER, serverInJson);
-        editor.apply();
     }
 
     private void persistFilter() {

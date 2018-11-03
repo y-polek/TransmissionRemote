@@ -2,6 +2,8 @@ package net.yupol.transmissionremote.app.res
 
 import android.content.res.Resources
 import net.yupol.transmissionremote.app.R
+import javax.inject.Inject
+import javax.inject.Singleton
 
 interface StringResources {
 
@@ -11,7 +13,8 @@ interface StringResources {
     val networkErrorUnauthorized: String
 }
 
-class StringResourcesImpl(res: Resources): StringResources {
+@Singleton
+class StringResourcesImpl @Inject constructor(res: Resources): StringResources {
 
     override val networkErrorNoNetwork: String by lazy {
         res.getString(R.string.network_error_message_no_network)

@@ -7,8 +7,9 @@ import net.yupol.transmissionremote.data.api.TransmissionRpcApi
 import net.yupol.transmissionremote.data.api.mapper.TorrentMapper
 import net.yupol.transmissionremote.domain.model.Torrent
 import net.yupol.transmissionremote.domain.repository.TorrentListRepository
+import javax.inject.Inject
 
-class TorrentListRepositoryImpl(
+class TorrentListRepositoryImpl @Inject constructor(
         private val api: TransmissionRpcApi,
         private val mapper: TorrentMapper): TorrentListRepository
 {

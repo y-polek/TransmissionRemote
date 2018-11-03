@@ -6,7 +6,7 @@ import okhttp3.Request
 import okhttp3.Response
 import okhttp3.Route
 
-internal class BasicAuthenticator(private val login: String, private val password: String): Authenticator {
+class BasicAuthenticator(private val login: String, private val password: String): Authenticator {
 
     override fun authenticate(route: Route?, response: Response): Request? {
         val authHeaderName = when (response.code()) {

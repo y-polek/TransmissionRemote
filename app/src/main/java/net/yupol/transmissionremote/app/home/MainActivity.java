@@ -7,7 +7,6 @@ import android.app.SearchManager;
 import android.content.ActivityNotFoundException;
 import android.content.ContentResolver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.databinding.DataBindingUtil;
@@ -26,6 +25,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -33,7 +33,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
-import android.widget.CompoundButton;
 import android.widget.SearchView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -41,7 +40,6 @@ import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
-import com.google.common.collect.ImmutableMap;
 import com.mikepenz.community_material_typeface_library.CommunityMaterial;
 import com.mikepenz.fontawesome_typeface_library.FontAwesome;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
@@ -49,14 +47,12 @@ import com.mikepenz.iconics.IconicsDrawable;
 import com.mikepenz.iconics.context.IconicsLayoutInflater2;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
-import com.mikepenz.materialdrawer.interfaces.OnCheckedChangeListener;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.SectionDrawerItem;
 import com.mikepenz.materialdrawer.model.SwitchDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
 import net.yupol.transmissionremote.app.BaseMvpActivity;
-import net.yupol.transmissionremote.app.NetworkErrorFragment;
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.TransmissionRemote;
 import net.yupol.transmissionremote.app.actionbar.ActionBarNavigationAdapter;
@@ -68,43 +64,32 @@ import net.yupol.transmissionremote.app.drawer.HeaderView;
 import net.yupol.transmissionremote.app.drawer.SortDrawerItem;
 import net.yupol.transmissionremote.app.filtering.Filter;
 import net.yupol.transmissionremote.app.model.TorrentViewModel;
-import net.yupol.transmissionremote.app.notifications.FinishedTorrentsNotificationManager;
 import net.yupol.transmissionremote.app.opentorrent.DownloadLocationDialogFragment;
 import net.yupol.transmissionremote.app.opentorrent.OpenAddressDialogFragment;
 import net.yupol.transmissionremote.app.opentorrent.OpenByDialogFragment;
+import net.yupol.transmissionremote.app.preferences.Preferences;
 import net.yupol.transmissionremote.app.preferences.PreferencesActivity;
 import net.yupol.transmissionremote.app.preferences.ServerPreferencesActivity;
 import net.yupol.transmissionremote.app.preferences.ServersActivity;
-import net.yupol.transmissionremote.app.res.StringResourcesImpl;
 import net.yupol.transmissionremote.app.server.AddServerActivity;
+import net.yupol.transmissionremote.app.server.ServerManager;
 import net.yupol.transmissionremote.app.sorting.SortOrder;
 import net.yupol.transmissionremote.app.sorting.SortedBy;
 import net.yupol.transmissionremote.app.torrentdetails.TorrentDetailsActivity;
 import net.yupol.transmissionremote.app.torrentlist.RemoveTorrentsDialogFragment;
 import net.yupol.transmissionremote.app.torrentlist.TorrentListFragment;
-import net.yupol.transmissionremote.app.transport.NetworkError;
-import net.yupol.transmissionremote.app.transport.TorrentUpdater;
 import net.yupol.transmissionremote.app.utils.DialogUtils;
 import net.yupol.transmissionremote.app.utils.DividerItemDecoration;
 import net.yupol.transmissionremote.app.utils.IconUtils;
 import net.yupol.transmissionremote.app.utils.ThemeUtils;
-import net.yupol.transmissionremote.data.api.ConnectivityInterceptor;
 import net.yupol.transmissionremote.data.api.Transport;
-import net.yupol.transmissionremote.data.api.mapper.TorrentMapper;
 import net.yupol.transmissionremote.data.api.model.AddTorrentResult;
-import net.yupol.transmissionremote.data.api.model.ServerSettingsEntity;
 import net.yupol.transmissionremote.data.api.rpc.RpcArgs;
 import net.yupol.transmissionremote.data.api.rpc.RpcFailureException;
-import net.yupol.transmissionremote.data.repository.TorrentListRepositoryImpl;
 import net.yupol.transmissionremote.device.clipboard.Clipboard;
-import net.yupol.transmissionremote.device.connectivity.Connectivity;
-import net.yupol.transmissionremote.domain.repository.TorrentListRepository;
-import net.yupol.transmissionremote.domain.usecase.LoadTorrentList;
-import net.yupol.transmissionremote.domain.usecase.PauseResumeTorrent;
-import net.yupol.transmissionremote.domain.usecase.TorrentListInteractor;
-import net.yupol.transmissionremote.model.Server;
+import net.yupol.transmissionremote.domain.model.Server;
+import net.yupol.transmissionremote.domain.repository.ServerRepository;
 import net.yupol.transmissionremote.model.json.Torrent;
-import net.yupol.transmissionremote.model.mapper.ServerMapper;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -117,10 +102,9 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.Collection;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.Callable;
-import java.util.concurrent.TimeUnit;
+
+import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -133,7 +117,6 @@ import io.reactivex.SingleSource;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 import permissions.dispatcher.NeedsPermission;
@@ -148,23 +131,18 @@ import static net.yupol.transmissionremote.data.api.rpc.SessionParameters.altSpe
 
 @RuntimePermissions
 public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivityPresenter> implements MainActivityView,
-        TorrentUpdater.TorrentUpdateListener, TransmissionRemote.OnSpeedLimitChangedListener,
+        TransmissionRemote.OnSpeedLimitChangedListener,
         TorrentListFragment.OnTorrentSelectedListener, TorrentListFragment.ContextualActionBarListener,
         OpenByDialogFragment.OnOpenTorrentSelectedListener, OpenAddressDialogFragment.OnOpenMagnetListener,
         DownloadLocationDialogFragment.OnDownloadLocationSelectedListener,
-        RemoveTorrentsDialogFragment.OnRemoveTorrentSelectionListener, NetworkErrorFragment.OnRefreshPressedListener {
+        RemoveTorrentsDialogFragment.OnRemoveTorrentSelectionListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
-
-    private static final int MIN_PREFS_UPDATE_INTERVAL = 5; // seconds
 
     public static int REQUEST_CODE_SERVER_PARAMS = 1;
     public static int REQUEST_CODE_CHOOSE_TORRENT = 2;
 
-    private static final String TAG_EMPTY_SERVER = "tag_empty_server";
-    private static final String TAG_PROGRESSBAR = "tag_progressbar";
     private static final String TAG_TORRENT_LIST = "tag_torrent_list";
-    private static final String TAG_NETWORK_ERROR = "tag_network_error";
     private static final String TAG_OPEN_TORRENT_DIALOG = "tag_open_torrent_dialog";
     private static final String TAG_OPEN_TORRENT_BY_ADDRESS_DIALOG = "tag_open_torrent_by_address_dialog";
     private static final String TAG_DOWNLOAD_LOCATION_DIALOG = "tag_download_location_dialog";
@@ -174,8 +152,6 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
     private static final String SCHEME_MAGNET = "magnet";
     private static final String SCHEME_HTTP = "http";
     private static final String SCHEME_HTTPS = "https";
-
-    private static final long UPDATE_REQUEST_DELAY = 500;
 
     private static final String KEY_DRAWER_SERVER_LIST_EXPANDED = "key_drawer_server_list_expanded";
     private static final String KEY_SEARCH_ACTION_EXPANDED = "key_search_action_expanded";
@@ -190,9 +166,6 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
     private static final int DRAWER_ITEM_FREE_SPACE = 102;
 
     private TransmissionRemote application;
-    private TorrentUpdater torrentUpdater;
-
-    private Timer prefsUpdateTimer;
 
     private MenuItem turtleModeItem;
     private TurtleModeButton turtleModeButton;
@@ -251,22 +224,29 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
     private MainActivityBinding binding;
     private boolean showFab;
     private FreeSpaceFooterDrawerItem freeSpaceFooterDrawerItem;
-    private FinishedTorrentsNotificationManager finishedTorrentsNotificationManager;
     private Transport transport;
     private CompositeDisposable serverSettingsRequests = new CompositeDisposable();
     private CompositeDisposable requests = new CompositeDisposable();
 
     private TorrentAdapter adapter;
 
-    private Clipboard clipboard;
+    @Inject Clipboard clipboard;
+    @Inject Preferences preferences;
+    @Inject ServerManager serverManager;
+    @Inject ServerRepository serverRepository;
+    Server activeServer;
 
     @BindView(R.id.recycler_view) RecyclerView recyclerView;
     @BindView(R.id.error_layout) View errorLayout;
     @BindView(R.id.error_text) TextView errorText;
     @BindView(R.id.detailed_error_text) TextView detailedErrorText;
 
+    private Disposable serverListSubscription;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        TransmissionRemote.getInstance().appComponent().inject(this);
+        activeServer = serverManager.getServerComponent().activeServer();
         LayoutInflaterCompat.setFactory2(getLayoutInflater(), new IconicsLayoutInflater2(getDelegate()));
         super.onCreate(savedInstanceState);
 
@@ -275,7 +255,6 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
 
         application = TransmissionRemote.getApplication(this);
         clipboard = new Clipboard(application);
-        finishedTorrentsNotificationManager = new FinishedTorrentsNotificationManager(this);
 
         binding.swipeRefresh.setOnRefreshListener(presenter::refresh);
 
@@ -308,6 +287,14 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
             openTorrentScheme = savedInstanceState.getString(KEY_OPEN_TORRENT_SCHEME);
             openTorrentPermissionRationaleOpen = savedInstanceState.getBoolean(KEY_OPEN_TORRENT_PERMISSION_RATIONALE_OPEN);
         }
+
+        serverListSubscription = serverRepository.servers()
+                .zipWith(serverRepository.activeServer(), Pair::create)
+                .subscribe(pair -> {
+                    List<Server> allServers = pair.first;
+                    Server activeServer = pair.second;
+                    headerView.setServers(allServers, activeServer);
+                });
     }
 
     @Override
@@ -320,18 +307,7 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
     @NonNull
     @Override
     public MainActivityPresenter createPresenter() {
-        Server server = TransmissionRemote.getApplication(this).getActiveServer();
-        TorrentListRepository repo = new TorrentListRepositoryImpl(
-                new Transport(ServerMapper.toDomain(server), new ConnectivityInterceptor(new Connectivity(getApplication()))).api(),
-                new TorrentMapper());
-        TorrentListInteractor interactor = new TorrentListInteractor(
-                new LoadTorrentList(repo, TransmissionRemote.getApplication(this).preferences().getUpdateInterval()),
-                new PauseResumeTorrent(repo));
-
-        return new MainActivityPresenter(
-                interactor,
-                new net.yupol.transmissionremote.app.model.mapper.TorrentMapper(),
-                new StringResourcesImpl(getResources()));
+        return serverManager.getServerComponent().mainActivityPresenter();
     }
 
     @OnLongClick(R.id.detailed_error_text)
@@ -355,8 +331,8 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if (id == ActionBarNavigationAdapter.ID_SERVER) {
                     Server server = (Server) toolbarSpinnerAdapter.getItem(position);
-                    if (!server.equals(application.getActiveServer())) {
-                        switchServer(server);
+                    if (!server.equals(activeServer)) {
+                        //switchServer(server);
                     }
                 } else if (id == ActionBarNavigationAdapter.ID_FILTER) {
                     Filter filter = (Filter) toolbarSpinnerAdapter.getItem(position);
@@ -378,14 +354,11 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
         if (bottomToolbar == null) return;
 
         turtleModeButton = bottomToolbar.findViewById(R.id.turtle_mode_button);
-        turtleModeButton.setEnableChangedListener(new TurtleModeButton.OnEnableChangedListener() {
-            @Override
-            public void onEnableChanged(boolean isEnabled) {
-                if (isEnabled == application.isSpeedLimitEnabled()) return;
+        turtleModeButton.setEnableChangedListener(isEnabled -> {
+            if (isEnabled == application.isSpeedLimitEnabled()) return;
 
-                application.setSpeedLimitEnabled(!application.isSpeedLimitEnabled());
-                updateSpeedLimitServerPrefs();
-            }
+            //application.setSpeedLimitEnabled(!application.isSpeedLimitEnabled());
+            updateSpeedLimitServerPrefs();
         });
 
         bottomToolbar.inflateMenu(R.menu.bottom_toolbar_menu);
@@ -406,12 +379,7 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
                 .withIcon(CommunityMaterial.Icon2.cmd_theme_light_dark)
                 .withSelectable(false)
                 .withChecked(ThemeUtils.isInNightMode(this))
-                .withOnCheckedChangeListener(new OnCheckedChangeListener() {
-                    @Override
-                    public void onCheckedChanged(IDrawerItem drawerItem, CompoundButton buttonView, boolean isChecked) {
-                        switchTheme(isChecked);
-                    }
-                });
+                .withOnCheckedChangeListener((drawerItem, buttonView, isChecked) -> switchTheme(isChecked));
 
         headerView = new HeaderView(this);
         headerView.setHeaderListener(new HeaderView.HeaderListener() {
@@ -422,7 +390,7 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
 
             @Override
             public void onServerSelected(Server server) {
-                switchServer(server);
+
             }
 
             @Override
@@ -493,8 +461,6 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
                 }).build();
 
         headerView.setDrawer(drawer);
-        List<Server> servers = application.getServers();
-        headerView.setServers(servers, servers.indexOf(application.getActiveServer()));
 
         SortedBy persistedSortedBy = application.getSortedBy();
         SortOrder persistedSortOrder = application.getSortOrder();
@@ -509,20 +475,14 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
 
     private void setupFloatingActionButton() {
 
-        binding.addTorrentByFileButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                binding.addTorrentButton.collapse();
-                onOpenTorrentByFile();
-            }
+        binding.addTorrentByFileButton.setOnClickListener(v -> {
+            binding.addTorrentButton.collapse();
+            onOpenTorrentByFile();
         });
 
-        binding.addTorrentByMagnetButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                binding.addTorrentButton.collapse();
-                onOpenTorrentByAddress();
-            }
+        binding.addTorrentByMagnetButton.setOnClickListener(v -> {
+            binding.addTorrentButton.collapse();
+            onOpenTorrentByAddress();
         });
 
         binding.addTorrentByFileButton.setIconDrawable(
@@ -547,12 +507,7 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
             }
         });
 
-        binding.fabOverlay.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                binding.addTorrentButton.collapse();
-            }
-        });
+        binding.fabOverlay.setOnClickListener(v -> binding.addTorrentButton.collapse());
 
         binding.fabOverlay.setVisibility(binding.addTorrentButton.isExpanded() ? VISIBLE : GONE);
     }
@@ -566,6 +521,7 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
     protected void onDestroy() {
         application.removeOnSpeedLimitEnabledChangedListener(this);
         turtleModeButton = null;
+        serverListSubscription.dispose();
         super.onDestroy();
     }
 
@@ -593,7 +549,7 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
 
         getIntent().setData(null);
 
-        if (application.getActiveServer() == null) {
+        if (activeServer == null) {
             new AlertDialog.Builder(this)
                     .setMessage(R.string.error_msg_open_torrent_no_server)
                     .setPositiveButton(android.R.string.ok, null)
@@ -666,19 +622,13 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
         openTorrentPermissionRationaleOpen = true;
         new AlertDialog.Builder(this)
                 .setMessage(R.string.storage_permission_rationale)
-                .setPositiveButton(R.string.storage_permission_allow, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int which) {
-                        openTorrentPermissionRationaleOpen = false;
-                        request.proceed();
-                    }
+                .setPositiveButton(R.string.storage_permission_allow, (dialogInterface, which) -> {
+                    openTorrentPermissionRationaleOpen = false;
+                    request.proceed();
                 })
-                .setNegativeButton(R.string.storage_permission_deny, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        openTorrentPermissionRationaleOpen = false;
-                        request.cancel();
-                    }
+                .setNegativeButton(R.string.storage_permission_deny, (dialogInterface, i) -> {
+                    openTorrentPermissionRationaleOpen = false;
+                    request.cancel();
                 })
                 .setCancelable(false)
                 .show();
@@ -697,9 +647,8 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
         super.onResume();
         isActivityResumed = true;
 
-        List<Server> servers = application.getServers();
+        /*List<Server> servers = application.getServers();
         if (servers.isEmpty()) {
-            showEmptyServerFragment();
             drawer.getDrawerLayout().setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
             binding.toolbar.setVisibility(GONE);
             if (bottomToolbar != null) bottomToolbar.setVisibility(GONE);
@@ -708,7 +657,7 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
             drawer.getDrawerLayout().setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
             binding.toolbar.setVisibility(VISIBLE);
             if (bottomToolbar != null) bottomToolbar.setVisibility(VISIBLE);
-        }
+        }*/
 
         binding.addTorrentButton.collapseImmediately();
 
@@ -731,12 +680,6 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
     protected void onPause() {
         super.onPause();
         isActivityResumed = false;
-
-        if (torrentUpdater != null) {
-            torrentUpdater.stop();
-        }
-
-        stopPreferencesUpdateTimer();
 
         application.persist();
     }
@@ -889,9 +832,9 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_turtle_mode:
-                application.setSpeedLimitEnabled(!application.isSpeedLimitEnabled());
+                /*application.setSpeedLimitEnabled(!application.isSpeedLimitEnabled());
                 updateTurtleModeActionIcon();
-                updateSpeedLimitServerPrefs();
+                updateSpeedLimitServerPrefs();*/
                 return true;
             case R.id.action_open_torrent:
                 new OpenByDialogFragment().show(getFragmentManager(), TAG_OPEN_TORRENT_DIALOG);
@@ -909,7 +852,7 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_CODE_SERVER_PARAMS) {
+        /*if (requestCode == REQUEST_CODE_SERVER_PARAMS) {
             if (resultCode == RESULT_OK) {
                 Server server = data.getParcelableExtra(AddServerActivity.EXTRA_SEVER);
                 addNewServer(server);
@@ -920,7 +863,7 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
                 openTorrentUri = data.getData();
                 openTorrentUriOnResume = true;
             }
-        }
+        }*/
     }
 
     @Override
@@ -970,49 +913,6 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
     @Override
     public void speedLimitEnabledChanged(boolean isEnabled) {
         updateTurtleModeActionIcon();
-    }
-
-    @Override
-    public void onTorrentUpdate(List<Torrent> torrents) {
-        application.setTorrents(torrents);
-        hasTorrentList = true;
-
-        if (application.isNotificationEnabled()) {
-            finishedTorrentsNotificationManager.checkForFinishedTorrents(application.getActiveServer(), torrents);
-        }
-
-        if (getTorrentListFragment() == null) {
-            showTorrentListFragment();
-        }
-
-        updateSpeedActions(torrents);
-
-        toolbarSpinnerAdapter.notifyDataSetChanged();
-    }
-
-    @Override
-    public void onNetworkError(NetworkError error) {
-        int messageRes;
-
-        switch (error) {
-            case NO_NETWORK:
-                messageRes = R.string.network_error_message_no_network;
-                break;
-            case UNAUTHORIZED:
-                messageRes = R.string.network_error_message_unauthorized;
-                break;
-            default:
-                messageRes = R.string.network_error_message_connection_error;
-        }
-
-        hasTorrentList = false;
-        showNetworkErrorFragment(getString(messageRes));
-    }
-
-    @Override
-    public void onRefreshPressed() {
-        showProgressbarFragment();
-        torrentUpdater.scheduleUpdate(0);
     }
 
     @Override
@@ -1081,28 +981,16 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
                         }
                         throw new RuntimeException("Failed to read file with URI: " + uri);
                     }
-                }).switchMapSingle(new Function<byte[], SingleSource<AddTorrentResult>>() {
-                    @Override
-                    public SingleSource<AddTorrentResult> apply(byte[] bytes) {
-                        return transport.api().addTorrent(RpcArgs.addTorrent(bytes, downloadDir, !startWhenAdded));
-                    }}).subscribeOn(Schedulers.io())
+                }).switchMapSingle((Function<byte[], SingleSource<AddTorrentResult>>) bytes -> transport.api().addTorrent(RpcArgs.addTorrent(bytes, downloadDir, !startWhenAdded))).subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(new Consumer<AddTorrentResult>() {
-                            @Override
-                            public void accept(AddTorrentResult result) {
-                                addTorrentResultListener.onSuccess(result);
-                            }
-                        }, new Consumer<Throwable>() {
-                            @Override
-                            public void accept(Throwable e) {
-                                if (e instanceof RpcFailureException) {
-                                    addTorrentResultListener.onError(e);
-                                } else {
-                                    Toast.makeText(
-                                            MainActivity.this
-                                            , getString(R.string.error_cannot_read_file_msg),
-                                            Toast.LENGTH_SHORT).show();
-                                }
+                        .subscribe(result -> addTorrentResultListener.onSuccess(result), e -> {
+                            if (e instanceof RpcFailureException) {
+                                addTorrentResultListener.onError(e);
+                            } else {
+                                Toast.makeText(
+                                        MainActivity.this
+                                        , getString(R.string.error_cannot_read_file_msg),
+                                        Toast.LENGTH_SHORT).show();
                             }
                         });
                 requests.add(request);
@@ -1149,7 +1037,7 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
 
     @Override
     public void onServerSelected(Server server) {
-        switchServer(server);
+
     }
 
     @Override
@@ -1164,144 +1052,11 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
                 .subscribeOn(Schedulers.io())
                 .onErrorComplete()
                 .subscribe();
-        torrentUpdater.scheduleUpdate(UPDATE_REQUEST_DELAY);
     }
 
     public void openAddServerActivity(View view) {
         Intent intent = new Intent(this, AddServerActivity.class);
         startActivityForResult(intent, REQUEST_CODE_SERVER_PARAMS);
-    }
-
-    private void addNewServer(Server server) {
-        application.addServer(server);
-    }
-
-    private void switchServer(Server server) {
-        if (!server.equals(application.getActiveServer())) {
-            hasTorrentList = false;
-        }
-        application.setActiveServer(server);
-        toolbarSpinner.setSelection(toolbarSpinnerAdapter.getServerPosition(server));
-
-        // Stop old server connections
-        if (torrentUpdater != null) {
-            torrentUpdater.stop();
-        }
-        stopPreferencesUpdateTimer();
-        if (hasTorrentList) {
-            showTorrentListFragment();
-        } else {
-            showProgressbarFragment();
-        }
-
-        // Start new server connections
-        List<Server> servers = application.getServers();
-        headerView.setServers(servers, servers.indexOf(server));
-
-        transport = new Transport(ServerMapper.toDomain(server), new ConnectivityInterceptor(new Connectivity(getApplication())));
-        torrentUpdater = new TorrentUpdater(transport, MainActivity.this, application.preferences().getUpdateInterval());
-        torrentUpdater.start();
-
-        //startPreferencesUpdateTimer();
-
-        toolbarSpinnerAdapter.notifyDataSetChanged();
-    }
-
-    private void startPreferencesUpdateTimer() {
-        prefsUpdateTimer = new Timer("Preferences update timer");
-        prefsUpdateTimer.scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-
-                transport.api().serverSettings(ImmutableMap.<String, Object>of())
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(new SingleObserver<ServerSettingsEntity>() {
-                            @Override
-                            public void onSubscribe(Disposable d) {
-                                serverSettingsRequests.clear();
-                                serverSettingsRequests.add(d);
-                            }
-
-                            @Override
-                            public void onSuccess(ServerSettingsEntity serverSettings) {
-                                application.setSpeedLimitEnabled(serverSettings.altSpeedLimitEnabled);
-                                application.setDefaultDownloadDir(serverSettings.downloadDir);
-                                if (drawer != null && !drawer.switchedDrawerContent()) {
-                                    drawer.updateStickyFooterItem(freeSpaceFooterDrawerItem.withFreeSpace(serverSettings.downloadDirFreeSpace));
-                                }
-                            }
-
-                            @Override
-                            public void onError(Throwable e) {
-                                Log.e(TAG, "Failed to obtain server settings", e);
-                            }
-                        });
-            }
-        }, 0, TimeUnit.SECONDS.toMillis(Math.max(application.preferences().getUpdateInterval(), MIN_PREFS_UPDATE_INTERVAL)));
-    }
-
-    private void stopPreferencesUpdateTimer() {
-        if (prefsUpdateTimer != null) {
-            prefsUpdateTimer.cancel();
-        }
-    }
-
-    private void showEmptyServerFragment() {
-        /*FragmentManager fm = getSupportFragmentManager();
-        EmptyServerFragment emptyServerFragment = (EmptyServerFragment) fm.findFragmentByTag(TAG_EMPTY_SERVER);
-        if (emptyServerFragment == null) {
-            emptyServerFragment = new EmptyServerFragment();
-            FragmentTransaction ft = fm.beginTransaction();
-            ft.replace(R.id.torrent_list_container, emptyServerFragment, TAG_EMPTY_SERVER);
-            ft.commit();
-        }
-
-        binding.addTorrentButton.setVisibility(View.GONE);*/
-    }
-
-    private void showProgressbarFragment() {
-        /*FragmentManager fm = getSupportFragmentManager();
-        ProgressbarFragment progressbarFragment = (ProgressbarFragment) fm.findFragmentByTag(TAG_PROGRESSBAR);
-        if (progressbarFragment == null) {
-            progressbarFragment = new ProgressbarFragment();
-            FragmentTransaction ft = fm.beginTransaction();
-            ft.replace(R.id.torrent_list_container, progressbarFragment, TAG_PROGRESSBAR);
-            ft.commitAllowingStateLoss();
-        }
-
-        binding.addTorrentButton.setVisibility(View.GONE);*/
-    }
-
-    private void showTorrentListFragment() {
-        /*FragmentManager fm = getSupportFragmentManager();
-        TorrentListFragment torrentListFragment = (TorrentListFragment) fm.findFragmentByTag(TAG_TORRENT_LIST);
-        if (torrentListFragment == null) {
-            torrentListFragment = new TorrentListFragment();
-            FragmentTransaction ft = fm.beginTransaction();
-            ft.replace(R.id.torrent_list_container, torrentListFragment, TAG_TORRENT_LIST);
-            ft.commit();
-        }
-
-        binding.addTorrentButton.setVisibility(showFab ? View.VISIBLE : View.GONE);*/
-    }
-
-    private void showNetworkErrorFragment(String message) {
-        /*FragmentManager fm = getSupportFragmentManager();
-        NetworkErrorFragment fragment = (NetworkErrorFragment) fm.findFragmentByTag(TAG_NETWORK_ERROR);
-        if (fragment == null) {
-            fragment = new NetworkErrorFragment();
-            Bundle args = new Bundle();
-            args.putString(NetworkErrorFragment.KEY_MESSAGE, message);
-            fragment.setArguments(args);
-            FragmentTransaction ft = fm.beginTransaction();
-            ft.replace(R.id.torrent_list_container, fragment, TAG_NETWORK_ERROR);
-            ft.commitAllowingStateLoss();
-        } else {
-            fragment.setErrorMessage(message);
-        }
-
-        binding.addTorrentButton.setVisibility(View.GONE);*/
     }
 
     private void updateTurtleModeActionIcon() {

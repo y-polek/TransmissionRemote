@@ -19,6 +19,7 @@ import net.yupol.transmissionremote.app.BaseActivity;
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.TransmissionRemote;
 import net.yupol.transmissionremote.app.databinding.TorrentDetailsLayoutBinding;
+import net.yupol.transmissionremote.app.preferences.Preferences;
 import net.yupol.transmissionremote.app.torrentlist.ChooseLocationDialogFragment;
 import net.yupol.transmissionremote.app.torrentlist.RemoveTorrentsDialogFragment;
 import net.yupol.transmissionremote.app.torrentlist.RenameDialogFragment;
@@ -33,6 +34,8 @@ import net.yupol.transmissionremote.model.mapper.TorrentMapper;
 
 import java.util.LinkedList;
 import java.util.List;
+
+import javax.inject.Inject;
 
 import io.reactivex.Completable;
 import io.reactivex.CompletableObserver;
@@ -68,10 +71,13 @@ public class TorrentDetailsActivity extends BaseActivity implements
     private Transport transport;
     private CompositeDisposable requests = new CompositeDisposable();
 
+    @Inject Preferences preferences;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         LayoutInflaterCompat.setFactory2(getLayoutInflater(), new IconicsLayoutInflater2(getDelegate()));
         super.onCreate(savedInstanceState);
+        TransmissionRemote.getInstance().appComponent().inject(this);
         binding = DataBindingUtil.setContentView(this, R.layout.torrent_details_layout);
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(TorrentDetailsActivity.this);
@@ -177,7 +183,7 @@ public class TorrentDetailsActivity extends BaseActivity implements
             restartUpdater = true;
         }
         torrentInfoUpdater = new TorrentInfoUpdater(transport, torrent.getId(),
-                1000 * TransmissionRemote.getInstance().preferences().getUpdateInterval());
+                1000 * preferences.getUpdateInterval());
         if (restartUpdater) torrentInfoUpdater.start(this);
 
         if (torrentInfo != null) pagerAdapter.setTorrentInfo(torrentInfo);

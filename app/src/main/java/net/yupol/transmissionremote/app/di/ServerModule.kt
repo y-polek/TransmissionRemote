@@ -1,39 +1,39 @@
-package net.yupol.transmissionremote.data.api
+package net.yupol.transmissionremote.app.di
 
-import android.annotation.SuppressLint
-import com.serjltt.moshi.adapters.FirstElement
-import com.serjltt.moshi.adapters.Wrapped
-import com.squareup.moshi.KotlinJsonAdapterFactory
 import com.squareup.moshi.Moshi
+import dagger.Module
+import dagger.Provides
+import net.yupol.transmissionremote.app.preferences.Preferences
+import net.yupol.transmissionremote.data.api.*
 import net.yupol.transmissionremote.data.api.rpc.RpcRequestBodyConverterFactory
+import net.yupol.transmissionremote.data.repository.TorrentListRepositoryImpl
 import net.yupol.transmissionremote.domain.model.Server
+import net.yupol.transmissionremote.domain.repository.TorrentListRepository
+import net.yupol.transmissionremote.domain.usecase.LoadTorrentList
 import okhttp3.HttpUrl
-import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
-import java.security.cert.X509Certificate
-import javax.net.ssl.SSLContext
-import javax.net.ssl.TrustManager
-import javax.net.ssl.X509TrustManager
+import javax.inject.Named
 
-class Transport(private val server: Server, vararg interceptors: Interceptor) {
+@Module
+class ServerModule {
 
-    private val moshi = Moshi.Builder()
-            .add(KotlinJsonAdapterFactory())
-            .add(Wrapped.ADAPTER_FACTORY)
-            .add(FirstElement.ADAPTER_FACTORY)
-            .build()
-
-    @get:JvmName(name = "api")
-    val api: TransmissionRpcApi by lazy {
-
-        val okHttpClient = with(OkHttpClient.Builder()) {
-            addInterceptor(SessionIdInterceptor())
-            addInterceptor(RpcFailureInterceptor(moshi))
+    @Provides
+    @ServerScope
+    fun provideOkHttpClient(
+            server: Server,
+            connectivityInterceptor: ConnectivityInterceptor,
+            sessionIdInterceptor: SessionIdInterceptor,
+            rpcFailureInterceptor: RpcFailureInterceptor): OkHttpClient
+    {
+        return with(OkHttpClient.Builder()) {
+            addInterceptor(connectivityInterceptor)
+            addInterceptor(sessionIdInterceptor)
+            addInterceptor(rpcFailureInterceptor)
             addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
             if (!server.login.value.isNullOrEmpty()) {
                 authenticator(BasicAuthenticator(server.login.value.orEmpty(), server.password.value.orEmpty()))
@@ -43,8 +43,13 @@ class Transport(private val server: Server, vararg interceptors: Interceptor) {
             }
             build()
         }
+    }
 
-        val baseUrl = with (HttpUrl.Builder()) {
+    @Provides
+    @ServerScope
+    @Named("BASE_URL")
+    fun provideBaseUrl(server: Server): HttpUrl {
+        return with (HttpUrl.Builder()) {
             scheme(if (server.https) "https" else "http")
             val port = server.port
             if (port != null) port(port)
@@ -63,40 +68,35 @@ class Transport(private val server: Server, vararg interceptors: Interceptor) {
             }
             build()
         }
+    }
 
-        val retrofit = Retrofit.Builder()
+    @Provides
+    @ServerScope
+    fun provideRetrofit(
+            @Named("BASE_URL") baseUrl: HttpUrl,
+            okHttpClient: OkHttpClient,
+            moshi: Moshi,
+            rpcBodyConverterFactory: RpcRequestBodyConverterFactory): Retrofit
+    {
+        return Retrofit.Builder()
                 .baseUrl(baseUrl)
                 .client(okHttpClient)
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                .addConverterFactory(RpcRequestBodyConverterFactory(moshi))
+                .addConverterFactory(rpcBodyConverterFactory)
                 .addConverterFactory(ScalarsConverterFactory.create())
                 .addConverterFactory(MoshiConverterFactory.create(moshi))
                 .build()
-
-        retrofit.create(TransmissionRpcApi::class.java)
     }
 
-    private fun OkHttpClient.Builder.trustAllCertificates() {
+    @Provides
+    @ServerScope
+    fun provideTransmissionRpcApi(retrofit: Retrofit): TransmissionRpcApi = retrofit.create(TransmissionRpcApi::class.java)
 
-        // Create a trust manager that does not validate certificate chains
-        val trustAllCerts = arrayOf<TrustManager>(object : X509TrustManager {
+    @Provides
+    @ServerScope
+    fun torrentListRepository(impl: TorrentListRepositoryImpl): TorrentListRepository = impl
 
-            @SuppressLint("TrustAllX509TrustManager")
-            override fun checkClientTrusted(chain: Array<X509Certificate>, authType: String) {}
-
-            @SuppressLint("TrustAllX509TrustManager")
-            override fun checkServerTrusted(chain: Array<X509Certificate>, authType: String) {}
-
-            override fun getAcceptedIssuers(): Array<X509Certificate> = arrayOf()
-        })
-
-        // Install the all-trusting trust manager
-        val sslContext = SSLContext.getInstance("SSL")
-        sslContext.init(null, trustAllCerts, java.security.SecureRandom())
-
-        // Create an ssl socket factory with our all-trusting manager
-        sslSocketFactory(sslContext.socketFactory, trustAllCerts[0] as X509TrustManager)
-        hostnameVerifier { _, _ -> true }
-    }
-
+    @Provides
+    @ServerScope
+    fun provideLoadTorrentListUseCase(repo: TorrentListRepository, preferences: Preferences): LoadTorrentList = LoadTorrentList(repo, preferences.updateInterval)
 }

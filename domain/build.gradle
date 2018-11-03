@@ -13,9 +13,7 @@ dependencies {
 
 sourceCompatibility = "7"
 targetCompatibility = "7"
-repositories {
-    mavenCentral()
-}
+
 compileKotlin {
     kotlinOptions {
         jvmTarget = "1.8"

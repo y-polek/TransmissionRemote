@@ -5,12 +5,11 @@ import okhttp3.RequestBody
 import retrofit2.Converter
 import retrofit2.Retrofit
 import java.lang.reflect.Type
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class RpcRequestBodyConverterFactory(private val moshi: Moshi) : Converter.Factory() {
-
-    companion object {
-        fun create(moshi: Moshi) = RpcRequestBodyConverterFactory(moshi)
-    }
+@Singleton
+class RpcRequestBodyConverterFactory @Inject constructor(private val moshi: Moshi) : Converter.Factory() {
 
     override fun requestBodyConverter(
             type: Type?, parameterAnnotations: Array<out Annotation>?,

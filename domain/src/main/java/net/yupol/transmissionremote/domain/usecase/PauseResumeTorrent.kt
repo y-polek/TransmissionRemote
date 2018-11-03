@@ -5,8 +5,9 @@ import io.reactivex.Single
 import net.yupol.transmissionremote.domain.model.Torrent
 import net.yupol.transmissionremote.domain.repository.TorrentListRepository
 import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 
-class PauseResumeTorrent(private val repo: TorrentListRepository) {
+class PauseResumeTorrent @Inject constructor(private val repo: TorrentListRepository) {
 
     fun pause(torrentId: Int): Single<Torrent> {
         return repo.pauseTorrent(torrentId)

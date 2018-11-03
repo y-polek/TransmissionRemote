@@ -26,8 +26,8 @@ public class Server implements Parcelable {
     private boolean useAuthentication;
     private String userName;
     private String password;
-    private String rpcUrl = DEFAULT_RPC_URL;
-    private boolean useHttps;
+    public String rpcUrl = DEFAULT_RPC_URL;
+    public boolean useHttps;
     private boolean trustSelfSignedSslCert;
     private List<String> savedDownloadLocations = new LinkedList<>();
     private long lastUpdateDate;

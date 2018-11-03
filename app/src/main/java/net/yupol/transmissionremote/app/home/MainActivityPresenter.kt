@@ -12,8 +12,9 @@ import net.yupol.transmissionremote.app.res.StringResources
 import net.yupol.transmissionremote.data.api.NoNetworkException
 import net.yupol.transmissionremote.domain.usecase.TorrentListInteractor
 import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 
-class MainActivityPresenter(
+class MainActivityPresenter @Inject constructor(
         private val interactor: TorrentListInteractor,
         private val torrentMapper: TorrentMapper,
         private val strRes: StringResources): MvpNullObjectBasePresenter<MainActivityView>(), MvpViewCallback

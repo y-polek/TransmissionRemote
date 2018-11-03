@@ -2,8 +2,9 @@ package net.yupol.transmissionremote.data.api
 
 import okhttp3.Interceptor
 import okhttp3.Response
+import javax.inject.Inject
 
-internal class SessionIdInterceptor: Interceptor {
+class SessionIdInterceptor @Inject constructor(): Interceptor {
 
     companion object {
         const val SESSION_ID_HEADER = "X-Transmission-Session-Id"

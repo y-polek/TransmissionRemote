@@ -3,9 +3,12 @@ package net.yupol.transmissionremote.app.model.mapper
 import net.yupol.transmissionremote.app.model.TorrentViewModel
 import net.yupol.transmissionremote.data.model.ErrorType
 import net.yupol.transmissionremote.domain.model.Torrent
+import javax.inject.Inject
+import javax.inject.Singleton
 import kotlin.math.max
 
-class TorrentMapper {
+@Singleton
+class TorrentMapper @Inject constructor() {
 
     fun toViewModel(torrent: Torrent): TorrentViewModel {
         return TorrentViewModel(
