@@ -101,7 +101,7 @@
             android:label="@string/server_preferences">
             <meta-data android:name="android.support.PARENT_ACTIVITY" android:value=".home.MainActivity"/>
         </activity>
-        <activity android:name=".preferences.ServersActivity"
+        <activity android:name=".preferences.ServerListActivity"
             android:label="@string/servers">
             <intent-filter>
                 <action android:name=".preferences.ServersActivity"/>

@@ -16,6 +16,8 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
         manifestPlaceholders = [fabricApiKey: "${apiKey('fabric_api_key')}"]
+
+        vectorDrawables.useSupportLibrary = true
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8

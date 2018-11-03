@@ -7,7 +7,7 @@ import net.yupol.transmissionremote.app.TransmissionRemote
 import net.yupol.transmissionremote.app.drawer.HeaderView
 import net.yupol.transmissionremote.app.home.MainActivity
 import net.yupol.transmissionremote.app.opentorrent.DownloadLocationDialogFragment
-import net.yupol.transmissionremote.app.preferences.ServersFragment
+import net.yupol.transmissionremote.app.preferences.ServerListActivity
 import net.yupol.transmissionremote.app.torrentdetails.TorrentDetailsActivity
 import javax.inject.Singleton
 
@@ -21,11 +21,11 @@ interface AppComponent {
 
     fun inject(activity: TorrentDetailsActivity)
 
+    fun inject(activity: ServerListActivity)
+
     fun inject(view: HeaderView)
 
     fun inject(fragment: DownloadLocationDialogFragment)
-
-    fun inject(fragment: ServersFragment)
 
     @Component.Builder
     interface Builder {

@@ -15,7 +15,6 @@ import android.widget.TextView;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.iconics.IconicsDrawable;
 
-import net.yupol.transmissionremote.app.preferences.ServersActivity;
 import net.yupol.transmissionremote.app.utils.ColorUtils;
 
 public class NetworkErrorFragment extends Fragment {
@@ -53,9 +52,9 @@ public class NetworkErrorFragment extends Fragment {
         serverSettingsBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getContext(), ServersActivity.class);
+                /*Intent intent = new Intent(getContext(), ServersActivity.class);
                 intent.putExtra(ServersActivity.KEY_SERVER_UUID, TransmissionRemote.getApplication(getContext()).getActiveServer().getId());
-                startActivity(intent);
+                startActivity(intent);*/
             }
         });
 

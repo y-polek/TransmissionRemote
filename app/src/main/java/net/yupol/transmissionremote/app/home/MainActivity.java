@@ -70,7 +70,7 @@ import net.yupol.transmissionremote.app.opentorrent.OpenByDialogFragment;
 import net.yupol.transmissionremote.app.preferences.Preferences;
 import net.yupol.transmissionremote.app.preferences.PreferencesActivity;
 import net.yupol.transmissionremote.app.preferences.ServerPreferencesActivity;
-import net.yupol.transmissionremote.app.preferences.ServersActivity;
+import net.yupol.transmissionremote.app.preferences.ServerListActivity;
 import net.yupol.transmissionremote.app.server.AddServerActivity;
 import net.yupol.transmissionremote.app.server.ServerManager;
 import net.yupol.transmissionremote.app.sorting.SortOrder;
@@ -400,7 +400,7 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
 
             @Override
             public void onManageServersPressed() {
-                startActivity(new Intent(MainActivity.this, ServersActivity.class));
+                startActivity(new Intent(MainActivity.this, ServerListActivity.class));
             }
         });
 
