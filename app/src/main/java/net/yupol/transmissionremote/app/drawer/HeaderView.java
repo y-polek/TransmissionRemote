@@ -151,7 +151,7 @@ public class HeaderView extends RelativeLayout implements View.OnClickListener {
             serversInCircles[i++] = it.next();
         }
 
-        nameText.setText(serversInCircles[0].getName());
+        nameText.setText(serversInCircles[0].name);
 
         updateServerCircles();
 
@@ -163,21 +163,21 @@ public class HeaderView extends RelativeLayout implements View.OnClickListener {
 
     private void updateServerCircles() {
         if (serversInCircles[0] != null) {
-            serverCircleCurrent.setImageDrawable(serverDrawable(serversInCircles[0].getName()));
+            serverCircleCurrent.setImageDrawable(serverDrawable(serversInCircles[0].name));
             serverCircleCurrent.setVisibility(VISIBLE);
         } else {
             serverCircleCurrent.setVisibility(GONE);
         }
 
         if (serversInCircles[1] != null) {
-            serverCircleSmallFirst.setImageDrawable(serverDrawable(serversInCircles[1].getName()));
+            serverCircleSmallFirst.setImageDrawable(serverDrawable(serversInCircles[1].name));
             serverCircleSmallFirst.setVisibility(VISIBLE);
         } else {
             serverCircleSmallFirst.setVisibility(GONE);
         }
 
         if (serversInCircles[2] != null) {
-            serverCircleSmallSecond.setImageDrawable(serverDrawable(serversInCircles[2].getName()));
+            serverCircleSmallSecond.setImageDrawable(serverDrawable(serversInCircles[2].name));
             serverCircleSmallSecond.setVisibility(VISIBLE);
         } else {
             serverCircleSmallSecond.setVisibility(GONE);
@@ -197,9 +197,9 @@ public class HeaderView extends RelativeLayout implements View.OnClickListener {
         for (int i=0; i<servers.size(); i++) {
             Server server = servers.get(i);
             PrimaryDrawerItem serverItem = new PrimaryDrawerItem()
-                    .withName(server.getName())
+                    .withName(server.name)
                     .withIdentifier(i)
-                    .withDescription(server.getHost().getValue() + (server.getPort() >= 0 ? ":" + server.getPort() : ""))
+                    .withDescription(server.host.getValue() + (server.port != null ? ":" + server.port : ""))
                     .withDescriptionTextColor(secondaryTextColor);
             serverSelectionItems.add(serverItem);
         }

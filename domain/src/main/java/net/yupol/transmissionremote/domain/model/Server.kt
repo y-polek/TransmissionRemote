@@ -1,11 +1,24 @@
 package net.yupol.transmissionremote.domain.model
 
 data class Server(
-        val name: String,
-        val host: ProtectedProperty<String>,
-        val port: Int?,
-        val https: Boolean,
-        val login: ProtectedProperty<String?>,
-        val password: ProtectedProperty<String?>,
-        val rpcPath: String,
-        val trustSelfSignedSslCert: Boolean)
+        @JvmField val name: String,
+        @JvmField val host: ProtectedProperty<String>,
+        @JvmField val port: Int?,
+        @JvmField val https: Boolean,
+        @JvmField val login: ProtectedProperty<String?>,
+        @JvmField val password: ProtectedProperty<String?>,
+        @JvmField val rpcPath: String,
+        @JvmField val trustSelfSignedSslCert: Boolean)
+{
+    companion object {
+        val EMPTY = Server(
+                name = "",
+                host = ProtectedProperty(""),
+                port = null,
+                https = false,
+                login = ProtectedProperty(null),
+                password = ProtectedProperty(null),
+                rpcPath =  "",
+                trustSelfSignedSslCert = false)
+    }
+}

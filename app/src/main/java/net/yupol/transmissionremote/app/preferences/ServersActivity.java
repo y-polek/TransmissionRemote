@@ -57,13 +57,6 @@ public class ServersActivity extends BaseActivity {
                 FragmentTransaction ft = fm.beginTransaction();
                 ft.replace(R.id.fragment_container, serversFragment, TAG_SERVERS);
                 ft.commit();
-
-                serversFragment.setOnServerSelectedListener(new ServersFragment.OnServerSelectedListener() {
-                    @Override
-                    public void onServerSelected(Server server) {
-                        showServerDetails(server);
-                    }
-                });
             }
         }
 

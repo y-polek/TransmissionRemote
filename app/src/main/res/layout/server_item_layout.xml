@@ -1,31 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="@dimen/default_padding_big">
+    android:orientation="horizontal"
+    android:paddingTop="@dimen/default_padding_big"
+    android:paddingBottom="@dimen/default_padding_big"
+    android:background="?android:attr/selectableItemBackground">
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/default_layout_margin"
+        android:layout_marginStart="@dimen/default_layout_margin"
         android:layout_weight="1">
         <TextView android:id="@+id/name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/default_text_margin"
-            android:textSize="@dimen/abc_text_size_subhead_material"
-            android:textColor="?android:textColorPrimary"/>
+            android:textSize="@dimen/tr_abc_text_size_subhead_material"
+            android:textColor="?android:textColorPrimary"
+            android:maxLines="1"
+            android:ellipsize="end"
+            tools:text="Router"/>
         <TextView android:id="@+id/address"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="@dimen/abc_text_size_body_1_material"
-            android:textColor="?android:textColorSecondary"/>
+            android:textSize="@dimen/tr_abc_text_size_body_1_material"
+            android:textColor="?android:textColorSecondary"
+            android:maxLines="1"
+            android:ellipsize="end"
+            tools:text="http://192.168.1.1:9091"/>
     </LinearLayout>
     <RadioButton android:id="@+id/radio_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
+        android:layout_marginRight="@dimen/default_layout_margin"
+        android:layout_marginEnd="@dimen/default_layout_margin"
         android:focusable="false"
         android:focusableInTouchMode="false"
-        android:clickable="false"/>
+        android:clickable="false"
+        tools:checked="true"/>
 </LinearLayout>

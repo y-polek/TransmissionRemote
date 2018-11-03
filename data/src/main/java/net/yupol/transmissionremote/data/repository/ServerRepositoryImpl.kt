@@ -13,11 +13,13 @@ class ServerRepositoryImpl(application: Application): ServerRepository {
     private val prefs: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(application)
     private val servers: MutableList<Server> = mutableListOf()
     private val serversSubject = BehaviorSubject.createDefault(emptyList<Server>())
-    private var activeServerSubject = BehaviorSubject.create<Server>()
+    private var activeServerSubject = BehaviorSubject.createDefault(Server.EMPTY)
 
     override fun activeServer(): Observable<Server> = activeServerSubject.hide()
 
     override fun setActiveServer(server: Server) {
+        if (activeServerSubject.value == server) return
+
         if (serversSubject.value.contains(server)) {
             activeServerSubject.onNext(server)
         } else {
@@ -40,9 +42,7 @@ class ServerRepositoryImpl(application: Application): ServerRepository {
             if (servers.isNotEmpty()) {
                 setActiveServer(servers.first())
             } else {
-                val oldSubject = activeServerSubject
-                activeServerSubject = BehaviorSubject.create()
-                oldSubject.onComplete()
+                setActiveServer(Server.EMPTY)
             }
         }
     }

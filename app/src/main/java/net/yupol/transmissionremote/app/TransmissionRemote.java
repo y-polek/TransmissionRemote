@@ -220,7 +220,7 @@ public class TransmissionRemote extends MultiDexApplication implements SharedPre
         return serverRepository.servers()
                 .firstOrError()
                 .flatMapObservable(Observable::fromIterable)
-                .filter(s -> s.getName().equals(id))
+                .filter(s -> s.name.equals(id))
                 .map(ServerMapper::toModel)
                 .blockingFirst();
     }
@@ -232,7 +232,7 @@ public class TransmissionRemote extends MultiDexApplication implements SharedPre
 
     @Deprecated
     public void persistServers() {
-        throw new NotImplementedException("Not implemented");
+        // throw new NotImplementedException("Not implemented");
     }
 
     private void setupCrashlytics() {
