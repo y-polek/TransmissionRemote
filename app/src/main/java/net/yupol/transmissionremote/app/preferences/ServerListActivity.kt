@@ -15,6 +15,8 @@ import io.reactivex.functions.BiFunction
 import net.yupol.transmissionremote.app.BaseActivity
 import net.yupol.transmissionremote.app.R
 import net.yupol.transmissionremote.app.TransmissionRemote
+import net.yupol.transmissionremote.app.server.AddServerActivity
+import net.yupol.transmissionremote.app.server.ServerDetailsActivity
 import net.yupol.transmissionremote.app.utils.DividerItemDecoration
 import net.yupol.transmissionremote.domain.model.Server
 import net.yupol.transmissionremote.domain.repository.ServerRepository
@@ -79,9 +81,10 @@ class ServerListActivity : BaseActivity(), ServerListAdapter.OnServerSelectedLis
 
     override fun onServerSelected(server: Server) {
         repo.setActiveServer(server)
+        startActivity(ServerDetailsActivity.intent(this, server.name))
     }
 
     private fun openNewServerActivity() {
-        toast("Add")
+        startActivity(AddServerActivity.intent(this))
     }
 }

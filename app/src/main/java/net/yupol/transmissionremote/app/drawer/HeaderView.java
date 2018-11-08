@@ -199,7 +199,7 @@ public class HeaderView extends RelativeLayout implements View.OnClickListener {
             PrimaryDrawerItem serverItem = new PrimaryDrawerItem()
                     .withName(server.name)
                     .withIdentifier(i)
-                    .withDescription(server.host.getValue() + (server.port != null ? ":" + server.port : ""))
+                    .withDescription(server.host.value + (server.port != null ? ":" + server.port : ""))
                     .withDescriptionTextColor(secondaryTextColor);
             serverSelectionItems.add(serverItem);
         }

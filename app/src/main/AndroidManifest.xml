@@ -128,6 +128,7 @@
             </intent-filter>
             <meta-data android:name="android.support.PARENT_ACTIVITY" android:value=".preferences.PreferencesActivity"/>
         </activity>
+        <activity android:name=".server.ServerDetailsActivity" />
 
         <receiver android:name=".notifications.BootCompleteBroadcastReceiver">
             <intent-filter>

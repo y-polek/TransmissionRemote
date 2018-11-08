@@ -1,5 +1,6 @@
 package net.yupol.transmissionremote.app.server;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
@@ -11,17 +12,24 @@ import android.view.View;
 import android.widget.Button;
 
 import net.yupol.transmissionremote.app.R;
-import net.yupol.transmissionremote.model.Server;
+import net.yupol.transmissionremote.app.TransmissionRemote;
+import net.yupol.transmissionremote.domain.model.Server;
+import net.yupol.transmissionremote.domain.repository.ServerRepository;
 
-public class AddServerActivity extends AppCompatActivity {
+import javax.inject.Inject;
+
+public class AddServerActivity extends AppCompatActivity implements ServerDetailsFragment.OnServerActionListener {
 
     public static final String PARAM_CANCELABLE = "param_cancelable";
-    public static final String EXTRA_SEVER = "extra_server";
+    public static final String EXTRA_SEVER_NAME = "extra_server_name";
 
     private ServerDetailsFragment serverDetailsFragment;
 
+    @Inject ServerRepository repo;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        TransmissionRemote.getInstance().appComponent().inject(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.add_server_activity);
 
@@ -41,14 +49,12 @@ public class AddServerActivity extends AppCompatActivity {
         }
 
         Button okButton = findViewById(R.id.ok_button);
-        okButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Server server = serverDetailsFragment.getNewServer();
-                if (server != null) {
-                    setResult(RESULT_OK, new Intent().putExtra(EXTRA_SEVER, server));
-                    finish();
-                }
+        okButton.setOnClickListener(view -> {
+            Server server = serverDetailsFragment.getNewServer();
+            if (server != null) {
+                repo.addServer(server);
+                setResult(RESULT_OK, new Intent().putExtra(EXTRA_SEVER_NAME, server.name));
+                finish();
             }
         });
 
@@ -56,13 +62,13 @@ public class AddServerActivity extends AppCompatActivity {
         boolean isCancelable = getIntent().getBooleanExtra(PARAM_CANCELABLE, true);
         cancelButton.setVisibility(isCancelable ? View.VISIBLE : View.GONE);
         if (isCancelable) {
-            cancelButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    cancel();
-                }
-            });
+            cancelButton.setOnClickListener(view -> cancel());
         }
+    }
+
+    @Override
+    public void onSaveServerRequested() {
+
     }
 
     @Override
@@ -78,5 +84,9 @@ public class AddServerActivity extends AppCompatActivity {
     private void cancel() {
         setResult(RESULT_CANCELED);
         finish();
+    }
+
+    public static Intent intent(Context context) {
+        return new Intent(context, AddServerActivity.class);
     }
 }

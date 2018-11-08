@@ -1,8 +1,10 @@
 package net.yupol.transmissionremote.app.server;
 
+import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.InputFilter;
@@ -15,7 +17,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -23,22 +24,31 @@ import android.widget.Spinner;
 import com.google.common.base.Strings;
 import com.google.common.net.InetAddresses;
 import com.google.common.net.InternetDomainName;
-import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 
 import net.yupol.transmissionremote.app.OnBackPressedListener;
 import net.yupol.transmissionremote.app.R;
-import net.yupol.transmissionremote.app.utils.IconUtils;
-import net.yupol.transmissionremote.model.Server;
+import net.yupol.transmissionremote.app.TransmissionRemote;
+import net.yupol.transmissionremote.domain.model.ProtectedProperty;
+import net.yupol.transmissionremote.domain.model.Server;
+import net.yupol.transmissionremote.domain.repository.ServerRepository;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import javax.inject.Inject;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+import io.reactivex.Observable;
+
 public class ServerDetailsFragment extends Fragment implements OnBackPressedListener {
 
-    public static final String ARGUMENT_SERVER = "argument_server";
+    private static final String KEY_SERVER_NAME = "key_server_name";
 
     private static final int DEFAULT_PORT = 9091;
     private static final int DEFAULT_HTTPS_PORT = 443;
+    private static final String DEFAULT_RPC_URL = "transmission/rpc";
     private static final String KEY_IS_AUTH_ENABLED = "key_is_auth_enabled";
     private static final String CHARS_TO_STRIP_RPC = "/";
     private static final String PROTOCOL_HTTP = "http";
@@ -47,45 +57,55 @@ public class ServerDetailsFragment extends Fragment implements OnBackPressedList
 
     private boolean isAuthEnabled = false;
 
-    private EditText serverNameEdit;
-    private Spinner protocolSpinner;
-    private EditText hostNameEdit;
-    private EditText portNumberEdit;
-    private CheckBox selfSignedSslCheckbox;
-    private CheckBox authCheckBox;
-    private EditText userNameEdit;
-    private EditText passwordEdit;
-    private EditText rpcUrlEdit;
+    @BindView(R.id.server_name_edit_text) EditText serverNameEdit;
+    @BindView(R.id.protocol_spinner) Spinner protocolSpinner;
+    @BindView(R.id.host_edit_text) EditText hostNameEdit;
+    @BindView(R.id.port_edit_text) EditText portNumberEdit;
+    @BindView(R.id.self_signed_ssl_checkbox) CheckBox selfSignedSslCheckbox;
+    @BindView(R.id.aunthentication_checkbox) CheckBox authCheckBox;
+    @BindView(R.id.user_name_edit_text) EditText userNameEdit;
+    @BindView(R.id.password_edit_text) EditText passwordEdit;
+    @BindView(R.id.rpc_url_edit_text) EditText rpcUrlEdit;
+
+    private OnServerActionListener listener;
+
+    @Inject ServerRepository repo;
+
+    @Nullable private Server server;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        TransmissionRemote.getInstance().appComponent().inject(this);
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(getServerArgument() != null);
+
+        Activity activity = getActivity();
+        if (activity instanceof OnServerActionListener) {
+            listener = (OnServerActionListener) activity;
+        } else {
+            throw new IllegalStateException("Parent activity must implement " + OnServerActionListener.class.getSimpleName() + " interface");
+        }
+
+        Bundle args = getArguments();
+        if (args != null) {
+            String name = args.getString(KEY_SERVER_NAME);
+            if (name != null) {
+                server = repo.servers()
+                        .flatMap(Observable::fromIterable)
+                        .filter(server -> name.equals(server.name))
+                        .blockingFirst();
+            }
+        }
+
+        setHasOptionsMenu(server != null);
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.server_details_fragment, container, false);
-
-        serverNameEdit = view.findViewById(R.id.server_name_edit_text);
-        protocolSpinner = view.findViewById(R.id.protocol_spinner);
-        hostNameEdit = view.findViewById(R.id.host_edit_text);
-        portNumberEdit = view.findViewById(R.id.port_edit_text);
-        selfSignedSslCheckbox = view.findViewById(R.id.self_signed_ssl_checkbox);
-        authCheckBox = view.findViewById(R.id.aunthentication_checkbox);
-        userNameEdit = view.findViewById(R.id.user_name_edit_text);
-        passwordEdit = view.findViewById(R.id.password_edit_text);
-        rpcUrlEdit = view.findViewById(R.id.rpc_url_edit_text);
-        Button defaultRpcUrlBtn = view.findViewById(R.id.default_rpc_url_button);
-        defaultRpcUrlBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                rpcUrlEdit.setText(Server.DEFAULT_RPC_URL);
-            }
-        });
+        ButterKnife.bind(this, view);
 
         ArrayAdapter<String> protocolAdapter = new ArrayAdapter<>(
-                getContext(), android.R.layout.simple_spinner_item, PROTOCOLS);
+                requireContext(), android.R.layout.simple_spinner_item, PROTOCOLS);
         protocolAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         protocolSpinner.setAdapter(protocolAdapter);
 
@@ -94,15 +114,9 @@ public class ServerDetailsFragment extends Fragment implements OnBackPressedList
         authCheckBox.setChecked(isAuthEnabled);
         updateAuth(isAuthEnabled);
 
-        authCheckBox.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                updateAuth(authCheckBox.isChecked());
-            }
-        });
+        authCheckBox.setOnClickListener(view1 -> updateAuth(authCheckBox.isChecked()));
 
-        final Server server = getServerArgument();
-        rpcUrlEdit.setText(server != null ? server.getRpcUrl() : Server.DEFAULT_RPC_URL);
+        rpcUrlEdit.setText(server != null ? server.rpcPath : DEFAULT_RPC_URL);
 
         serverNameEdit.addTextChangedListener(new ClearErrorTextWatcher(serverNameEdit));
         hostNameEdit.addTextChangedListener(new ClearErrorTextWatcher(hostNameEdit));
@@ -114,7 +128,8 @@ public class ServerDetailsFragment extends Fragment implements OnBackPressedList
                 boolean isHttps = PROTOCOL_HTTPS.equals(protocolSpinner.getSelectedItem());
                 selfSignedSslCheckbox.setEnabled(isHttps);
                 if (server == null) { // only if creating new server
-                    int port = getUiPort();
+                    Integer uiPort = getUiPort();
+                    int port = uiPort != null ? uiPort : 0;
                     if (isHttps) {
                         if (port == DEFAULT_PORT)
                             portNumberEdit.setText(String.valueOf(DEFAULT_HTTPS_PORT));
@@ -138,7 +153,7 @@ public class ServerDetailsFragment extends Fragment implements OnBackPressedList
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putBoolean(KEY_IS_AUTH_ENABLED, isAuthEnabled);
     }
@@ -155,8 +170,6 @@ public class ServerDetailsFragment extends Fragment implements OnBackPressedList
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.server_details_menu, menu);
-        IconUtils.setMenuIcon(getActivity(), menu, R.id.action_remove, GoogleMaterial.Icon.gmd_delete);
-        IconUtils.setMenuIcon(getActivity(), menu, R.id.action_save, GoogleMaterial.Icon.gmd_save);
     }
 
     @Override
@@ -168,106 +181,89 @@ public class ServerDetailsFragment extends Fragment implements OnBackPressedList
         return false;
     }
 
+    @OnClick(R.id.default_rpc_url_button)
+    void onDefaultRpcUrlClicked() {
+        rpcUrlEdit.setText(DEFAULT_RPC_URL);
+    }
+
     public Server getNewServer() {
         if (!checkValidity())
             return null;
 
-        Server server;
-        if (isAuthEnabled) {
-            server = new Server(getUiName(), getUiHost(), getUiPort(), getUiUserName(), getUiPassword());
-        } else {
-            server = new Server(getUiName(), getUiHost(), getUiPort());
-        }
-        server.setRpcUrl(getUiRpcUrl());
-        server.setUseHttps(getUiUseHttps());
-        server.setTrustSelfSignedSslCert(getUiTrustSelfSignedCert());
+        String name = getUiName();
+        String host = getUiHost();
+        Integer port = getUiPort();
+        boolean https = getUiUseHttps();
+        boolean trustSelfSignedCert = getUiTrustSelfSignedCert();
+        String rpcPath = getUiRpcUrl();
+        String login = isAuthEnabled ? getUiUserName() : null;
+        String password = isAuthEnabled ? getUiPassword() : null;
 
-        return server;
-    }
-
-    public Server getServerArgument() {
-        Server server = null;
-        if (getArguments() != null)
-            server = getArguments().getParcelable(ARGUMENT_SERVER);
-        return server;
-    }
-
-    public boolean saveServer() {
-        Server server = getServerArgument();
-        if (server == null) {
-            throw new IllegalStateException("No server argument, can't save server");
-        }
-
-        if (!checkValidity()) return false;
-
-        server.setName(getUiName());
-        server.setHost(getUiHost());
-        server.setPort(getUiPort());
-        server.setAuthenticationEnabled(isAuthEnabled);
-        server.setUserName(getUiUserName());
-        server.setPassword(getUiPassword());
-        server.setRpcUrl(getUiRpcUrl());
-        server.setUseHttps(getUiUseHttps());
-        server.setTrustSelfSignedSslCert(getUiTrustSelfSignedCert());
-
-        return true;
+        return new Server(
+                name,
+                new ProtectedProperty<>(host),
+                port,
+                https,
+                new ProtectedProperty<>(login),
+                new ProtectedProperty<>(password),
+                rpcPath,
+                trustSelfSignedCert);
     }
 
     public boolean hasChanges() {
-        Server server = getServerArgument();
         if (server == null) {
             return true;
         }
-        if (!getUiName().equals(server.getName()))
+        if (!getUiName().equals(server.name))
             return true;
-        if (!getUiHost().equals(server.getHost()))
+        if (!getUiHost().equals(server.host.value))
             return true;
-        if (getUiPort() != server.getPort())
+
+        int uiPort = getUiPort() != null ? getUiPort() : 0;
+        int port = server.port != null ? server.port : 0;
+        if (uiPort != port)
             return true;
-        if (isAuthEnabled != server.isAuthenticationEnabled())
+        if (isAuthEnabled != server.authEnabled())
             return true;
-        if (!getUiUserName().equals(Strings.nullToEmpty(server.getUserName())))
+        if (!getUiUserName().equals(Strings.nullToEmpty(server.login.value)))
             return true;
-        if (!getUiPassword().equals(Strings.nullToEmpty(server.getPassword())))
+        if (!getUiPassword().equals(Strings.nullToEmpty(server.password.value)))
             return true;
-        if (!getUiRpcUrl().equals(server.getRpcUrl()))
+        if (!getUiRpcUrl().equals(server.rpcPath))
             return true;
-        if (getUiUseHttps() != server.useHttps())
+        if (getUiUseHttps() != server.https)
             return true;
-        return getUiTrustSelfSignedCert() != server.getTrustSelfSignedSslCert();
+        return getUiTrustSelfSignedCert() != server.trustSelfSignedSslCert;
     }
 
     private void discardChanges() {
-        Server server = getServerArgument();
         if (server == null) return;
-        if (!getUiName().equals(server.getName())) {
-            serverNameEdit.setText(server.getName());
+        if (!getUiName().equals(server.name)) {
+            serverNameEdit.setText(server.name);
         }
-        if (!getUiHost().equals(server.getHost())) {
-            hostNameEdit.setText(server.getHost());
+        if (!getUiHost().equals(server.host.value)) {
+            hostNameEdit.setText(server.host.value);
         }
-        int port = server.getPort();
-        if (getUiPort() != port) {
-            portNumberEdit.setText(port >= 0 ? String.valueOf(server.getPort()) : "");
-        }
-        if (isAuthEnabled != server.isAuthenticationEnabled()) {
-            isAuthEnabled = server.isAuthenticationEnabled();
+
+        portNumberEdit.setText(server.port != null ? String.valueOf(server.port) : "");
+        if (isAuthEnabled != server.authEnabled()) {
+            isAuthEnabled = server.authEnabled();
             authCheckBox.setChecked(isAuthEnabled);
         }
-        if (!getUiUserName().equals(Strings.nullToEmpty(server.getUserName()))) {
-            userNameEdit.setText(Strings.nullToEmpty(server.getUserName()));
+        if (!getUiUserName().equals(Strings.nullToEmpty(server.login.value))) {
+            userNameEdit.setText(Strings.nullToEmpty(server.login.value));
         }
-        if (!getUiPassword().equals(Strings.nullToEmpty(server.getPassword()))) {
-            passwordEdit.setText(Strings.nullToEmpty(server.getPassword()));
+        if (!getUiPassword().equals(Strings.nullToEmpty(server.password.value))) {
+            passwordEdit.setText(Strings.nullToEmpty(server.password.value));
         }
-        if (!getUiRpcUrl().equals(server.getRpcUrl())) {
-            rpcUrlEdit.setText(server.getRpcUrl());
+        if (!getUiRpcUrl().equals(server.rpcPath)) {
+            rpcUrlEdit.setText(server.rpcPath);
         }
-        if (getUiUseHttps() != server.useHttps()) {
-            protocolSpinner.setSelection(ArrayUtils.indexOf(PROTOCOLS, server.useHttps() ? PROTOCOL_HTTPS : PROTOCOL_HTTP));
+        if (getUiUseHttps() != server.https) {
+            protocolSpinner.setSelection(ArrayUtils.indexOf(PROTOCOLS, server.https ? PROTOCOL_HTTPS : PROTOCOL_HTTP));
         }
-        if (getUiTrustSelfSignedCert() != server.getTrustSelfSignedSslCert()) {
-            selfSignedSslCheckbox.setChecked(server.getTrustSelfSignedSslCert());
+        if (getUiTrustSelfSignedCert() != server.trustSelfSignedSslCert) {
+            selfSignedSslCheckbox.setChecked(server.trustSelfSignedSslCert);
         }
     }
 
@@ -280,38 +276,31 @@ public class ServerDetailsFragment extends Fragment implements OnBackPressedList
             selfSignedSslCheckbox.setChecked(false);
             userNameEdit.setText("");
             passwordEdit.setText("");
-            rpcUrlEdit.setText(Server.DEFAULT_RPC_URL);
+            rpcUrlEdit.setText(DEFAULT_RPC_URL);
         } else {
-            serverNameEdit.setText(server.getName());
-            protocolSpinner.setSelection(server.useHttps() ? 1 : 0);
-            hostNameEdit.setText(server.getHost());
-            int port = server.getPort();
-            portNumberEdit.setText(port >= 0 ? String.valueOf(port) : "");
-            selfSignedSslCheckbox.setChecked(server.getTrustSelfSignedSslCert());
-            updateAuth(server.isAuthenticationEnabled());
-            userNameEdit.setText(server.getUserName());
-            passwordEdit.setText(server.getPassword());
-            rpcUrlEdit.setText(server.getRpcUrl());
+            serverNameEdit.setText(server.name);
+            protocolSpinner.setSelection(server.https ? 1 : 0);
+            hostNameEdit.setText(server.host.value);
+            portNumberEdit.setText(server.port != null ? String.valueOf(server.port) : "");
+            selfSignedSslCheckbox.setChecked(server.trustSelfSignedSslCert);
+            updateAuth(server.authEnabled());
+            userNameEdit.setText(server.login.value != null ? server.login.value : "");
+            passwordEdit.setText(server.password.value != null ? server.password.value : "");
+            rpcUrlEdit.setText(server.rpcPath);
         }
     }
 
     private void askForSave() {
         new AlertDialog.Builder(getContext())
                 .setMessage(R.string.save_changes_question)
-                .setPositiveButton(R.string.save_changes_save, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        saveServer();
-                        getActivity().onBackPressed();
-                    }
+                .setPositiveButton(R.string.save_changes_save, (dialog, which) -> {
+                    listener.onSaveServerRequested();
+                    requireActivity().onBackPressed();
                 })
-                .setNegativeButton(R.string.save_changes_discard, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        discardChanges();
-                        getActivity().onBackPressed();
-                    }
-        }).create().show();
+                .setNegativeButton(R.string.save_changes_discard, (dialog, which) -> {
+                    discardChanges();
+                    requireActivity().onBackPressed();
+                }).create().show();
     }
 
     private String getUiName() {
@@ -328,9 +317,10 @@ public class ServerDetailsFragment extends Fragment implements OnBackPressedList
         return InternetDomainName.isValid(host) || InetAddresses.isInetAddress(host);
     }
 
-    private int getUiPort() {
+    @Nullable
+    private Integer getUiPort() {
         String portStr = portNumberEdit.getText().toString().trim();
-        if (portStr.isEmpty()) return -1;
+        if (portStr.isEmpty()) return null;
 
         try {
             return Integer.parseInt(portStr);
@@ -389,7 +379,7 @@ public class ServerDetailsFragment extends Fragment implements OnBackPressedList
 
         private EditText editText;
 
-        public ClearErrorTextWatcher(EditText editText) {
+        ClearErrorTextWatcher(EditText editText) {
             this.editText = editText;
         }
 
@@ -403,5 +393,21 @@ public class ServerDetailsFragment extends Fragment implements OnBackPressedList
         public void afterTextChanged(Editable editable) {
             editText.setError(null);
         }
+    }
+
+    public static ServerDetailsFragment edit(String serverName) {
+        ServerDetailsFragment fragment = new ServerDetailsFragment();
+        Bundle args = new Bundle();
+        args.putString(KEY_SERVER_NAME, serverName);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    public static ServerDetailsFragment create() {
+        return new ServerDetailsFragment();
+    }
+
+    interface OnServerActionListener {
+        void onSaveServerRequested();
     }
 }
