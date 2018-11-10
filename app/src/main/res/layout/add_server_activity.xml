@@ -7,30 +7,15 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <FrameLayout android:id="@+id/add_server_fragment_container"
+        <FrameLayout android:id="@+id/fragment_container"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="top" />
+            android:layout_height="wrap_content" />
 
-        <LinearLayout
-            android:layout_width="wrap_content"
+        <Button android:id="@+id/ok_button"
+            android:layout_width="@dimen/add_server_buttons_width"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
+            android:layout_marginBottom="@dimen/default_layout_margin"
             android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="@dimen/default_layout_margin">
-            <Button android:id="@+id/cancel_button"
-                android:layout_width="@dimen/add_server_buttons_width"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginRight="@dimen/add_server_buttons_margin"
-                android:text="@android:string/cancel" />
-            <Button android:id="@+id/ok_button"
-                android:layout_width="@dimen/add_server_buttons_width"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@android:string/ok" />
-        </LinearLayout>
-
+            android:text="@android:string/ok" />
     </LinearLayout>
-
 </ScrollView>

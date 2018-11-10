@@ -207,7 +207,7 @@ public class TransmissionRemote extends MultiDexApplication implements SharedPre
 
     @Deprecated
     public void removeServer(Server server) {
-        serverRepository.removeServer(ServerMapper.toDomain(server));
+        serverRepository.removeServer(server.getName());
     }
 
     @Deprecated

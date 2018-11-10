@@ -1,7 +1,5 @@
 package net.yupol.transmissionremote.app.server;
 
-import android.app.Activity;
-import android.app.AlertDialog;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -11,8 +9,6 @@ import android.text.InputFilter;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -25,14 +21,12 @@ import com.google.common.base.Strings;
 import com.google.common.net.InetAddresses;
 import com.google.common.net.InternetDomainName;
 
-import net.yupol.transmissionremote.app.OnBackPressedListener;
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.TransmissionRemote;
 import net.yupol.transmissionremote.domain.model.ProtectedProperty;
 import net.yupol.transmissionremote.domain.model.Server;
 import net.yupol.transmissionremote.domain.repository.ServerRepository;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.inject.Inject;
@@ -42,7 +36,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.reactivex.Observable;
 
-public class ServerDetailsFragment extends Fragment implements OnBackPressedListener {
+public class ServerDetailsFragment extends Fragment {
 
     private static final String KEY_SERVER_NAME = "key_server_name";
 
@@ -67,8 +61,6 @@ public class ServerDetailsFragment extends Fragment implements OnBackPressedList
     @BindView(R.id.password_edit_text) EditText passwordEdit;
     @BindView(R.id.rpc_url_edit_text) EditText rpcUrlEdit;
 
-    private OnServerActionListener listener;
-
     @Inject ServerRepository repo;
 
     @Nullable private Server server;
@@ -77,13 +69,6 @@ public class ServerDetailsFragment extends Fragment implements OnBackPressedList
     public void onCreate(Bundle savedInstanceState) {
         TransmissionRemote.getInstance().appComponent().inject(this);
         super.onCreate(savedInstanceState);
-
-        Activity activity = getActivity();
-        if (activity instanceof OnServerActionListener) {
-            listener = (OnServerActionListener) activity;
-        } else {
-            throw new IllegalStateException("Parent activity must implement " + OnServerActionListener.class.getSimpleName() + " interface");
-        }
 
         Bundle args = getArguments();
         if (args != null) {
@@ -95,8 +80,6 @@ public class ServerDetailsFragment extends Fragment implements OnBackPressedList
                         .blockingFirst();
             }
         }
-
-        setHasOptionsMenu(server != null);
     }
 
     @Override
@@ -167,20 +150,6 @@ public class ServerDetailsFragment extends Fragment implements OnBackPressedList
         }
     }
 
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.server_details_menu, menu);
-    }
-
-    @Override
-    public boolean onBackPressed() {
-        if (hasChanges()) {
-            askForSave();
-            return true;
-        }
-        return false;
-    }
-
     @OnClick(R.id.default_rpc_url_button)
     void onDefaultRpcUrlClicked() {
         rpcUrlEdit.setText(DEFAULT_RPC_URL);
@@ -236,37 +205,6 @@ public class ServerDetailsFragment extends Fragment implements OnBackPressedList
         return getUiTrustSelfSignedCert() != server.trustSelfSignedSslCert;
     }
 
-    private void discardChanges() {
-        if (server == null) return;
-        if (!getUiName().equals(server.name)) {
-            serverNameEdit.setText(server.name);
-        }
-        if (!getUiHost().equals(server.host.value)) {
-            hostNameEdit.setText(server.host.value);
-        }
-
-        portNumberEdit.setText(server.port != null ? String.valueOf(server.port) : "");
-        if (isAuthEnabled != server.authEnabled()) {
-            isAuthEnabled = server.authEnabled();
-            authCheckBox.setChecked(isAuthEnabled);
-        }
-        if (!getUiUserName().equals(Strings.nullToEmpty(server.login.value))) {
-            userNameEdit.setText(Strings.nullToEmpty(server.login.value));
-        }
-        if (!getUiPassword().equals(Strings.nullToEmpty(server.password.value))) {
-            passwordEdit.setText(Strings.nullToEmpty(server.password.value));
-        }
-        if (!getUiRpcUrl().equals(server.rpcPath)) {
-            rpcUrlEdit.setText(server.rpcPath);
-        }
-        if (getUiUseHttps() != server.https) {
-            protocolSpinner.setSelection(ArrayUtils.indexOf(PROTOCOLS, server.https ? PROTOCOL_HTTPS : PROTOCOL_HTTP));
-        }
-        if (getUiTrustSelfSignedCert() != server.trustSelfSignedSslCert) {
-            selfSignedSslCheckbox.setChecked(server.trustSelfSignedSslCert);
-        }
-    }
-
     private void updateUI(Server server) {
         if (server == null) {
             serverNameEdit.setText("");
@@ -288,19 +226,6 @@ public class ServerDetailsFragment extends Fragment implements OnBackPressedList
             passwordEdit.setText(server.password.value != null ? server.password.value : "");
             rpcUrlEdit.setText(server.rpcPath);
         }
-    }
-
-    private void askForSave() {
-        new AlertDialog.Builder(getContext())
-                .setMessage(R.string.save_changes_question)
-                .setPositiveButton(R.string.save_changes_save, (dialog, which) -> {
-                    listener.onSaveServerRequested();
-                    requireActivity().onBackPressed();
-                })
-                .setNegativeButton(R.string.save_changes_discard, (dialog, which) -> {
-                    discardChanges();
-                    requireActivity().onBackPressed();
-                }).create().show();
     }
 
     private String getUiName() {
@@ -405,9 +330,5 @@ public class ServerDetailsFragment extends Fragment implements OnBackPressedList
 
     public static ServerDetailsFragment create() {
         return new ServerDetailsFragment();
-    }
-
-    interface OnServerActionListener {
-        void onSaveServerRequested();
     }
 }

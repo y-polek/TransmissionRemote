@@ -14,7 +14,6 @@ class ServerRepositoryImpl(application: Application): ServerRepository {
     private val servers: MutableList<Server> = mutableListOf()
     private val serversSubject = BehaviorSubject.createDefault(emptyList<Server>())
     private var activeServerSubject = BehaviorSubject.createDefault(Server.EMPTY)
-
     override fun activeServer(): Observable<Server> = activeServerSubject.hide()
 
     override fun setActiveServer(server: Server) {
@@ -34,15 +33,29 @@ class ServerRepositoryImpl(application: Application): ServerRepository {
         serversSubject.onNext(servers)
     }
 
-    override fun removeServer(server: Server) {
-        servers.remove(server)
+    override fun removeServer(withName: String) {
+        servers.removeAll { withName == it.name }
         serversSubject.onNext(servers)
 
-        if (activeServerSubject.value == server) {
+        if (activeServerSubject.value.name == withName) {
             if (servers.isNotEmpty()) {
                 setActiveServer(servers.first())
             } else {
                 setActiveServer(Server.EMPTY)
+            }
+        }
+    }
+
+    override fun findServer(withName: String) = servers.first { withName == it.name }
+
+    override fun updateServer(withName: String, server: Server) {
+        val idx = servers.indexOfFirst { withName == it.name }
+        if (idx > 0) {
+            servers[idx] = server
+            serversSubject.onNext(servers)
+
+            if (activeServerSubject.value.name == withName) {
+                setActiveServer(server)
             }
         }
     }

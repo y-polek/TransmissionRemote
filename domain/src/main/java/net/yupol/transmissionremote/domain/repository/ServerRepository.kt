@@ -13,5 +13,9 @@ interface ServerRepository {
 
     fun addServer(server: Server)
 
-    fun removeServer(server: Server)
+    fun removeServer(withName: String)
+
+    fun findServer(withName: String): Server?
+
+    fun updateServer(withName: String, server: Server)
 }
