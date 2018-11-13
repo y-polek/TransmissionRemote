@@ -3,30 +3,49 @@ package net.yupol.transmissionremote.app.home
 import com.hannesdorfmann.mosby3.mvp.MvpNullObjectBasePresenter
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
+import io.reactivex.functions.BiFunction
 import io.reactivex.schedulers.Schedulers
 import net.yupol.transmissionremote.app.model.ListResource
 import net.yupol.transmissionremote.app.model.Status.*
 import net.yupol.transmissionremote.app.model.mapper.TorrentMapper
 import net.yupol.transmissionremote.app.mvp.MvpViewCallback
 import net.yupol.transmissionremote.app.res.StringResources
+import net.yupol.transmissionremote.app.server.ServerManager
 import net.yupol.transmissionremote.data.api.NoNetworkException
+import net.yupol.transmissionremote.domain.model.Server
+import net.yupol.transmissionremote.domain.repository.ServerRepository
 import net.yupol.transmissionremote.domain.usecase.TorrentListInteractor
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class MainActivityPresenter @Inject constructor(
-        private val interactor: TorrentListInteractor,
+        private val serverManager: ServerManager,
+        private val serverRepo: ServerRepository,
         private val torrentMapper: TorrentMapper,
         private val strRes: StringResources): MvpNullObjectBasePresenter<MainActivityView>(), MvpViewCallback
 {
-    private var torrentListDisposable: Disposable? = null
+    private lateinit var interactor: TorrentListInteractor
+
+    private var torrentListSubscription: Disposable? = null
+    private var serverListSubscription: Disposable? = null
 
     override fun viewStarted() {
-        refresh()
+        serverListSubscription = serverRepo.servers()
+                .zipWith(serverRepo.activeServer(),  BiFunction { allServers: List<Server>, activeServer: Server ->
+                    allServers to activeServer
+                })
+                .subscribe { pair ->
+                    val allServers = pair.first
+                    val activeServer = pair.second
+                    interactor = serverManager.serverComponent?.torrentListInteractor()!!
+                    view.serverListChanged(allServers, activeServer)
+                    refresh()
+                }
     }
 
     override fun viewStopped() {
-        torrentListDisposable?.dispose()
+        torrentListSubscription?.dispose()
+        serverListSubscription?.dispose()
     }
 
     fun refresh() {
@@ -91,9 +110,9 @@ class MainActivityPresenter @Inject constructor(
     }
 
     private fun startTorrentListLoading() {
-        torrentListDisposable?.dispose()
+        torrentListSubscription?.dispose()
 
-        torrentListDisposable = interactor.loadTorrentList()
+        torrentListSubscription = interactor.loadTorrentList()
                 .map(torrentMapper::toViewMode)
                 .map {
                     ListResource.success(it)

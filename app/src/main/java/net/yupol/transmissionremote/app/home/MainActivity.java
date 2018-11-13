@@ -25,7 +25,6 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
-import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -69,8 +68,8 @@ import net.yupol.transmissionremote.app.opentorrent.OpenAddressDialogFragment;
 import net.yupol.transmissionremote.app.opentorrent.OpenByDialogFragment;
 import net.yupol.transmissionremote.app.preferences.Preferences;
 import net.yupol.transmissionremote.app.preferences.PreferencesActivity;
-import net.yupol.transmissionremote.app.preferences.ServerPreferencesActivity;
 import net.yupol.transmissionremote.app.preferences.ServerListActivity;
+import net.yupol.transmissionremote.app.preferences.ServerPreferencesActivity;
 import net.yupol.transmissionremote.app.server.AddServerActivity;
 import net.yupol.transmissionremote.app.server.ServerManager;
 import net.yupol.transmissionremote.app.sorting.SortOrder;
@@ -94,6 +93,7 @@ import net.yupol.transmissionremote.model.json.Torrent;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -241,7 +241,7 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
     @BindView(R.id.error_text) TextView errorText;
     @BindView(R.id.detailed_error_text) TextView detailedErrorText;
 
-    private Disposable serverListSubscription;
+    @Inject MainActivityPresenter presenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -287,15 +287,6 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
             openTorrentScheme = savedInstanceState.getString(KEY_OPEN_TORRENT_SCHEME);
             openTorrentPermissionRationaleOpen = savedInstanceState.getBoolean(KEY_OPEN_TORRENT_PERMISSION_RATIONALE_OPEN);
         }
-
-        serverListSubscription = serverRepository.servers()
-                .zipWith(serverRepository.activeServer(), Pair::create)
-                .subscribe(pair -> {
-                    List<Server> allServers = pair.first;
-                    Server activeServer = pair.second;
-                    headerView.setServers(allServers, activeServer);
-                    toolbarSpinnerAdapter.setServers(allServers, activeServer);
-                });
     }
 
     @Override
@@ -308,7 +299,7 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
     @NonNull
     @Override
     public MainActivityPresenter createPresenter() {
-        return serverManager.getServerComponent().mainActivityPresenter();
+        return presenter;
     }
 
     @OnLongClick(R.id.detailed_error_text)
@@ -522,7 +513,6 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
     protected void onDestroy() {
         application.removeOnSpeedLimitEnabledChangedListener(this);
         turtleModeButton = null;
-        serverListSubscription.dispose();
         super.onDestroy();
     }
 
@@ -1158,6 +1148,15 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
         dialog.show(getSupportFragmentManager(), TAG_DOWNLOAD_LOCATION_DIALOG);
     }
 
+
+
+
+
+
+
+
+    //
+
     @Override
     public void showLoading() {
         binding.swipeRefresh.setRefreshing(true);
@@ -1207,5 +1206,11 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
     @Override
     public void showErrorAlert(@NonNull Throwable error) {
         Toast.makeText(this, error.getMessage(), Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void serverListChanged(@NotNull List<Server> servers, @NotNull Server activeServer) {
+        headerView.setServers(servers, activeServer);
+        toolbarSpinnerAdapter.setServers(servers, activeServer);
     }
 }

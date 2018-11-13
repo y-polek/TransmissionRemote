@@ -2,8 +2,11 @@ package net.yupol.transmissionremote.app.home
 
 import com.hannesdorfmann.mosby3.mvp.MvpView
 import net.yupol.transmissionremote.app.model.TorrentViewModel
+import net.yupol.transmissionremote.domain.model.Server
 
 interface MainActivityView: MvpView {
+
+    fun serverListChanged(servers: List<Server>, activeServer: Server)
 
     fun showLoading()
 
