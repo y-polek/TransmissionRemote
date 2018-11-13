@@ -1,6 +1,7 @@
 package net.yupol.transmissionremote.app.actionbar;
 
 import android.content.Context;
+import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,8 +15,13 @@ import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.TransmissionRemote;
 import net.yupol.transmissionremote.app.filtering.Filter;
 import net.yupol.transmissionremote.app.filtering.Filters;
-import net.yupol.transmissionremote.model.Server;
 import net.yupol.transmissionremote.app.utils.ColorUtils;
+import net.yupol.transmissionremote.app.utils.Equals;
+import net.yupol.transmissionremote.domain.model.Server;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class ActionBarNavigationAdapter extends BaseAdapter {
 
@@ -26,15 +32,17 @@ public class ActionBarNavigationAdapter extends BaseAdapter {
     private static final int ID_SERVER_TITLE = 2;
     private static final int ID_FILTER_TITLE = 3;
 
-    private Context context;
     private TransmissionRemote app;
+
     private int textColorPrimary;
     private int accentColor;
     private int alternativeAccentColor;
     private int textColorPrimaryInverse;
 
+    private List<Server> servers = Collections.emptyList();
+    @Nullable private Server activeServer;
+
     public ActionBarNavigationAdapter(Context context) {
-        this.context = context;
         app = (TransmissionRemote) context.getApplicationContext();
 
         textColorPrimary = ColorUtils.resolveColor(context, android.R.attr.textColorPrimary, R.color.text_primary);
@@ -43,10 +51,17 @@ public class ActionBarNavigationAdapter extends BaseAdapter {
         alternativeAccentColor = context.getResources().getColor(R.color.alternative_accent);
     }
 
+    public void setServers(List<Server> servers, @Nullable Server activeServer) {
+        if (this.servers.equals(servers) && Equals.equals(activeServer, this.activeServer)) return;
+        this.servers = new ArrayList<>(servers);
+        this.activeServer = activeServer;
+        notifyDataSetChanged();
+    }
+
     @Override
     public int getCount() {
         // server title + servers + filter title + filters
-        return 1 + app.getServers().size() + 1 + app.getAllFilters().length;
+        return 1 + servers.size() + 1 + app.getAllFilters().length;
     }
 
     @Override
@@ -57,26 +72,21 @@ public class ActionBarNavigationAdapter extends BaseAdapter {
             case ID_FILTER_TITLE:
                 return null;
             case ID_SERVER:
-                return app.getServers().get(position - 1);
+                return servers.get(position - 1);
             case ID_FILTER:
-                return app.getAllFilters()[position - app.getServers().size() - 2];
+                return app.getAllFilters()[position - servers.size() - 2];
         }
         Log.e(TAG, "Unknown item at position " + position +
-                ". Number of servers: " + app.getServers().size() +
+                ". Number of servers: " + servers.size() +
                 ", number of filters: " + app.getAllFilters().length);
         return null;
-    }
-
-    public int getServerPosition(Server server) {
-        int serverIndex = app.getServers().indexOf(server);
-        return serverIndex >= 0 ? 1 + serverIndex : -1;
     }
 
     @Override
     public long getItemId(int position) {
         if (position == 0) return ID_SERVER_TITLE;
-        if (position <= app.getServers().size()) return ID_SERVER;
-        if (position == app.getServers().size() + 1) return ID_FILTER_TITLE;
+        if (position <= servers.size()) return ID_SERVER;
+        if (position == servers.size() + 1) return ID_FILTER_TITLE;
         return ID_FILTER;
     }
 
@@ -91,8 +101,7 @@ public class ActionBarNavigationAdapter extends BaseAdapter {
         long id = getItemId(position);
         View itemView = convertView;
         if (convertView == null) {
-            LayoutInflater li = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            itemView = li.inflate(R.layout.drop_down_navigation_item, parent, false);
+            itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.drop_down_navigation_item, parent, false);
         }
 
         TextView text = itemView.findViewById(R.id.text);
@@ -115,8 +124,8 @@ public class ActionBarNavigationAdapter extends BaseAdapter {
             if (id == ID_SERVER) {
                 countText.setVisibility(View.GONE);
                 Server server = (Server) getItem(position);
-                text.setText(server.getName());
-                text.setTextColor(dropDownTextColor(server.equals(app.getActiveServer())));
+                text.setText(server.name);
+                text.setTextColor(dropDownTextColor(server.equals(activeServer)));
             } else if (id == ID_FILTER) {
                 countText.setVisibility(View.VISIBLE);
                 Filter filter = (Filter) getItem(position);
@@ -140,13 +149,11 @@ public class ActionBarNavigationAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         View view = convertView;
         if (convertView == null) {
-            LayoutInflater li = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            view = li.inflate(R.layout.drop_down_navigation, parent, false);
+            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.drop_down_navigation, parent, false);
         }
 
         TextView serverName = view.findViewById(R.id.server_name);
-        Server activeServer = app.getActiveServer();
-        serverName.setText(activeServer != null ? activeServer.getName() : "");
+        serverName.setText(activeServer != null ? activeServer.name : "");
         serverName.setTextColor(textColorPrimaryInverse);
 
         Filter activeFilter = app.getActiveFilter();

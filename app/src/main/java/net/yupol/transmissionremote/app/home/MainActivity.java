@@ -294,6 +294,7 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
                     List<Server> allServers = pair.first;
                     Server activeServer = pair.second;
                     headerView.setServers(allServers, activeServer);
+                    toolbarSpinnerAdapter.setServers(allServers, activeServer);
                 });
     }
 
@@ -332,7 +333,7 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
                 if (id == ActionBarNavigationAdapter.ID_SERVER) {
                     Server server = (Server) toolbarSpinnerAdapter.getItem(position);
                     if (!server.equals(activeServer)) {
-                        //switchServer(server);
+                        serverRepository.setActiveServer(server);
                     }
                 } else if (id == ActionBarNavigationAdapter.ID_FILTER) {
                     Filter filter = (Filter) toolbarSpinnerAdapter.getItem(position);
