@@ -48,6 +48,10 @@ class MainActivityPresenter @Inject constructor(
         serverListSubscription?.dispose()
     }
 
+    ///////////////////////////
+    // region Public interface
+    ///////////////////////////
+
     fun refresh() {
         view.showLoading()
         startTorrentListLoading()
@@ -108,6 +112,14 @@ class MainActivityPresenter @Inject constructor(
                     view.showErrorAlert(error)
                 })
     }
+
+    fun activeServerSelected(server: Server) {
+        serverRepo.setActiveServer(server)
+    }
+
+    //////////////////////////////
+    // endregion Public interface
+    //////////////////////////////
 
     private fun startTorrentListLoading() {
         torrentListSubscription?.dispose()

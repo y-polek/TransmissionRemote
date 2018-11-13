@@ -103,10 +103,6 @@ dependencies {
         transitive = true
     }
 
-    // Permissions Dispatcher
-    implementation 'com.github.hotchemi:permissionsdispatcher:2.2.0'
-    kapt 'com.github.hotchemi:permissionsdispatcher-processor:2.2.0'
-
     // Floating Action Button
     implementation 'com.getbase:floatingactionbutton:1.10.1'
 
