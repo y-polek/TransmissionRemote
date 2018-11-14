@@ -1,6 +1,8 @@
 package net.yupol.transmissionremote.app.di
 
 import android.app.Application
+import android.content.SharedPreferences
+import android.preference.PreferenceManager
 import com.serjltt.moshi.adapters.FirstElement
 import com.serjltt.moshi.adapters.Wrapped
 import com.squareup.moshi.KotlinJsonAdapterFactory
@@ -28,7 +30,14 @@ class AppModule {
 
     @Provides
     @Singleton
-    fun provideServerRepository(app: Application): ServerRepository = ServerRepositoryImpl(app)
+    fun provideSharedPreferences(app: Application): SharedPreferences {
+        return PreferenceManager.getDefaultSharedPreferences(app)
+
+    }
+
+    @Provides
+    @Singleton
+    fun provideServerRepository(prefs: SharedPreferences, moshi: Moshi): ServerRepository = ServerRepositoryImpl(prefs, moshi)
 
     @Provides
     @Singleton

@@ -165,7 +165,11 @@ public class TransmissionRemote extends MultiDexApplication implements SharedPre
     private void migrateServersPreferences() {
         SharedPreferences sp = getSharedPreferences(SHARED_PREFS_NAME, MODE_PRIVATE);
 
-        Set<String> serversInJson = sp.getStringSet(KEY_SERVERS, Collections.emptySet());
+        Set<String> serversInJson = sp.getStringSet(KEY_SERVERS, null);
+        if (serversInJson == null) return;
+
+        sp.edit().remove(KEY_SERVERS).apply();
+
         for (String serverInJson : serversInJson) {
             Server server = Server.fromJson(serverInJson);
             if (server == null) continue;
