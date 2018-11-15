@@ -87,5 +87,13 @@
 
         </com.getbase.floatingactionbutton.FloatingActionsMenu>
 
+        <include layout="@layout/welcome_layout"
+            android:id="@+id/welcome_layout"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            tools:visibility="gone"/>
+
     </android.support.constraint.ConstraintLayout>
 </layout>

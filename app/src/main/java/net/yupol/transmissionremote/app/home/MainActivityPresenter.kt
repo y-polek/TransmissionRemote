@@ -39,7 +39,12 @@ class MainActivityPresenter @Inject constructor(
                     val activeServer = pair.second
                     interactor = serverManager.serverComponent?.torrentListInteractor()!!
                     view.serverListChanged(allServers, activeServer)
-                    refresh()
+                    if (allServers.isEmpty()) {
+                        view.showWelcomeScreen()
+                    } else {
+                        view.hideWelcomeScreen()
+                        refreshTorrentList()
+                    }
                 }
     }
 
@@ -52,7 +57,15 @@ class MainActivityPresenter @Inject constructor(
     // region Public interface
     ///////////////////////////
 
-    fun refresh() {
+    fun addServerClicked() {
+        view.openAddServerScreen()
+    }
+
+    fun activeServerSelected(server: Server) {
+        serverRepo.setActiveServer(server)
+    }
+
+    fun refreshTorrentList() {
         view.showLoading()
         startTorrentListLoading()
     }
@@ -91,7 +104,7 @@ class MainActivityPresenter @Inject constructor(
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
-                    refresh()
+                    refreshTorrentList()
                 }, { error ->
                     view.hideLoading()
                     view.showErrorAlert(error)
@@ -106,15 +119,11 @@ class MainActivityPresenter @Inject constructor(
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
-                    refresh()
+                    refreshTorrentList()
                 }, { error ->
                     view.hideLoading()
                     view.showErrorAlert(error)
                 })
-    }
-
-    fun activeServerSelected(server: Server) {
-        serverRepo.setActiveServer(server)
     }
 
     //////////////////////////////

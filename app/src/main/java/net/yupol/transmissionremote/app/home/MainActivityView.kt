@@ -6,6 +6,12 @@ import net.yupol.transmissionremote.domain.model.Server
 
 interface MainActivityView: MvpView {
 
+    fun showWelcomeScreen()
+
+    fun hideWelcomeScreen()
+
+    fun openAddServerScreen()
+
     fun serverListChanged(servers: List<Server>, activeServer: Server)
 
     fun showLoading()

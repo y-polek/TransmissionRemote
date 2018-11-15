@@ -74,6 +74,7 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import butterknife.OnLongClick;
 
 import static android.view.View.GONE;
@@ -81,8 +82,6 @@ import static android.view.View.VISIBLE;
 
 public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivityPresenter> implements MainActivityView,
         TorrentListFragment.OnTorrentSelectedListener, TorrentListFragment.ContextualActionBarListener {
-
-    public static int REQUEST_CODE_SERVER_PARAMS = 1;
 
     private static final String KEY_DRAWER_SERVER_LIST_EXPANDED = "key_drawer_server_list_expanded";
     private static final String KEY_SEARCH_ACTION_EXPANDED = "key_search_action_expanded";
@@ -123,6 +122,7 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
     @BindView(R.id.error_layout) View errorLayout;
     @BindView(R.id.error_text) TextView errorText;
     @BindView(R.id.detailed_error_text) TextView detailedErrorText;
+    @BindView(R.id.welcome_layout) View welcomeLayout;
 
     @Inject MainActivityPresenter injectedPresenter;
 
@@ -138,7 +138,7 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
         application = TransmissionRemote.getApplication(this);
         clipboard = new Clipboard(application);
 
-        binding.swipeRefresh.setOnRefreshListener(presenter::refresh);
+        binding.swipeRefresh.setOnRefreshListener(presenter::refreshTorrentList);
 
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(this));
         binding.recyclerView.addItemDecoration(new DividerItemDecoration(this));
@@ -248,7 +248,7 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
 
             @Override
             public void onAddServerPressed() {
-                openAddServerActivity(null);
+                presenter.addServerClicked();
             }
 
             @Override
@@ -527,15 +527,22 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
         drawer.getDrawerLayout().setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
     }
 
-    public void openAddServerActivity(View view) {
-        Intent intent = new Intent(this, AddServerActivity.class);
-        startActivityForResult(intent, REQUEST_CODE_SERVER_PARAMS);
+    //region MainActivityView interface implementation
+
+    @Override
+    public void showWelcomeScreen() {
+        welcomeLayout.setVisibility(VISIBLE);
     }
 
+    @Override
+    public void hideWelcomeScreen() {
+        welcomeLayout.setVisibility(GONE);
+    }
 
-
-
-    //
+    @Override
+    public void openAddServerScreen() {
+        startActivity(new Intent(this, AddServerActivity.class));
+    }
 
     @Override
     public void showLoading() {
@@ -593,4 +600,17 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
         headerView.setServers(servers, activeServer);
         toolbarSpinnerAdapter.setServers(servers, activeServer);
     }
+
+    //endregion
+
+    //region Click listeners
+
+    @OnClick(R.id.add_server_button)
+    void onAddServerClicked() {
+        presenter.addServerClicked();
+    }
+
+
+
+    //endregion
 }
