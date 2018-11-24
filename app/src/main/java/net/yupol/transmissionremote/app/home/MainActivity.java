@@ -532,11 +532,13 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
     @Override
     public void showWelcomeScreen() {
         welcomeLayout.setVisibility(VISIBLE);
+        drawer.getDrawerLayout().setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
     }
 
     @Override
     public void hideWelcomeScreen() {
         welcomeLayout.setVisibility(GONE);
+        drawer.getDrawerLayout().setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
     }
 
     @Override
