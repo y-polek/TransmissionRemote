@@ -1,6 +1,7 @@
 package net.yupol.transmissionremote.app.home
 
 import com.hannesdorfmann.mosby3.mvp.MvpNullObjectBasePresenter
+import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.functions.BiFunction
@@ -30,16 +31,14 @@ class MainActivityPresenter @Inject constructor(
     private var serverListSubscription: Disposable? = null
 
     override fun viewStarted() {
-        serverListSubscription = serverRepo.servers()
-                .zipWith(serverRepo.activeServer(),  BiFunction { allServers: List<Server>, activeServer: Server ->
-                    allServers to activeServer
-                })
-                .subscribe { pair ->
-                    val allServers = pair.first
-                    val activeServer = pair.second
+        serverListSubscription = Observable.combineLatest(
+                serverRepo.servers(),
+                serverRepo.activeServer(),
+                BiFunction { servers: List<Server>, activeServer: Server -> servers to activeServer })
+                .subscribe { (servers, activeServer) ->
                     interactor = serverManager.serverComponent?.torrentListInteractor()!!
-                    view.serverListChanged(allServers, activeServer)
-                    if (allServers.isEmpty()) {
+                    view.serverListChanged(servers, activeServer)
+                    if (servers.isEmpty()) {
                         view.showWelcomeScreen()
                     } else {
                         view.hideWelcomeScreen()

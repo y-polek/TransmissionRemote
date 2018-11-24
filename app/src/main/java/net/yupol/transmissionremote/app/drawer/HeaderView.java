@@ -26,6 +26,7 @@ import net.yupol.transmissionremote.domain.repository.ServerRepository;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -138,15 +139,16 @@ public class HeaderView extends RelativeLayout implements View.OnClickListener {
 
     public void setServers(List<Server> servers, Server activeServer) {
         this.servers = servers;
-        int currentServerPosition = servers.indexOf(activeServer);
-        if (currentServerPosition < 0) {
-            Arrays.fill(serversInCircles, null);
-            return;
-        }
 
         Arrays.fill(serversInCircles, null);
+        if (servers.isEmpty()) return;
+        int activeServerPosition = Math.max(servers.indexOf(activeServer), 0);
+
+        List<Server> orderedServers = new ArrayList<>(servers);
+        Collections.swap(orderedServers, 0, activeServerPosition);
+
         int i = 0;
-        Iterator<Server> it = servers.iterator();
+        Iterator<Server> it = orderedServers.iterator();
         while (it.hasNext() && i < serversInCircles.length) {
             serversInCircles[i++] = it.next();
         }
