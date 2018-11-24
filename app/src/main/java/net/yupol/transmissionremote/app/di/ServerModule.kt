@@ -35,8 +35,8 @@ class ServerModule {
             addInterceptor(sessionIdInterceptor)
             addInterceptor(rpcFailureInterceptor)
             addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
-            if (!server.login.value.isNullOrEmpty()) {
-                authenticator(BasicAuthenticator(server.login.value.orEmpty(), server.password.value.orEmpty()))
+            if (server.authEnabled()) {
+                authenticator(BasicAuthenticator(server.login.orEmpty(), server.password.orEmpty()))
             }
             if (server.trustSelfSignedSslCert) {
                 trustAllCertificates()
@@ -54,7 +54,7 @@ class ServerModule {
             val port = server.port
             if (port != null) port(port)
             try {
-                host(server.host.value)
+                host(server.host)
             } catch (e: IllegalArgumentException) {
                 // Catching exception to prevent crashes caused by invalid host name saved in previous versions of the app.
                 // In later versions host name validation was added, so this exception should not be thrown.

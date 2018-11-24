@@ -64,7 +64,7 @@ class ServerListAdapter(private val listener: OnServerSelectedListener): Recycle
             name.text = server.name
 
             val protocol = if (server.https) "https" else "http"
-            val host = server.host.value
+            val host = server.host
             val portText = if (server.port != null) ":${server.port}" else ""
             address.text = "$protocol//$host$portText"
 

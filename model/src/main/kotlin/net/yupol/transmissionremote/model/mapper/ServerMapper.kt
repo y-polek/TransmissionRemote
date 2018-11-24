@@ -1,10 +1,8 @@
 package net.yupol.transmissionremote.model.mapper
 
 import net.yupol.transmissionremote.data.api.model.ServerSettingsEntity
-import net.yupol.transmissionremote.domain.model.ProtectedProperty
 import net.yupol.transmissionremote.domain.model.Server
 import net.yupol.transmissionremote.model.json.ServerSettings
-import java.util.*
 
 object ServerMapper {
 
@@ -12,11 +10,11 @@ object ServerMapper {
     fun toDomain(server: net.yupol.transmissionremote.model.Server): Server {
         return Server(
                 server.name,
-                server.host.protected(),
+                server.host,
                 server.port,
                 server.useHttps(),
-                server.userName.protected(),
-                server.password.protected(),
+                server.userName,
+                server.password,
                 server.urlPath,
                 server.trustSelfSignedSslCert)
     }
@@ -24,7 +22,7 @@ object ServerMapper {
     @Deprecated(message = "For migration only")
     @JvmStatic
     fun toModel(server: Server): net.yupol.transmissionremote.model.Server {
-        val model = net.yupol.transmissionremote.model.Server(server.name, server.host.value, server.port ?: 0, server.login.value!!, server.password.value!!)
+        val model = net.yupol.transmissionremote.model.Server(server.name, server.host, server.port ?: 0, server.login!!, server.password!!)
         model.rpcUrl = server.rpcPath
         model.useHttps = false
         model.trustSelfSignedSslCert = false
@@ -40,6 +38,4 @@ object ServerMapper {
 
     @JvmStatic
     fun toViewModel(settings: ServerSettingsEntity): ServerSettings = ServerSettings.fromEntity(settings)
-
-    private fun <T> T.protected() = ProtectedProperty(this)
 }

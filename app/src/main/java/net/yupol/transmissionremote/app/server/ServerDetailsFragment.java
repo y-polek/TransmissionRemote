@@ -23,7 +23,6 @@ import com.google.common.net.InternetDomainName;
 
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.TransmissionRemote;
-import net.yupol.transmissionremote.domain.model.ProtectedProperty;
 import net.yupol.transmissionremote.domain.model.Server;
 import net.yupol.transmissionremote.domain.repository.ServerRepository;
 
@@ -168,15 +167,7 @@ public class ServerDetailsFragment extends Fragment {
         String login = isAuthEnabled ? getUiUserName() : null;
         String password = isAuthEnabled ? getUiPassword() : null;
 
-        return new Server(
-                name,
-                new ProtectedProperty<>(host),
-                port,
-                https,
-                new ProtectedProperty<>(login),
-                new ProtectedProperty<>(password),
-                rpcPath,
-                trustSelfSignedCert);
+        return new Server(name, host, port, https, login, password, rpcPath, trustSelfSignedCert);
     }
 
     public boolean hasChanges() {
@@ -185,7 +176,7 @@ public class ServerDetailsFragment extends Fragment {
         }
         if (!getUiName().equals(server.name))
             return true;
-        if (!getUiHost().equals(server.host.value))
+        if (!getUiHost().equals(server.host))
             return true;
 
         int uiPort = getUiPort() != null ? getUiPort() : 0;
@@ -194,9 +185,9 @@ public class ServerDetailsFragment extends Fragment {
             return true;
         if (isAuthEnabled != server.authEnabled())
             return true;
-        if (!getUiUserName().equals(Strings.nullToEmpty(server.login.value)))
+        if (!getUiUserName().equals(Strings.nullToEmpty(server.login)))
             return true;
-        if (!getUiPassword().equals(Strings.nullToEmpty(server.password.value)))
+        if (!getUiPassword().equals(Strings.nullToEmpty(server.password)))
             return true;
         if (!getUiRpcUrl().equals(server.rpcPath))
             return true;
@@ -218,12 +209,12 @@ public class ServerDetailsFragment extends Fragment {
         } else {
             serverNameEdit.setText(server.name);
             protocolSpinner.setSelection(server.https ? 1 : 0);
-            hostNameEdit.setText(server.host.value);
+            hostNameEdit.setText(server.host);
             portNumberEdit.setText(server.port != null ? String.valueOf(server.port) : "");
             selfSignedSslCheckbox.setChecked(server.trustSelfSignedSslCert);
             updateAuth(server.authEnabled());
-            userNameEdit.setText(server.login.value != null ? server.login.value : "");
-            passwordEdit.setText(server.password.value != null ? server.password.value : "");
+            userNameEdit.setText(server.login != null ? server.login : "");
+            passwordEdit.setText(server.password != null ? server.password : "");
             rpcUrlEdit.setText(server.rpcPath);
         }
     }

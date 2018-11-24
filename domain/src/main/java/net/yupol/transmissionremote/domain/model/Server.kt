@@ -2,25 +2,33 @@ package net.yupol.transmissionremote.domain.model
 
 data class Server(
         @JvmField val name: String, // TODO: server name mast be unique
-        @JvmField val host: ProtectedProperty<String>,
+        @JvmField val host: String,
         @JvmField val port: Int?,
         @JvmField val https: Boolean = false,
-        @JvmField val login: ProtectedProperty<String?> = ProtectedProperty(null),
-        @JvmField val password: ProtectedProperty<String?> = ProtectedProperty(null),
+        @JvmField val login: String? = null,
+        @JvmField val password: String? = null,
         @JvmField val rpcPath: String,
         @JvmField val trustSelfSignedSslCert: Boolean = false)
 {
     companion object {
         val EMPTY = Server(
                 name = "",
-                host = ProtectedProperty(""),
+                host = "",
                 port = null,
-                https = false,
-                login = ProtectedProperty(null),
-                password = ProtectedProperty(null),
-                rpcPath =  "",
-                trustSelfSignedSslCert = false)
+                rpcPath =  "")
     }
 
-    fun authEnabled() = login.value != null
+    fun authEnabled() = login != null
+
+    override fun toString(): String {
+        return "Server(" +
+                "name='$name', " +
+                "host='████████', " +
+                "port=$port, " +
+                "https=$https, " +
+                "login=████████, " +
+                "password=████████, " +
+                "rpcPath='$rpcPath', " +
+                "trustSelfSignedSslCert=$trustSelfSignedSslCert)"
+    }
 }

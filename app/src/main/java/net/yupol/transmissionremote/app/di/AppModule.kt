@@ -5,8 +5,8 @@ import android.content.SharedPreferences
 import android.preference.PreferenceManager
 import com.serjltt.moshi.adapters.FirstElement
 import com.serjltt.moshi.adapters.Wrapped
-import com.squareup.moshi.KotlinJsonAdapterFactory
 import com.squareup.moshi.Moshi
+import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.Module
 import dagger.Provides
 import net.yupol.transmissionremote.app.res.StringResources

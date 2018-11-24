@@ -3,8 +3,8 @@ package net.yupol.transmissionremote.data.api
 import android.annotation.SuppressLint
 import com.serjltt.moshi.adapters.FirstElement
 import com.serjltt.moshi.adapters.Wrapped
-import com.squareup.moshi.KotlinJsonAdapterFactory
 import com.squareup.moshi.Moshi
+import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import net.yupol.transmissionremote.data.api.rpc.RpcRequestBodyConverterFactory
 import net.yupol.transmissionremote.domain.model.Server
 import okhttp3.HttpUrl
@@ -35,8 +35,8 @@ class Transport(private val server: Server, vararg interceptors: Interceptor) {
             addInterceptor(SessionIdInterceptor())
             addInterceptor(RpcFailureInterceptor(moshi))
             addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
-            if (!server.login.value.isNullOrEmpty()) {
-                authenticator(BasicAuthenticator(server.login.value.orEmpty(), server.password.value.orEmpty()))
+            if (server.authEnabled()) {
+                authenticator(BasicAuthenticator(server.login.orEmpty(), server.password.orEmpty()))
             }
             if (server.trustSelfSignedSslCert) {
                 trustAllCertificates()
@@ -49,7 +49,7 @@ class Transport(private val server: Server, vararg interceptors: Interceptor) {
             val port = server.port
             if (port != null) port(port)
             try {
-                host(server.host.value)
+                host(server.host)
             } catch (e: IllegalArgumentException) {
                 // Catching exception to prevent crashes caused by invalid host name saved in previous versions of the app.
                 // In later versions host name validation was added, so this exception should not be thrown.

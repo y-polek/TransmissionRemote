@@ -23,7 +23,7 @@ class RpcFailureInterceptor @Inject constructor(moshi: Moshi) : Interceptor {
         val responseBody = response.body()!!
         val source = responseBody.source()
         source.request(Long.MAX_VALUE) // Buffer the entire body.
-        val buffer = source.buffer()
+        val buffer = source.buffer
 
         val body = buffer.clone().readString(UTF8)
 
