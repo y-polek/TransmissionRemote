@@ -1,5 +1,7 @@
 package net.yupol.transmissionremote.app;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
@@ -16,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.iconics.IconicsDrawable;
@@ -34,6 +37,7 @@ public class NetworkErrorFragment extends Fragment {
 
     private TextView messageView;
     private TextView detailedMessageView;
+    private String detailedMessage;
 
     private OnRefreshPressedListener listener;
 
@@ -49,6 +53,13 @@ public class NetworkErrorFragment extends Fragment {
         messageView = view.findViewById(R.id.error_message);
         detailedMessageView = view.findViewById(R.id.detailed_error_text);
         detailedMessageView.setMovementMethod(LinkMovementMethod.getInstance());
+        detailedMessageView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                copyDetailedErrorMessageToClipboard();
+                return true;
+            }
+        });
 
         String message = fromNullable(args.getString(KEY_MESSAGE)).or("");
         String detailedMessage = args.getString(KEY_DETAILED_MESSAGE);
@@ -104,6 +115,8 @@ public class NetworkErrorFragment extends Fragment {
     }
 
     public void setErrorMessage(@NonNull String message, @Nullable String detailedMessage) {
+        this.detailedMessage = detailedMessage;
+
         messageView.setText(message);
 
         detailedMessageView.setVisibility(detailedMessage != null ? VISIBLE : GONE);
@@ -113,6 +126,17 @@ public class NetworkErrorFragment extends Fragment {
             } else {
                 detailedMessageView.setText(Html.fromHtml(detailedMessage));
             }
+        }
+    }
+
+    private void copyDetailedErrorMessageToClipboard() {
+        if (detailedMessage == null || detailedMessage.isEmpty()) return;
+
+        ClipboardManager clipboard = (ClipboardManager) requireActivity().getSystemService(Context.CLIPBOARD_SERVICE);
+        if (clipboard != null) {
+            ClipData clip = ClipData.newPlainText("Error message", detailedMessage);
+            clipboard.setPrimaryClip(clip);
+            Toast.makeText(getContext(), R.string.copied, Toast.LENGTH_SHORT).show();
         }
     }
 
