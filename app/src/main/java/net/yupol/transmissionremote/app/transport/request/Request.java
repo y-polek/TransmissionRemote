@@ -40,6 +40,8 @@ public abstract class Request<RESULT> extends GoogleHttpClientSpiceRequest<RESUL
     private Server server;
     private String responseSessionId;
 
+    private String url;
+
     private int statusCode = -1;
 
     private String redirectLocation;
@@ -57,6 +59,11 @@ public abstract class Request<RESULT> extends GoogleHttpClientSpiceRequest<RESUL
 
     public Server getServer() {
         return server;
+    }
+
+    @Nullable
+    public String getUrl() {
+        return url;
     }
 
     public int getResponseStatusCode() {
@@ -87,7 +94,7 @@ public abstract class Request<RESULT> extends GoogleHttpClientSpiceRequest<RESUL
             throw new IllegalStateException("Server must be set before executing");
         }
 
-        String url = String.format(Locale.ROOT, "%s://%s:%d/%s",
+        url = String.format(Locale.ROOT, "%s://%s:%d/%s",
                 server.useHttps() ? "https" : "http",
                 server.getHost(),
                 server.getPort(),

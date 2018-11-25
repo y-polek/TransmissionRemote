@@ -115,9 +115,11 @@ public class TorrentUpdater {
                             error = NetworkError.UNAUTHORIZED;
                         }
 
+                        String url = currentRequest.getUrl();
                         String responseBody = currentRequest.getResponseBody();
                         String errorMessage = currentRequest.getError() != null ? errorMessage(currentRequest.getError()) : null;
-                        listener.onNetworkError(error, responseBody != null ? responseBody : errorMessage);
+                        String errorText = "<p><u>" + url + "</u></p>" + (responseBody != null ? responseBody : errorMessage);
+                        listener.onNetworkError(error, errorText);
                     }
                 }
 

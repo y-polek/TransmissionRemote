@@ -26,6 +26,8 @@ import com.mikepenz.iconics.IconicsDrawable;
 import net.yupol.transmissionremote.app.preferences.ServersActivity;
 import net.yupol.transmissionremote.app.utils.ColorUtils;
 
+import org.apache.commons.lang3.StringUtils;
+
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 import static com.google.common.base.Optional.fromNullable;
@@ -115,10 +117,11 @@ public class NetworkErrorFragment extends Fragment {
     }
 
     public void setErrorMessage(@NonNull String message, @Nullable String detailedMessage) {
-        this.detailedMessage = detailedMessage;
-
         messageView.setText(message);
 
+        if (StringUtils.equals(this.detailedMessage, detailedMessage)) return;
+
+        this.detailedMessage = detailedMessage;
         detailedMessageView.setVisibility(detailedMessage != null ? VISIBLE : GONE);
         if (detailedMessage != null) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
