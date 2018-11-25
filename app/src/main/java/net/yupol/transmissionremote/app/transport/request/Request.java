@@ -1,5 +1,6 @@
 package net.yupol.transmissionremote.app.transport.request;
 
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.google.api.client.http.ByteArrayContent;
@@ -43,6 +44,9 @@ public abstract class Request<RESULT> extends GoogleHttpClientSpiceRequest<RESUL
 
     private String redirectLocation;
 
+    private String responseBody;
+    private Throwable error;
+
     public Request(Class<RESULT> resultClass) {
         super(resultClass);
     }
@@ -65,6 +69,16 @@ public abstract class Request<RESULT> extends GoogleHttpClientSpiceRequest<RESUL
 
     public String getRedirectLocation() {
         return redirectLocation;
+    }
+
+    @Nullable
+    public String getResponseBody() {
+        return responseBody;
+    }
+
+    @Nullable
+    public Throwable getError() {
+        return error;
     }
 
     @Override
@@ -96,7 +110,13 @@ public abstract class Request<RESULT> extends GoogleHttpClientSpiceRequest<RESUL
         request.setHeaders(headers);
         request.setParser(JSON_PARSER);
 
-        HttpResponse response = request.execute();
+        HttpResponse response;
+        try {
+            response = request.execute();
+        } catch (Exception e) {
+            error = e;
+            throw e;
+        }
 
         statusCode = response.getStatusCode();
 
@@ -125,7 +145,7 @@ public abstract class Request<RESULT> extends GoogleHttpClientSpiceRequest<RESUL
                 RESULT result;
                 try {
                     //result = response.parseAs(getResultType());
-                    String responseBody = response.parseAsString();
+                    responseBody = response.parseAsString();
 
                     JSONObject responseBodyJson = new JSONObject(responseBody);
 

@@ -2,10 +2,15 @@ package net.yupol.transmissionremote.app;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,26 +23,42 @@ import com.mikepenz.iconics.IconicsDrawable;
 import net.yupol.transmissionremote.app.preferences.ServersActivity;
 import net.yupol.transmissionremote.app.utils.ColorUtils;
 
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
+import static com.google.common.base.Optional.fromNullable;
+
 public class NetworkErrorFragment extends Fragment {
 
-    public static final String KEY_MESSAGE = "key_message";
+    private static final String KEY_MESSAGE = "key_message";
+    private static final String KEY_DETAILED_MESSAGE = "key_detailed_message";
 
     private TextView messageView;
+    private TextView detailedMessageView;
 
     private OnRefreshPressedListener listener;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.network_error_fragment, container, false);
 
-        messageView = view.findViewById(R.id.error_message);
-        messageView.setText(getArguments().getString(KEY_MESSAGE));
+        Bundle args = getArguments();
+        if (args == null || args.getString(KEY_MESSAGE) == null) {
+            throw new IllegalArgumentException("Message argument must be provided");
+        }
 
-        int iconColor = ColorUtils.resolveColor(getContext(), R.attr.colorAccent, R.color.accent);
+        messageView = view.findViewById(R.id.error_message);
+        detailedMessageView = view.findViewById(R.id.detailed_error_text);
+        detailedMessageView.setMovementMethod(LinkMovementMethod.getInstance());
+
+        String message = fromNullable(args.getString(KEY_MESSAGE)).or("");
+        String detailedMessage = args.getString(KEY_DETAILED_MESSAGE);
+        setErrorMessage(message, detailedMessage);
+
+        int iconColor = ColorUtils.resolveColor(requireContext(), R.attr.colorAccent, R.color.accent);
 
         Button retryBtn = view.findViewById(R.id.retry_button);
         retryBtn.setCompoundDrawables(
-                new IconicsDrawable(getContext()).icon(GoogleMaterial.Icon.gmd_refresh).color(iconColor).sizeRes(R.dimen.default_button_icon_size),
+                new IconicsDrawable(requireContext()).icon(GoogleMaterial.Icon.gmd_refresh).color(iconColor).sizeRes(R.dimen.default_button_icon_size),
                 null, null, null);
         retryBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -48,20 +69,20 @@ public class NetworkErrorFragment extends Fragment {
 
         Button serverSettingsBtn = view.findViewById(R.id.server_settings_button);
         serverSettingsBtn.setCompoundDrawables(
-                new IconicsDrawable(getContext()).icon(GoogleMaterial.Icon.gmd_account_circle).color(iconColor).sizeRes(R.dimen.default_button_icon_size),
+                new IconicsDrawable(requireContext()).icon(GoogleMaterial.Icon.gmd_account_circle).color(iconColor).sizeRes(R.dimen.default_button_icon_size),
                 null, null, null);
         serverSettingsBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getContext(), ServersActivity.class);
-                intent.putExtra(ServersActivity.KEY_SERVER_UUID, TransmissionRemote.getApplication(getContext()).getActiveServer().getId());
+                intent.putExtra(ServersActivity.KEY_SERVER_UUID, TransmissionRemote.getApplication(requireContext()).getActiveServer().getId());
                 startActivity(intent);
             }
         });
 
         Button networkSettingsBtn = view.findViewById(R.id.network_settings_button);
         networkSettingsBtn.setCompoundDrawables(
-                new IconicsDrawable(getContext()).icon(GoogleMaterial.Icon.gmd_network_wifi).color(iconColor).sizeRes(R.dimen.default_button_icon_size),
+                new IconicsDrawable(requireContext()).icon(GoogleMaterial.Icon.gmd_network_wifi).color(iconColor).sizeRes(R.dimen.default_button_icon_size),
                 null, null, null);
         networkSettingsBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -82,8 +103,26 @@ public class NetworkErrorFragment extends Fragment {
         }
     }
 
-    public void setErrorMessage(String message) {
+    public void setErrorMessage(@NonNull String message, @Nullable String detailedMessage) {
         messageView.setText(message);
+
+        detailedMessageView.setVisibility(detailedMessage != null ? VISIBLE : GONE);
+        if (detailedMessage != null) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                detailedMessageView.setText(Html.fromHtml(detailedMessage, Html.FROM_HTML_MODE_COMPACT));
+            } else {
+                detailedMessageView.setText(Html.fromHtml(detailedMessage));
+            }
+        }
+    }
+
+    public static NetworkErrorFragment newInstance(@NonNull String message, @Nullable String detailedMessage) {
+        Bundle args = new Bundle();
+        args.putString(KEY_MESSAGE, message);
+        args.putString(KEY_DETAILED_MESSAGE, detailedMessage);
+        NetworkErrorFragment fragment = new NetworkErrorFragment();
+        fragment.setArguments(args);
+        return fragment;
     }
 
     public interface OnRefreshPressedListener {

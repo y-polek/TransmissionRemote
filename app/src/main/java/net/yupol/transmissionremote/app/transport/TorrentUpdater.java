@@ -1,5 +1,6 @@
 package net.yupol.transmissionremote.app.transport;
 
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.octo.android.robospice.exception.NetworkException;
@@ -106,14 +107,17 @@ public class TorrentUpdater {
                     Log.d(TAG, "TorrentGetRequest failed. SC: " + currentRequest.getResponseStatusCode());
                     responseReceived = Boolean.TRUE;
                     if (spiceException instanceof NoNetworkException) {
-                        listener.onNetworkError(NetworkError.NO_NETWORK);
+                        listener.onNetworkError(NetworkError.NO_NETWORK, null);
                     } else if (spiceException instanceof NetworkException) {
                         Log.d(TAG, "NetworkException: " + spiceException.getMessage() + " status code: " + currentRequest.getResponseStatusCode());
                         NetworkError error = NetworkError.OTHER;
                         if (currentRequest.getResponseStatusCode() == HttpURLConnection.HTTP_UNAUTHORIZED) {
                             error = NetworkError.UNAUTHORIZED;
                         }
-                        listener.onNetworkError(error);
+
+                        String responseBody = currentRequest.getResponseBody();
+                        String errorMessage = currentRequest.getError() != null ? errorMessage(currentRequest.getError()) : null;
+                        listener.onNetworkError(error, responseBody != null ? responseBody : errorMessage);
                     }
                 }
 
@@ -139,8 +143,25 @@ public class TorrentUpdater {
         }
     }
 
+    private static String errorMessage(Throwable throwable) {
+        if (throwable.getCause() == null) return throwable.getMessage();
+
+        StringBuilder builder = new StringBuilder();
+        builder.append("<ul>");
+        while (throwable != null) {
+            String message = throwable.getMessage();
+            if (message != null && !message.isEmpty()) {
+                builder.append("<li>").append(message).append("</li>");
+            }
+            throwable = throwable.getCause();
+        }
+        builder.append("</ul>");
+
+        return builder.toString();
+    }
+
     public interface TorrentUpdateListener {
         void onTorrentUpdate(List<Torrent> torrents);
-        void onNetworkError(NetworkError error);
+        void onNetworkError(NetworkError error, @Nullable String detailedMessage);
     }
 }

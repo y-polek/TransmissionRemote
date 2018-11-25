@@ -907,7 +907,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
     }
 
     @Override
-    public void onNetworkError(NetworkError error) {
+    public void onNetworkError(NetworkError error, @Nullable String detailedMessage) {
         int messageRes;
 
         switch (error) {
@@ -922,7 +922,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
         }
 
         hasTorrentList = false;
-        showNetworkErrorFragment(getString(messageRes));
+        showNetworkErrorFragment(getString(messageRes), detailedMessage);
     }
 
     @Override
@@ -1128,19 +1128,16 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
         binding.addTorrentButton.setVisibility(showFab ? View.VISIBLE : View.GONE);
     }
 
-    private void showNetworkErrorFragment(String message) {
+    private void showNetworkErrorFragment(@NonNull String message, @Nullable String detailedMessage) {
         FragmentManager fm = getSupportFragmentManager();
         NetworkErrorFragment fragment = (NetworkErrorFragment) fm.findFragmentByTag(TAG_NETWORK_ERROR);
         if (fragment == null) {
-            fragment = new NetworkErrorFragment();
-            Bundle args = new Bundle();
-            args.putString(NetworkErrorFragment.KEY_MESSAGE, message);
-            fragment.setArguments(args);
+            fragment = NetworkErrorFragment.newInstance(message, detailedMessage);
             FragmentTransaction ft = fm.beginTransaction();
             ft.replace(R.id.torrent_list_container, fragment, TAG_NETWORK_ERROR);
             ft.commitAllowingStateLoss();
         } else {
-            fragment.setErrorMessage(message);
+            fragment.setErrorMessage(message, detailedMessage);
         }
 
         binding.addTorrentButton.setVisibility(View.GONE);
