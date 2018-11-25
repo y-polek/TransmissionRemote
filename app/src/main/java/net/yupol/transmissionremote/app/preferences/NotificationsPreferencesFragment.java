@@ -15,18 +15,27 @@ import net.yupol.transmissionremote.app.TransmissionRemote;
 public class NotificationsPreferencesFragment extends PreferenceFragment {
 
     private String notificationChannelPreferenceKey;
+    private Intent notificationChannelScreen;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.notification_preferences);
+        setupNotificationChannelPreference();
+    }
 
+    private void setupNotificationChannelPreference() {
         notificationChannelPreferenceKey = getString(R.string.torrent_finished_notification_sound_and_vibrate_key);
 
-        Preference notificationChannelPreference = findPreference(notificationChannelPreferenceKey);
-        notificationChannelPreference.setTitle(
-                getString(R.string.torrent_finished_notification_sound_title) + "/" +
-                getString(R.string.torrent_finished_notification_vibrate_title));
+        Preference pref = findPreference(notificationChannelPreferenceKey);
+        if (pref != null) {
+            pref.setTitle(
+                    getString(R.string.torrent_finished_notification_sound_title) + "/" +
+                    getString(R.string.torrent_finished_notification_vibrate_title));
+
+            setupNotificationChannelIntent();
+            pref.setEnabled(canOpenNotificationChannelScreen());
+        }
     }
 
     @Override
@@ -41,9 +50,17 @@ public class NotificationsPreferencesFragment extends PreferenceFragment {
 
     @TargetApi(Build.VERSION_CODES.O)
     private void openNotificationChannelSettings() {
-        Intent intent = new Intent(Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS);
-        intent.putExtra(Settings.EXTRA_CHANNEL_ID, TransmissionRemote.NOTIFICATION_CHANNEL_ID);
-        intent.putExtra(Settings.EXTRA_APP_PACKAGE, getContext().getPackageName());
-        startActivity(intent);
+        startActivity(notificationChannelScreen);
+    }
+
+    @TargetApi(Build.VERSION_CODES.O)
+    private void setupNotificationChannelIntent() {
+        notificationChannelScreen = new Intent(Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS);
+        notificationChannelScreen.putExtra(Settings.EXTRA_CHANNEL_ID, TransmissionRemote.NOTIFICATION_CHANNEL_ID);
+        notificationChannelScreen.putExtra(Settings.EXTRA_APP_PACKAGE, getActivity().getPackageName());
+    }
+
+    private boolean canOpenNotificationChannelScreen() {
+        return notificationChannelScreen.resolveActivity(getActivity().getPackageManager()) != null;
     }
 }
