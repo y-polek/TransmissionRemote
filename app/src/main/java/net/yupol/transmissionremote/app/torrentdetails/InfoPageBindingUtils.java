@@ -64,10 +64,10 @@ public class InfoPageBindingUtils {
                 displayableSize(uploaded), ratio);
     }
 
-    public static long transferSpeed(Torrent torrent, TorrentInfo torrentInfo) {
-        if (torrent == null || torrentInfo == null) return 0;
+    public static long transferSpeed(TorrentInfo torrentInfo) {
+        if (torrentInfo == null) return 0;
 
-        long downloaded = torrent.getSizeWhenDone() - torrent.getLeftUntilDone();
+        long downloaded = torrentInfo.getSizeWhenDone() - torrentInfo.getLeftUntilDone();
         return downloaded / torrentInfo.getSecondsDownloading();
     }
 
