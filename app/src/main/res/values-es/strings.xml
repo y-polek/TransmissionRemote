@@ -100,6 +100,7 @@
     <string name="total_size">Tamaño total</string>
     <string name="torrent_information">Información del torrent</string>
     <string name="uploaded">Subido:</string>
+    <string name="average_speed">Velocidad media:</string>
     <string name="value">Valor:</string>
     <string name="username">Nombre de usuario:</string>
     <string name="drawer_sort_by_date_added">Fecha de agregado</string>
