@@ -67,7 +67,8 @@ public class InfoPageBindingUtils {
     public static long transferSpeed(Torrent torrent, TorrentInfo torrentInfo) {
         if (torrent == null || torrentInfo == null) return 0;
 
-        return torrent.getTotalSize() / torrentInfo.getSecondsDownloading();
+        long downloaded = torrent.getSizeWhenDone() - torrent.getLeftUntilDone();
+        return downloaded / torrentInfo.getSecondsDownloading();
     }
 
 }
