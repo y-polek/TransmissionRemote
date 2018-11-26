@@ -11,8 +11,8 @@ android {
     defaultConfig {
         minSdkVersion 15
         targetSdkVersion 26
-        versionCode 91102
-        versionName '0.9.11.2'
+        versionCode 91103
+        versionName '0.9.11.3'
         applicationId 'net.yupol.transmissionremote.app'
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         manifestPlaceholders = [fabricApiKey: "${apiKey('fabric_api_key')}"]
@@ -29,6 +29,7 @@ android {
 
             lintOptions {
                 disable 'MissingTranslation'
+                abortOnError false
             }
         }
     }
