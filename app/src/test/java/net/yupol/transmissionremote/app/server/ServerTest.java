@@ -9,13 +9,6 @@ public class ServerTest extends TestCase {
 
     public void testIllegalPort() {
         try {
-            new Server("name", "192.168.1.1", 0);
-            fail("Port must be > " + 0);
-        } catch (IllegalArgumentException e) {
-            // ok
-        }
-
-        try {
             new Server("name", "192.168.1.1", 0xFFFF + 1);
             fail("Port must be <= " + 0xFFFF);
         } catch (IllegalArgumentException e) {
