@@ -89,6 +89,9 @@ dependencies {
 
     compile 'org.apache.commons:commons-io:1.3.2'
 
+    // Emoji
+    implementation 'com.vdurmont:emoji-java:4.0.0'
+
     testCompile 'junit:junit:4.12'
     testCompile 'org.hamcrest:hamcrest-library:1.3'
     androidTestCompile 'com.android.support:support-annotations:26.1.0'
