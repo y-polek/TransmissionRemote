@@ -1,41 +1,48 @@
 package net.yupol.transmissionremote.app.model;
 
+import android.support.annotation.NonNull;
+
 import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.common.base.Function;
+import com.google.common.collect.FluentIterable;
+import com.google.common.collect.Ordering;
 
 import junit.framework.TestCase;
 
 import net.yupol.transmissionremote.app.model.json.File;
 
+import java.util.List;
+
 public class DirTest extends TestCase {
 
     private static final String NESTED_FILES = "[" +
             "{\"bytesCompleted\":1937408,\"length\":1937408,\"name\":\"Test Tree/d1/d1-1/f1-1-1\"}," +
-            "{\"bytesCompleted\":1937408,\"length\":1937408,\"name\":\"Test Tree/d1/d1-1/f1-1-2\"}," +
             "{\"bytesCompleted\":1937408,\"length\":1937408,\"name\":\"Test Tree/d1/d1-1/f1-1-3\"}," +
+            "{\"bytesCompleted\":1937408,\"length\":1937408,\"name\":\"Test Tree/d1/d1-1/f1-1-2\"}," +
             "{\"bytesCompleted\":1937408,\"length\":1937408,\"name\":\"Test Tree/d1/d1-2/f1-2-1\"}," +
             "{\"bytesCompleted\":1937408,\"length\":1937408,\"name\":\"Test Tree/d1/d1-2/f1-2-2\"}," +
-            "{\"bytesCompleted\":1937408,\"length\":1937408,\"name\":\"Test Tree/d1/d1-2/f1-2-3\"}," +
             "{\"bytesCompleted\":1937408,\"length\":1937408,\"name\":\"Test Tree/d1/d1-3/f1-3-1\"}," +
+            "{\"bytesCompleted\":1937408,\"length\":1937408,\"name\":\"Test Tree/d1/d1-2/f1-2-3\"}," +
             "{\"bytesCompleted\":1937408,\"length\":1937408,\"name\":\"Test Tree/d1/d1-3/f1-3-2\"}," +
+            "{\"bytesCompleted\":1937408,\"length\":1937408,\"name\":\"Test Tree/d2/d2-1/f2-1-2\"}," +
             "{\"bytesCompleted\":1937408,\"length\":1937408,\"name\":\"Test Tree/d1/d1-3/f1-3-3\"}," +
             "{\"bytesCompleted\":1937408,\"length\":1937408,\"name\":\"Test Tree/d2/d2-1/f2-1-1\"}," +
-            "{\"bytesCompleted\":1937408,\"length\":1937408,\"name\":\"Test Tree/d2/d2-1/f2-1-2\"}," +
-            "{\"bytesCompleted\":1937408,\"length\":1937408,\"name\":\"Test Tree/d2/d2-1/f2-1-3\"}," +
             "{\"bytesCompleted\":1937408,\"length\":1937408,\"name\":\"Test Tree/d2/d2-2/f2-2-1\"}," +
-            "{\"bytesCompleted\":1937408,\"length\":1937408,\"name\":\"Test Tree/d2/d2-2/f2-2-2\"}," +
             "{\"bytesCompleted\":1937408,\"length\":1937408,\"name\":\"Test Tree/d2/d2-2/f2-2-3\"}," +
             "{\"bytesCompleted\":1937408,\"length\":1937408,\"name\":\"Test Tree/d2/d2-3/f2-3-1\"}," +
-            "{\"bytesCompleted\":1937408,\"length\":1937408,\"name\":\"Test Tree/d2/d2-3/f2-3-2\"}," +
-            "{\"bytesCompleted\":1937408,\"length\":1937408,\"name\":\"Test Tree/d2/d2-3/f2-3-3\"}," +
-            "{\"bytesCompleted\":1937408,\"length\":1937408,\"name\":\"Test Tree/d3/d3-1/f3-1-1\"}," +
-            "{\"bytesCompleted\":1937408,\"length\":1937408,\"name\":\"Test Tree/d3/d3-1/f3-1-2\"}," +
-            "{\"bytesCompleted\":1937408,\"length\":1937408,\"name\":\"Test Tree/d3/d3-1/f3-1-3\"}," +
-            "{\"bytesCompleted\":1937408,\"length\":1937408,\"name\":\"Test Tree/d3/d3-2/f3-2-1\"}," +
-            "{\"bytesCompleted\":1937408,\"length\":1937408,\"name\":\"Test Tree/d3/d3-2/f3-2-2\"}," +
-            "{\"bytesCompleted\":1937408,\"length\":1937408,\"name\":\"Test Tree/d3/d3-2/f3-2-3\"}," +
-            "{\"bytesCompleted\":1937408,\"length\":1937408,\"name\":\"Test Tree/d3/d3-3/f3-3-1\"}," +
-            "{\"bytesCompleted\":1937408,\"length\":1937408,\"name\":\"Test Tree/d3/d3-3/f3-3-2\"}," +
             "{\"bytesCompleted\":1937408,\"length\":1937408,\"name\":\"Test Tree/d3/d3-3/f3-3-3\"}," +
+            "{\"bytesCompleted\":1937408,\"length\":1937408,\"name\":\"Test Tree/d2/d2-3/f2-3-3\"}," +
+            "{\"bytesCompleted\":1937408,\"length\":1937408,\"name\":\"Test Tree/d2/d2-1/f2-1-3\"}," +
+            "{\"bytesCompleted\":1937408,\"length\":1937408,\"name\":\"Test Tree/d3/d3-2/f3-2-2\"}," +
+            "{\"bytesCompleted\":1937408,\"length\":1937408,\"name\":\"Test Tree/d2/d2-2/f2-2-2\"}," +
+            "{\"bytesCompleted\":1937408,\"length\":1937408,\"name\":\"Test Tree/d3/d3-1/f3-1-1\"}," +
+            "{\"bytesCompleted\":1937408,\"length\":1937408,\"name\":\"Test Tree/d2/d2-3/f2-3-2\"}," +
+            "{\"bytesCompleted\":1937408,\"length\":1937408,\"name\":\"Test Tree/d3/d3-1/f3-1-2\"}," +
+            "{\"bytesCompleted\":1937408,\"length\":1937408,\"name\":\"Test Tree/d3/d3-3/f3-3-2\"}," +
+            "{\"bytesCompleted\":1937408,\"length\":1937408,\"name\":\"Test Tree/d3/d3-1/f3-1-3\"}," +
+            "{\"bytesCompleted\":1937408,\"length\":1937408,\"name\":\"Test Tree/d3/d3-3/f3-3-1\"}," +
+            "{\"bytesCompleted\":1937408,\"length\":1937408,\"name\":\"Test Tree/d3/d3-2/f3-2-1\"}," +
+            "{\"bytesCompleted\":1937408,\"length\":1937408,\"name\":\"Test Tree/d3/d3-2/f3-2-3\"}," +
             "{\"bytesCompleted\":1937408,\"length\":1937408,\"name\":\"Test Tree/r1.txt\"}]";
 
     private static final String SINGLE_FILE = "[{\"bytesCompleted\":1937408,\"length\":1937408,\"name\":\"r1.txt\"}]";
@@ -86,14 +93,48 @@ public class DirTest extends TestCase {
         assertEquals("r1.txt", singleFile[dir.getFileIndices().get(0)].getName());
     }
 
-    public void testFileIndices() {
+    public void testFilesSorted() {
         Dir dir = Dir.createFileTree(nestedFiles);
 
-        Dir d11 = dir.getDirs().get(0).getDirs().get(0).getDirs().get(0);
-        assertEquals(Integer.valueOf(0), d11.getFileIndices().get(0));
-        assertEquals(Integer.valueOf(1), d11.getFileIndices().get(1));
-        assertEquals(Integer.valueOf(2), d11.getFileIndices().get(2));
+        testFilesSortedRecursively(dir);
+    }
 
-        assertEquals(Integer.valueOf(27), dir.getDirs().get(0).getFileIndices().get(0));
+    private void testFilesSortedRecursively(Dir dir) {
+        List<String> fileNames = FluentIterable.from(dir.getFileIndices())
+                .transform(new Function<Integer, String>() {
+                    @Override
+                    public String apply(@NonNull Integer index) {
+                        String[] segments = nestedFiles[index].getPath().split("/");
+                        return segments[segments.length - 1];
+                    }
+                }).toList();
+
+        assertTrue("Files are not sorted", Ordering.natural().isOrdered(fileNames));
+
+        for (Dir subDir : dir.getDirs()) {
+            testFilesSortedRecursively(subDir);
+        }
+    }
+
+    public void testDirsSorted() {
+        Dir dir = Dir.createFileTree(nestedFiles);
+
+        testDirsSortedRecursively(dir);
+    }
+
+    private void testDirsSortedRecursively(Dir dir) {
+        List<String> dirNames = FluentIterable.from(dir.getDirs())
+                .transform(new Function<Dir, String>() {
+                    @Override
+                    public String apply(@NonNull Dir subDir) {
+                        return subDir.getName();
+                    }
+                }).toList();
+
+        assertTrue("Dirs are not sorted", Ordering.natural().isOrdered(dirNames));
+
+        for (Dir subDir : dir.getDirs()) {
+            testDirsSortedRecursively(subDir);
+        }
     }
 }

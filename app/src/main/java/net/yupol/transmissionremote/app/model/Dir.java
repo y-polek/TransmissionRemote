@@ -4,13 +4,18 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
+import com.google.common.base.Function;
+import com.google.common.collect.FluentIterable;
+
 import net.yupol.transmissionremote.app.model.json.File;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 
-public final class Dir implements Parcelable {
+public final class Dir implements Parcelable, Comparable<Dir> {
 
     private String name;
     private List<Dir> dirs = new LinkedList<>();
@@ -48,7 +53,34 @@ public final class Dir implements Parcelable {
             parsePath(pathParts, root, i);
         }
 
+        List<String> fileNames = FluentIterable.from(files)
+                .transform(new Function<File, String>() {
+                    @Override
+                    public String apply(@NonNull File file) {
+                        String[] segments = file.getPath().split("/");
+                        if (segments.length == 0) return "";
+                        return segments[segments.length - 1];
+                    }
+                }).toList();
+        sortRecursively(root, fileNames);
+
         return root;
+    }
+
+    private static void sortRecursively(Dir dir, final List<String> fileNames) {
+        Collections.sort(dir.dirs);
+
+        Collections.sort(dir.fileIndices, new Comparator<Integer>() {
+            @Override
+            public int compare(Integer idx1, Integer idx2) {
+                String fileName1 = fileNames.get(idx1);
+                String fileName2 = fileNames.get(idx2);
+                return fileName1.compareToIgnoreCase(fileName2);
+            }
+        });
+        for (Dir subDir : dir.dirs) {
+            sortRecursively(subDir, fileNames);
+        }
     }
 
     public static List<Integer> filesInDirRecursively(Dir dir) {
@@ -109,4 +141,9 @@ public final class Dir implements Parcelable {
             return new Dir[size];
         }
     };
+
+    @Override
+    public int compareTo(@NonNull Dir dir) {
+        return name.compareToIgnoreCase(dir.name);
+    }
 }
