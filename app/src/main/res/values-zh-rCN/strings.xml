@@ -17,6 +17,7 @@
     <string name="action_verify">校验本地数据</string>
     <string name="action_request_more_peers">寻求更多节点</string>
     <string name="action_set_location">设置保存位置</string>
+    <string name="action_rename">重命名</string>
 
     <!-- Filters -->
     <string name="filters">筛选</string>
@@ -39,18 +40,21 @@
 
     <!-- Sort by -->
     <string name="drawer_sort_by">排序方式</string>
+    <string name="drawer_sort_by_name">名称</string>
     <string name="drawer_sort_by_size">大小</string>
     <string name="drawer_sort_by_time_remaining">剩余时间</string>
     <string name="drawer_sort_by_date_added">添加日期</string>
     <string name="drawer_sort_by_progress">进度</string>
-    <string name="drawer_sort_by_queue_position">优先级</string>
+    <string name="drawer_sort_by_queue_position">队列顺序</string>
+    <string name="drawer_sort_by_upload_ratio">比率</string>
 
     <!-- Preferences -->
     <string name="action_settings">设置</string>
     <string name="notifications_pref_title">通知</string>
     <string name="notification_settings">通知设置</string>
     <string name="advanced_pref_title">高级选项</string>
-
+    <string name="show_add_torrent_fab_title">显示“添加种子”浮动按钮</string>
+    
     <!-- Servers -->
     <string name="add_new_server_title">添加新服务器</string>
     <string name="server_parameters">服务器参数</string>
@@ -66,13 +70,13 @@
     <string name="password">密码</string>
     <string name="server_name_error_message">名称不能为空</string>
     <string name="host_name_empty_message">输入运行 Transmission 的计算机的 IP 或主机名</string>
+    <string name="host_name_invalid_message">IP 地址或主机名无效</string>
     <string name="port_number_error_message">请输入端口号，必须与 Transmission 选项对话框“远程”选项卡中的“监听端口”一致。</string>
     <string name="servers">服务器</string>
     <string name="add_remove_servers">添加或删除服务器</string>
     <string name="remove_server">删除服务器</string>
     <string name="save_server">保存</string>
     <string name="remove_server_confirmation">删除服务器？</string>
-    <string name="remove">删除</string>
     <string name="saved">已保存</string>
     <string name="save_changes_question">保存更改？</string>
     <string name="save_changes_save">保存</string>
@@ -87,8 +91,10 @@
     <string name="update_interval_summary">种子列表更新间隔</string>
     <string name="torrent_finished_notification_title">打开种子完成提醒</string>
     <string name="torrent_finished_notification_summary">在后台刷新种子</string>
-    <string name="torrent_finished_notification_vibrate_title">震动</string>
+    <string name="torrent_finished_notification_vibrate_title">振动</string>
     <string name="torrent_finished_notification_sound_title">声音</string>
+    <string name="torrent_finished_notification_only_unmetered_wifi_title">仅在未计量的 WiFi 上</string>
+    <string name="torrent_finished_notification_only_unmetered_wifi_summary">关闭该选项将允许在使用移动数据网络或其它按流量计费的网络时后台更新</string>
     <string name="server_preferences">服务器选项</string>
     <string name="remote_preferences">选项</string>
     <string name="global_bandwidth_limits">全局带宽限制</string>
@@ -100,29 +106,35 @@
     <string name="preferences_notifications_summary">种子完成通知</string>
     <string name="preferences_advanced_title">高级</string>
     <string name="preferences_advanced_summary">高级选项</string>
-    <string name="disable_free_space_check_title">禁用剩余空间检查</string>
-    <string name="disable_free_space_check_summary">允许不检查剩余空间就添加种子</string>
+    <string name="disable_free_space_check_title">禁用可用空间检查</string>
+    <string name="disable_free_space_check_summary">允许不检查可用空间就添加种子</string>
+    <string name="free_space_title">可用空间：%s</string>
 
     <!-- Torrent List -->
     <string name="unknown_error_message">未知错误</string>
     <string name="downloaded_text">%1$s，共 %2$s</string>
-    <string name="uploaded_text">%1$s（比率：%2$.2f）</string>
+    <string name="uploaded_text">%1$s（分享率：%2$.2f）</string>
     <string name="speed_limit">速度限制</string>
     <string name="download_speed">下载速度</string>
     <string name="upload_speed">上传速度</string>
     <string name="remove_selected_torrents">删除选中的种子…</string>
     <string name="remove_from_list">从列表中删除</string>
     <string name="remove_data">删除数据</string>
+    <string name="remove_data_confirmation">确实要删除所有数据吗？</string>
     <string name="search">搜索</string>
     <string name="eta_unknown">剩余时间未知</string>
     <string name="eta_infinite">~ \u221e</string>
     <string name="eta">~ %1$s</string>
+    <string name="checking_progress_text">正在检查已存在的数据 (%1$.2f%%)</string>
+    <string name="rename_file">重命名文件</string>
+    <string name="rename">重命名</string>
 
     <!-- Open torrent -->
     <string name="error_install_file_manager_msg">请先安装一个文件管理器</string>
     <string name="error_file_does_not_exists_msg">文件“%1$s”不存在</string>
-    <string name="error_wrong_file_extension_msg">无法打开 .%1$s 文件。请选择一个“.torrent”文件。</string>
+    <string name="error_wrong_file_extension_msg">无法打开 “.%1$s” 文件。请选择一个“.torrent”文件。</string>
     <string name="error_cannot_read_file_msg">无法读取文件内容</string>
+    <string name="error_failed_to_open_torrent">无法打开种子。请再试一次。</string>
     <string name="error_failed_to_open_downloaded_torrent">无法打开文件。尝试使用“打开种子”菜单打开文件。</string>
     <string name="error_duplicate_torrent">已存在相同种子</string>
     <string name="torrent_added_successfully">成功添加种子</string>
@@ -135,32 +147,41 @@
     <string name="add">添加</string>
     <string name="free_space">%1$s 可用</string>
     <string name="free_space_unknown">可用空间未知</string>
+    <string name="no_directory">没有此目录</string>
     <string name="use_default_directory">使用默认目录</string>
     <string name="unknown_free_space_confirmation">没有此目录。\n确定要添加种子吗？</string>
     <string name="storage_permission_rationale">Transmission Remote 需要“储存”权限来打开本地种子文件。</string>
+    <string name="storage_permission_allow">允许</string>
     <string name="storage_permission_deny">拒绝</string>
     <string name="storage_permission_never_ask_again_message">Transmission Remote 需要“储存”权限来打开本地种子文件。\n你可以在应用程序设置中授予该权限。</string>
+    <string name="app_settings">程序设置</string>
+    <string name="select_server_title">服务器：</string>
 
     <!-- Torrent details -->
     <string name="torrent_details">种子详情</string>
     <string name="info">信息</string>
     <string name="files">文件</string>
+    <string name="trackers">服务器</string>
+    <string name="peers">节点</string>
     <string name="options">选项</string>
     <string name="priority">优先级</string>
     <string name="transfer_priority">传输优先级：</string>
     <string name="transfer_bandwidth">传输带宽</string>
+    <string name="limit_download">下载限制：</string>
+    <string name="limit_upload">上传限制：</string>
     <string name="stay_within_global_bandwidth">服从全局带宽限制</string>
-    <string name="ratio_limit">比率限制</string>
+    <string name="ratio_limit">分享率限制</string>
+    <string name="inactivity_limit">不活跃限制</string>
     <string name="mode">模式：</string>
     <string name="value">值：</string>
     <string name="value_in_minutes">值（分钟）:</string>
     <string name="global_settings">全局设置</string>
     <string name="unlimited">无限制</string>
-    <string name="stop_at_ratio">达到比率后停止</string>
+    <string name="stop_at_ratio">达到分享率后停止</string>
     <string name="stop_when_inactive">不活跃时停止</string>
     <string name="save_torrent_options">保存</string>
     <string name="options_update_failed">无法更新种子选项</string>
-    <string name="three_dots">&#8230;</string>
+    <string name="three_dots">…</string>
     <string name="disabled">已禁用</string>
     <string name="total_size_text">%1$s（%2$d 个 %3$s 的块）</string>
     <string name="have_size_text">%1$s，共 %2$s（%3$.1f%%）</string>
@@ -170,7 +191,7 @@
     <string name="privacy_public_torrent">公开种子</string>
     <string name="privacy_private_torrent">私有种子，已禁用 DHT 和 PeX 种子交换</string>
     <string name="downloaded_ever_text">%1$s（损坏 %2$s）</string>
-    <string name="uploaded_ever_text">%1$s（比率：%2$.2f）</string>
+    <string name="uploaded_ever_text">%1$s（分享率：%2$.2f）</string>
     <string name="today_time">今天 %1$s</string>
     <string name="yesterday_time">昨天 %1$s</string>
     <string name="date_time">%1$s %2$s</string>
@@ -182,9 +203,12 @@
     <string name="created_on">创建时间：</string>
     <string name="comment">备注：</string>
     <string name="transfer">传输</string>
+    <string name="have">总计下载：</string>
+    <string name="available">可用：</string>
     <string name="downloaded">已下载：</string>
     <string name="uploaded">已上传：</string>
-    <string name="dates">时间</string>
+    <string name="average_speed">平均速度：</string>
+    <string name="dates">日期</string>
     <string name="added">已添加：</string>
     <string name="completed">完成时间：</string>
     <string name="last_activity">最后活动：</string>
@@ -192,6 +216,46 @@
     <string name="downloading">下载：</string>
     <string name="seeding">做种：</string>
     <string name="remove_failed">无法删除种子。请再试一次。</string>
+    <string name="client_on_port">%1$s 在端口 %2$d</string>
+    <string name="peers_empty_message">没有已连接的结点</string>
+    <string name="peers_sort_by">排序方式</string>
+    <string name="peers_sort_by_address">地址</string>
+    <string name="peers_sort_by_client">客户端</string>
+    <string name="peers_sort_by_progress">进度</string>
+    <string name="peers_sort_by_download_rate">正在下载</string>
+    <string name="peers_sort_by_upload_rate">正在上传</string>
+
+    <string name="trackers_empty_message">无服务器</string>
+    <string name="trackers_add">添加服务器</string>
+    <string name="trackers_tier_number">层级 %d</string>
+    <string name="trackers_last_announce">最后更新：%s</string>
+    <string name="trackers_announce_error">更新错误：%s</string>
+    <string name="trackers_next_announce_in">下一次更新于 %s</string>
+    <string name="trackers_last_scrape">最后刮擦：%s</string>
+    <string name="trackers_scrape_error">刮擦错误：%s</string>
+    <string name="trackers_seeders">种子：%s</string>
+    <string name="trackers_leechers">下载：%s</string>
+    <string name="trackers_downloaded">已下载：%s</string>
+    <plurals name="trackers_last_announce_with_results">
+        <item quantity="one">%1$s (获得 %2$d 个节点)</item>
+        <item quantity="other">%1$s (获得 %2$d 个节点)</item>
+    </plurals>
+    <string name="trackers_announce_in_progress">正在进行更新</string>
+    <string name="trackers_announce_is_queued">更新已加入队列</string>
+    <string name="trackers_tracked_will_be_used_as_backup">将作为备用服务器</string>
+    <string name="trackers_announce_not_scheduled">未安排更新计划</string>
+    <string name="trackers_unknown_announce_state">未知更新状态：%d</string>
+    <string name="trackers_menu_content_description">服务器菜单</string>
+    <string name="trackers_menu_copy_to_clipboard">复制地址到剪贴板</string>
+    <string name="trackers_menu_edit_url">编辑地址</string>
+    <string name="trackers_menu_remove">@string/remove</string>
+    <string name="trackers_remove_confirmation_title">确实要删除此服务器吗？</string>
+    <string name="trackers_remove_confirmation_message">一旦删除，Transmission 将不再尝试与它联系。\n该操作无法撤销。</string>
+    <string name="trackers_add_tracker_title">添加服务器</string>
+    <string name="trackers_edit_tracker_title">编辑服务器</string>
+    <string name="trackers_url_hint">地址</string>
+    <string name="trackers_add_button">添加</string>
+    <string name="trackers_done_button">完成</string>
 
     <string name="retry">重试</string>
     <string name="server_settings">服务器设置</string>
@@ -200,16 +264,26 @@
     <string name="network_error_message_connection_error">无法连接到服务器。请检查服务器设置。</string>
     <string name="network_error_message_unauthorized">操作未授权。请检查服务器设置中的用户名和密码。</string>
     <string name="error_retrieve_torrent_details">无法获取种子详情。请再试一次。</string>
-
     <string name="tooltip_turtle_mode">限速模式</string>
     <string name="tooltip_total_download_speed">总下载速度</string>
     <string name="tooltip_total_upload_speed">总上传速度</string>
 
     <string name="welcome">欢迎！</string>
     <string name="error_msg_open_torrent_no_server">添加种子前需要先设置服务器</string>
-
     <string name="apply">应用</string>
+    <string name="choose_location">选择位置</string>
     <string name="move_data">移动数据</string>
+
+    <string name="remove">删除</string>
+    <string name="delete">删除</string>
+    <string name="not_available">无</string>
+    <string name="copied">已复制</string>
+    <string name="cancel">取消</string>
+
+    <string name="night_mode">夜间模式</string>
+
+    <string name="add_torrent_by_file">文件</string>
+    <string name="add_torrent_by_address">地址</string>
 
     <plurals name="torrents">
         <item quantity="zero">%d 个种子</item>
@@ -221,19 +295,7 @@
         <item quantity="one">种子已完成</item>
         <item quantity="other">%d 个种子已完成</item>
     </plurals>
-    <string name="app_settings">程序设置</string>
-    <string name="available">可用：</string>
-    <string name="choose_location">选择位置</string>
-    <string name="have">总计下载：</string>
-    <string name="drawer_sort_by_name">名称</string>
-    <string name="drawer_sort_by_upload_ratio">比率</string>
-    <string name="error_failed_to_open_torrent">无法打开种子。请再试一次。</string>
-    <string name="inactivity_limit">不活跃限制</string>
-    <string name="limit_download">下载限制：</string>
-    <string name="limit_upload">上传限制：</string>
-    <string name="storage_permission_allow">允许</string>
-    <string name="no_directory">没有此目录</string>
-    <string name="add_torrent_by_file">文件</string>
-    <string name="add_torrent_by_address">地址</string>
+
+    <string name="notification_channel_name">种子下载已完成</string>
 
 </resources>
