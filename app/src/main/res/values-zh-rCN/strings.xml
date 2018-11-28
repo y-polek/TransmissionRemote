@@ -237,7 +237,6 @@
     <string name="trackers_leechers">下载：%s</string>
     <string name="trackers_downloaded">已下载：%s</string>
     <plurals name="trackers_last_announce_with_results">
-        <item quantity="one">%1$s (获得 %2$d 个节点)</item>
         <item quantity="other">%1$s (获得 %2$d 个节点)</item>
     </plurals>
     <string name="trackers_announce_in_progress">正在进行更新</string>
@@ -286,8 +285,6 @@
     <string name="add_torrent_by_address">地址</string>
 
     <plurals name="torrents">
-        <item quantity="zero">%d 个种子</item>
-        <item quantity="one">%d 个种子</item>
         <item quantity="other">%d 个种子</item>
     </plurals>
 
