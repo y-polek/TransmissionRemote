@@ -1,5 +1,6 @@
 package net.yupol.transmissionremote.app.transport;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
@@ -100,24 +101,26 @@ public class TorrentUpdater {
         }
 
         private void sendRequest() {
-            currentRequest = new TorrentGetRequest();
-            transportManager.doRequest(currentRequest, new RequestListener<Torrents>() {
+            final TorrentGetRequest request = new TorrentGetRequest();
+            currentRequest = request;
+
+            transportManager.doRequest(request, new RequestListener<Torrents>() {
                 @Override
                 public void onRequestFailure(SpiceException spiceException) {
-                    Log.d(TAG, "TorrentGetRequest failed. SC: " + currentRequest.getResponseStatusCode());
+                    Log.d(TAG, "TorrentGetRequest failed. SC: " + request.getResponseStatusCode());
                     responseReceived = Boolean.TRUE;
                     if (spiceException instanceof NoNetworkException) {
                         listener.onNetworkError(NetworkError.NO_NETWORK, null);
                     } else if (spiceException instanceof NetworkException) {
-                        Log.d(TAG, "NetworkException: " + spiceException.getMessage() + " status code: " + currentRequest.getResponseStatusCode());
+                        Log.d(TAG, "NetworkException: " + spiceException.getMessage() + " status code: " + request.getResponseStatusCode());
                         NetworkError error = NetworkError.OTHER;
-                        if (currentRequest.getResponseStatusCode() == HttpURLConnection.HTTP_UNAUTHORIZED) {
+                        if (request.getResponseStatusCode() == HttpURLConnection.HTTP_UNAUTHORIZED) {
                             error = NetworkError.UNAUTHORIZED;
                         }
 
-                        String url = currentRequest.getUrl();
-                        String responseBody = currentRequest.getResponseBody();
-                        String errorMessage = currentRequest.getError() != null ? errorMessage(currentRequest.getError()) : null;
+                        String url = request.getUrl();
+                        String responseBody = request.getResponseBody();
+                        String errorMessage = request.getError() != null ? errorMessage(request.getError()) : null;
                         String errorText = "<p><u>" + url + "</u></p>" + (responseBody != null ? responseBody : errorMessage);
                         listener.onNetworkError(error, errorText);
                     }
@@ -145,7 +148,7 @@ public class TorrentUpdater {
         }
     }
 
-    private static String errorMessage(Throwable throwable) {
+    private static String errorMessage(@NonNull Throwable throwable) {
         if (throwable.getCause() == null) return throwable.getMessage();
 
         StringBuilder builder = new StringBuilder();
