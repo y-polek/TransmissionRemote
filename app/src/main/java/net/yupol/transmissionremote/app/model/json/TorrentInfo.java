@@ -2,6 +2,7 @@ package net.yupol.transmissionremote.app.model.json;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 
 import com.google.api.client.util.Key;
 
@@ -214,8 +215,9 @@ public class TorrentInfo implements Parcelable {
         return items[0].trackers;
     }
 
+    @NonNull
     public TrackerStats[] getTrackerStats() {
-        return items[0].trackerStats;
+        return items[0].trackerStats != null ? items[0].trackerStats : new TrackerStats[0];
     }
 
     @Override
