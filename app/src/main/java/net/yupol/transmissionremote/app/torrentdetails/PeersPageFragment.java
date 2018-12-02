@@ -4,6 +4,7 @@ import android.content.SharedPreferences;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
@@ -47,7 +48,7 @@ public class PeersPageFragment extends BasePageFragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
         binding = DataBindingUtil.inflate(
                 inflater, R.layout.torrent_details_peers_page_fragment, container, false);

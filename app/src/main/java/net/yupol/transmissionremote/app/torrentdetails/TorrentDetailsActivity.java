@@ -54,7 +54,6 @@ public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveCha
     private static final String TAG_CHOOSE_LOCATION_DIALOG = "tag_choose_location_dialog";
 
     private static final String KEY_OPTIONS_CHANGE_REQUEST = "key_options_request";
-    private static final String KEY_TORRENT_INFO = "key_torrent_info";
     private static final String KEY_LAST_PAGE_POSITION = "key_last_position";
 
     private static final String RENAME_TORRENT_FRAGMENT_TAG = "rename_torrent_fragment_tag";
@@ -77,10 +76,6 @@ public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveCha
         binding = DataBindingUtil.setContentView(this, R.layout.torrent_details_layout);
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(TorrentDetailsActivity.this);
-
-        if (savedInstanceState != null) {
-            torrentInfo = savedInstanceState.getParcelable(KEY_TORRENT_INFO);
-        }
 
         torrent = getIntent().getParcelableExtra(EXTRA_TORRENT);
         setupPager();
@@ -140,7 +135,6 @@ public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveCha
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         outState.putSparseParcelableArray(KEY_OPTIONS_CHANGE_REQUEST, saveChangesRequests);
-        outState.putParcelable(KEY_TORRENT_INFO, torrentInfo);
         super.onSaveInstanceState(outState);
     }
 

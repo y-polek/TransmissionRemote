@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.text.InputFilter;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -104,7 +105,7 @@ public class OptionsPageFragment extends BasePageFragment implements AdapterView
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
 
         binding = DataBindingUtil.inflate(inflater, R.layout.torrent_details_options_page_fragment, container, false);

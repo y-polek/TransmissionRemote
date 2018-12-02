@@ -3,6 +3,7 @@ package net.yupol.transmissionremote.app.torrentdetails;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -31,8 +32,6 @@ public class DirectoryFragment extends Fragment implements DirectoryAdapter.OnIt
 
     private static final String TAG = DirectoryFragment.class.getSimpleName();
     private static final String ARG_TORRENT_ID = "arg_torrent_id";
-    private static final String ARG_DIRECTORY = "arg_directory";
-    private static final String ARG_FILES = "arg_files";
     private static final String ARG_FILE_STATS = "arg_file_stats";
 
     private int torrentId;
@@ -48,12 +47,23 @@ public class DirectoryFragment extends Fragment implements DirectoryAdapter.OnIt
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Bundle args = getArguments();
+        if (args == null) throw new IllegalArgumentException("No args found");
         torrentId = args.getInt(ARG_TORRENT_ID, -1);
-        dir = args.getParcelable(ARG_DIRECTORY);
-        files = ParcelableUtils.toArrayOfType(File.class, args.getParcelableArray(ARG_FILES));
+
+        if (!(getParentFragment() instanceof FilesPageFragment)) {
+            throw new IllegalStateException("DirectoryFragment must be used only in FilesPageFragment. Actual parent: " + getParentFragment());
+        }
+
+        // Passing Dir, Files and FileStats through parent fragment instead of fragment arguments
+        // because amount of data may be too large (> 1 MB) to pass it through Parcelable.
+        FilesPageFragment parentFragment = (FilesPageFragment) getParentFragment();
+        dir = parentFragment.getCurrentDir();
+        if (dir == null) return;
+
+        files = parentFragment.getTorrentInfo().getFiles();
 
         if (savedInstanceState == null) {
-            fileStats = ParcelableUtils.toArrayOfType(FileStat.class, args.getParcelableArray(ARG_FILE_STATS));
+            fileStats = parentFragment.getTorrentInfo().getFileStats();
         } else {
             fileStats = ParcelableUtils.toArrayOfType(FileStat.class, savedInstanceState.getParcelableArray(ARG_FILE_STATS));
         }
@@ -66,7 +76,7 @@ public class DirectoryFragment extends Fragment implements DirectoryAdapter.OnIt
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
 
         View view = inflater.inflate(R.layout.directory_fragment, container, false);
@@ -91,7 +101,7 @@ public class DirectoryFragment extends Fragment implements DirectoryAdapter.OnIt
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelableArray(ARG_FILE_STATS, fileStats);
     }
@@ -169,13 +179,13 @@ public class DirectoryFragment extends Fragment implements DirectoryAdapter.OnIt
         adapter.setFileStats(fileStats);
     }
 
-    public static DirectoryFragment newInstance(int torrentId, Dir dir, File[] files, FileStat[] fileStats) {
+    /**
+     * Dir, Files and FileStat argument will be queried from parent fragment
+     */
+    public static DirectoryFragment newInstance(int torrentId) {
         DirectoryFragment fragment = new DirectoryFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_TORRENT_ID, torrentId);
-        args.putParcelable(ARG_DIRECTORY, dir);
-        args.putParcelableArray(ARG_FILES, files);
-        args.putParcelableArray(ARG_FILE_STATS, fileStats);
         fragment.setArguments(args);
         return fragment;
     }

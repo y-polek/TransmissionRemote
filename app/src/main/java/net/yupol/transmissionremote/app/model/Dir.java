@@ -1,8 +1,7 @@
 package net.yupol.transmissionremote.app.model;
 
-import android.os.Parcel;
-import android.os.Parcelable;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.google.common.base.Function;
 import com.google.common.collect.FluentIterable;
@@ -15,7 +14,7 @@ import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 
-public final class Dir implements Parcelable, Comparable<Dir> {
+public final class Dir implements Comparable<Dir> {
 
     private String name;
     private List<Dir> dirs = new LinkedList<>();
@@ -23,12 +22,6 @@ public final class Dir implements Parcelable, Comparable<Dir> {
 
     public Dir(String name) {
         this.name = name;
-    }
-
-    protected Dir(Parcel in) {
-        name = in.readString();
-        dirs = in.createTypedArrayList(Dir.CREATOR);
-        in.readList(fileIndices = new LinkedList<>(), Integer.class.getClassLoader());
     }
 
     public String getName() {
@@ -43,6 +36,15 @@ public final class Dir implements Parcelable, Comparable<Dir> {
         return fileIndices;
     }
 
+    @Nullable
+    public Dir findDir(@NonNull String name) {
+        for (Dir dir : dirs) {
+            if (name.equals(dir.name)) return dir;
+        }
+        return null;
+    }
+
+    @NonNull
     public static Dir createFileTree(@NonNull File[] files) {
         Dir root = new Dir("/");
 
@@ -117,30 +119,6 @@ public final class Dir implements Parcelable, Comparable<Dir> {
         }
         return null;
     }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(name);
-        dest.writeTypedList(dirs);
-        dest.writeList(fileIndices);
-    }
-
-    public static final Creator<Dir> CREATOR = new Creator<Dir>() {
-        @Override
-        public Dir createFromParcel(Parcel in) {
-            return new Dir(in);
-        }
-
-        @Override
-        public Dir[] newArray(int size) {
-            return new Dir[size];
-        }
-    };
 
     @Override
     public int compareTo(@NonNull Dir dir) {
