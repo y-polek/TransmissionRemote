@@ -78,7 +78,7 @@ dependencies {
 
     compile 'com.github.sevar83:indeterminate-checkbox:1.0.5@aar'
 
-    compile('com.crashlytics.sdk.android:crashlytics:2.9.6@aar') {
+    compile('com.crashlytics.sdk.android:crashlytics:2.9.7@aar') {
         transitive = true
     }
 
