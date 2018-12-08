@@ -125,6 +125,7 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
     @BindView(R.id.error_text) TextView errorText;
     @BindView(R.id.detailed_error_text) TextView detailedErrorText;
     @BindView(R.id.welcome_layout) View welcomeLayout;
+    @BindView(R.id.add_torrent_button) View addTorrentFab;
 
     @Inject MainActivityPresenter injectedPresenter;
 
@@ -544,11 +545,6 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
     }
 
     @Override
-    public void openAddServerScreen() {
-        startActivity(new Intent(this, AddServerActivity.class));
-    }
-
-    @Override
     public void showLoading() {
         binding.swipeRefresh.setRefreshing(true);
     }
@@ -606,6 +602,25 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
     }
 
     @Override
+    public void showFab() {
+        addTorrentFab.setVisibility(VISIBLE);
+    }
+
+    @Override
+    public void hideFab() {
+        addTorrentFab.setVisibility(GONE);
+    }
+
+    // endregion
+
+    // region Routing
+
+    @Override
+    public void openAddServerScreen() {
+        startActivity(new Intent(this, AddServerActivity.class));
+    }
+
+    @Override
     public void openServerSettings(@NonNull Server server) {
         startActivity(ServerDetailsActivity.intent(this, server.name));
     }
@@ -614,8 +629,7 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
     public void openNetworkSettings() {
         startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
     }
-
-    //endregion
+    // endregion
 
     //region Click listeners
 
@@ -638,6 +652,5 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
     void onRetryButtonClicked() {
         presenter.retryButtonClicked();
     }
-
-    //endregion
+    // endregion
 }

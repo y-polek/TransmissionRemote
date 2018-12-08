@@ -10,8 +10,6 @@ interface MainActivityView: MvpView {
 
     fun hideWelcomeScreen()
 
-    fun openAddServerScreen()
-
     fun serverListChanged(servers: List<Server>, activeServer: Server)
 
     fun showLoading()
@@ -21,6 +19,10 @@ interface MainActivityView: MvpView {
     fun showTorrents(torrents: List<TorrentViewModel>)
 
     fun hideTorrents()
+
+    fun showFab()
+
+    fun hideFab()
 
     fun updateTorrents(vararg torrents: TorrentViewModel)
 
@@ -32,7 +34,13 @@ interface MainActivityView: MvpView {
 
     fun showErrorAlert(error: Throwable)
 
+    // region Routing
+
+    fun openAddServerScreen()
+
     fun openServerSettings(server: Server)
 
     fun openNetworkSettings()
+
+    // endregion
 }

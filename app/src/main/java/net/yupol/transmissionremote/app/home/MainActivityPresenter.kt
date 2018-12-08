@@ -39,7 +39,10 @@ class MainActivityPresenter @Inject constructor(
                 .subscribe { (servers, activeServer) ->
                     interactor = serverManager.serverComponent?.torrentListInteractor()!!
                     this.activeServer = activeServer
+
                     view.serverListChanged(servers, activeServer)
+                    view.hideFab()
+
                     if (servers.isEmpty()) {
                         view.showWelcomeScreen()
                     } else {
@@ -169,14 +172,17 @@ class MainActivityPresenter @Inject constructor(
                         SUCCESS -> {
                             view.showTorrents(result.data!!)
                             view.hideError()
+                            view.showFab()
                         }
                         NO_NETWORK -> {
                             view.hideTorrents()
                             view.showError(if (result.inAirplaneMode) strRes.networkErrorNoNetworkInAirplaneMode else strRes.networkErrorNoNetwork)
+                            view.hideFab()
                         }
                         ERROR -> {
                             view.hideTorrents()
                             view.showError(strRes.networkErrorNoConnection, result.error?.message)
+                            view.hideFab()
                         }
                         else -> throw IllegalStateException("Unknown status: ${result.status}")
                     }
