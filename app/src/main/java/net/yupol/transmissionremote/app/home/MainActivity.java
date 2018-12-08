@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.view.LayoutInflaterCompat;
@@ -55,6 +56,7 @@ import net.yupol.transmissionremote.app.preferences.PreferencesActivity;
 import net.yupol.transmissionremote.app.preferences.ServerListActivity;
 import net.yupol.transmissionremote.app.preferences.ServerPreferencesActivity;
 import net.yupol.transmissionremote.app.server.AddServerActivity;
+import net.yupol.transmissionremote.app.server.ServerDetailsActivity;
 import net.yupol.transmissionremote.app.sorting.SortOrder;
 import net.yupol.transmissionremote.app.sorting.SortedBy;
 import net.yupol.transmissionremote.app.torrentdetails.TorrentDetailsActivity;
@@ -603,6 +605,16 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
         toolbarSpinnerAdapter.setServers(servers, activeServer);
     }
 
+    @Override
+    public void openServerSettings(@NonNull Server server) {
+        startActivity(ServerDetailsActivity.intent(this, server.name));
+    }
+
+    @Override
+    public void openNetworkSettings() {
+        startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
+    }
+
     //endregion
 
     //region Click listeners
@@ -612,7 +624,20 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
         presenter.addServerClicked();
     }
 
+    @OnClick(R.id.server_settings_button)
+    void onServerSettingsClicked() {
+        presenter.serverSettingsClicked();
+    }
 
+    @OnClick(R.id.network_settings_button)
+    void onNetworkSettingsClicked() {
+        presenter.networkSettingsClicked();
+    }
+
+    @OnClick(R.id.retry_button)
+    void onRetryButtonClicked() {
+        presenter.retryButtonClicked();
+    }
 
     //endregion
 }

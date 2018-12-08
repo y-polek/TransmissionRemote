@@ -26,6 +26,7 @@ class MainActivityPresenter @Inject constructor(
         private val strRes: StringResources): MvpNullObjectBasePresenter<MainActivityView>(), MvpViewCallback
 {
     private lateinit var interactor: TorrentListInteractor
+    private lateinit var activeServer: Server
 
     private var torrentListSubscription: Disposable? = null
     private var serverListSubscription: Disposable? = null
@@ -37,6 +38,7 @@ class MainActivityPresenter @Inject constructor(
                 BiFunction { servers: List<Server>, activeServer: Server -> servers to activeServer })
                 .subscribe { (servers, activeServer) ->
                     interactor = serverManager.serverComponent?.torrentListInteractor()!!
+                    this.activeServer = activeServer
                     view.serverListChanged(servers, activeServer)
                     if (servers.isEmpty()) {
                         view.showWelcomeScreen()
@@ -123,6 +125,18 @@ class MainActivityPresenter @Inject constructor(
                     view.hideLoading()
                     view.showErrorAlert(error)
                 })
+    }
+
+    fun serverSettingsClicked() {
+        view.openServerSettings(activeServer)
+    }
+
+    fun networkSettingsClicked() {
+        view.openNetworkSettings()
+    }
+
+    fun retryButtonClicked() {
+        refreshTorrentList()
     }
 
     //////////////////////////////

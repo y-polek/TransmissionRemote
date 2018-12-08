@@ -65,7 +65,7 @@ class ServerRepositoryImpl(private val prefs: SharedPreferences, private val mos
 
     override fun updateServer(withName: String, server: Server) {
         val idx = servers.indexOfFirst { withName == it.name }
-        if (idx > 0) {
+        if (idx >= 0) {
             servers[idx] = server
             serversSubject.onNext(servers)
             persistServers()

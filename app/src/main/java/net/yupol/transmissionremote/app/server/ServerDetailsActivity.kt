@@ -19,6 +19,7 @@ class ServerDetailsActivity: BaseActivity() {
         private const val KEY_SERVER_NAME = "key_server_name"
         private const val FRAGMENT_TAG = "fragment_tag"
 
+        @JvmStatic
         fun intent(context: Context, serverName: String): Intent {
             return Intent(context, ServerDetailsActivity::class.java)
                     .putExtra(KEY_SERVER_NAME, serverName)

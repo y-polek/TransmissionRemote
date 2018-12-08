@@ -31,4 +31,8 @@ interface MainActivityView: MvpView {
     fun hideError()
 
     fun showErrorAlert(error: Throwable)
+
+    fun openServerSettings(server: Server)
+
+    fun openNetworkSettings()
 }
