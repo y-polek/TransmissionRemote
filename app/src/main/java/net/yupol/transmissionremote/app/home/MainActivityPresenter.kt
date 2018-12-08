@@ -136,7 +136,9 @@ class MainActivityPresenter @Inject constructor(
     fun selectionModeFinished() {
         inSelectionMode = false
         selectedTorrents.clear()
-        torrents?.forEach { it.selected = false }
+        torrents = torrents?.map { torrent ->
+            torrent.copy(selected = false)
+        }
         view.showTorrents(torrents ?: return)
     }
 

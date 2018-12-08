@@ -3,6 +3,7 @@ package net.yupol.transmissionremote.app.home
 import android.graphics.PorterDuff
 import android.support.annotation.DrawableRes
 import android.support.v4.content.ContextCompat
+import android.support.v7.util.DiffUtil
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.RecyclerView.NO_POSITION
 import android.view.LayoutInflater
@@ -23,6 +24,7 @@ import net.yupol.transmissionremote.app.utils.ColorUtils
 import net.yupol.transmissionremote.app.utils.TextUtils.*
 import java.util.*
 import java.util.concurrent.TimeUnit
+import kotlin.collections.ArrayList
 
 class TorrentAdapter(private val listener: TorrentAdapter.ClickListener): RecyclerView.Adapter<TorrentAdapter.ViewHolder>() {
 
@@ -30,11 +32,16 @@ class TorrentAdapter(private val listener: TorrentAdapter.ClickListener): Recycl
         private val ETA_INFINITE_THRESHOLD = TimeUnit.DAYS.toSeconds(7)
     }
 
-    private var torrents: Array<TorrentViewModel> = arrayOf()
+    private var torrents = mutableListOf<TorrentViewModel>()
+
+    init {
+        setHasStableIds(true)
+    }
 
     fun setTorrents(torrents: List<TorrentViewModel>) {
-        this.torrents = torrents.toTypedArray()
-        notifyDataSetChanged()
+        val diffResult = DiffUtil.calculateDiff(TorrentsDiffCallback(newTorrents = torrents, oldTorrents = this.torrents))
+        this.torrents = ArrayList(torrents)
+        diffResult.dispatchUpdatesTo(this)
     }
 
     fun updateTorrents(vararg updatedTorrents: TorrentViewModel) {
@@ -52,12 +59,14 @@ class TorrentAdapter(private val listener: TorrentAdapter.ClickListener): Recycl
         if (idx >= 0) notifyItemChanged(idx)
     }
 
+    override fun getItemCount() = torrents.size
+
+    override fun getItemId(position: Int) = torrents[position].id.toLong()
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.torrent_list_item, parent, false)
         return ViewHolder(view, listener)
     }
-
-    override fun getItemCount() = torrents.size
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         if (position == NO_POSITION) return

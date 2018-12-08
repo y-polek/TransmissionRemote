@@ -23,7 +23,7 @@ data class TorrentViewModel(
         val eta: Long,
         val errorMessage: String? = null,
         val errorType: ErrorType = ErrorType.NONE,
-        var selected: Boolean)
+        val selected: Boolean)
 {
     fun hasErrorOrWarning() = errorType != NONE
 

@@ -10,6 +10,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.view.LayoutInflaterCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.view.ActionMode;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -122,6 +123,7 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
     @Inject Preferences preferences;
 
     @BindView(R.id.recycler_view) RecyclerView recyclerView;
+    @BindView(R.id.swipe_refresh) SwipeRefreshLayout swipeRefresh;
     @BindView(R.id.error_layout) View errorLayout;
     @BindView(R.id.error_text) TextView errorText;
     @BindView(R.id.detailed_error_text) TextView detailedErrorText;
@@ -168,10 +170,11 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
         application = TransmissionRemote.getApplication(this);
         clipboard = new Clipboard(application);
 
-        binding.swipeRefresh.setOnRefreshListener(presenter::refreshTorrentList);
+        swipeRefresh.setOnRefreshListener(presenter::refreshTorrentList);
 
-        binding.recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        binding.recyclerView.addItemDecoration(new DividerItemDecoration(this));
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.addItemDecoration(new DividerItemDecoration(this));
+        recyclerView.setItemAnimator(null);
         adapter = new TorrentAdapter(new TorrentAdapter.ClickListener() {
             @Override
             public void onPauseClicked(int torrentId) {
@@ -193,7 +196,7 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
                 return presenter.torrentLongClicked(torrentId);
             }
         });
-        binding.recyclerView.setAdapter(adapter);
+        recyclerView.setAdapter(adapter);
 
         detailedErrorText.setMovementMethod(new ScrollingMovementMethod());
 
@@ -583,12 +586,12 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
 
     @Override
     public void showLoading() {
-        binding.swipeRefresh.setRefreshing(true);
+        swipeRefresh.setRefreshing(true);
     }
 
     @Override
     public void hideLoading() {
-        binding.swipeRefresh.setRefreshing(false);
+        swipeRefresh.setRefreshing(false);
     }
 
     @Override
