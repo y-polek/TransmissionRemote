@@ -4,12 +4,15 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item android:id="@+id/action_remove_torrents"
         android:title="@string/action_remove_torrents"
+        android:icon="@drawable/ic_delete"
         app:showAsAction="ifRoom"/>
     <item android:id="@+id/action_pause"
         android:title="@string/action_pause"
+        android:icon="@drawable/ic_pause"
         app:showAsAction="ifRoom"/>
     <item android:id="@+id/action_start"
         android:title="@string/action_start"
+        android:icon="@drawable/ic_play"
         app:showAsAction="ifRoom"/>
     <group android:id="@+id/torrent_actions"
         android:menuCategory="secondary">

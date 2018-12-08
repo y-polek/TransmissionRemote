@@ -18,6 +18,7 @@ import android.support.v7.widget.Toolbar;
 import android.text.method.ScrollingMovementMethod;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -138,11 +139,15 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
         @Override
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
             actionMode = mode;
+            MenuInflater inflater = mode.getMenuInflater();
+            inflater.inflate(R.menu.context_torrent_list_menu, menu);
+            inflater.inflate(R.menu.torrent_actions_menu, menu);
             return true;
         }
 
         @Override
         public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+
             return false;
         }
 
@@ -444,9 +449,6 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.torrent_list_menu, menu);
-
-        IconUtils.setMenuIcon(this, menu, R.id.action_start_all_torrents, CommunityMaterial.Icon2.cmd_play);
-        IconUtils.setMenuIcon(this, menu, R.id.action_pause_all_torrents, CommunityMaterial.Icon2.cmd_pause);
 
         final MenuItem downloadItem = menu.findItem(R.id.action_download_speed);
         if (downloadItem != null) {
