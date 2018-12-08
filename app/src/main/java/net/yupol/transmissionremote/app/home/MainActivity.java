@@ -147,12 +147,40 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
 
         @Override
         public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-
             return false;
         }
 
         @Override
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+            switch (item.getItemId()) {
+                case R.id.action_select_all:
+                    presenter.selectAllClicked();
+                    return true;
+                case R.id.action_remove_torrents:
+                    presenter.removeSelectedClicked();
+                    return true;
+                case R.id.action_start:
+                    presenter.resumeAllClicked();
+                    return true;
+                case R.id.action_pause:
+                    presenter.pauseSelectedClicked();
+                    return true;
+                case R.id.action_start_now:
+                    presenter.startNowSelectedClicked();
+                    return true;
+                case R.id.action_rename:
+                    presenter.renameSelectedClicked();
+                    return true;
+                case R.id.action_set_location:
+                    presenter.setLocationForSelectedClicked();
+                    return true;
+                case R.id.action_verify:
+                    presenter.verifySelectedClicked();
+                    return true;
+                case R.id.action_reannounce:
+                    presenter.reannounceSelectedClicked();
+                    return true;
+            }
             return false;
         }
 
@@ -666,6 +694,28 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
     @Override
     public void setSelectionTitle(@NotNull String title) {
         if (actionMode != null) actionMode.setTitle(title);
+    }
+
+    @Override
+    public void setGroupActionsEnabled(boolean enabled) {
+        if (actionMode != null) {
+            Menu menu = actionMode.getMenu();
+            menu.findItem(R.id.action_remove_torrents).setEnabled(enabled);
+            menu.findItem(R.id.action_pause).setEnabled(enabled);
+            menu.findItem(R.id.action_start).setEnabled(enabled);
+            menu.findItem(R.id.action_start_now).setEnabled(enabled);
+            menu.findItem(R.id.action_rename).setEnabled(enabled);
+            menu.findItem(R.id.action_set_location).setEnabled(enabled);
+            menu.findItem(R.id.action_verify).setEnabled(enabled);
+            menu.findItem(R.id.action_reannounce).setEnabled(enabled);
+        }
+    }
+
+    @Override
+    public void setRenameActionEnabled(boolean enabled) {
+        if (actionMode != null) {
+            actionMode.getMenu().findItem(R.id.action_rename).setEnabled(enabled);
+        }
     }
 
     // endregion

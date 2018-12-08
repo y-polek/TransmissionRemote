@@ -40,6 +40,10 @@ interface MainActivityView: MvpView {
 
     fun setSelectionTitle(title: String)
 
+    fun setGroupActionsEnabled(enabled: Boolean)
+
+    fun setRenameActionEnabled(enabled: Boolean)
+
     // region Routing
 
     fun openAddServerScreen()

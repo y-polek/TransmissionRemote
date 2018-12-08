@@ -116,6 +116,7 @@ class MainActivityPresenter @Inject constructor(
             }
             updateTorrentSelection(torrentId)
             updateSelectionTitle()
+            updateSelectionMenu()
         } else {
             view.openTorrentDetails()
         }
@@ -128,6 +129,7 @@ class MainActivityPresenter @Inject constructor(
             selectedTorrents.add(torrentId)
             updateTorrentSelection(torrentId)
             updateSelectionTitle()
+            updateSelectionMenu()
             return true
         }
         return false
@@ -136,10 +138,7 @@ class MainActivityPresenter @Inject constructor(
     fun selectionModeFinished() {
         inSelectionMode = false
         selectedTorrents.clear()
-        torrents = torrents?.map { torrent ->
-            torrent.copy(selected = false)
-        }
-        view.showTorrents(torrents ?: return)
+        updateAllTorrentsSelection()
     }
 
     fun pauseAllClicked() {
@@ -182,6 +181,45 @@ class MainActivityPresenter @Inject constructor(
 
     fun retryButtonClicked() {
         refreshTorrentList()
+    }
+
+    fun selectAllClicked() {
+        if (selectedTorrents.size < torrents?.size ?: 0) {
+            selectedTorrents.addAll(torrents?.map { it.id }.orEmpty())
+        } else {
+            selectedTorrents.clear()
+        }
+        updateAllTorrentsSelection()
+        updateSelectionTitle()
+        updateSelectionMenu()
+    }
+
+    fun removeSelectedClicked() {
+
+    }
+
+    fun pauseSelectedClicked() {
+
+    }
+
+    fun startNowSelectedClicked() {
+
+    }
+
+    fun renameSelectedClicked() {
+        assert(selectedTorrents.size == 1)
+    }
+
+    fun setLocationForSelectedClicked() {
+
+    }
+
+    fun verifySelectedClicked() {
+
+    }
+
+    fun reannounceSelectedClicked() {
+
     }
 
     //////////////////////////////
@@ -240,8 +278,20 @@ class MainActivityPresenter @Inject constructor(
         if (torrent != null) view.updateTorrents(torrent)
     }
 
+    private fun updateAllTorrentsSelection() {
+        torrents = torrents?.map { torrent ->
+            torrent.copy(selected = selectedTorrents.contains(torrent.id))
+        }
+        view.showTorrents(torrents ?: return)
+    }
+
     private fun updateSelectionTitle() {
         view.setSelectionTitle(strRes.torrentsCount(selectedTorrents.size))
+    }
+
+    private fun updateSelectionMenu() {
+        view.setGroupActionsEnabled(selectedTorrents.size > 0)
+        view.setRenameActionEnabled(selectedTorrents.size == 1)
     }
 
     private fun Torrent.toViewModel(): TorrentViewModel {
