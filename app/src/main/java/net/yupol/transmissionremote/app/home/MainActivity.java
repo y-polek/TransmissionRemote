@@ -10,6 +10,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.view.LayoutInflaterCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.view.ActionMode;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -129,6 +130,32 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
 
     @Inject MainActivityPresenter injectedPresenter;
 
+    @Nullable private ActionMode actionMode;
+
+    private ActionMode.Callback actionModeCallback = new ActionMode.Callback() {
+        @Override
+        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+            actionMode = mode;
+            return true;
+        }
+
+        @Override
+        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+            return false;
+        }
+
+        @Override
+        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+            return false;
+        }
+
+        @Override
+        public void onDestroyActionMode(ActionMode mode) {
+            actionMode = null;
+            presenter.selectionModeFinished();
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         TransmissionRemote.getInstance().appComponent().inject(this);
@@ -154,6 +181,16 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
             @Override
             public void onResumeClicked(int torrentId) {
                 presenter.resumeClicked(torrentId);
+            }
+
+            @Override
+            public void onTorrentClicked(int torrentId) {
+                presenter.torrentClicked(torrentId);
+            }
+
+            @Override
+            public boolean onTorrentLongClicked(int torrentId) {
+                return presenter.torrentLongClicked(torrentId);
             }
         });
         binding.recyclerView.setAdapter(adapter);
@@ -611,6 +648,21 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
         addTorrentFab.setVisibility(GONE);
     }
 
+    @Override
+    public void startSelection() {
+        startSupportActionMode(actionModeCallback);
+    }
+
+    @Override
+    public void finishSelection() {
+        if (actionMode != null) actionMode.finish();
+    }
+
+    @Override
+    public void setSelectionTitle(@NotNull String title) {
+        if (actionMode != null) actionMode.setTitle(title);
+    }
+
     // endregion
 
     // region Routing
@@ -629,6 +681,12 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
     public void openNetworkSettings() {
         startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
     }
+
+    @Override
+    public void openTorrentDetails() {
+
+    }
+
     // endregion
 
     //region Click listeners

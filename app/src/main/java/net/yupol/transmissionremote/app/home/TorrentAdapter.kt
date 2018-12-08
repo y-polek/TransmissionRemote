@@ -15,6 +15,7 @@ import android.widget.TextView
 import butterknife.BindView
 import butterknife.ButterKnife
 import butterknife.OnClick
+import butterknife.OnLongClick
 import net.yupol.transmissionremote.app.R
 import net.yupol.transmissionremote.app.model.TorrentViewModel
 import net.yupol.transmissionremote.app.torrentlist.PlayPauseButton
@@ -75,6 +76,7 @@ class TorrentAdapter(private val listener: TorrentAdapter.ClickListener): Recycl
         @BindView(R.id.remaining_time_text) lateinit var remainingTimeText: TextView
         @BindView(R.id.error_message) lateinit var errorText: TextView
         @BindView(R.id.pause_resume_button) lateinit var pauseButton: PlayPauseButton
+        @BindView(R.id.selection_overlay) lateinit var selectionOverlay: View
 
         private lateinit var torrent: TorrentViewModel
 
@@ -143,6 +145,8 @@ class TorrentAdapter(private val listener: TorrentAdapter.ClickListener): Recycl
             }
 
             pauseButton.isPaused = torrent.paused
+
+            selectionOverlay.visibility = if (torrent.selected) VISIBLE else GONE
         }
 
         @OnClick(R.id.pause_resume_button)
@@ -155,6 +159,16 @@ class TorrentAdapter(private val listener: TorrentAdapter.ClickListener): Recycl
                 listener.onResumeClicked(torrent.id)
             }
         }
+
+        @OnClick(R.id.root_layout)
+        fun onClicked() {
+            return listener.onTorrentClicked(torrent.id)
+        }
+
+        @OnLongClick(R.id.root_layout)
+        fun onLongClicked(): Boolean {
+            return listener.onTorrentLongClicked(torrent.id)
+        }
     }
 
     interface ClickListener {
@@ -162,5 +176,9 @@ class TorrentAdapter(private val listener: TorrentAdapter.ClickListener): Recycl
         fun onPauseClicked(torrentId: Int)
 
         fun onResumeClicked(torrentId: Int)
+
+        fun onTorrentClicked(torrentId: Int)
+
+        fun onTorrentLongClicked(torrentId: Int): Boolean
     }
 }

@@ -831,7 +831,7 @@ public class TorrentListFragment extends Fragment implements ChooseLocationDialo
 
             errorMsgView = itemView.findViewById(R.id.error_message);
 
-            selectedOverlay = itemView.findViewById(R.id.selected_overlay);
+            selectedOverlay = itemView.findViewById(R.id.selection_overlay);
         }
 
         public void setTorrent(Torrent torrent) {

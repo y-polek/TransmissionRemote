@@ -10,7 +10,7 @@ import kotlin.math.max
 @Singleton
 class TorrentMapper @Inject constructor() {
 
-    fun toViewModel(torrent: Torrent): TorrentViewModel {
+    fun toViewModel(torrent: Torrent, selected: Boolean): TorrentViewModel {
         return TorrentViewModel(
                 id = torrent.id,
                 name = torrent.name,
@@ -28,9 +28,14 @@ class TorrentMapper @Inject constructor() {
                 recheckProgressPercent = torrent.recheckProgress,
                 eta = torrent.eta,
                 errorMessage = torrent.errorString,
-                errorType = ErrorType.fromCode(torrent.errorId)
+                errorType = ErrorType.fromCode(torrent.errorId),
+                selected = selected
         )
     }
 
-    fun toViewMode(torrents: Iterable<Torrent>) = torrents.map(this::toViewModel)
+    fun toViewModel(torrents: Iterable<Torrent>, selectedTorrents: Set<Int>): List<TorrentViewModel> {
+        return torrents.map { torrent ->
+            toViewModel(torrent, selectedTorrents.contains(torrent.id))
+        }
+    }
 }

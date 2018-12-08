@@ -34,6 +34,12 @@ interface MainActivityView: MvpView {
 
     fun showErrorAlert(error: Throwable)
 
+    fun startSelection()
+
+    fun finishSelection()
+
+    fun setSelectionTitle(title: String)
+
     // region Routing
 
     fun openAddServerScreen()
@@ -41,6 +47,8 @@ interface MainActivityView: MvpView {
     fun openServerSettings(server: Server)
 
     fun openNetworkSettings()
+
+    fun openTorrentDetails()
 
     // endregion
 }

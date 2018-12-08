@@ -8,12 +8,14 @@ import io.reactivex.functions.BiFunction
 import io.reactivex.schedulers.Schedulers
 import net.yupol.transmissionremote.app.model.ListResource
 import net.yupol.transmissionremote.app.model.Status.*
+import net.yupol.transmissionremote.app.model.TorrentViewModel
 import net.yupol.transmissionremote.app.model.mapper.TorrentMapper
 import net.yupol.transmissionremote.app.mvp.MvpViewCallback
 import net.yupol.transmissionremote.app.res.StringResources
 import net.yupol.transmissionremote.app.server.ServerManager
 import net.yupol.transmissionremote.data.api.NoNetworkException
 import net.yupol.transmissionremote.domain.model.Server
+import net.yupol.transmissionremote.domain.model.Torrent
 import net.yupol.transmissionremote.domain.repository.ServerRepository
 import net.yupol.transmissionremote.domain.usecase.TorrentListInteractor
 import java.util.concurrent.TimeUnit
@@ -30,6 +32,11 @@ class MainActivityPresenter @Inject constructor(
 
     private var torrentListSubscription: Disposable? = null
     private var serverListSubscription: Disposable? = null
+
+    private var torrents: List<TorrentViewModel>? = null
+
+    private var inSelectionMode: Boolean = false
+    private val selectedTorrents = mutableSetOf<Int>()
 
     override fun viewStarted() {
         serverListSubscription = Observable.combineLatest(
@@ -76,7 +83,7 @@ class MainActivityPresenter @Inject constructor(
 
     fun pauseClicked(torrentId: Int) {
         val d = interactor.pauseTorrent(torrentId)
-                .map(torrentMapper::toViewModel)
+                .map { it.toViewModel() }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ torrent ->
@@ -89,7 +96,7 @@ class MainActivityPresenter @Inject constructor(
 
     fun resumeClicked(torrentId: Int) {
         val d = interactor.resumeTorrent(torrentId)
-                .map(torrentMapper::toViewModel)
+                .map { it.toViewModel() }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ torrent ->
@@ -98,6 +105,39 @@ class MainActivityPresenter @Inject constructor(
                     view.updateTorrent(torrentId)
                     view.showErrorAlert(error)
                 })
+    }
+
+    fun torrentClicked(torrentId: Int) {
+        if (inSelectionMode) {
+            if (selectedTorrents.contains(torrentId)) {
+                selectedTorrents.remove(torrentId)
+            } else {
+                selectedTorrents.add(torrentId)
+            }
+            updateTorrentSelection(torrentId)
+            updateSelectionTitle()
+        } else {
+            view.openTorrentDetails()
+        }
+    }
+
+    fun torrentLongClicked(torrentId: Int): Boolean {
+        if (!inSelectionMode) {
+            inSelectionMode = true
+            view.startSelection()
+            selectedTorrents.add(torrentId)
+            updateTorrentSelection(torrentId)
+            updateSelectionTitle()
+            return true
+        }
+        return false
+    }
+
+    fun selectionModeFinished() {
+        inSelectionMode = false
+        selectedTorrents.clear()
+        torrents?.forEach { it.selected = false }
+        view.showTorrents(torrents ?: return)
     }
 
     fun pauseAllClicked() {
@@ -150,7 +190,7 @@ class MainActivityPresenter @Inject constructor(
         torrentListSubscription?.dispose()
 
         torrentListSubscription = interactor.loadTorrentList()
-                .map(torrentMapper::toViewMode)
+                .map { it.toViewModel() }
                 .map {
                     ListResource.success(it)
                 }
@@ -170,16 +210,19 @@ class MainActivityPresenter @Inject constructor(
                     view.hideLoading()
                     when (result.status) {
                         SUCCESS -> {
-                            view.showTorrents(result.data!!)
+                            torrents = result.data
+                            view.showTorrents(torrents!!)
                             view.hideError()
                             view.showFab()
                         }
                         NO_NETWORK -> {
+                            torrents = null
                             view.hideTorrents()
                             view.showError(if (result.inAirplaneMode) strRes.networkErrorNoNetworkInAirplaneMode else strRes.networkErrorNoNetwork)
                             view.hideFab()
                         }
                         ERROR -> {
+                            torrents = null
                             view.hideTorrents()
                             view.showError(strRes.networkErrorNoConnection, result.error?.message)
                             view.hideFab()
@@ -187,5 +230,23 @@ class MainActivityPresenter @Inject constructor(
                         else -> throw IllegalStateException("Unknown status: ${result.status}")
                     }
                 }
+    }
+
+    private fun updateTorrentSelection(torrentId: Int) {
+        val selected = selectedTorrents.contains(torrentId)
+        val torrent = torrents?.find { it.id == torrentId }?.copy(selected = selected)
+        if (torrent != null) view.updateTorrents(torrent)
+    }
+
+    private fun updateSelectionTitle() {
+        view.setSelectionTitle(strRes.torrentsCount(selectedTorrents.size))
+    }
+
+    private fun Torrent.toViewModel(): TorrentViewModel {
+        return torrentMapper.toViewModel(this, selectedTorrents.contains(id))
+    }
+
+    private fun Iterable<Torrent>.toViewModel(): List<TorrentViewModel> {
+        return torrentMapper.toViewModel(this, selectedTorrents)
     }
 }

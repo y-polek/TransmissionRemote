@@ -22,7 +22,8 @@ data class TorrentViewModel(
         val recheckProgressPercent: Double,
         val eta: Long,
         val errorMessage: String? = null,
-        val errorType: ErrorType = ErrorType.NONE)
+        val errorType: ErrorType = ErrorType.NONE,
+        var selected: Boolean)
 {
     fun hasErrorOrWarning() = errorType != NONE
 

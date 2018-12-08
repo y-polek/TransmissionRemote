@@ -11,10 +11,12 @@ interface StringResources {
     val networkErrorNoNetworkInAirplaneMode: String
     val networkErrorNoConnection: String
     val networkErrorUnauthorized: String
+
+    fun torrentsCount(count: Int): String
 }
 
 @Singleton
-class StringResourcesImpl @Inject constructor(res: Resources): StringResources {
+class StringResourcesImpl @Inject constructor(private val res: Resources): StringResources {
 
     override val networkErrorNoNetwork: String by lazy {
         res.getString(R.string.network_error_message_no_network)
@@ -30,5 +32,9 @@ class StringResourcesImpl @Inject constructor(res: Resources): StringResources {
 
     override val networkErrorUnauthorized: String by lazy {
         res.getString(R.string.network_error_message_unauthorized)
+    }
+
+    override fun torrentsCount(count: Int): String {
+        return res.getQuantityString(R.plurals.torrents, count, count)
     }
 }
