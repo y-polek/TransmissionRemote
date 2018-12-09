@@ -135,6 +135,11 @@ class MainActivityPresenter @Inject constructor(
         return false
     }
 
+    fun selectionModeRestored() {
+        updateSelectionTitle()
+        updateSelectionMenu()
+    }
+
     fun selectionModeFinished() {
         inSelectionMode = false
         selectedTorrents.clear()

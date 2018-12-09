@@ -88,10 +88,10 @@ import static android.view.View.VISIBLE;
 public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivityPresenter> implements MainActivityView,
         TorrentListFragment.OnTorrentSelectedListener, TorrentListFragment.ContextualActionBarListener {
 
+    private static final String KEY_IN_SELECTION_MODE = "key_in_selection_mode";
     private static final String KEY_DRAWER_SERVER_LIST_EXPANDED = "key_drawer_server_list_expanded";
     private static final String KEY_SEARCH_ACTION_EXPANDED = "key_search_action_expanded";
     private static final String KEY_SEARCH_QUERY = "key_search_query";
-    private static final String KEY_HAS_TORRENT_LIST = "has_torrent_list";
     private static final String KEY_FAB_EXPANDED = "key_fab_expanded";
 
     private static final int DRAWER_ITEM_ID_SETTINGS = 101;
@@ -111,8 +111,6 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
     private MenuItem searchMenuItem;
     private boolean restoredSearchMenuItemExpanded = false;
     private CharSequence restoredSearchQuery = "";
-
-    private boolean hasTorrentList = false;
 
     private Spinner toolbarSpinner;
     private MainActivityBinding binding;
@@ -237,6 +235,13 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
         setupBottomToolbar();
         setupDrawer();
         setupFloatingActionButton();
+
+        if (savedInstanceState != null) {
+            if (savedInstanceState.getBoolean(KEY_IN_SELECTION_MODE, false)) {
+                startSupportActionMode(actionModeCallback);
+                presenter.selectionModeRestored();
+            }
+        }
     }
 
     @NonNull
@@ -439,6 +444,9 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+
+        outState.putBoolean(KEY_IN_SELECTION_MODE, actionMode != null);
+
         outState.putBoolean(KEY_DRAWER_SERVER_LIST_EXPANDED, drawer.switchedDrawerContent());
         if (searchMenuItem != null) {
             outState.putBoolean(KEY_SEARCH_ACTION_EXPANDED, searchMenuItem.isActionViewExpanded());
@@ -447,7 +455,6 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
             outState.putBoolean(KEY_SEARCH_ACTION_EXPANDED, restoredSearchMenuItemExpanded);
             outState.putCharSequence(KEY_SEARCH_QUERY, restoredSearchQuery);
         }
-        outState.putBoolean(KEY_HAS_TORRENT_LIST, hasTorrentList);
 
         outState.putBoolean(KEY_FAB_EXPANDED, binding.addTorrentButton.isExpanded());
     }
@@ -462,8 +469,6 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
 
         restoredSearchMenuItemExpanded = savedInstanceState.getBoolean(KEY_SEARCH_ACTION_EXPANDED, false);
         restoredSearchQuery = savedInstanceState.getCharSequence(KEY_SEARCH_QUERY, "");
-
-        hasTorrentList = savedInstanceState.getBoolean(KEY_HAS_TORRENT_LIST, false);
 
         boolean isFabExpanded = savedInstanceState.getBoolean(KEY_FAB_EXPANDED, false);
         if (isFabExpanded) {
