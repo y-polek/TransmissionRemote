@@ -6,13 +6,13 @@ import net.yupol.transmissionremote.domain.model.Torrent
 
 interface TorrentListRepository {
 
-    fun getTorrents(): Single<List<Torrent>>
+    fun getAllTorrents(): Single<List<Torrent>>
 
-    fun getTorrent(id: Int): Single<Torrent>
+    fun getTorrents(vararg ids: Int): Single<List<Torrent>>
 
-    fun pauseTorrent(id: Int): Completable
+    fun pauseTorrents(vararg ids: Int): Completable
 
-    fun resumeTorrent(id: Int): Completable
+    fun resumeTorrents(vararg ids: Int, noQueue: Boolean = false): Completable
 
     fun pauseAll(): Completable
 

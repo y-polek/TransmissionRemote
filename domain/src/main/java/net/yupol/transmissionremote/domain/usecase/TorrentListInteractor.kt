@@ -14,12 +14,12 @@ class TorrentListInteractor @Inject constructor(
         return loadTorrentList.execute()
     }
 
-    fun pauseTorrent(torrentId: Int): Single<Torrent> {
-        return pauseResumeTorrent.pause(torrentId)
+    fun pauseTorrents(vararg ids: Int): Single<List<Torrent>> {
+        return pauseResumeTorrent.pause(*ids)
     }
 
-    fun resumeTorrent(torrentId: Int): Single<Torrent> {
-        return pauseResumeTorrent.resume(torrentId)
+    fun resumeTorrents(vararg ids: Int, noQueue: Boolean = false): Single<List<Torrent>> {
+        return pauseResumeTorrent.resume(*ids, noQueue = noQueue)
     }
 
     fun pauseAllTorrents(): Completable {

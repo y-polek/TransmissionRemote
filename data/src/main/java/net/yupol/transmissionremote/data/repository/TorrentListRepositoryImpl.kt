@@ -13,7 +13,7 @@ class TorrentListRepositoryImpl @Inject constructor(
         private val api: TransmissionRpcApi,
         private val mapper: TorrentMapper): TorrentListRepository
 {
-    override fun getTorrents(): Single<List<Torrent>> {
+    override fun getAllTorrents(): Single<List<Torrent>> {
         return api.torrentList()
                 .flatMapObservable {
                     Observable.fromIterable(it)
@@ -22,21 +22,17 @@ class TorrentListRepositoryImpl @Inject constructor(
                 .toList()
     }
 
-    override fun getTorrent(id: Int): Single<Torrent> {
-        return api.torrentList(id)
-                .flatMapObservable {
-                    Observable.fromIterable(it)
-                }
-                .firstOrError()
+    override fun getTorrents(vararg ids: Int): Single<List<Torrent>> {
+        return api.torrentList(*ids)
                 .map(mapper::toDomain)
     }
 
-    override fun pauseTorrent(id: Int): Completable {
-        return api.stopTorrents(id)
+    override fun pauseTorrents(vararg ids: Int): Completable {
+        return api.stopTorrents(*ids)
     }
 
-    override fun resumeTorrent(id: Int): Completable {
-        return api.startTorrents(id)
+    override fun resumeTorrents(vararg ids: Int, noQueue: Boolean): Completable {
+        return if (noQueue) api.startTorrentsNoQueue(*ids) else api.startTorrents(*ids)
     }
 
     override fun pauseAll(): Completable {

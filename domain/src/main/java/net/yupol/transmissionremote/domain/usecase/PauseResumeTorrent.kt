@@ -9,18 +9,18 @@ import javax.inject.Inject
 
 class PauseResumeTorrent @Inject constructor(private val repo: TorrentListRepository) {
 
-    fun pause(torrentId: Int): Single<Torrent> {
-        return repo.pauseTorrent(torrentId)
+    fun pause(vararg ids: Int): Single<List<Torrent>> {
+        return repo.pauseTorrents(*ids)
                 .andThen(Single.defer {
-                    repo.getTorrent(torrentId)
+                    repo.getTorrents(*ids)
                             .delaySubscription(500, TimeUnit.MILLISECONDS)
                 })
     }
 
-    fun resume(torrentId: Int): Single<Torrent> {
-        return repo.resumeTorrent(torrentId)
+    fun resume(vararg ids: Int, noQueue: Boolean): Single<List<Torrent>> {
+        return repo.resumeTorrents(*ids, noQueue = noQueue)
                 .andThen(Single.defer {
-                    repo.getTorrent(torrentId)
+                    repo.getTorrents(*ids)
                             .delaySubscription(500, TimeUnit.MILLISECONDS)
                 })
     }

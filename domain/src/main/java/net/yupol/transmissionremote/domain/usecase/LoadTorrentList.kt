@@ -11,7 +11,7 @@ class LoadTorrentList @Inject constructor(private val repo: TorrentListRepositor
     fun execute(): Observable<List<Torrent>> {
         return Observable.interval(0, updateInterval.toLong(), TimeUnit.SECONDS)
                 .switchMap {
-                    repo.getTorrents().toObservable()
+                    repo.getAllTorrents().toObservable()
                 }
     }
 }

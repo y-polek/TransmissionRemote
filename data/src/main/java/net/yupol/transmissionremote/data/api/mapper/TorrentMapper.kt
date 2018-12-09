@@ -33,4 +33,6 @@ class TorrentMapper @Inject constructor() {
                 recheckProgress = torrent.recheckProgress,
                 doneDate = torrent.doneDate)
     }
+
+    fun toDomain(torrents: List<TorrentEntity>) = torrents.map { toDomain(it) }
 }

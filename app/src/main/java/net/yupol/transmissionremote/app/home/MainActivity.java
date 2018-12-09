@@ -158,7 +158,7 @@ public class MainActivity extends BaseMvpActivity<MainActivityView, MainActivity
                     presenter.removeSelectedClicked();
                     return true;
                 case R.id.action_start:
-                    presenter.resumeAllClicked();
+                    presenter.resumeSelectedClicked();
                     return true;
                 case R.id.action_pause:
                     presenter.pauseSelectedClicked();
