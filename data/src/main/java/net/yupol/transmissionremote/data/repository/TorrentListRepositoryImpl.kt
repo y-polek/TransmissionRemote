@@ -42,4 +42,8 @@ class TorrentListRepositoryImpl @Inject constructor(
     override fun resumeAll(): Completable {
         return api.startTorrents()
     }
+
+    override fun removeTorrents(vararg ids: Int, deleteData: Boolean): Completable {
+        return if (deleteData) api.removeTorrentsAndDeleteData(*ids) else api.removeTorrents(*ids)
+    }
 }

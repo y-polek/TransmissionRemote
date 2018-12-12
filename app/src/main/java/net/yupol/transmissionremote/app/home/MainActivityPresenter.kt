@@ -201,7 +201,7 @@ class MainActivityPresenter @Inject constructor(
     }
 
     fun removeSelectedClicked() {
-
+        view.openRemoveTorrentOptionsDialog()
     }
 
     fun pauseSelectedClicked() {
