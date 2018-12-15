@@ -18,4 +18,5 @@ ext {
     javax_inject_version = '1'
     butterknife_version = '8.8.1'
     ktx_version = '0.3'
+    crashlytics_version = '2.9.7@aar'
 }
