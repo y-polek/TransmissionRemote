@@ -26,7 +26,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     
     // Support Library
-    implementation "com.android.support:support-v4:$support_version"
+    implementation "androidx.annotation:annotation:$support_version"
 
     // Moshi
     implementation "com.squareup.moshi:moshi:$moshi_version"

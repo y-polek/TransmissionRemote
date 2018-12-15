@@ -1,6 +1,6 @@
 package net.yupol.transmissionremote.app.model
 
-import android.support.annotation.DrawableRes
+import androidx.annotation.DrawableRes
 import net.yupol.transmissionremote.app.R
 import net.yupol.transmissionremote.data.model.ErrorType
 import net.yupol.transmissionremote.data.model.ErrorType.*

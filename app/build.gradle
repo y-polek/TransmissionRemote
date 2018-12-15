@@ -13,7 +13,7 @@ android {
         versionCode version_code
         versionName "$version_name"
         applicationId 'net.yupol.transmissionremote.app'
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
         manifestPlaceholders = [fabricApiKey: "${apiKey('fabric_api_key')}"]
 
@@ -60,10 +60,10 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
     // Support Library
-    implementation "com.android.support:appcompat-v7:$support_version"
-    implementation "com.android.support:support-v4:$support_version"
-    implementation "com.android.support:recyclerview-v7:$support_version"
-    implementation "com.android.support:design:$support_version"
+    implementation "androidx.recyclerview:recyclerview:$support_version"
+    implementation "com.google.android.material:material:$support_version"
+    implementation "androidx.swiperefreshlayout:swiperefreshlayout:$support_version"
+    implementation "androidx.viewpager:viewpager:$support_version"
 
     // RxJava
     implementation "io.reactivex.rxjava2:rxjava:$rxjava_version"
@@ -117,7 +117,7 @@ dependencies {
     implementation "com.vdurmont:emoji-java:$emoji_java_version"
 
     // Constraint Layout
-    implementation "com.android.support.constraint:constraint-layout:$constraint_layout_version"
+    implementation "androidx.constraintlayout:constraintlayout:$constraint_layout_version"
 
     // ButterKnife
     implementation "com.jakewharton:butterknife:$butterknife_version"
@@ -142,6 +142,9 @@ dependencies {
     implementation "com.squareup.retrofit2:converter-scalars:$retrofit_version"
     implementation "com.squareup.retrofit2:adapter-rxjava2:$retrofit_version"
     implementation "com.squareup.okhttp3:logging-interceptor:$okhttp_version"
+
+    // Material Dialogs
+    implementation "com.afollestad.material-dialogs:core:$material_dialogs_version"
 
     // Testing
     testImplementation 'junit:junit:4.12'

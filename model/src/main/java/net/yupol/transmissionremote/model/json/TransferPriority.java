@@ -1,6 +1,6 @@
 package net.yupol.transmissionremote.model.json;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 public enum TransferPriority {
     HIGH(1),

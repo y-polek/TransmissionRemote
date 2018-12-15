@@ -2,7 +2,7 @@ package net.yupol.transmissionremote.app.utils;
 
 import android.content.Context;
 import android.preference.PreferenceManager;
-import android.support.v7.app.AppCompatDelegate;
+import androidx.appcompat.app.AppCompatDelegate;
 
 public class ThemeUtils {
 

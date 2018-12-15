@@ -1,6 +1,6 @@
 package net.yupol.transmissionremote.model;
 
-import android.support.annotation.StringRes;
+import androidx.annotation.StringRes;
 
 import com.mikepenz.community_material_typeface_library.CommunityMaterial;
 import com.mikepenz.fontawesome_typeface_library.FontAwesome;

@@ -1,12 +1,11 @@
 package net.yupol.transmissionremote.app.preferences
 
 import android.os.Bundle
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import androidx.core.widget.toast
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import butterknife.BindView
 import butterknife.ButterKnife
 import io.reactivex.Observable
@@ -49,8 +48,6 @@ class ServerListActivity : BaseActivity(), ServerListAdapter.OnServerSelectedLis
         serversSubscription = Observable.combineLatest(repo.servers(), repo.activeServer(), BiFunction { servers: List<Server>, activeServer: Server -> servers to activeServer })
                 .subscribe { (servers, activeServer) ->
                     adapter.setServers(servers, activeServer)
-
-                    toast(activeServer.name)
 
                     emptyView.visibility = if (servers.isEmpty()) View.VISIBLE else View.GONE
                 }

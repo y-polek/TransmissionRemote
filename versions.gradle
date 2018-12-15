@@ -2,7 +2,7 @@ ext {
     version_code = 91400
     version_name = '0.9.14'
 
-    min_sdk_version = 15
-    target_sdk_version = 27
-    compile_sdk_version = 27
+    min_sdk_version = 16
+    target_sdk_version = 28
+    compile_sdk_version = 28
 }

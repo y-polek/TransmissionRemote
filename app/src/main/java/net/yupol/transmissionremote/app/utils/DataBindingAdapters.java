@@ -1,9 +1,9 @@
 package net.yupol.transmissionremote.app.utils;
 
-import android.databinding.BindingAdapter;
-import android.support.annotation.NonNull;
-import android.support.annotation.PluralsRes;
-import android.support.annotation.StringRes;
+import androidx.databinding.BindingAdapter;
+import androidx.annotation.NonNull;
+import androidx.annotation.PluralsRes;
+import androidx.annotation.StringRes;
 import android.view.View;
 import android.widget.TextView;
 

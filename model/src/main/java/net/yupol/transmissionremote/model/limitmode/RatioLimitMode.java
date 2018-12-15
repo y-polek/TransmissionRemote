@@ -1,6 +1,6 @@
 package net.yupol.transmissionremote.model.limitmode;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import net.yupol.transmissionremote.model.R;
 

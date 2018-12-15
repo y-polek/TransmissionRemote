@@ -3,17 +3,18 @@ package net.yupol.transmissionremote.app.home
 import android.app.SearchManager
 import android.content.Context
 import android.content.Intent
-import android.databinding.DataBindingUtil
+import androidx.databinding.DataBindingUtil
 import android.os.Bundle
 import android.provider.Settings
-import android.support.v4.view.LayoutInflaterCompat
-import android.support.v4.widget.DrawerLayout
-import android.support.v4.widget.SwipeRefreshLayout
-import android.support.v7.view.ActionMode
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
-import android.support.v7.widget.Toolbar
+import androidx.core.view.LayoutInflaterCompat
+import androidx.drawerlayout.widget.DrawerLayout
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import androidx.appcompat.view.ActionMode
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import androidx.appcompat.widget.Toolbar
 import android.text.method.ScrollingMovementMethod
+import android.util.Log
 import android.view.*
 import android.view.View.GONE
 import android.view.View.VISIBLE
@@ -81,7 +82,7 @@ class MainActivity : BaseMvpActivity<MainActivityView, MainActivityPresenter>(),
     private var restoredSearchMenuItemExpanded = false
     private var restoredSearchQuery: CharSequence = ""
 
-    private var toolbarSpinner: Spinner? = null
+    private lateinit var toolbarSpinner: Spinner
     private lateinit var binding: MainActivityBinding
     private var freeSpaceFooterDrawerItem: FreeSpaceFooterDrawerItem? = null
 
@@ -233,9 +234,10 @@ class MainActivity : BaseMvpActivity<MainActivityView, MainActivityPresenter>(),
         binding.toolbar.addView(spinnerContainer, lp)
         toolbarSpinner = spinnerContainer.findViewById(R.id.toolbar_spinner)
         toolbarSpinnerAdapter = ActionBarNavigationAdapter(this)
-        toolbarSpinner!!.adapter = toolbarSpinnerAdapter
-        toolbarSpinner!!.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
+        toolbarSpinner.adapter = toolbarSpinnerAdapter
+        toolbarSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                Log.e("MainActivity", "onItemSelected")
                 if (id == ActionBarNavigationAdapter.ID_SERVER.toLong()) {
                     val server = toolbarSpinnerAdapter!!.getItem(position) as Server
                     presenter.activeServerSelected(server)

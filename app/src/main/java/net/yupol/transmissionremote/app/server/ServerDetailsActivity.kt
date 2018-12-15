@@ -3,10 +3,10 @@ package net.yupol.transmissionremote.app.server
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.support.v7.app.AlertDialog
 import android.view.Menu
 import android.view.MenuItem
-import androidx.core.widget.toast
+import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import net.yupol.transmissionremote.app.BaseActivity
 import net.yupol.transmissionremote.app.R
 import net.yupol.transmissionremote.app.TransmissionRemote
@@ -55,7 +55,7 @@ class ServerDetailsActivity: BaseActivity() {
         return when (item.itemId) {
             R.id.action_save -> {
                 saveServer()
-                toast(R.string.saved)
+                Toast.makeText(this, R.string.saved, Toast.LENGTH_SHORT).show()
                 finish()
                 true
             }

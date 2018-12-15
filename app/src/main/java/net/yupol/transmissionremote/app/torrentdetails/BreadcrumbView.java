@@ -2,9 +2,9 @@ package net.yupol.transmissionremote.app.torrentdetails;
 
 import android.content.Context;
 import android.graphics.Typeface;
-import android.support.annotation.ColorInt;
-import android.support.annotation.DrawableRes;
-import android.support.v4.content.ContextCompat;
+import androidx.annotation.ColorInt;
+import androidx.annotation.DrawableRes;
+import androidx.core.content.ContextCompat;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.Gravity;
