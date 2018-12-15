@@ -97,7 +97,7 @@ class MainActivity : BaseMvpActivity<MainActivityView, MainActivityPresenter>(),
     @BindView(R.id.detailed_error_text) lateinit var detailedErrorText: TextView
     @BindView(R.id.welcome_layout) lateinit var welcomeLayout: View
     @BindView(R.id.add_torrent_button) lateinit var addTorrentFab: View
-    @BindView(R.id.bottom_toolbar) var bottomToolbar: Toolbar? = null
+    @BindView(R.id.bottom_toolbar) @JvmField var bottomToolbar: Toolbar? = null
 
     @Inject lateinit var injectedPresenter: MainActivityPresenter
 
@@ -665,6 +665,10 @@ class MainActivity : BaseMvpActivity<MainActivityView, MainActivityPresenter>(),
 
     override fun openTorrentDetails() {
 
+    }
+
+    override fun openRemoveTorrentOptionsDialog() {
+        TODO("not implemented")
     }
 
     // endregion
