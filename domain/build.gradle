@@ -5,7 +5,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 
     // RxKotlin
-    implementation "io.reactivex.rxjava2:rxkotlin:$rxjava_version"
+    implementation "io.reactivex.rxjava2:rxkotlin:$rxkotlin_version"
 
     // Inject annotation
     implementation "javax.inject:javax.inject:$javax_inject_version"

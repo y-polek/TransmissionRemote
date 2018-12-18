@@ -22,3 +22,13 @@ fun Any.isEmptyArray(): Boolean {
 }
 
 fun Collection<Int>.toArray() = toIntArray()
+
+fun <T> MutableCollection<T>.deleteIf(predicate: (T) -> Boolean) {
+    val iterator = iterator()
+    while (iterator.hasNext()) {
+        val element = iterator.next()
+        if (predicate(element)) {
+            iterator.remove()
+        }
+    }
+}

@@ -2,10 +2,11 @@ package net.yupol.transmissionremote.app.home
 
 import com.hannesdorfmann.mosby3.mvp.MvpNullObjectBasePresenter
 import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.android.schedulers.AndroidSchedulers.mainThread
 import io.reactivex.disposables.Disposable
 import io.reactivex.functions.BiFunction
-import io.reactivex.schedulers.Schedulers
+import io.reactivex.rxkotlin.subscribeBy
+import io.reactivex.schedulers.Schedulers.io
 import net.yupol.transmissionremote.app.model.ListResource
 import net.yupol.transmissionremote.app.model.Status.*
 import net.yupol.transmissionremote.app.model.TorrentViewModel
@@ -18,6 +19,7 @@ import net.yupol.transmissionremote.domain.model.Server
 import net.yupol.transmissionremote.domain.model.Torrent
 import net.yupol.transmissionremote.domain.repository.ServerRepository
 import net.yupol.transmissionremote.domain.usecase.TorrentListInteractor
+import net.yupol.transmissionremote.utils.deleteIf
 import net.yupol.transmissionremote.utils.toArray
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -85,8 +87,8 @@ class MainActivityPresenter @Inject constructor(
     fun pauseClicked(torrentId: Int) {
         val d = interactor.pauseTorrents(torrentId)
                 .map { it.toViewModel() }
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(io())
+                .observeOn(mainThread())
                 .subscribe({ torrent ->
                     view.updateTorrents(*torrent.toTypedArray())
                 }, { error ->
@@ -98,8 +100,8 @@ class MainActivityPresenter @Inject constructor(
     fun resumeClicked(torrentId: Int) {
         val d = interactor.resumeTorrents(torrentId)
                 .map { it.toViewModel() }
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(io())
+                .observeOn(mainThread())
                 .subscribe({ torrent ->
                     view.updateTorrents(*torrent.toTypedArray())
                 }, { error ->
@@ -152,8 +154,8 @@ class MainActivityPresenter @Inject constructor(
 
         val d = interactor.pauseAllTorrents()
                 .delay(500, TimeUnit.MILLISECONDS)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(io())
+                .observeOn(mainThread())
                 .subscribe({
                     refreshTorrentList()
                 }, { error ->
@@ -167,8 +169,8 @@ class MainActivityPresenter @Inject constructor(
 
         val d = interactor.resumeAllTorrents()
                 .delay(500, TimeUnit.MILLISECONDS)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(io())
+                .observeOn(mainThread())
                 .subscribe({
                     refreshTorrentList()
                 }, { error ->
@@ -204,14 +206,26 @@ class MainActivityPresenter @Inject constructor(
         view.openRemoveTorrentOptionsDialog()
     }
 
+    fun removeSelectedTorrentsFromListClicked() {
+        removeSelectedTorrents(deleteData = false)
+    }
+
+    fun removeSelectedTorrentsFromListAndDeleteDataClicked() {
+        view.openDeleteTorrentDataConfirmation()
+    }
+
+    fun deleteSelectedTorrentsDataConfirmed() {
+        removeSelectedTorrents(deleteData = true)
+    }
+
     fun pauseSelectedClicked() {
         if (selectedTorrents.isEmpty()) return
 
         val ids = selectedTorrents.toArray()
         val d = interactor.pauseTorrents(*ids)
                 .map { it.toViewModel() }
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(io())
+                .observeOn(mainThread())
                 .subscribe({ torrent ->
                     view.updateTorrents(*torrent.toTypedArray())
                 }, { error ->
@@ -227,8 +241,8 @@ class MainActivityPresenter @Inject constructor(
         val ids = selectedTorrents.toArray()
         val d = interactor.resumeTorrents(*ids)
                 .map { it.toViewModel() }
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(io())
+                .observeOn(mainThread())
                 .subscribe({ torrent ->
                     view.updateTorrents(*torrent.toTypedArray())
                 }, { error ->
@@ -244,8 +258,8 @@ class MainActivityPresenter @Inject constructor(
         val ids = selectedTorrents.toArray()
         val d = interactor.resumeTorrents(*ids, noQueue = true)
                 .map { it.toViewModel() }
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(io())
+                .observeOn(mainThread())
                 .subscribe({ torrent ->
                     view.updateTorrents(*torrent.toTypedArray())
                 }, { error ->
@@ -293,8 +307,8 @@ class MainActivityPresenter @Inject constructor(
                 .repeatWhen { completed ->
                     completed.delay(5, TimeUnit.SECONDS)
                 }
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(io())
+                .observeOn(mainThread())
                 .subscribe { result ->
                     view.hideLoading()
                     when (result.status) {
@@ -318,6 +332,8 @@ class MainActivityPresenter @Inject constructor(
                         }
                         else -> throw IllegalStateException("Unknown status: ${result.status}")
                     }
+
+                    if (inSelectionMode) cleanupSelection()
                 }
     }
 
@@ -341,6 +357,36 @@ class MainActivityPresenter @Inject constructor(
     private fun updateSelectionMenu() {
         view.setGroupActionsEnabled(selectedTorrents.size > 0)
         view.setRenameActionEnabled(selectedTorrents.size == 1)
+    }
+
+    private fun removeSelectedTorrents(deleteData: Boolean) {
+        view.showLoading()
+
+        val d = interactor.removeTorrents(*selectedTorrents.toIntArray(), deleteData = deleteData)
+                .subscribeOn(io())
+                .observeOn(mainThread())
+                .subscribeBy(
+                        onComplete = {
+                            refreshTorrentList()
+                        },
+                        onError = { error ->
+                            view.hideLoading()
+                            view.showErrorAlert(error)
+                        })
+
+        view.finishSelection()
+    }
+
+    private fun cleanupSelection() {
+        if (torrents.isNullOrEmpty()) {
+            selectedTorrents.clear()
+        } else {
+            val sortedIds = torrents!!.map { it.id }.sorted()
+            selectedTorrents.deleteIf { sortedIds.binarySearch(it) < 0 }
+        }
+        updateAllTorrentsSelection()
+        updateSelectionTitle()
+        updateSelectionMenu()
     }
 
     private fun Torrent.toViewModel(): TorrentViewModel {

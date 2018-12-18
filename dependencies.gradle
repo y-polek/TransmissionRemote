@@ -1,6 +1,6 @@
 ext {
     support_version = '1.0.0'
-    rxjava_version = '2.2.0'
+    rxkotlin_version = '2.3.0'
     dagger_version = '2.18'
     moshi_version = '1.8.0'
     moshi_lazy_adapters_version = '2.2'

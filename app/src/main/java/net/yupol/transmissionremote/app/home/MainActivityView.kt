@@ -56,5 +56,7 @@ interface MainActivityView: MvpView {
 
     fun openRemoveTorrentOptionsDialog()
 
+    fun openDeleteTorrentDataConfirmation()
+
     // endregion
 }

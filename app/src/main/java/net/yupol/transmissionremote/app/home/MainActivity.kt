@@ -24,6 +24,8 @@ import butterknife.BindView
 import butterknife.ButterKnife
 import butterknife.OnClick
 import butterknife.OnLongClick
+import com.afollestad.materialdialogs.MaterialDialog
+import com.afollestad.materialdialogs.list.listItems
 import com.getbase.floatingactionbutton.FloatingActionsMenu
 import com.mikepenz.community_material_typeface_library.CommunityMaterial
 import com.mikepenz.fontawesome_typeface_library.FontAwesome
@@ -670,7 +672,26 @@ class MainActivity : BaseMvpActivity<MainActivityView, MainActivityPresenter>(),
     }
 
     override fun openRemoveTorrentOptionsDialog() {
-        TODO("not implemented")
+        MaterialDialog(this).show {
+            title(R.string.remove_selected_torrents)
+            listItems(R.array.remove_torrents_entries) { _, index, text ->
+                when (index) {
+                    0 -> presenter.removeSelectedTorrentsFromListClicked()
+                    1 -> presenter.removeSelectedTorrentsFromListAndDeleteDataClicked()
+                    else -> throw NotImplementedError("Unknown option at index $index: '$text'")
+                }
+            }
+        }
+    }
+
+    override fun openDeleteTorrentDataConfirmation() {
+        MaterialDialog(this).show {
+            message(R.string.remove_data_confirmation)
+            positiveButton(R.string.delete) {
+                presenter.deleteSelectedTorrentsDataConfirmed()
+            }
+            negativeButton(R.string.cancel)
+        }
     }
 
     // endregion

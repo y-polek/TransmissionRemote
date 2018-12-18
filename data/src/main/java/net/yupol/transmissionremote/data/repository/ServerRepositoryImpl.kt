@@ -31,7 +31,7 @@ class ServerRepositoryImpl(private val prefs: SharedPreferences, private val mos
     override fun setActiveServer(server: Server) {
         if (activeServerSubject.value == server) return
 
-        if (serversSubject.value.contains(server)) {
+        if (serversSubject.value!!.contains(server)) {
             activeServerSubject.onNext(server)
             persistActiveServer()
         } else {
@@ -52,7 +52,7 @@ class ServerRepositoryImpl(private val prefs: SharedPreferences, private val mos
         persistServers()
         serversSubject.onNext(servers)
 
-        if (activeServerSubject.value.name == withName) {
+        if (activeServerSubject.value!!.name == withName) {
             if (servers.isNotEmpty()) {
                 setActiveServer(servers.first())
             } else {
@@ -70,7 +70,7 @@ class ServerRepositoryImpl(private val prefs: SharedPreferences, private val mos
             serversSubject.onNext(servers)
             persistServers()
 
-            if (activeServerSubject.value.name == withName) {
+            if (activeServerSubject.value!!.name == withName) {
                 setActiveServer(server)
             }
         }
