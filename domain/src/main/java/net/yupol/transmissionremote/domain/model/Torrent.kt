@@ -6,7 +6,7 @@ data class Torrent(
         val addedDate: Long,
         val totalSize: Long,
         val percentDone: Double,
-        val status: Int,
+        val status: Status,
         val downloadRate: Long,
         val uploadRate: Long,
         val eta: Long,
@@ -23,3 +23,15 @@ data class Torrent(
         val queuePosition: Int,
         val recheckProgress: Double,
         val doneDate: Long)
+{
+    enum class Status {
+        UNKNOWN,
+        STOPPED,
+        CHECK_WAIT,
+        CHECK,
+        DOWNLOAD_WAIT,
+        DOWNLOAD,
+        SEED_WAIT,
+        SEED
+    }
+}

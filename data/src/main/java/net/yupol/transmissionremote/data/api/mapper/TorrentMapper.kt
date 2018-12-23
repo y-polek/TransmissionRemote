@@ -2,6 +2,7 @@ package net.yupol.transmissionremote.data.api.mapper
 
 import net.yupol.transmissionremote.data.api.model.TorrentEntity
 import net.yupol.transmissionremote.domain.model.Torrent
+import net.yupol.transmissionremote.domain.model.Torrent.Status.*
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -9,13 +10,24 @@ import javax.inject.Singleton
 class TorrentMapper @Inject constructor() {
 
     fun toDomain(torrent: TorrentEntity): Torrent {
+        val status = when (torrent.status) {
+            0 -> STOPPED
+            1 -> CHECK_WAIT
+            2 -> CHECK
+            3 -> DOWNLOAD_WAIT
+            4 -> DOWNLOAD
+            5 -> SEED_WAIT
+            6 -> SEED
+            else -> UNKNOWN
+        }
+
         return Torrent(
                 id = torrent.id,
                 name = torrent.name,
                 addedDate = torrent.addedDate,
                 totalSize = torrent.totalSize,
                 percentDone = torrent.percentDone,
-                status = torrent.status,
+                status = status,
                 downloadRate = torrent.downloadRate,
                 uploadRate = torrent.uploadRate,
                 eta = torrent.eta,
