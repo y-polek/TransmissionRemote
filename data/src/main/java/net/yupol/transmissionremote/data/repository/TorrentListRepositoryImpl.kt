@@ -52,4 +52,9 @@ class TorrentListRepositoryImpl @Inject constructor(
         if (ids.isEmpty()) throw IllegalArgumentException("List of IDs cannot be empty, otherwise all torrents will be verified")
         return api.verifyTorrents(*ids)
     }
+
+    override fun reannounceTorrents(vararg ids: Int): Completable {
+        if (ids.isEmpty()) throw IllegalArgumentException("List of IDs cannot be empty, otherwise all torrents will be reannounced")
+        return api.reannounceTorrents(*ids)
+    }
 }

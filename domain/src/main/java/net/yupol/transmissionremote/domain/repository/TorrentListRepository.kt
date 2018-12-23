@@ -21,4 +21,6 @@ interface TorrentListRepository {
     fun removeTorrents(vararg ids: Int, deleteData: Boolean): Completable
 
     fun verifyTorrents(vararg ids: Int): Completable
+
+    fun reannounceTorrents(vararg ids: Int): Completable
 }

@@ -291,7 +291,14 @@ class MainActivityPresenter @Inject constructor(
     }
 
     fun reannounceSelectedClicked() {
+        if (selectedTorrents.isEmpty()) return
 
+        requests += interactor.reannounceTorrents(*selectedTorrents.toArray())
+                .subscribeOn(io())
+                .observeOn(mainThread())
+                .subscribeBy(onError = view::showErrorAlert)
+
+        view.finishSelection()
     }
 
     //////////////////////////////
