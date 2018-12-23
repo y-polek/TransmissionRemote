@@ -247,8 +247,8 @@ class MainActivityPresenter @Inject constructor(
                 .map { it.toViewModel() }
                 .subscribeOn(io())
                 .observeOn(mainThread())
-                .subscribe({ torrent ->
-                    view.updateTorrents(*torrent.toTypedArray())
+                .subscribe({ torrents ->
+                    view.updateTorrents(*torrents.toTypedArray())
                 }, { error ->
                     view.showErrorAlert(error)
                 })
@@ -264,8 +264,8 @@ class MainActivityPresenter @Inject constructor(
                 .map { it.toViewModel() }
                 .subscribeOn(io())
                 .observeOn(mainThread())
-                .subscribe({ torrent ->
-                    view.updateTorrents(*torrent.toTypedArray())
+                .subscribe({ torrents ->
+                    view.updateTorrents(*torrents.toTypedArray())
                 }, { error ->
                     view.showErrorAlert(error)
                 })
@@ -282,10 +282,17 @@ class MainActivityPresenter @Inject constructor(
     }
 
     fun verifySelectedClicked() {
+        if (selectedTorrents.isEmpty()) return
+
         requests += interactor.verifyLocalData(*selectedTorrents.toArray())
+                .map { it.toViewModel() }
                 .subscribeOn(io())
                 .observeOn(mainThread())
-                .subscribeBy(onError = view::showErrorAlert)
+                .subscribeBy(
+                        onSuccess = { torrents ->
+                            view.updateTorrents(*torrents.toTypedArray())
+                        },
+                        onError = view::showErrorAlert)
 
         view.finishSelection()
     }

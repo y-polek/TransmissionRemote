@@ -37,7 +37,7 @@ class TorrentListInteractor @Inject constructor(
         return removeTorrent.removeTorrents(*ids, deleteData = deleteData)
     }
 
-    fun verifyLocalData(vararg ids: Int): Completable {
+    fun verifyLocalData(vararg ids: Int): Single<List<Torrent>> {
         return verifyTorrent.execute(*ids)
     }
 
