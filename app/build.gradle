@@ -64,6 +64,7 @@ dependencies {
     implementation "com.google.android.material:material:$support_version"
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:$support_version"
     implementation "androidx.viewpager:viewpager:$support_version"
+    implementation "androidx.constraintlayout:constraintlayout:$constraint_layout_version"
 
     // RxJava
     implementation "io.reactivex.rxjava2:rxkotlin:$rxkotlin_version"
