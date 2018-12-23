@@ -47,4 +47,9 @@ class TorrentListRepositoryImpl @Inject constructor(
         if (ids.isEmpty()) throw IllegalArgumentException("List of IDs cannot be empty, otherwise all torrents will be removed")
         return if (deleteData) api.removeTorrentsAndDeleteData(*ids) else api.removeTorrents(*ids)
     }
+
+    override fun verifyTorrents(vararg ids: Int): Completable {
+        if (ids.isEmpty()) throw IllegalArgumentException("List of IDs cannot be empty, otherwise all torrents will be verified")
+        return api.verifyTorrents(*ids)
+    }
 }

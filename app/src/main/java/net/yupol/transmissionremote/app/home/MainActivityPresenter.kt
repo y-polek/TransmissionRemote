@@ -3,8 +3,10 @@ package net.yupol.transmissionremote.app.home
 import com.hannesdorfmann.mosby3.mvp.MvpNullObjectBasePresenter
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers.mainThread
+import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.functions.BiFunction
+import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers.io
 import net.yupol.transmissionremote.app.model.ListResource
@@ -35,6 +37,7 @@ class MainActivityPresenter @Inject constructor(
 
     private var torrentListSubscription: Disposable? = null
     private var serverListSubscription: Disposable? = null
+    private val requests = CompositeDisposable()
 
     private var torrents: List<TorrentViewModel>? = null
 
@@ -65,6 +68,7 @@ class MainActivityPresenter @Inject constructor(
     override fun viewStopped() {
         torrentListSubscription?.dispose()
         serverListSubscription?.dispose()
+        requests.clear()
     }
 
     ///////////////////////////
@@ -85,7 +89,7 @@ class MainActivityPresenter @Inject constructor(
     }
 
     fun pauseClicked(torrentId: Int) {
-        val d = interactor.pauseTorrents(torrentId)
+        requests += interactor.pauseTorrents(torrentId)
                 .map { it.toViewModel() }
                 .subscribeOn(io())
                 .observeOn(mainThread())
@@ -98,7 +102,7 @@ class MainActivityPresenter @Inject constructor(
     }
 
     fun resumeClicked(torrentId: Int) {
-        val d = interactor.resumeTorrents(torrentId)
+        requests += interactor.resumeTorrents(torrentId)
                 .map { it.toViewModel() }
                 .subscribeOn(io())
                 .observeOn(mainThread())
@@ -152,7 +156,7 @@ class MainActivityPresenter @Inject constructor(
     fun pauseAllClicked() {
         view.showLoading()
 
-        val d = interactor.pauseAllTorrents()
+        requests += interactor.pauseAllTorrents()
                 .delay(500, TimeUnit.MILLISECONDS)
                 .subscribeOn(io())
                 .observeOn(mainThread())
@@ -167,7 +171,7 @@ class MainActivityPresenter @Inject constructor(
     fun resumeAllClicked() {
         view.showLoading()
 
-        val d = interactor.resumeAllTorrents()
+        requests += interactor.resumeAllTorrents()
                 .delay(500, TimeUnit.MILLISECONDS)
                 .subscribeOn(io())
                 .observeOn(mainThread())
@@ -222,7 +226,7 @@ class MainActivityPresenter @Inject constructor(
         if (selectedTorrents.isEmpty()) return
 
         val ids = selectedTorrents.toArray()
-        val d = interactor.pauseTorrents(*ids)
+        requests += interactor.pauseTorrents(*ids)
                 .map { it.toViewModel() }
                 .subscribeOn(io())
                 .observeOn(mainThread())
@@ -239,7 +243,7 @@ class MainActivityPresenter @Inject constructor(
         if (selectedTorrents.isEmpty()) return
 
         val ids = selectedTorrents.toArray()
-        val d = interactor.resumeTorrents(*ids)
+        requests += interactor.resumeTorrents(*ids)
                 .map { it.toViewModel() }
                 .subscribeOn(io())
                 .observeOn(mainThread())
@@ -256,7 +260,7 @@ class MainActivityPresenter @Inject constructor(
         if (selectedTorrents.isEmpty()) return
 
         val ids = selectedTorrents.toArray()
-        val d = interactor.resumeTorrents(*ids, noQueue = true)
+        requests += interactor.resumeTorrents(*ids, noQueue = true)
                 .map { it.toViewModel() }
                 .subscribeOn(io())
                 .observeOn(mainThread())
@@ -278,7 +282,12 @@ class MainActivityPresenter @Inject constructor(
     }
 
     fun verifySelectedClicked() {
+        requests += interactor.verifyLocalData(*selectedTorrents.toArray())
+                .subscribeOn(io())
+                .observeOn(mainThread())
+                .subscribeBy(onError = view::showErrorAlert)
 
+        view.finishSelection()
     }
 
     fun reannounceSelectedClicked() {
@@ -362,7 +371,7 @@ class MainActivityPresenter @Inject constructor(
     private fun removeSelectedTorrents(deleteData: Boolean) {
         view.showLoading()
 
-        val d = interactor.removeTorrents(*selectedTorrents.toIntArray(), deleteData = deleteData)
+        requests += interactor.removeTorrents(*selectedTorrents.toIntArray(), deleteData = deleteData)
                 .subscribeOn(io())
                 .observeOn(mainThread())
                 .subscribeBy(
@@ -387,10 +396,6 @@ class MainActivityPresenter @Inject constructor(
         updateAllTorrentsSelection()
         updateSelectionTitle()
         updateSelectionMenu()
-    }
-
-    private fun Torrent.toViewModel(): TorrentViewModel {
-        return torrentMapper.toViewModel(this, selectedTorrents.contains(id))
     }
 
     private fun Iterable<Torrent>.toViewModel(): List<TorrentViewModel> {

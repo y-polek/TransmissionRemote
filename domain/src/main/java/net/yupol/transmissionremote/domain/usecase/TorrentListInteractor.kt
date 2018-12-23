@@ -9,7 +9,8 @@ import javax.inject.Inject
 class TorrentListInteractor @Inject constructor(
         private val loadTorrentList: LoadTorrentList,
         private val pauseResumeTorrent: PauseResumeTorrent,
-        private val removeTorrent: RemoveTorrent)
+        private val removeTorrent: RemoveTorrent,
+        private val verifyTorrent: VerifyTorrent)
 {
     fun loadTorrentList(): Observable<List<Torrent>> {
         return loadTorrentList.execute()
@@ -33,5 +34,9 @@ class TorrentListInteractor @Inject constructor(
 
     fun removeTorrents(vararg ids: Int, deleteData: Boolean = false): Completable {
         return removeTorrent.removeTorrents(*ids, deleteData = deleteData)
+    }
+
+    fun verifyLocalData(vararg ids: Int): Completable {
+        return verifyTorrent.execute(*ids)
     }
 }
