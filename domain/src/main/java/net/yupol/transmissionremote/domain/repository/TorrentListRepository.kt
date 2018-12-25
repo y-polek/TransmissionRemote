@@ -23,4 +23,6 @@ interface TorrentListRepository {
     fun verifyTorrents(vararg ids: Int): Completable
 
     fun reannounceTorrents(vararg ids: Int): Completable
+
+    fun renameTorrent(id: Int, oldName: String, newName: String): Completable
 }

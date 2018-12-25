@@ -3,16 +3,10 @@ package net.yupol.transmissionremote.app.home
 import android.app.SearchManager
 import android.content.Context
 import android.content.Intent
-import androidx.databinding.DataBindingUtil
 import android.os.Bundle
 import android.provider.Settings
-import androidx.core.view.LayoutInflaterCompat
-import androidx.drawerlayout.widget.DrawerLayout
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import androidx.appcompat.view.ActionMode
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import androidx.appcompat.widget.Toolbar
+import android.text.InputType.TYPE_TEXT_FLAG_MULTI_LINE
+import android.text.InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS
 import android.text.method.ScrollingMovementMethod
 import android.util.Log
 import android.view.*
@@ -20,11 +14,23 @@ import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
+import androidx.appcompat.view.ActionMode
+import androidx.appcompat.widget.Toolbar
+import androidx.core.view.LayoutInflaterCompat
+import androidx.databinding.DataBindingUtil
+import androidx.drawerlayout.widget.DrawerLayout
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import butterknife.BindView
 import butterknife.ButterKnife
 import butterknife.OnClick
 import butterknife.OnLongClick
 import com.afollestad.materialdialogs.MaterialDialog
+import com.afollestad.materialdialogs.WhichButton.POSITIVE
+import com.afollestad.materialdialogs.actions.setActionButtonEnabled
+import com.afollestad.materialdialogs.input.getInputField
+import com.afollestad.materialdialogs.input.input
 import com.afollestad.materialdialogs.list.listItems
 import com.getbase.floatingactionbutton.FloatingActionsMenu
 import com.mikepenz.community_material_typeface_library.CommunityMaterial
@@ -692,6 +698,32 @@ class MainActivity : BaseMvpActivity<MainActivityView, MainActivityPresenter>(),
             }
             negativeButton(R.string.cancel)
         }
+    }
+
+    override fun openRenameTorrentDialog(torrent: TorrentViewModel) {
+
+        fun CharSequence.toName(): String = trim().toString()
+
+        fun CharSequence.isValidName(): Boolean {
+            val name = toName()
+            return name.isNotEmpty() && name != torrent.name
+        }
+
+        val dialog = MaterialDialog(this).show {
+            message(R.string.rename_file)
+            input(prefill = torrent.name,
+                    inputType = TYPE_TEXT_FLAG_MULTI_LINE or TYPE_TEXT_FLAG_NO_SUGGESTIONS,
+                    waitForPositiveButton = false) { dialog, text ->
+                dialog.setActionButtonEnabled(POSITIVE, text.isValidName())
+            }
+            positiveButton(R.string.rename) { dialog ->
+                val name = dialog.getInputField()!!.text.toName()
+                presenter.renameTorrent(torrent, name)
+            }
+            negativeButton(R.string.cancel)
+        }
+
+        dialog.setActionButtonEnabled(POSITIVE, false)
     }
 
     // endregion

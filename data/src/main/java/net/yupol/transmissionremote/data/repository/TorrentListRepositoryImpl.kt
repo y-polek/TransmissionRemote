@@ -5,6 +5,7 @@ import io.reactivex.Observable
 import io.reactivex.Single
 import net.yupol.transmissionremote.data.api.TransmissionRpcApi
 import net.yupol.transmissionremote.data.api.mapper.TorrentMapper
+import net.yupol.transmissionremote.data.api.rpc.RpcArgs
 import net.yupol.transmissionremote.domain.model.Torrent
 import net.yupol.transmissionremote.domain.repository.TorrentListRepository
 import javax.inject.Inject
@@ -56,5 +57,9 @@ class TorrentListRepositoryImpl @Inject constructor(
     override fun reannounceTorrents(vararg ids: Int): Completable {
         if (ids.isEmpty()) throw IllegalArgumentException("List of IDs cannot be empty, otherwise all torrents will be reannounced")
         return api.reannounceTorrents(*ids)
+    }
+
+    override fun renameTorrent(id: Int, oldName: String, newName: String): Completable {
+        return api.renameTorrent(RpcArgs.renameTorrent(id = id, path = oldName, name = newName))
     }
 }

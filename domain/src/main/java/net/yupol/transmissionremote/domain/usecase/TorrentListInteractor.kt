@@ -11,7 +11,8 @@ class TorrentListInteractor @Inject constructor(
         private val pauseResumeTorrent: PauseResumeTorrent,
         private val removeTorrent: RemoveTorrent,
         private val verifyTorrent: VerifyTorrent,
-        private val reannounceTorrent: ReannounceTorrent)
+        private val reannounceTorrent: ReannounceTorrent,
+        private val renameTorrent: RenameTorrent)
 {
     fun loadTorrentList(): Observable<List<Torrent>> {
         return loadTorrentList.execute()
@@ -43,5 +44,9 @@ class TorrentListInteractor @Inject constructor(
 
     fun reannounceTorrents(vararg ids: Int): Completable {
         return reannounceTorrent.execute(*ids)
+    }
+
+    fun renameTorrent(id: Int, oldName: String, newName: String): Single<Torrent> {
+        return renameTorrent.execute(id = id, oldName = oldName, newName = newName)
     }
 }

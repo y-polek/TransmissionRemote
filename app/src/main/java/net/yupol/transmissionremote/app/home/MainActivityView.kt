@@ -45,7 +45,6 @@ interface MainActivityView: MvpView {
     fun setRenameActionEnabled(enabled: Boolean)
 
     // region Routing
-
     fun openAddServerScreen()
 
     fun openServerSettings(server: Server)
@@ -58,5 +57,6 @@ interface MainActivityView: MvpView {
 
     fun openDeleteTorrentDataConfirmation()
 
+    fun openRenameTorrentDialog(torrent: TorrentViewModel)
     // endregion
 }

@@ -19,5 +19,5 @@ ext {
     butterknife_version = '9.0.0-rc3'
     ktx_version = '1.0.1'
     crashlytics_version = '2.9.7@aar'
-    material_dialogs_version = '2.0.0-rc3'
+    material_dialogs_version = '2.0.0-rc5'
 }

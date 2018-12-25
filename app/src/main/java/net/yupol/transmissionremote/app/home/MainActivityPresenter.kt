@@ -275,6 +275,21 @@ class MainActivityPresenter @Inject constructor(
 
     fun renameSelectedClicked() {
         assert(selectedTorrents.size == 1)
+
+        val torrent = torrents?.findWithId(selectedTorrents.first()) ?: throw IllegalStateException("Trying to rename unknown torrent")
+        view.openRenameTorrentDialog(torrent)
+    }
+
+    fun renameTorrent(torrent: TorrentViewModel, newName: String) {
+        requests += interactor.renameTorrent(id = torrent.id, oldName = torrent.name, newName = newName)
+                .map { torrentMapper.toViewModel(it, false) }
+                .subscribeOn(io())
+                .observeOn(mainThread())
+                .subscribeBy(
+                        onSuccess = { view.updateTorrents(it) },
+                        onError = view::showErrorAlert)
+
+        view.finishSelection()
     }
 
     fun setLocationForSelectedClicked() {
@@ -415,4 +430,6 @@ class MainActivityPresenter @Inject constructor(
     private fun Iterable<Torrent>.toViewModel(): List<TorrentViewModel> {
         return torrentMapper.toViewModel(this, selectedTorrents)
     }
+
+    private fun List<TorrentViewModel>.findWithId(id: Int) = find { it.id == id }
 }
