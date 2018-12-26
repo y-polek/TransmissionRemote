@@ -27,7 +27,7 @@ import net.yupol.transmissionremote.app.server.ServerManager;
 import net.yupol.transmissionremote.app.sorting.SortOrder;
 import net.yupol.transmissionremote.app.sorting.SortedBy;
 import net.yupol.transmissionremote.app.utils.ThemeUtils;
-import net.yupol.transmissionremote.domain.repository.ServerRepository;
+import net.yupol.transmissionremote.domain.repository.ServerListRepository;
 import net.yupol.transmissionremote.model.Server;
 import net.yupol.transmissionremote.model.json.Torrent;
 import net.yupol.transmissionremote.model.mapper.ServerMapper;
@@ -98,7 +98,7 @@ public class TransmissionRemote extends MultiDexApplication implements SharedPre
 
     private AppComponent appComponent;
 
-    @Inject ServerRepository serverRepository;
+    @Inject ServerListRepository serverListRepository;
     @Inject ServerManager serverManager;
 
     @Override
@@ -130,7 +130,7 @@ public class TransmissionRemote extends MultiDexApplication implements SharedPre
             createNotificationChannel();
         }
 
-        serverRepository.servers()
+        serverListRepository.servers()
                 .subscribe(servers -> {
                     if (servers.size() > 0 && isNotificationEnabled()) {
                         BackgroundUpdater.start(this);
@@ -149,7 +149,7 @@ public class TransmissionRemote extends MultiDexApplication implements SharedPre
     }
 
     private void setupServerComponent() {
-        Disposable d = serverRepository.activeServer()
+        Disposable d = serverListRepository.activeServer()
                 .subscribe(
                         serverManager::startServerSession,
                         error -> {
@@ -173,45 +173,45 @@ public class TransmissionRemote extends MultiDexApplication implements SharedPre
         for (String serverInJson : serversInJson) {
             Server server = Server.fromJson(serverInJson);
             if (server == null) continue;
-            serverRepository.addServer(ServerMapper.toDomain(server));
+            serverListRepository.addServer(ServerMapper.toDomain(server));
         }
 
         String activeServerInJson = sp.getString(KEY_ACTIVE_SERVER, null);
         if (activeServerInJson != null) {
             Server persistedActiveServer = Server.fromJson(activeServerInJson);
             if (persistedActiveServer != null) {
-                serverRepository.setActiveServer(ServerMapper.toDomain(persistedActiveServer));
+                serverListRepository.setActiveServer(ServerMapper.toDomain(persistedActiveServer));
             }
         }
 
-        if (serverRepository.servers().blockingFirst().size() > 0 && serverRepository.activeServer().blockingFirst() == null) {
-            serverRepository.setActiveServer(serverRepository.servers().blockingFirst().get(0));
+        if (serverListRepository.servers().blockingFirst().size() > 0 && serverListRepository.activeServer().blockingFirst() == null) {
+            serverListRepository.setActiveServer(serverListRepository.servers().blockingFirst().get(0));
         }
     }
 
     @Deprecated
     public Server getActiveServer() {
-        return serverRepository.activeServer().map(ServerMapper::toModel).blockingFirst();
+        return serverListRepository.activeServer().map(ServerMapper::toModel).blockingFirst();
     }
 
     @Deprecated
     public List<Server> getServers() {
-        return serverRepository.servers().map(ServerMapper::toModel).blockingFirst();
+        return serverListRepository.servers().map(ServerMapper::toModel).blockingFirst();
     }
 
     @Deprecated
     public void setActiveServer(Server server) {
-        serverRepository.setActiveServer(ServerMapper.toDomain(server));
+        serverListRepository.setActiveServer(ServerMapper.toDomain(server));
     }
 
     @Deprecated
     public void addServer(Server server) {
-        serverRepository.addServer(ServerMapper.toDomain(server));
+        serverListRepository.addServer(ServerMapper.toDomain(server));
     }
 
     @Deprecated
     public void removeServer(Server server) {
-        serverRepository.removeServer(server.getName());
+        serverListRepository.removeServer(server.getName());
     }
 
     @Deprecated
@@ -221,7 +221,7 @@ public class TransmissionRemote extends MultiDexApplication implements SharedPre
 
     @Deprecated
     public Server getServerById(String id) {
-        return serverRepository.servers()
+        return serverListRepository.servers()
                 .firstOrError()
                 .flatMapObservable(Observable::fromIterable)
                 .filter(s -> s.name.equals(id))

@@ -18,7 +18,7 @@ import net.yupol.transmissionremote.app.server.AddServerActivity
 import net.yupol.transmissionremote.app.server.ServerDetailsActivity
 import net.yupol.transmissionremote.app.utils.DividerItemDecoration
 import net.yupol.transmissionremote.domain.model.Server
-import net.yupol.transmissionremote.domain.repository.ServerRepository
+import net.yupol.transmissionremote.domain.repository.ServerListRepository
 import javax.inject.Inject
 
 class ServerListActivity : BaseActivity(), ServerListAdapter.OnServerSelectedListener {
@@ -26,7 +26,7 @@ class ServerListActivity : BaseActivity(), ServerListAdapter.OnServerSelectedLis
     @BindView(R.id.recycler_view) lateinit var recyclerView: RecyclerView
     @BindView(R.id.empty_view) lateinit var emptyView: View
 
-    @Inject lateinit var repo: ServerRepository
+    @Inject lateinit var repo: ServerListRepository
 
     private lateinit var adapter: ServerListAdapter
     private lateinit var serversSubscription: Disposable

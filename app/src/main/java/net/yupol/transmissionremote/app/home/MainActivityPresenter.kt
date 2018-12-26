@@ -19,8 +19,8 @@ import net.yupol.transmissionremote.app.server.ServerManager
 import net.yupol.transmissionremote.data.api.NoNetworkException
 import net.yupol.transmissionremote.domain.model.Server
 import net.yupol.transmissionremote.domain.model.Torrent
-import net.yupol.transmissionremote.domain.repository.ServerRepository
 import net.yupol.transmissionremote.domain.usecase.TorrentListInteractor
+import net.yupol.transmissionremote.domain.repository.ServerListRepository
 import net.yupol.transmissionremote.utils.deleteIf
 import net.yupol.transmissionremote.utils.toArray
 import java.util.concurrent.TimeUnit
@@ -28,7 +28,7 @@ import javax.inject.Inject
 
 class MainActivityPresenter @Inject constructor(
         private val serverManager: ServerManager,
-        private val serverRepo: ServerRepository,
+        private val serverListRepo: ServerListRepository,
         private val torrentMapper: TorrentMapper,
         private val strRes: StringResources): MvpNullObjectBasePresenter<MainActivityView>(), MvpViewCallback
 {
@@ -46,8 +46,8 @@ class MainActivityPresenter @Inject constructor(
 
     override fun viewStarted() {
         serverListSubscription = Observable.combineLatest(
-                serverRepo.servers(),
-                serverRepo.activeServer(),
+                serverListRepo.servers(),
+                serverListRepo.activeServer(),
                 BiFunction { servers: List<Server>, activeServer: Server -> servers to activeServer })
                 .subscribe { (servers, activeServer) ->
                     interactor = serverManager.serverComponent?.torrentListInteractor()!!
@@ -80,7 +80,7 @@ class MainActivityPresenter @Inject constructor(
     }
 
     fun activeServerSelected(server: Server) {
-        serverRepo.setActiveServer(server)
+        serverListRepo.setActiveServer(server)
     }
 
     fun refreshTorrentList() {

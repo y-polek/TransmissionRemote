@@ -8,9 +8,9 @@ import com.squareup.moshi.Types
 import io.reactivex.Observable
 import io.reactivex.subjects.BehaviorSubject
 import net.yupol.transmissionremote.domain.model.Server
-import net.yupol.transmissionremote.domain.repository.ServerRepository
+import net.yupol.transmissionremote.domain.repository.ServerListRepository
 
-class ServerRepositoryImpl(private val prefs: SharedPreferences, private val moshi: Moshi): ServerRepository {
+class ServerListRepositoryImpl(private val prefs: SharedPreferences, private val moshi: Moshi): ServerListRepository {
 
     companion object {
         private const val KEY_SERVER_LIST = "key_server_list"

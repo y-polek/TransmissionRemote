@@ -3,7 +3,7 @@ package net.yupol.transmissionremote.domain.repository
 import io.reactivex.Observable
 import net.yupol.transmissionremote.domain.model.Server
 
-interface ServerRepository {
+interface ServerListRepository {
 
     fun activeServer(): Observable<Server>
 

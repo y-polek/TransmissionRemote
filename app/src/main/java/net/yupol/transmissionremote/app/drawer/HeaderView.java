@@ -22,7 +22,7 @@ import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.TransmissionRemote;
 import net.yupol.transmissionremote.app.utils.ColorUtils;
 import net.yupol.transmissionremote.domain.model.Server;
-import net.yupol.transmissionremote.domain.repository.ServerRepository;
+import net.yupol.transmissionremote.domain.repository.ServerListRepository;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -61,7 +61,7 @@ public class HeaderView extends RelativeLayout implements View.OnClickListener {
     private int primaryInverseTextColor;
     private int secondaryTextColor;
 
-    @Inject ServerRepository repo;
+    @Inject ServerListRepository repo;
 
     private Drawer.OnDrawerItemClickListener drawerItemClickListener = new Drawer.OnDrawerItemClickListener() {
         @Override

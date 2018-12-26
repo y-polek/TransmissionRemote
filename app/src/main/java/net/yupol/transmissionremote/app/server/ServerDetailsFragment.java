@@ -24,7 +24,7 @@ import com.google.common.net.InternetDomainName;
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.TransmissionRemote;
 import net.yupol.transmissionremote.domain.model.Server;
-import net.yupol.transmissionremote.domain.repository.ServerRepository;
+import net.yupol.transmissionremote.domain.repository.ServerListRepository;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -60,7 +60,7 @@ public class ServerDetailsFragment extends Fragment {
     @BindView(R.id.password_edit_text) EditText passwordEdit;
     @BindView(R.id.rpc_url_edit_text) EditText rpcUrlEdit;
 
-    @Inject ServerRepository repo;
+    @Inject ServerListRepository repo;
 
     @Nullable private Server server;
 

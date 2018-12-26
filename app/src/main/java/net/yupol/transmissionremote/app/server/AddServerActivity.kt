@@ -8,7 +8,7 @@ import butterknife.ButterKnife
 import butterknife.OnClick
 import net.yupol.transmissionremote.app.R
 import net.yupol.transmissionremote.app.TransmissionRemote
-import net.yupol.transmissionremote.domain.repository.ServerRepository
+import net.yupol.transmissionremote.domain.repository.ServerListRepository
 import javax.inject.Inject
 
 class AddServerActivity : AppCompatActivity() {
@@ -21,7 +21,7 @@ class AddServerActivity : AppCompatActivity() {
         }
     }
 
-    @Inject lateinit var repo: ServerRepository
+    @Inject lateinit var repo: ServerListRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         TransmissionRemote.getInstance().appComponent().inject(this)

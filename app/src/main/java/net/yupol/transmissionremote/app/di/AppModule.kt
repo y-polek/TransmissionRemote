@@ -11,8 +11,8 @@ import dagger.Module
 import dagger.Provides
 import net.yupol.transmissionremote.app.res.StringResources
 import net.yupol.transmissionremote.app.res.StringResourcesImpl
-import net.yupol.transmissionremote.data.repository.ServerRepositoryImpl
-import net.yupol.transmissionremote.domain.repository.ServerRepository
+import net.yupol.transmissionremote.data.repository.ServerListRepositoryImpl
+import net.yupol.transmissionremote.domain.repository.ServerListRepository
 import javax.inject.Singleton
 
 @Module(subcomponents = [ServerComponent::class])
@@ -37,7 +37,7 @@ class AppModule {
 
     @Provides
     @Singleton
-    fun provideServerRepository(prefs: SharedPreferences, moshi: Moshi): ServerRepository = ServerRepositoryImpl(prefs, moshi)
+    fun provideServerRepository(prefs: SharedPreferences, moshi: Moshi): ServerListRepository = ServerListRepositoryImpl(prefs, moshi)
 
     @Provides
     @Singleton
