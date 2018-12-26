@@ -18,6 +18,10 @@ android {
         manifestPlaceholders = [fabricApiKey: "${apiKey('fabric_api_key')}"]
 
         vectorDrawables.useSupportLibrary = true
+
+        androidExtensions {
+            experimental = true
+        }
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8

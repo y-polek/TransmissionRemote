@@ -1,10 +1,13 @@
 package net.yupol.transmissionremote.app.model
 
+import android.os.Parcelable
 import androidx.annotation.DrawableRes
+import kotlinx.android.parcel.Parcelize
 import net.yupol.transmissionremote.app.R
 import net.yupol.transmissionremote.data.model.ErrorType
 import net.yupol.transmissionremote.data.model.ErrorType.*
 
+@Parcelize
 data class TorrentViewModel(
         val id: Int,
         val name: String,
@@ -23,7 +26,7 @@ data class TorrentViewModel(
         val eta: Long,
         val errorMessage: String? = null,
         val errorType: ErrorType = ErrorType.NONE,
-        val selected: Boolean)
+        val selected: Boolean): Parcelable
 {
     fun hasErrorOrWarning() = errorType != NONE
 

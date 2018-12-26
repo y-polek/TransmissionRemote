@@ -5,8 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.provider.Settings
-import android.text.InputType.TYPE_TEXT_FLAG_MULTI_LINE
-import android.text.InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS
 import android.text.method.ScrollingMovementMethod
 import android.util.Log
 import android.view.*
@@ -27,10 +25,6 @@ import butterknife.ButterKnife
 import butterknife.OnClick
 import butterknife.OnLongClick
 import com.afollestad.materialdialogs.MaterialDialog
-import com.afollestad.materialdialogs.WhichButton.POSITIVE
-import com.afollestad.materialdialogs.actions.setActionButtonEnabled
-import com.afollestad.materialdialogs.input.getInputField
-import com.afollestad.materialdialogs.input.input
 import com.afollestad.materialdialogs.list.listItems
 import com.getbase.floatingactionbutton.FloatingActionsMenu
 import com.mikepenz.community_material_typeface_library.CommunityMaterial
@@ -51,6 +45,7 @@ import net.yupol.transmissionremote.app.actionbar.ActionBarNavigationAdapter
 import net.yupol.transmissionremote.app.actionbar.SpeedTextView
 import net.yupol.transmissionremote.app.actionbar.TurtleModeButton
 import net.yupol.transmissionremote.app.databinding.MainActivityBinding
+import net.yupol.transmissionremote.app.dialogs.RenameTorrentDialog
 import net.yupol.transmissionremote.app.drawer.FreeSpaceFooterDrawerItem
 import net.yupol.transmissionremote.app.drawer.HeaderView
 import net.yupol.transmissionremote.app.drawer.SortDrawerItem
@@ -74,8 +69,12 @@ import net.yupol.transmissionremote.domain.model.Server
 import net.yupol.transmissionremote.model.json.Torrent
 import javax.inject.Inject
 
-class MainActivity : BaseMvpActivity<MainActivityView, MainActivityPresenter>(), MainActivityView, TorrentListFragment.OnTorrentSelectedListener, TorrentListFragment.ContextualActionBarListener {
-
+class MainActivity : BaseMvpActivity<MainActivityView, MainActivityPresenter>(),
+        MainActivityView,
+        TorrentListFragment.OnTorrentSelectedListener,
+        TorrentListFragment.ContextualActionBarListener,
+        RenameTorrentDialog.Listener
+{
     private var application: TransmissionRemote? = null
 
     private var toolbarSpinnerAdapter: ActionBarNavigationAdapter? = null
@@ -701,29 +700,11 @@ class MainActivity : BaseMvpActivity<MainActivityView, MainActivityPresenter>(),
     }
 
     override fun openRenameTorrentDialog(torrent: TorrentViewModel) {
+        RenameTorrentDialog.instance(torrent).show(supportFragmentManager, "RenameTorrent")
+    }
 
-        fun CharSequence.toName(): String = trim().toString()
-
-        fun CharSequence.isValidName(): Boolean {
-            val name = toName()
-            return name.isNotEmpty() && name != torrent.name
-        }
-
-        val dialog = MaterialDialog(this).show {
-            message(R.string.rename_file)
-            input(prefill = torrent.name,
-                    inputType = TYPE_TEXT_FLAG_MULTI_LINE or TYPE_TEXT_FLAG_NO_SUGGESTIONS,
-                    waitForPositiveButton = false) { dialog, text ->
-                dialog.setActionButtonEnabled(POSITIVE, text.isValidName())
-            }
-            positiveButton(R.string.rename) { dialog ->
-                val name = dialog.getInputField()!!.text.toName()
-                presenter.renameTorrent(torrent, name)
-            }
-            negativeButton(R.string.cancel)
-        }
-
-        dialog.setActionButtonEnabled(POSITIVE, false)
+    override fun onTorrentNameSelected(torrent: TorrentViewModel, newName: String) {
+        presenter.renameTorrent(torrent, newName)
     }
 
     // endregion
