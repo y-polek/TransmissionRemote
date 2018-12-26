@@ -3,7 +3,7 @@ package net.yupol.transmissionremote.app.di
 import dagger.BindsInstance
 import dagger.Subcomponent
 import net.yupol.transmissionremote.domain.model.Server
-import net.yupol.transmissionremote.domain.usecase.TorrentListInteractor
+import net.yupol.transmissionremote.domain.usecase.torrent.TorrentListInteractor
 
 @ServerScope
 @Subcomponent(modules = [ServerModule::class])

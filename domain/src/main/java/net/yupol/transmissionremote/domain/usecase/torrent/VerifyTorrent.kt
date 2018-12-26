@@ -1,4 +1,4 @@
-package net.yupol.transmissionremote.domain.usecase
+package net.yupol.transmissionremote.domain.usecase.torrent
 
 import io.reactivex.Single
 import net.yupol.transmissionremote.domain.model.Torrent

@@ -9,7 +9,7 @@ import net.yupol.transmissionremote.data.api.rpc.RpcRequestBodyConverterFactory
 import net.yupol.transmissionremote.data.repository.TorrentListRepositoryImpl
 import net.yupol.transmissionremote.domain.model.Server
 import net.yupol.transmissionremote.domain.repository.TorrentListRepository
-import net.yupol.transmissionremote.domain.usecase.LoadTorrentList
+import net.yupol.transmissionremote.domain.usecase.torrent.LoadTorrentList
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor

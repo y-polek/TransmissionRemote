@@ -19,8 +19,8 @@ import net.yupol.transmissionremote.app.server.ServerManager
 import net.yupol.transmissionremote.data.api.NoNetworkException
 import net.yupol.transmissionremote.domain.model.Server
 import net.yupol.transmissionremote.domain.model.Torrent
-import net.yupol.transmissionremote.domain.usecase.TorrentListInteractor
 import net.yupol.transmissionremote.domain.repository.ServerListRepository
+import net.yupol.transmissionremote.domain.usecase.torrent.TorrentListInteractor
 import net.yupol.transmissionremote.utils.deleteIf
 import net.yupol.transmissionremote.utils.toArray
 import java.util.concurrent.TimeUnit
