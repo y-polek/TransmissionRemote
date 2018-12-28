@@ -44,6 +44,8 @@ interface MainActivityView: MvpView {
 
     fun setRenameActionEnabled(enabled: Boolean)
 
+    fun setTurtleModeEnabled(enabled: Boolean)
+
     // region Routing
     fun openAddServerScreen()
 

@@ -6,8 +6,10 @@ import dagger.Provides
 import net.yupol.transmissionremote.app.preferences.Preferences
 import net.yupol.transmissionremote.data.api.*
 import net.yupol.transmissionremote.data.api.rpc.RpcRequestBodyConverterFactory
+import net.yupol.transmissionremote.data.repository.ServerRepositoryImpl
 import net.yupol.transmissionremote.data.repository.TorrentListRepositoryImpl
 import net.yupol.transmissionremote.domain.model.Server
+import net.yupol.transmissionremote.domain.repository.ServerRepository
 import net.yupol.transmissionremote.domain.repository.TorrentListRepository
 import net.yupol.transmissionremote.domain.usecase.torrent.LoadTorrentList
 import okhttp3.HttpUrl
@@ -83,8 +85,8 @@ class ServerModule {
                 .client(okHttpClient)
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .addConverterFactory(rpcBodyConverterFactory)
-                .addConverterFactory(ScalarsConverterFactory.create())
                 .addConverterFactory(MoshiConverterFactory.create(moshi))
+                .addConverterFactory(ScalarsConverterFactory.create())
                 .build()
     }
 
@@ -99,4 +101,8 @@ class ServerModule {
     @Provides
     @ServerScope
     fun provideLoadTorrentListUseCase(repo: TorrentListRepository, preferences: Preferences): LoadTorrentList = LoadTorrentList(repo, preferences.updateInterval)
+
+    @Provides
+    @ServerScope
+    fun serverRepository(impl: ServerRepositoryImpl): ServerRepository = impl
 }

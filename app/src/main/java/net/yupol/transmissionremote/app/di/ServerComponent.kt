@@ -3,6 +3,7 @@ package net.yupol.transmissionremote.app.di
 import dagger.BindsInstance
 import dagger.Subcomponent
 import net.yupol.transmissionremote.domain.model.Server
+import net.yupol.transmissionremote.domain.usecase.server.ServerInteractor
 import net.yupol.transmissionremote.domain.usecase.torrent.TorrentListInteractor
 
 @ServerScope
@@ -12,6 +13,8 @@ interface ServerComponent {
     fun activeServer(): Server
 
     fun torrentListInteractor(): TorrentListInteractor
+
+    fun serverInteractor(): ServerInteractor
 
     @Subcomponent.Builder
     interface Builder {

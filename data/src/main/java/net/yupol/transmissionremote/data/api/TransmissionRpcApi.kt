@@ -106,4 +106,10 @@ interface TransmissionRpcApi {
     @POST(".")
     @RpcMethod("torrent-set")
     fun setTorrentSettings(@Body args: Map<String, @JvmSuppressWildcards Any>): Completable
+
+    @POST("./")
+    @RpcMethod("session-get")
+    @RpcFields(fields = ["alt-speed-enabled"])
+    @Wrapped(path = ["arguments", "alt-speed-enabled"])
+    fun isTurtleModeEnabled(@Body args: Map<String, @JvmSuppressWildcards Any> = emptyMap()): Single<Boolean>
 }

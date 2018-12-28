@@ -1,5 +1,6 @@
 package net.yupol.transmissionremote.app.home
 
+import android.util.Log
 import com.hannesdorfmann.mosby3.mvp.MvpNullObjectBasePresenter
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers.mainThread
@@ -20,10 +21,12 @@ import net.yupol.transmissionremote.data.api.NoNetworkException
 import net.yupol.transmissionremote.domain.model.Server
 import net.yupol.transmissionremote.domain.model.Torrent
 import net.yupol.transmissionremote.domain.repository.ServerListRepository
+import net.yupol.transmissionremote.domain.usecase.server.ServerInteractor
 import net.yupol.transmissionremote.domain.usecase.torrent.TorrentListInteractor
 import net.yupol.transmissionremote.utils.deleteIf
 import net.yupol.transmissionremote.utils.toArray
-import java.util.concurrent.TimeUnit
+import java.util.concurrent.TimeUnit.MILLISECONDS
+import java.util.concurrent.TimeUnit.SECONDS
 import javax.inject.Inject
 
 class MainActivityPresenter @Inject constructor(
@@ -32,17 +35,22 @@ class MainActivityPresenter @Inject constructor(
         private val torrentMapper: TorrentMapper,
         private val strRes: StringResources): MvpNullObjectBasePresenter<MainActivityView>(), MvpViewCallback
 {
-    private lateinit var interactor: TorrentListInteractor
+    private lateinit var torrentInteractor: TorrentListInteractor
+    private lateinit var serverInteractor: ServerInteractor
     private lateinit var activeServer: Server
 
     private var torrentListSubscription: Disposable? = null
     private var serverListSubscription: Disposable? = null
+    private var turtleModeSubscription: Disposable? = null
     private val requests = CompositeDisposable()
+    private val turtleModeRequests = CompositeDisposable()
 
     private var torrents: List<TorrentViewModel>? = null
 
     private var inSelectionMode: Boolean = false
     private val selectedTorrents = mutableSetOf<Int>()
+
+    private var turtleModeEnabled: Boolean = false
 
     override fun viewStarted() {
         serverListSubscription = Observable.combineLatest(
@@ -50,7 +58,8 @@ class MainActivityPresenter @Inject constructor(
                 serverListRepo.activeServer(),
                 BiFunction { servers: List<Server>, activeServer: Server -> servers to activeServer })
                 .subscribe { (servers, activeServer) ->
-                    interactor = serverManager.serverComponent?.torrentListInteractor()!!
+                    torrentInteractor = serverManager.serverComponent?.torrentListInteractor()!!
+                    serverInteractor = serverManager.serverComponent?.serverInteractor()!!
                     this.activeServer = activeServer
 
                     view.serverListChanged(servers, activeServer)
@@ -61,6 +70,7 @@ class MainActivityPresenter @Inject constructor(
                     } else {
                         view.hideWelcomeScreen()
                         refreshTorrentList()
+                        startTurtleModePolling()
                     }
                 }
     }
@@ -68,7 +78,9 @@ class MainActivityPresenter @Inject constructor(
     override fun viewStopped() {
         torrentListSubscription?.dispose()
         serverListSubscription?.dispose()
+        turtleModeSubscription?.dispose()
         requests.clear()
+        turtleModeRequests.clear()
     }
 
     ///////////////////////////
@@ -89,7 +101,7 @@ class MainActivityPresenter @Inject constructor(
     }
 
     fun pauseClicked(torrentId: Int) {
-        requests += interactor.pauseTorrents(torrentId)
+        requests += torrentInteractor.pauseTorrents(torrentId)
                 .map { it.toViewModel() }
                 .subscribeOn(io())
                 .observeOn(mainThread())
@@ -102,7 +114,7 @@ class MainActivityPresenter @Inject constructor(
     }
 
     fun resumeClicked(torrentId: Int) {
-        requests += interactor.resumeTorrents(torrentId)
+        requests += torrentInteractor.resumeTorrents(torrentId)
                 .map { it.toViewModel() }
                 .subscribeOn(io())
                 .observeOn(mainThread())
@@ -156,8 +168,8 @@ class MainActivityPresenter @Inject constructor(
     fun pauseAllClicked() {
         view.showLoading()
 
-        requests += interactor.pauseAllTorrents()
-                .delay(500, TimeUnit.MILLISECONDS)
+        requests += torrentInteractor.pauseAllTorrents()
+                .delay(500, MILLISECONDS)
                 .subscribeOn(io())
                 .observeOn(mainThread())
                 .subscribe({
@@ -171,8 +183,8 @@ class MainActivityPresenter @Inject constructor(
     fun resumeAllClicked() {
         view.showLoading()
 
-        requests += interactor.resumeAllTorrents()
-                .delay(500, TimeUnit.MILLISECONDS)
+        requests += torrentInteractor.resumeAllTorrents()
+                .delay(500, MILLISECONDS)
                 .subscribeOn(io())
                 .observeOn(mainThread())
                 .subscribe({
@@ -226,7 +238,7 @@ class MainActivityPresenter @Inject constructor(
         if (selectedTorrents.isEmpty()) return
 
         val ids = selectedTorrents.toArray()
-        requests += interactor.pauseTorrents(*ids)
+        requests += torrentInteractor.pauseTorrents(*ids)
                 .map { it.toViewModel() }
                 .subscribeOn(io())
                 .observeOn(mainThread())
@@ -243,7 +255,7 @@ class MainActivityPresenter @Inject constructor(
         if (selectedTorrents.isEmpty()) return
 
         val ids = selectedTorrents.toArray()
-        requests += interactor.resumeTorrents(*ids)
+        requests += torrentInteractor.resumeTorrents(*ids)
                 .map { it.toViewModel() }
                 .subscribeOn(io())
                 .observeOn(mainThread())
@@ -260,7 +272,7 @@ class MainActivityPresenter @Inject constructor(
         if (selectedTorrents.isEmpty()) return
 
         val ids = selectedTorrents.toArray()
-        requests += interactor.resumeTorrents(*ids, noQueue = true)
+        requests += torrentInteractor.resumeTorrents(*ids, noQueue = true)
                 .map { it.toViewModel() }
                 .subscribeOn(io())
                 .observeOn(mainThread())
@@ -281,7 +293,7 @@ class MainActivityPresenter @Inject constructor(
     }
 
     fun renameTorrent(torrent: TorrentViewModel, newName: String) {
-        requests += interactor.renameTorrent(id = torrent.id, oldName = torrent.name, newName = newName)
+        requests += torrentInteractor.renameTorrent(id = torrent.id, oldName = torrent.name, newName = newName)
                 .map { torrentMapper.toViewModel(it, false) }
                 .subscribeOn(io())
                 .observeOn(mainThread())
@@ -299,7 +311,7 @@ class MainActivityPresenter @Inject constructor(
     fun verifySelectedClicked() {
         if (selectedTorrents.isEmpty()) return
 
-        requests += interactor.verifyLocalData(*selectedTorrents.toArray())
+        requests += torrentInteractor.verifyLocalData(*selectedTorrents.toArray())
                 .map { it.toViewModel() }
                 .subscribeOn(io())
                 .observeOn(mainThread())
@@ -315,12 +327,29 @@ class MainActivityPresenter @Inject constructor(
     fun reannounceSelectedClicked() {
         if (selectedTorrents.isEmpty()) return
 
-        requests += interactor.reannounceTorrents(*selectedTorrents.toArray())
+        requests += torrentInteractor.reannounceTorrents(*selectedTorrents.toArray())
                 .subscribeOn(io())
                 .observeOn(mainThread())
                 .subscribeBy(onError = view::showErrorAlert)
 
         view.finishSelection()
+    }
+
+    fun turtleModeToggled() {
+        turtleModeRequests.clear()
+
+        /*turtleModeRequests += serverInteractor.setTurtleModeEnabled(!turtleModeEnabled)
+                .subscribeOn(io())
+                .observeOn(mainThread())
+                .subscribeBy(
+                        onSuccess = { enabled ->
+                            turtleModeEnabled = enabled
+                            view.setTurtleModeEnabled(enabled)
+                        },
+                        onError = { error ->
+                            view.showErrorAlert(error)
+                            // TODO: reload Turtle Mode
+                        })*/
     }
 
     //////////////////////////////
@@ -330,7 +359,7 @@ class MainActivityPresenter @Inject constructor(
     private fun startTorrentListLoading() {
         torrentListSubscription?.dispose()
 
-        torrentListSubscription = interactor.loadTorrentList()
+        torrentListSubscription = torrentInteractor.loadTorrentList()
                 .map { it.toViewModel() }
                 .map {
                     ListResource.success(it)
@@ -343,7 +372,7 @@ class MainActivityPresenter @Inject constructor(
                     }
                 }
                 .repeatWhen { completed ->
-                    completed.delay(5, TimeUnit.SECONDS)
+                    completed.delay(5, SECONDS)
                 }
                 .subscribeOn(io())
                 .observeOn(mainThread())
@@ -400,7 +429,7 @@ class MainActivityPresenter @Inject constructor(
     private fun removeSelectedTorrents(deleteData: Boolean) {
         view.showLoading()
 
-        requests += interactor.removeTorrents(*selectedTorrents.toIntArray(), deleteData = deleteData)
+        requests += torrentInteractor.removeTorrents(*selectedTorrents.toIntArray(), deleteData = deleteData)
                 .subscribeOn(io())
                 .observeOn(mainThread())
                 .subscribeBy(
@@ -432,4 +461,25 @@ class MainActivityPresenter @Inject constructor(
     }
 
     private fun List<TorrentViewModel>.findWithId(id: Int) = find { it.id == id }
+
+    private fun startTurtleModePolling() {
+        turtleModeSubscription?.dispose()
+
+        turtleModeSubscription = serverInteractor.isTurtleModeEnabled()
+                .doOnError { error ->
+                    Log.e("MainActivityPresenter", "Failed to load turtle mode state", error)
+                }
+                .retryWhen { error ->
+                    error.delay(5, SECONDS)
+                }
+                .repeatWhen { completed ->
+                    completed.delay(5, SECONDS)
+                }
+                .subscribeOn(io())
+                .observeOn(mainThread())
+                .subscribeBy { enabled ->
+                    turtleModeEnabled = enabled
+                    view.setTurtleModeEnabled(enabled)
+                }
+    }
 }

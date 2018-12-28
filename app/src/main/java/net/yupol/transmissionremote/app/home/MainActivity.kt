@@ -106,6 +106,9 @@ class MainActivity : BaseMvpActivity<MainActivityView, MainActivityPresenter>(),
     @BindView(R.id.welcome_layout) lateinit var welcomeLayout: View
     @BindView(R.id.add_torrent_button) lateinit var addTorrentFab: View
     @BindView(R.id.bottom_toolbar) @JvmField var bottomToolbar: Toolbar? = null
+    @BindView(R.id.turtle_mode_button) @JvmField var turtleModeButton: TurtleModeButton? = null
+
+    private var turtleModeMenu: MenuItem? = null
 
     @Inject lateinit var injectedPresenter: MainActivityPresenter
 
@@ -209,6 +212,10 @@ class MainActivity : BaseMvpActivity<MainActivityView, MainActivityPresenter>(),
 
         detailedErrorText.movementMethod = ScrollingMovementMethod()
 
+        turtleModeButton?.setEnableChangedListener {
+            presenter.turtleModeToggled()
+        }
+
         setupActionBar()
         setupBottomToolbar()
         setupDrawer()
@@ -228,7 +235,7 @@ class MainActivity : BaseMvpActivity<MainActivityView, MainActivityPresenter>(),
 
     @OnLongClick(R.id.detailed_error_text)
     internal fun onErrorDetailsLongClicked(): Boolean {
-        clipboard.setPlainTextClip("Error text", detailedErrorText!!.text)
+        clipboard.setPlainTextClip("Error text", detailedErrorText.text)
         Toast.makeText(this, R.string.copied, Toast.LENGTH_SHORT).show()
         return true
     }
@@ -263,11 +270,6 @@ class MainActivity : BaseMvpActivity<MainActivityView, MainActivityPresenter>(),
 
     private fun setupBottomToolbar() {
         if (bottomToolbar == null) return
-
-        val turtleModeButton = bottomToolbar!!.findViewById<TurtleModeButton>(R.id.turtle_mode_button)
-        turtleModeButton.setEnableChangedListener { isEnabled ->
-
-        }
 
         bottomToolbar!!.inflateMenu(R.menu.bottom_toolbar_menu)
         val menu = bottomToolbar!!.menu
@@ -441,6 +443,8 @@ class MainActivity : BaseMvpActivity<MainActivityView, MainActivityPresenter>(),
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.torrent_list_menu, menu)
 
+        turtleModeMenu = menu.findItem(R.id.action_turtle_mode)
+
         val downloadItem = menu.findItem(R.id.action_download_speed)
         if (downloadItem != null) {
             val downloadSpeedView = downloadItem.actionView as SpeedTextView
@@ -516,12 +520,14 @@ class MainActivity : BaseMvpActivity<MainActivityView, MainActivityPresenter>(),
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.action_turtle_mode ->
+            R.id.action_turtle_mode -> {
+                presenter.turtleModeToggled()
+                return true
+            }
+            R.id.action_open_torrent -> {
                 // TODO: implement
                 return true
-            R.id.action_open_torrent ->
-                // TODO: implement
-                return true
+            }
             R.id.action_start_all_torrents -> {
                 presenter.resumeAllClicked()
                 return true
@@ -654,6 +660,11 @@ class MainActivity : BaseMvpActivity<MainActivityView, MainActivityPresenter>(),
         if (actionMode != null) {
             actionMode!!.menu.findItem(R.id.action_rename).isEnabled = enabled
         }
+    }
+
+    override fun setTurtleModeEnabled(enabled: Boolean) {
+        turtleModeButton?.isEnabled = enabled
+        turtleModeMenu?.setIcon(if (enabled) R.drawable.ic_turtle_active else R.drawable.ic_turtle_default)
     }
 
     // endregion
