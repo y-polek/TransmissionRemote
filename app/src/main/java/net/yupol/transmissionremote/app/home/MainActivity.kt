@@ -20,10 +20,7 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import butterknife.BindView
-import butterknife.ButterKnife
-import butterknife.OnClick
-import butterknife.OnLongClick
+import butterknife.*
 import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.list.listItems
 import com.getbase.floatingactionbutton.FloatingActionsMenu
@@ -738,6 +735,7 @@ class MainActivity : BaseMvpActivity<MainActivityView, MainActivityPresenter>(),
         presenter.retryButtonClicked()
     }
 
+    @Optional
     @OnClick(R.id.turtle_mode_button)
     internal fun onTurtleModeClicked() {
         turtleModeButton?.toggle()
