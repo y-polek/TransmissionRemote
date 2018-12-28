@@ -75,6 +75,16 @@ class ServerDetailsActivity: BaseActivity() {
         }
     }
 
+    override fun onSupportNavigateUp(): Boolean {
+        return if (findFragment().hasChanges()) {
+            promptSave()
+            false
+        } else {
+            finish()
+            true
+        }
+    }
+
     private fun findFragment(): ServerDetailsFragment {
         return supportFragmentManager.findFragmentByTag(FRAGMENT_TAG) as ServerDetailsFragment
     }

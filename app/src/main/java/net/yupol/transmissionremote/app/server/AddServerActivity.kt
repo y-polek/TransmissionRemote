@@ -49,6 +49,11 @@ class AddServerActivity : AppCompatActivity() {
         }
     }
 
+    override fun onSupportNavigateUp(): Boolean {
+        finish()
+        return true
+    }
+
     private fun findFragment(): ServerDetailsFragment {
         return supportFragmentManager.findFragmentByTag(FRAGMENT_TAG) as ServerDetailsFragment
     }
