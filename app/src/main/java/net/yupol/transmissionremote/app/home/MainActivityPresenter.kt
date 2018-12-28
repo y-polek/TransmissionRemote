@@ -1,6 +1,5 @@
 package net.yupol.transmissionremote.app.home
 
-import android.util.Log
 import com.hannesdorfmann.mosby3.mvp.MvpNullObjectBasePresenter
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers.mainThread
@@ -338,7 +337,7 @@ class MainActivityPresenter @Inject constructor(
     fun turtleModeToggled() {
         turtleModeRequests.clear()
 
-        /*turtleModeRequests += serverInteractor.setTurtleModeEnabled(!turtleModeEnabled)
+        turtleModeRequests += serverInteractor.setTurtleModeEnabled(!turtleModeEnabled)
                 .subscribeOn(io())
                 .observeOn(mainThread())
                 .subscribeBy(
@@ -348,8 +347,8 @@ class MainActivityPresenter @Inject constructor(
                         },
                         onError = { error ->
                             view.showErrorAlert(error)
-                            // TODO: reload Turtle Mode
-                        })*/
+                            view.setTurtleModeEnabled(turtleModeEnabled)
+                        })
     }
 
     //////////////////////////////
@@ -466,9 +465,6 @@ class MainActivityPresenter @Inject constructor(
         turtleModeSubscription?.dispose()
 
         turtleModeSubscription = serverInteractor.isTurtleModeEnabled()
-                .doOnError { error ->
-                    Log.e("MainActivityPresenter", "Failed to load turtle mode state", error)
-                }
                 .retryWhen { error ->
                     error.delay(5, SECONDS)
                 }

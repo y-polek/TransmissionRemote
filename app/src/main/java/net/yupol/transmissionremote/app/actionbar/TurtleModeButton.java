@@ -3,19 +3,17 @@ package net.yupol.transmissionremote.app.actionbar;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
-import android.view.View;
 
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.utils.CheatSheet;
 
 import androidx.appcompat.widget.AppCompatImageButton;
 
-public class TurtleModeButton extends AppCompatImageButton implements View.OnClickListener {
+public class TurtleModeButton extends AppCompatImageButton {
 
     private boolean isEnabled;
     private int enabledRes;
     private int disabledRes;
-    private OnEnableChangedListener enableListener;
 
     public TurtleModeButton(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -31,9 +29,6 @@ public class TurtleModeButton extends AppCompatImageButton implements View.OnCli
         }
 
         updateImage();
-
-        setOnClickListener(this);
-
         CheatSheet.setup(this, R.string.tooltip_turtle_mode);
     }
 
@@ -45,36 +40,16 @@ public class TurtleModeButton extends AppCompatImageButton implements View.OnCli
         if (this.isEnabled == isEnabled) return;
 
         this.isEnabled = isEnabled;
-        if (enableListener != null) {
-            enableListener.onEnableChanged(isEnabled);
-        }
         updateImage();
         invalidate();
         requestLayout();
     }
 
-    public void setEnableChangedListener(OnEnableChangedListener listener) {
-        enableListener = listener;
-    }
-
-    @Override
-    public void onClick(View v) {
+    public void toggle() {
         setEnabled(!isEnabled);
-    }
-
-    @Override
-    public void setOnClickListener(OnClickListener l) {
-        if (l != this) {
-            throw new UnsupportedOperationException("Use setEnableChangedListener(OnEnableChangedListener) instead");
-        }
-        super.setOnClickListener(l);
     }
 
     private void updateImage() {
         setImageResource(isEnabled ? enabledRes : disabledRes);
-    }
-
-    public interface OnEnableChangedListener {
-        void onEnableChanged(boolean isEnabled);
     }
 }

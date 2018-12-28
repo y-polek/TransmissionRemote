@@ -13,6 +13,6 @@ class ServerRepositoryImpl @Inject constructor(private val api: TransmissionRpcA
     }
 
     override fun setTurtleModeEnabled(enabled: Boolean): Completable {
-        TODO("not implemented")
+        return api.setServerSettings(mapOf("alt-speed-enabled" to enabled))
     }
 }

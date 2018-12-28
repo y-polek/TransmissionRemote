@@ -212,10 +212,6 @@ class MainActivity : BaseMvpActivity<MainActivityView, MainActivityPresenter>(),
 
         detailedErrorText.movementMethod = ScrollingMovementMethod()
 
-        turtleModeButton?.setEnableChangedListener {
-            presenter.turtleModeToggled()
-        }
-
         setupActionBar()
         setupBottomToolbar()
         setupDrawer()
@@ -740,6 +736,12 @@ class MainActivity : BaseMvpActivity<MainActivityView, MainActivityPresenter>(),
     @OnClick(R.id.retry_button)
     internal fun onRetryButtonClicked() {
         presenter.retryButtonClicked()
+    }
+
+    @OnClick(R.id.turtle_mode_button)
+    internal fun onTurtleModeClicked() {
+        turtleModeButton?.toggle()
+        presenter.turtleModeToggled()
     }
 
     companion object {
