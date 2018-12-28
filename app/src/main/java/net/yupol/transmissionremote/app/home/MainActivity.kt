@@ -437,6 +437,7 @@ class MainActivity : BaseMvpActivity<MainActivityView, MainActivityPresenter>(),
         menuInflater.inflate(R.menu.torrent_list_menu, menu)
 
         turtleModeMenu = menu.findItem(R.id.action_turtle_mode)
+        updateTurtleModeMenu(presenter.turtleModeEnabled)
 
         val downloadItem = menu.findItem(R.id.action_download_speed)
         if (downloadItem != null) {
@@ -507,6 +508,10 @@ class MainActivity : BaseMvpActivity<MainActivityView, MainActivityPresenter>(),
         return super.onCreateOptionsMenu(menu)
     }
 
+    private fun updateTurtleModeMenu(enabled: Boolean) {
+        turtleModeMenu?.setIcon(if (enabled) R.drawable.ic_turtle_active else R.drawable.ic_turtle_default)
+    }
+
     private fun handleSearch(query: String) {
         // TODO: implement
     }
@@ -514,6 +519,7 @@ class MainActivity : BaseMvpActivity<MainActivityView, MainActivityPresenter>(),
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.action_turtle_mode -> {
+                updateTurtleModeMenu(!presenter.turtleModeEnabled)
                 presenter.turtleModeToggled()
                 return true
             }
@@ -657,7 +663,7 @@ class MainActivity : BaseMvpActivity<MainActivityView, MainActivityPresenter>(),
 
     override fun setTurtleModeEnabled(enabled: Boolean) {
         turtleModeButton?.isEnabled = enabled
-        turtleModeMenu?.setIcon(if (enabled) R.drawable.ic_turtle_active else R.drawable.ic_turtle_default)
+        updateTurtleModeMenu(enabled)
     }
 
     // endregion

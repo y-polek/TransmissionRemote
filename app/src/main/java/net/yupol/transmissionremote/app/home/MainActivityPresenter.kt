@@ -49,7 +49,8 @@ class MainActivityPresenter @Inject constructor(
     private var inSelectionMode: Boolean = false
     private val selectedTorrents = mutableSetOf<Int>()
 
-    private var turtleModeEnabled: Boolean = false
+    var turtleModeEnabled: Boolean = false
+        private set
 
     override fun viewStarted() {
         serverListSubscription = Observable.combineLatest(
