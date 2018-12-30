@@ -39,3 +39,11 @@ data class TorrentViewModel(
         }
     }
 }
+
+fun Iterable<TorrentViewModel>.totalDownloadSpeed(): Long {
+    return map(TorrentViewModel::downloadRate).sum()
+}
+
+fun Iterable<TorrentViewModel>.totalUploadSpeed(): Long {
+    return map(TorrentViewModel::uploadRate).sum()
+}

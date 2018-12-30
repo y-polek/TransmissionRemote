@@ -18,6 +18,8 @@ interface MainActivityView: MvpView {
 
     fun showTorrents(torrents: List<TorrentViewModel>)
 
+    fun showLoadingSpeed(downloadSpeed: Long, uploadSpeed: Long)
+
     fun hideTorrents()
 
     fun showFab()

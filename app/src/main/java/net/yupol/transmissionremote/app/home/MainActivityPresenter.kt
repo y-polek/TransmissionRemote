@@ -13,6 +13,8 @@ import net.yupol.transmissionremote.app.model.ListResource
 import net.yupol.transmissionremote.app.model.Status.*
 import net.yupol.transmissionremote.app.model.TorrentViewModel
 import net.yupol.transmissionremote.app.model.mapper.TorrentMapper
+import net.yupol.transmissionremote.app.model.totalDownloadSpeed
+import net.yupol.transmissionremote.app.model.totalUploadSpeed
 import net.yupol.transmissionremote.app.mvp.MvpViewCallback
 import net.yupol.transmissionremote.app.res.StringResources
 import net.yupol.transmissionremote.app.server.ServerManager
@@ -97,7 +99,7 @@ class MainActivityPresenter @Inject constructor(
 
     fun refreshTorrentList() {
         view.showLoading()
-        startTorrentListLoading()
+        startTorrentListPolling()
     }
 
     fun pauseClicked(torrentId: Int) {
@@ -356,7 +358,7 @@ class MainActivityPresenter @Inject constructor(
     // endregion Public interface
     //////////////////////////////
 
-    private fun startTorrentListLoading() {
+    private fun startTorrentListPolling() {
         torrentListSubscription?.dispose()
 
         torrentListSubscription = torrentInteractor.loadTorrentList()
@@ -382,6 +384,9 @@ class MainActivityPresenter @Inject constructor(
                         SUCCESS -> {
                             torrents = result.data
                             view.showTorrents(torrents!!)
+                            view.showLoadingSpeed(
+                                    downloadSpeed = torrents!!.totalDownloadSpeed(),
+                                    uploadSpeed = torrents!!.totalUploadSpeed())
                             view.hideError()
                             view.showFab()
                         }

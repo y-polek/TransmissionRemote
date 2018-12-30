@@ -107,6 +107,9 @@ class MainActivity : BaseMvpActivity<MainActivityView, MainActivityPresenter>(),
 
     private var turtleModeMenu: MenuItem? = null
 
+    private var downloadSpeedView: SpeedTextView? = null
+    private var uploadSpeedView: SpeedTextView? = null
+
     @Inject lateinit var injectedPresenter: MainActivityPresenter
 
     private var actionMode: ActionMode? = null
@@ -268,6 +271,8 @@ class MainActivity : BaseMvpActivity<MainActivityView, MainActivityPresenter>(),
         val menu = bottomToolbar!!.menu
         bottomBarDownSpeedMenuItem = menu.findItem(R.id.action_download_speed)
         bottomBarUpSpeedMenuItem = menu.findItem(R.id.action_upload_speed)
+        downloadSpeedView = bottomBarDownSpeedMenuItem?.actionView as SpeedTextView?
+        uploadSpeedView = bottomBarUpSpeedMenuItem?.actionView as SpeedTextView?
     }
 
     private fun setupDrawer() {
@@ -439,13 +444,12 @@ class MainActivity : BaseMvpActivity<MainActivityView, MainActivityPresenter>(),
         turtleModeMenu = menu.findItem(R.id.action_turtle_mode)
         updateTurtleModeMenu(presenter.turtleModeEnabled)
 
-        val downloadItem = menu.findItem(R.id.action_download_speed)
-        if (downloadItem != null) {
-            val downloadSpeedView = downloadItem.actionView as SpeedTextView
-        }
-        val uploadItem = menu.findItem(R.id.action_upload_speed)
-        if (uploadItem != null) {
-            val uploadSpeedView = uploadItem.actionView as SpeedTextView
+
+        val downloadSpeedMenu = menu.findItem(R.id.action_download_speed)
+        val uploadSpeedMenu = menu.findItem(R.id.action_upload_speed)
+        if (downloadSpeedMenu != null && uploadSpeedMenu != null) {
+            downloadSpeedView = downloadSpeedMenu.actionView as SpeedTextView
+            uploadSpeedView = uploadSpeedMenu.actionView as SpeedTextView
         }
 
         searchMenuItem = menu.findItem(R.id.action_search)
@@ -664,6 +668,11 @@ class MainActivity : BaseMvpActivity<MainActivityView, MainActivityPresenter>(),
     override fun setTurtleModeEnabled(enabled: Boolean) {
         turtleModeButton?.isEnabled = enabled
         updateTurtleModeMenu(enabled)
+    }
+
+    override fun showLoadingSpeed(downloadSpeed: Long, uploadSpeed: Long) {
+        downloadSpeedView?.setSpeed(downloadSpeed)
+        uploadSpeedView?.setSpeed(uploadSpeed)
     }
 
     // endregion
