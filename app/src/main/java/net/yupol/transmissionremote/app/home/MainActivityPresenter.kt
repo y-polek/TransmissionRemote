@@ -51,6 +51,7 @@ class MainActivityPresenter @Inject constructor(
     private val turtleModeRequests = CompositeDisposable()
 
     private var torrents: List<TorrentViewModel>? = null
+    private var filteredTorrents: List<TorrentViewModel>? = null
 
     private var inSelectionMode: Boolean = false
     private val selectedTorrents = mutableSetOf<Int>()
@@ -216,8 +217,8 @@ class MainActivityPresenter @Inject constructor(
     }
 
     fun selectAllClicked() {
-        if (selectedTorrents.size < torrents?.size ?: 0) {
-            selectedTorrents.addAll(torrents?.map { it.id }.orEmpty())
+        if (selectedTorrents.size < filteredTorrents?.size ?: 0) {
+            selectedTorrents.addAll(filteredTorrents?.map { it.id }.orEmpty())
         } else {
             selectedTorrents.clear()
         }
@@ -363,9 +364,12 @@ class MainActivityPresenter @Inject constructor(
     fun searchSubmitted(query: String) {
         searchQuery = query
 
-        if (torrents != null) {
-            view.showTorrents(torrents!!.filteredAndHighlighted())
+        filteredTorrents = torrents?.filteredAndHighlighted()
+        if (filteredTorrents != null) {
+            view.showTorrents(filteredTorrents!!)
         }
+
+        if (inSelectionMode) cleanupSelection()
     }
 
     //////////////////////////////
@@ -397,7 +401,8 @@ class MainActivityPresenter @Inject constructor(
                     when (result.status) {
                         SUCCESS -> {
                             torrents = result.data
-                            view.showTorrents(torrents!!.filteredAndHighlighted())
+                            filteredTorrents = torrents?.filteredAndHighlighted()
+                            view.showTorrents(filteredTorrents.orEmpty())
                             view.showLoadingSpeed(
                                     downloadSpeed = torrents!!.totalDownloadSpeed(),
                                     uploadSpeed = torrents!!.totalUploadSpeed())
@@ -406,12 +411,14 @@ class MainActivityPresenter @Inject constructor(
                         }
                         NO_NETWORK -> {
                             torrents = null
+                            filteredTorrents = null
                             view.hideTorrents()
                             view.showError(if (result.inAirplaneMode) strRes.networkErrorNoNetworkInAirplaneMode else strRes.networkErrorNoNetwork)
                             view.hideFab()
                         }
                         ERROR -> {
                             torrents = null
+                            filteredTorrents = null
                             view.hideTorrents()
                             view.showError(strRes.networkErrorNoConnection, result.error?.message)
                             view.hideFab()
@@ -433,7 +440,8 @@ class MainActivityPresenter @Inject constructor(
         torrents = torrents?.map { torrent ->
             torrent.copy(selected = selectedTorrents.contains(torrent.id))
         }
-        view.showTorrents(torrents ?: return)
+        filteredTorrents = torrents?.filteredAndHighlighted()
+        view.showTorrents(filteredTorrents ?: return)
     }
 
     private fun updateSelectionTitle() {
@@ -464,10 +472,10 @@ class MainActivityPresenter @Inject constructor(
     }
 
     private fun cleanupSelection() {
-        if (torrents.isNullOrEmpty()) {
+        if (filteredTorrents.isNullOrEmpty()) {
             selectedTorrents.clear()
         } else {
-            val sortedIds = torrents!!.map { it.id }.sorted()
+            val sortedIds = filteredTorrents!!.map { it.id }.sorted()
             selectedTorrents.deleteIf { sortedIds.binarySearch(it) < 0 }
         }
         updateAllTorrentsSelection()
