@@ -1,5 +1,7 @@
 package net.yupol.transmissionremote.app.home
 
+import android.text.SpannableStringBuilder
+import androidx.core.text.color
 import com.hannesdorfmann.mosby3.mvp.MvpNullObjectBasePresenter
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers.mainThread
@@ -16,6 +18,7 @@ import net.yupol.transmissionremote.app.model.mapper.TorrentMapper
 import net.yupol.transmissionremote.app.model.totalDownloadSpeed
 import net.yupol.transmissionremote.app.model.totalUploadSpeed
 import net.yupol.transmissionremote.app.mvp.MvpViewCallback
+import net.yupol.transmissionremote.app.res.ColorResources
 import net.yupol.transmissionremote.app.res.StringResources
 import net.yupol.transmissionremote.app.server.ServerManager
 import net.yupol.transmissionremote.data.api.NoNetworkException
@@ -34,7 +37,8 @@ class MainActivityPresenter @Inject constructor(
         private val serverManager: ServerManager,
         private val serverListRepo: ServerListRepository,
         private val torrentMapper: TorrentMapper,
-        private val strRes: StringResources): MvpNullObjectBasePresenter<MainActivityView>(), MvpViewCallback
+        private val strRes: StringResources,
+        private val colorRes: ColorResources): MvpNullObjectBasePresenter<MainActivityView>(), MvpViewCallback
 {
     private lateinit var torrentInteractor: TorrentListInteractor
     private lateinit var serverInteractor: ServerInteractor
@@ -50,6 +54,8 @@ class MainActivityPresenter @Inject constructor(
 
     private var inSelectionMode: Boolean = false
     private val selectedTorrents = mutableSetOf<Int>()
+
+    private var searchQuery: String = ""
 
     var turtleModeEnabled: Boolean = false
         private set
@@ -295,7 +301,7 @@ class MainActivityPresenter @Inject constructor(
     }
 
     fun renameTorrent(torrent: TorrentViewModel, newName: String) {
-        requests += torrentInteractor.renameTorrent(id = torrent.id, oldName = torrent.name, newName = newName)
+        requests += torrentInteractor.renameTorrent(id = torrent.id, oldName = torrent.name.toString(), newName = newName)
                 .map { torrentMapper.toViewModel(it, false) }
                 .subscribeOn(io())
                 .observeOn(mainThread())
@@ -354,6 +360,14 @@ class MainActivityPresenter @Inject constructor(
                         })
     }
 
+    fun searchSubmitted(query: String) {
+        searchQuery = query
+
+        if (torrents != null) {
+            view.showTorrents(torrents!!.filteredAndHighlighted())
+        }
+    }
+
     //////////////////////////////
     // endregion Public interface
     //////////////////////////////
@@ -383,7 +397,7 @@ class MainActivityPresenter @Inject constructor(
                     when (result.status) {
                         SUCCESS -> {
                             torrents = result.data
-                            view.showTorrents(torrents!!)
+                            view.showTorrents(torrents!!.filteredAndHighlighted())
                             view.showLoadingSpeed(
                                     downloadSpeed = torrents!!.totalDownloadSpeed(),
                                     uploadSpeed = torrents!!.totalUploadSpeed())
@@ -483,5 +497,27 @@ class MainActivityPresenter @Inject constructor(
                     turtleModeEnabled = enabled
                     view.setTurtleModeEnabled(enabled)
                 }
+    }
+
+    private fun List<TorrentViewModel>.filteredAndHighlighted(): List<TorrentViewModel> {
+        if (searchQuery.isBlank()) return this
+
+        return filter { torrent ->
+            torrent.name.contains(searchQuery, ignoreCase = true)
+        }.map { torrent ->
+            val name = torrent.name.toString()
+            val matchStartIdx = name.indexOf(searchQuery, ignoreCase = true)
+            if (matchStartIdx < 0) return@map torrent
+            val matchEndIdx = matchStartIdx + searchQuery.length
+
+            val nameWithHighlight = SpannableStringBuilder()
+                    .append(name.substring(0, matchStartIdx))
+                    .color(colorRes.accent) {
+                        append(name.substring(matchStartIdx, matchEndIdx))
+                    }
+                    .append(name.substring(matchEndIdx))
+
+            return@map torrent.copy(name = nameWithHighlight)
+        }
     }
 }

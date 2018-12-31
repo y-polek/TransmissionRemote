@@ -25,7 +25,6 @@ import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.list.listItems
 import com.getbase.floatingactionbutton.FloatingActionsMenu
 import com.mikepenz.community_material_typeface_library.CommunityMaterial
-import com.mikepenz.fontawesome_typeface_library.FontAwesome
 import com.mikepenz.google_material_typeface_library.GoogleMaterial
 import com.mikepenz.iconics.IconicsDrawable
 import com.mikepenz.iconics.context.IconicsLayoutInflater2
@@ -59,8 +58,8 @@ import net.yupol.transmissionremote.app.sorting.SortedBy
 import net.yupol.transmissionremote.app.torrentdetails.TorrentDetailsActivity
 import net.yupol.transmissionremote.app.torrentlist.TorrentListFragment
 import net.yupol.transmissionremote.app.utils.DividerItemDecoration
-import net.yupol.transmissionremote.app.utils.IconUtils
 import net.yupol.transmissionremote.app.utils.ThemeUtils
+import net.yupol.transmissionremote.app.utils.hideKeyboard
 import net.yupol.transmissionremote.device.clipboard.Clipboard
 import net.yupol.transmissionremote.domain.model.Server
 import net.yupol.transmissionremote.model.json.Torrent
@@ -81,8 +80,8 @@ class MainActivity : BaseMvpActivity<MainActivityView, MainActivityPresenter>(),
     private var bottomBarDownSpeedMenuItem: MenuItem? = null
     private var bottomBarUpSpeedMenuItem: MenuItem? = null
 
-    private var searchView: SearchView? = null
-    private var searchMenuItem: MenuItem? = null
+    private lateinit var searchMenuItem: MenuItem
+    private lateinit var searchView: SearchView
     private var restoredSearchMenuItemExpanded = false
     private var restoredSearchQuery: CharSequence = ""
 
@@ -408,13 +407,8 @@ class MainActivity : BaseMvpActivity<MainActivityView, MainActivityPresenter>(),
         outState.putBoolean(KEY_IN_SELECTION_MODE, actionMode != null)
 
         outState.putBoolean(KEY_DRAWER_SERVER_LIST_EXPANDED, drawer.switchedDrawerContent())
-        if (searchMenuItem != null) {
-            outState.putBoolean(KEY_SEARCH_ACTION_EXPANDED, searchMenuItem!!.isActionViewExpanded)
-            outState.putCharSequence(KEY_SEARCH_QUERY, searchView!!.query)
-        } else {
-            outState.putBoolean(KEY_SEARCH_ACTION_EXPANDED, restoredSearchMenuItemExpanded)
-            outState.putCharSequence(KEY_SEARCH_QUERY, restoredSearchQuery)
-        }
+        outState.putBoolean(KEY_SEARCH_ACTION_EXPANDED, searchMenuItem.isActionViewExpanded)
+        outState.putCharSequence(KEY_SEARCH_QUERY, searchView.query)
 
         outState.putBoolean(KEY_FAB_EXPANDED, binding.addTorrentButton.isExpanded)
     }
@@ -444,7 +438,6 @@ class MainActivity : BaseMvpActivity<MainActivityView, MainActivityPresenter>(),
         turtleModeMenu = menu.findItem(R.id.action_turtle_mode)
         updateTurtleModeMenu(presenter.turtleModeEnabled)
 
-
         val downloadSpeedMenu = menu.findItem(R.id.action_download_speed)
         val uploadSpeedMenu = menu.findItem(R.id.action_upload_speed)
         if (downloadSpeedMenu != null && uploadSpeedMenu != null) {
@@ -452,28 +445,32 @@ class MainActivity : BaseMvpActivity<MainActivityView, MainActivityPresenter>(),
             uploadSpeedView = uploadSpeedMenu.actionView as SpeedTextView
         }
 
-        searchMenuItem = menu.findItem(R.id.action_search)
-        if (searchMenuItem == null) {
-            searchMenuItem = bottomToolbar!!.menu.findItem(R.id.action_search)
+        setupSearchMenu(menu)
+
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    private fun setupSearchMenu(menu: Menu) {
+        searchMenuItem = when {
+            bottomToolbar != null -> bottomToolbar!!.menu.findItem(R.id.action_search)
+            else -> menu.findItem(R.id.action_search)
         }
-        IconUtils.setMenuIcon(this, searchMenuItem, FontAwesome.Icon.faw_search)
 
-        searchView = searchMenuItem!!.actionView as SearchView
+        searchView = searchMenuItem.actionView as SearchView
         // iconifiedByDefault must be false to avoid closing SearchView by close button (close button only clears text)
-        searchView!!.setIconifiedByDefault(false)
-        val searchManager = getSystemService(Context.SEARCH_SERVICE) as SearchManager
-
+        searchView.setIconifiedByDefault(false)
         // Workaround issue #47. Setting query hint in code to avoid crash in SearchView#updateQueryHint
-        searchView!!.queryHint = getString(R.string.search_hing)
+        searchView.queryHint = getString(R.string.search_hing)
 
-        searchView!!.setSearchableInfo(searchManager.getSearchableInfo(componentName))
+        val searchManager = getSystemService(Context.SEARCH_SERVICE) as SearchManager
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(componentName))
 
-        searchMenuItem!!.setOnActionExpandListener(object : MenuItem.OnActionExpandListener {
+        searchMenuItem.setOnActionExpandListener(object : MenuItem.OnActionExpandListener {
             override fun onMenuItemActionExpand(item: MenuItem): Boolean {
-                if (bottomBarDownSpeedMenuItem != null) bottomBarDownSpeedMenuItem!!.isVisible = false
-                if (bottomBarUpSpeedMenuItem != null) bottomBarUpSpeedMenuItem!!.isVisible = false
+                bottomBarDownSpeedMenuItem?.isVisible = false
+                bottomBarUpSpeedMenuItem?.isVisible = false
 
-                searchView!!.requestFocus()
+                searchView.requestFocus()
                 val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                 imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS)
 
@@ -481,20 +478,22 @@ class MainActivity : BaseMvpActivity<MainActivityView, MainActivityPresenter>(),
             }
 
             override fun onMenuItemActionCollapse(item: MenuItem): Boolean {
-                searchView!!.setQuery("", false)
+                searchView.setQuery("", false)
 
-                if (bottomBarDownSpeedMenuItem != null) bottomBarDownSpeedMenuItem!!.isVisible = true
-                if (bottomBarUpSpeedMenuItem != null) bottomBarUpSpeedMenuItem!!.isVisible = true
+                bottomBarDownSpeedMenuItem?.isVisible = true
+                bottomBarUpSpeedMenuItem?.isVisible = true
 
-                searchView!!.clearFocus()
+                searchView.clearFocus()
 
                 return true
             }
         })
 
-        searchView!!.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String): Boolean {
                 handleSearch(query)
+                hideKeyboard()
+                searchView.clearFocus()
                 return true
             }
 
@@ -505,11 +504,9 @@ class MainActivity : BaseMvpActivity<MainActivityView, MainActivityPresenter>(),
         })
 
         if (restoredSearchMenuItemExpanded) {
-            searchMenuItem!!.expandActionView()
-            searchView!!.setQuery(restoredSearchQuery, true)
+            searchMenuItem.expandActionView()
+            searchView.setQuery(restoredSearchQuery, true)
         }
-
-        return super.onCreateOptionsMenu(menu)
     }
 
     private fun updateTurtleModeMenu(enabled: Boolean) {
@@ -517,7 +514,7 @@ class MainActivity : BaseMvpActivity<MainActivityView, MainActivityPresenter>(),
     }
 
     private fun handleSearch(query: String) {
-        // TODO: implement
+        presenter.searchSubmitted(query)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -546,7 +543,7 @@ class MainActivity : BaseMvpActivity<MainActivityView, MainActivityPresenter>(),
     override fun onBackPressed() {
         when {
             drawer.isDrawerOpen -> drawer.closeDrawer()
-            searchMenuItem!!.isActionViewExpanded -> searchMenuItem!!.collapseActionView()
+            searchMenuItem.isActionViewExpanded -> searchMenuItem.collapseActionView()
             binding.addTorrentButton.isExpanded -> binding.addTorrentButton.collapse()
             else -> super.onBackPressed()
         }

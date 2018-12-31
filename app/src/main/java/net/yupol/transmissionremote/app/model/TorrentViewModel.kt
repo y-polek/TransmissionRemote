@@ -10,7 +10,7 @@ import net.yupol.transmissionremote.data.model.ErrorType.*
 @Parcelize
 data class TorrentViewModel(
         val id: Int,
-        val name: String,
+        val name: CharSequence,
         val downloadedSize: Long,
         val totalSize: Long,
         val sizeWhenDone: Long,
