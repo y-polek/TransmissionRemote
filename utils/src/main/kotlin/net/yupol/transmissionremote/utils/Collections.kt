@@ -2,6 +2,8 @@
 
 package net.yupol.transmissionremote.utils
 
+import kotlin.contracts.ExperimentalContracts
+
 fun <K, V> Map<K, V>.emptyToNull(): Map<K, V>? {
     return if (isNotEmpty()) this else null
 }
@@ -32,3 +34,5 @@ fun <T> MutableCollection<T>.deleteIf(predicate: (T) -> Boolean) {
         }
     }
 }
+
+fun IntArray?.isNullOrEmpty() = this == null || this.isEmpty()

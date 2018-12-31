@@ -28,6 +28,7 @@ import net.yupol.transmissionremote.domain.repository.ServerListRepository
 import net.yupol.transmissionremote.domain.usecase.server.ServerInteractor
 import net.yupol.transmissionremote.domain.usecase.torrent.TorrentListInteractor
 import net.yupol.transmissionremote.utils.deleteIf
+import net.yupol.transmissionremote.utils.isNullOrEmpty
 import net.yupol.transmissionremote.utils.toArray
 import java.util.concurrent.TimeUnit.MILLISECONDS
 import java.util.concurrent.TimeUnit.SECONDS
@@ -175,9 +176,12 @@ class MainActivityPresenter @Inject constructor(
     }
 
     fun pauseAllClicked() {
+        val ids = filteredTorrents?.map(TorrentViewModel::id)?.toArray()
+        if (ids.isNullOrEmpty()) return
+
         view.showLoading()
 
-        requests += torrentInteractor.pauseAllTorrents()
+        requests += torrentInteractor.pauseTorrents(*ids!!)
                 .delay(500, MILLISECONDS)
                 .subscribeOn(io())
                 .observeOn(mainThread())
@@ -190,9 +194,12 @@ class MainActivityPresenter @Inject constructor(
     }
 
     fun resumeAllClicked() {
+        val ids = filteredTorrents?.map(TorrentViewModel::id)?.toArray()
+        if (ids.isNullOrEmpty()) return
+
         view.showLoading()
 
-        requests += torrentInteractor.resumeAllTorrents()
+        requests += torrentInteractor.resumeTorrents(*ids!!)
                 .delay(500, MILLISECONDS)
                 .subscribeOn(io())
                 .observeOn(mainThread())
