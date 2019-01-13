@@ -63,16 +63,6 @@ public class TransmissionRemote extends MultiDexApplication implements SharedPre
 
     public static final String NOTIFICATION_CHANNEL_ID = "finished_torrents_notification_channel_id";
 
-    private static final Filter[] ALL_FILTERS = {
-            Filters.ALL,
-            Filters.ACTIVE,
-            Filters.DOWNLOADING,
-            Filters.SEEDING,
-            Filters.PAUSED,
-            Filters.DOWNLOAD_COMPLETED,
-            Filters.FINISHED
-    };
-
     private static TransmissionRemote instance;
 
     private List<OnActiveServerChangedListener> activeServerListeners = new LinkedList<>();
@@ -84,8 +74,6 @@ public class TransmissionRemote extends MultiDexApplication implements SharedPre
     private Collection<Torrent> torrents = Collections.emptyList();
 
     private List<OnTorrentsUpdatedListener> torrentsUpdatedListeners = new LinkedList<>();
-    private Filter activeFilter = Filters.ALL;
-    private List<OnFilterSelectedListener> filterSelectedListeners = new LinkedList<>();
 
     private SortedBy sortedBy = SortedBy.NAME;
     private SortOrder sortOrder = SortOrder.ASCENDING;
@@ -320,31 +308,6 @@ public class TransmissionRemote extends MultiDexApplication implements SharedPre
         torrentsUpdatedListeners.remove(listener);
     }
 
-    public void setActiveFilter(@Nonnull Filter activeFilter) {
-        this.activeFilter = activeFilter;
-        for (OnFilterSelectedListener listener : filterSelectedListeners) {
-            listener.filterSelected(activeFilter);
-        }
-    }
-
-    public Filter[] getAllFilters() {
-        return ALL_FILTERS;
-    }
-
-    public Filter getActiveFilter() {
-        return activeFilter;
-    }
-
-    public void addOnFilterSetListener(@Nonnull OnFilterSelectedListener listener) {
-        if (!filterSelectedListeners.contains(listener)) {
-            filterSelectedListeners.add(listener);
-        }
-    }
-
-    public void removeOnFilterSelectedListener(@Nonnull OnFilterSelectedListener listener) {
-        filterSelectedListeners.remove(listener);
-    }
-
     public void setSorting(@NonNull SortedBy sortedBy, @NonNull SortOrder sortOrder) {
         this.sortedBy = sortedBy;
         this.sortOrder = sortOrder;
@@ -385,17 +348,12 @@ public class TransmissionRemote extends MultiDexApplication implements SharedPre
         return defaultDownloadDir;
     }
 
-    public void persist() {
-        persistFilter();
-        persistSorting();
-    }
-
     private void restore() {
-        restoreFilter();
+        //restoreFilter();
         restoreSorting();
     }
 
-    private void persistFilter() {
+    /*private void persistFilter() {
         SharedPreferences sp = getSharedPreferences(SHARED_PREFS_NAME, MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();
         editor.putInt(KEY_FILTER, Arrays.asList(ALL_FILTERS).indexOf(activeFilter));
@@ -406,7 +364,7 @@ public class TransmissionRemote extends MultiDexApplication implements SharedPre
         SharedPreferences sp = getSharedPreferences(SHARED_PREFS_NAME, MODE_PRIVATE);
         int filterIdx = sp.getInt(KEY_FILTER, 0);
         activeFilter = ALL_FILTERS[filterIdx];
-    }
+    }*/
 
     private void persistSorting() {
         SharedPreferences sp = getSharedPreferences(SHARED_PREFS_NAME, MODE_PRIVATE);

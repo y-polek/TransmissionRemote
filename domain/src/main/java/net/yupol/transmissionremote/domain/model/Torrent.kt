@@ -1,5 +1,7 @@
 package net.yupol.transmissionremote.domain.model
 
+import net.yupol.transmissionremote.domain.model.Torrent.Status.*
+
 data class Torrent(
         val id: Int,
         val name: String,
@@ -34,4 +36,16 @@ data class Torrent(
         SEED_WAIT,
         SEED
     }
+
+    val isChecking = status == CHECK
+
+    val isActive = peersGettingFromUs > 0 || peersSendingToUs > 0 || webseedsSendingToUs > 0 || isChecking
+
+    val isDownloading = status == DOWNLOAD || status == DOWNLOAD_WAIT
+
+    val isCompleted = leftUntilDone <= 0 && sizeWhenDone > 0
+
+    val isSeeding = status == SEED || status == SEED_WAIT
+
+    val isPaused = status == STOPPED
 }

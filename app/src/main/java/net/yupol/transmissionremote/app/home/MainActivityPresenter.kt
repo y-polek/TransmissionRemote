@@ -57,6 +57,8 @@ class MainActivityPresenter @Inject constructor(
     private var inSelectionMode: Boolean = false
     private val selectedTorrents = mutableSetOf<Int>()
 
+    private var filter: (Torrent) -> Boolean = { true }
+
     private var searchQuery: String = ""
 
     var turtleModeEnabled: Boolean = false

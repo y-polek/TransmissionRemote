@@ -19,7 +19,7 @@ class TorrentMapper @Inject constructor() {
                 downloadedSize = torrent.sizeWhenDone - torrent.leftUntilDone,
                 totalSize = torrent.totalSize,
                 sizeWhenDone = torrent.sizeWhenDone,
-                completed = torrent.leftUntilDone <= 0 && torrent.sizeWhenDone > 0,
+                completed = torrent.isCompleted,
                 uploadedSize = torrent.uploadedSize,
                 uploadRatio = max(torrent.uploadRatio, 0.0),
                 downloadRate = torrent.downloadRate,

@@ -45,7 +45,7 @@ import net.yupol.transmissionremote.app.dialogs.RenameTorrentDialog
 import net.yupol.transmissionremote.app.drawer.FreeSpaceFooterDrawerItem
 import net.yupol.transmissionremote.app.drawer.HeaderView
 import net.yupol.transmissionremote.app.drawer.SortDrawerItem
-import net.yupol.transmissionremote.app.filtering.Filter
+import net.yupol.transmissionremote.app.home.filter.Filter
 import net.yupol.transmissionremote.app.model.TorrentViewModel
 import net.yupol.transmissionremote.app.preferences.Preferences
 import net.yupol.transmissionremote.app.preferences.PreferencesActivity
@@ -73,7 +73,7 @@ class MainActivity : BaseMvpActivity<MainActivityView, MainActivityPresenter>(),
 {
     private var application: TransmissionRemote? = null
 
-    private var toolbarSpinnerAdapter: ActionBarNavigationAdapter? = null
+    private lateinit var toolbarSpinnerAdapter: ActionBarNavigationAdapter
     private lateinit var drawer: Drawer
     private var headerView: HeaderView? = null
 
@@ -248,15 +248,14 @@ class MainActivity : BaseMvpActivity<MainActivityView, MainActivityPresenter>(),
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                 Log.e("MainActivity", "onItemSelected")
                 if (id == ActionBarNavigationAdapter.ID_SERVER.toLong()) {
-                    val server = toolbarSpinnerAdapter!!.getItem(position) as Server
+                    val server = toolbarSpinnerAdapter.getItem(position) as Server
                     presenter.activeServerSelected(server)
                 } else if (id == ActionBarNavigationAdapter.ID_FILTER.toLong()) {
-                    val filter = toolbarSpinnerAdapter!!.getItem(position) as Filter
-                    if (filter != application!!.activeFilter) {
-                        application!!.activeFilter = filter
-                    }
+                    val filter = toolbarSpinnerAdapter.getItem(position) as Filter
+
+                    TODO("Implement")
                 }
-                toolbarSpinnerAdapter!!.notifyDataSetChanged()
+                toolbarSpinnerAdapter.notifyDataSetChanged()
             }
 
             override fun onNothingSelected(parent: AdapterView<*>) {}

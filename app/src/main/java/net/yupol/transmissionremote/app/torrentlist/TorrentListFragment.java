@@ -244,7 +244,7 @@ public class TorrentListFragment extends Fragment implements ChooseLocationDialo
         Activity activity = getActivity();
 
         app = (TransmissionRemote) requireActivity().getApplication();
-        app.addOnFilterSetListener(filterListener);
+        //app.addOnFilterSetListener(filterListener);
         app.addOnSortingChangedListeners(sortingListener);
 
         transport = new Transport(ServerMapper.toDomain(app.getActiveServer()));
@@ -322,7 +322,7 @@ public class TorrentListFragment extends Fragment implements ChooseLocationDialo
 
     @Override
     public void onDetach() {
-        app.removeOnFilterSelectedListener(filterListener);
+        //app.removeOnFilterSelectedListener(filterListener);
         app.removeOnSortingChangedListener(sortingListener);
         super.onDetach();
     }
@@ -367,7 +367,7 @@ public class TorrentListFragment extends Fragment implements ChooseLocationDialo
     }
 
     private void updateTorrentList() {
-        Filter filter = inSearchMode ? NAME_FILTER.withQuery(searchQuery) : app.getActiveFilter();
+        Filter filter = inSearchMode ? NAME_FILTER.withQuery(searchQuery) : null;//app.getActiveFilter();
         List<Torrent> torrentsToShow = new ArrayList<>(FluentIterable.from(allTorrents).filter(filter).toList());
 
         Comparator<Torrent> comparator = app.getSortComparator();
