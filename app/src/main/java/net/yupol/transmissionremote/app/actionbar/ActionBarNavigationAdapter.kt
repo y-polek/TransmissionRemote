@@ -4,11 +4,12 @@ import android.content.Context
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.TextView
 import net.yupol.transmissionremote.app.R
-import net.yupol.transmissionremote.app.TransmissionRemote
 import net.yupol.transmissionremote.app.home.filter.Filter
 import net.yupol.transmissionremote.app.utils.ColorUtils.resolveColor
 import net.yupol.transmissionremote.app.utils.Equals
@@ -42,7 +43,7 @@ class ActionBarNavigationAdapter(context: Context) : BaseAdapter() {
 
     override fun getItem(position: Int): Any? {
         val id = getItemId(position)
-        when (id.toInt()) {
+        when (id) {
             ID_SERVER_TITLE, ID_FILTER_TITLE -> return null
             ID_SERVER -> return servers[position - 1]
             ID_FILTER -> return FILTERS[position - servers.size - 2]
@@ -54,18 +55,20 @@ class ActionBarNavigationAdapter(context: Context) : BaseAdapter() {
     }
 
     override fun getItemId(position: Int): Long {
-        if (position == 0) return ID_SERVER_TITLE.toLong()
-        if (position <= servers.size) return ID_SERVER.toLong()
-        return if (position == servers.size + 1) ID_FILTER_TITLE.toLong() else ID_FILTER.toLong()
+        return when {
+            position == 0 -> ID_SERVER_TITLE
+            position <= servers.size -> ID_SERVER
+            position == servers.size + 1 -> ID_FILTER_TITLE
+            else -> ID_FILTER
+        }
     }
 
     override fun isEnabled(position: Int): Boolean {
         val id = getItemId(position)
-        return id == ID_SERVER.toLong() || id == ID_FILTER.toLong()
+        return id == ID_SERVER || id == ID_FILTER
     }
 
     override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup): View {
-        val id = getItemId(position)
         val itemView = convertView ?: LayoutInflater.from(parent.context).inflate(R.layout.drop_down_navigation_item, parent, false)
 
         val text = itemView.findViewById<TextView>(R.id.text)
@@ -73,25 +76,26 @@ class ActionBarNavigationAdapter(context: Context) : BaseAdapter() {
         val headerText = itemView.findViewById<TextView>(R.id.header_text)
         val separator = itemView.findViewById<View>(R.id.separator)
 
-        if (id == ID_SERVER_TITLE.toLong() || id == ID_FILTER_TITLE.toLong()) {
-            text.visibility = View.GONE
-            countText.visibility = View.GONE
-            headerText.visibility = View.VISIBLE
-            separator.visibility = View.VISIBLE
+        val id = getItemId(position)
+        if (id == ID_SERVER_TITLE || id == ID_FILTER_TITLE) {
+            text.visibility = GONE
+            countText.visibility = GONE
+            headerText.visibility = VISIBLE
+            separator.visibility = VISIBLE
 
-            headerText.setText(if (id == ID_SERVER_TITLE.toLong()) R.string.servers else R.string.filters)
+            headerText.setText(if (id == ID_SERVER_TITLE) R.string.servers else R.string.filters)
         } else {
-            text.visibility = View.VISIBLE
-            headerText.visibility = View.GONE
-            separator.visibility = View.GONE
+            text.visibility = VISIBLE
+            headerText.visibility = GONE
+            separator.visibility = GONE
 
-            if (id == ID_SERVER.toLong()) {
-                countText.visibility = View.GONE
-                val server = getItem(position) as Server?
-                text.text = server!!.name
+            if (id == ID_SERVER) {
+                countText.visibility = GONE
+                val server = getItem(position) as Server
+                text.text = server.name
                 text.setTextColor(dropDownTextColor(server == activeServer))
-            } else if (id == ID_FILTER.toLong()) {
-                countText.visibility = View.VISIBLE
+            } else if (id == ID_FILTER) {
+                countText.visibility = VISIBLE
                 val filter = getItem(position) as Filter
                 text.setText(filter.name)
                 countText.text = "???"//FluentIterable.from<Torrent>(app.torrents).filter(filter).size().toString()
@@ -110,13 +114,10 @@ class ActionBarNavigationAdapter(context: Context) : BaseAdapter() {
     }
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-        var view = convertView
-        if (convertView == null) {
-            view = LayoutInflater.from(parent.context).inflate(R.layout.drop_down_navigation, parent, false)
-        }
+        val view = convertView ?: LayoutInflater.from(parent.context).inflate(R.layout.drop_down_navigation, parent, false)
 
-        val serverName = view!!.findViewById<TextView>(R.id.server_name)
-        serverName.text = if (activeServer != null) activeServer!!.name else ""
+        val serverName = view.findViewById<TextView>(R.id.server_name)
+        serverName.text = activeServer?.name.orEmpty()
         serverName.setTextColor(textColorPrimaryInverse)
 
         val filterName = view.findViewById<TextView>(R.id.filter_name)
@@ -131,10 +132,10 @@ class ActionBarNavigationAdapter(context: Context) : BaseAdapter() {
 
         private val TAG = ActionBarNavigationAdapter::class.java.simpleName
 
-        const val ID_SERVER = 0
-        const val ID_FILTER = 1
-        private const val ID_SERVER_TITLE = 2
-        private const val ID_FILTER_TITLE = 3
+        const val ID_SERVER = 0L
+        const val ID_FILTER = 1L
+        private const val ID_SERVER_TITLE = 2L
+        private const val ID_FILTER_TITLE = 3L
 
         private val FILTERS = listOf(
                 Filter(R.string.filter_all) { true },
