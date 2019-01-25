@@ -37,9 +37,9 @@ data class Torrent(
         SEED
     }
 
-    val isChecking = status == CHECK
+    val isRechecking = status == CHECK || status == CHECK_WAIT
 
-    val isActive = peersGettingFromUs > 0 || peersSendingToUs > 0 || webseedsSendingToUs > 0 || isChecking
+    val isActive = peersGettingFromUs > 0 || peersSendingToUs > 0 || webseedsSendingToUs > 0 || status == CHECK
 
     val isDownloading = status == DOWNLOAD || status == DOWNLOAD_WAIT
 

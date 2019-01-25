@@ -11,12 +11,10 @@ import io.reactivex.functions.BiFunction
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers.io
-import net.yupol.transmissionremote.app.model.ListResource
+import net.yupol.transmissionremote.app.home.filter.Filter
+import net.yupol.transmissionremote.app.model.*
 import net.yupol.transmissionremote.app.model.Status.*
-import net.yupol.transmissionremote.app.model.TorrentViewModel
 import net.yupol.transmissionremote.app.model.mapper.TorrentMapper
-import net.yupol.transmissionremote.app.model.totalDownloadSpeed
-import net.yupol.transmissionremote.app.model.totalUploadSpeed
 import net.yupol.transmissionremote.app.mvp.MvpViewCallback
 import net.yupol.transmissionremote.app.res.ColorResources
 import net.yupol.transmissionremote.app.res.StringResources
@@ -381,6 +379,10 @@ class MainActivityPresenter @Inject constructor(
         if (inSelectionMode) cleanupSelection()
     }
 
+    fun filterSelected(filter: Filter) {
+        view.showActiveFilter(filter)
+    }
+
     //////////////////////////////
     // endregion Public interface
     //////////////////////////////
@@ -415,6 +417,7 @@ class MainActivityPresenter @Inject constructor(
                             view.showLoadingSpeed(
                                     downloadSpeed = torrents!!.totalDownloadSpeed(),
                                     uploadSpeed = torrents!!.totalUploadSpeed())
+                            view.showTorrentCount(torrents!!.count())
                             view.hideError()
                             view.showFab()
                         }

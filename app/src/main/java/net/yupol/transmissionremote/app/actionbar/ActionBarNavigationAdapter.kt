@@ -10,11 +10,11 @@ import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.TextView
 import net.yupol.transmissionremote.app.R
+import net.yupol.transmissionremote.app.home.filter.FILTERS
 import net.yupol.transmissionremote.app.home.filter.Filter
 import net.yupol.transmissionremote.app.utils.ColorUtils.resolveColor
 import net.yupol.transmissionremote.app.utils.Equals
 import net.yupol.transmissionremote.domain.model.Server
-import net.yupol.transmissionremote.domain.model.Torrent
 import java.util.*
 
 class ActionBarNavigationAdapter(context: Context) : BaseAdapter() {
@@ -28,6 +28,11 @@ class ActionBarNavigationAdapter(context: Context) : BaseAdapter() {
     private var activeServer: Server? = null
 
     var activeFilter: Filter = FILTERS.first()
+    var counts: Map<Filter, Int> = emptyMap()
+        set(value) {
+            field = value
+            notifyDataSetChanged()
+        }
 
     fun setServers(servers: List<Server>, activeServer: Server?) {
         if (this.servers == servers && Equals.equals(activeServer, this.activeServer)) return
@@ -98,7 +103,7 @@ class ActionBarNavigationAdapter(context: Context) : BaseAdapter() {
                 countText.visibility = VISIBLE
                 val filter = getItem(position) as Filter
                 text.setText(filter.name)
-                countText.text = "???"//FluentIterable.from<Torrent>(app.torrents).filter(filter).size().toString()
+                countText.text = "${counts[filter] ?: 0}"
 
                 val textColor = dropDownTextColor(filter == activeFilter)
                 text.setTextColor(textColor)
@@ -136,15 +141,5 @@ class ActionBarNavigationAdapter(context: Context) : BaseAdapter() {
         const val ID_FILTER = 1L
         private const val ID_SERVER_TITLE = 2L
         private const val ID_FILTER_TITLE = 3L
-
-        private val FILTERS = listOf(
-                Filter(R.string.filter_all) { true },
-                Filter(R.string.filter_active, Torrent::isActive),
-                Filter(R.string.filter_downloading, Torrent::isDownloading),
-                Filter(R.string.filter_seeding, Torrent::isSeeding),
-                Filter(R.string.filter_paused, Torrent::isPaused),
-                Filter(R.string.filter_download_completed, Torrent::isCompleted),
-                Filter(R.string.filter_finished, Torrent::isFinished)
-        )
     }
 }

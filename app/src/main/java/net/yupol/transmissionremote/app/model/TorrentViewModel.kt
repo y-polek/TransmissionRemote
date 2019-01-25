@@ -4,6 +4,8 @@ import android.os.Parcelable
 import androidx.annotation.DrawableRes
 import kotlinx.android.parcel.Parcelize
 import net.yupol.transmissionremote.app.R
+import net.yupol.transmissionremote.app.home.filter.FILTERS
+import net.yupol.transmissionremote.app.home.filter.Filter
 import net.yupol.transmissionremote.data.model.ErrorType
 import net.yupol.transmissionremote.data.model.ErrorType.*
 
@@ -14,19 +16,23 @@ data class TorrentViewModel(
         val downloadedSize: Long,
         val totalSize: Long,
         val sizeWhenDone: Long,
-        val completed: Boolean,
         val uploadedSize: Long,
         val uploadRatio: Double,
         val downloadRate: Long,
         val uploadRate: Long,
-        val paused: Boolean,
-        val rechecking: Boolean,
         val progressPercent: Double,
         val recheckProgressPercent: Double,
         val eta: Long,
         val errorMessage: String? = null,
         val errorType: ErrorType = ErrorType.NONE,
-        val selected: Boolean): Parcelable
+        val selected: Boolean,
+        val completed: Boolean,
+        val finished: Boolean,
+        val paused: Boolean,
+        val rechecking: Boolean,
+        val active: Boolean,
+        val downloading: Boolean,
+        val seeding: Boolean): Parcelable
 {
     fun hasErrorOrWarning() = errorType != NONE
 
@@ -46,4 +52,8 @@ fun Iterable<TorrentViewModel>.totalDownloadSpeed(): Long {
 
 fun Iterable<TorrentViewModel>.totalUploadSpeed(): Long {
     return map(TorrentViewModel::uploadRate).sum()
+}
+
+fun Iterable<TorrentViewModel>.count(): Map<Filter, Int> {
+    return FILTERS.map { filter -> filter to count { torrent -> filter.apply(torrent) } }.toMap()
 }

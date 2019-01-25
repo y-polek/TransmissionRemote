@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?android:attr/windowBackground"
@@ -7,7 +8,8 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:background="?android:attr/selectableItemBackground">
         <TextView android:id="@+id/text"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -18,14 +20,16 @@
             android:layout_marginRight="@dimen/spinner_text_margin_horizontal"
             android:layout_marginBottom="@dimen/spinner_text_margin_vertical"
             android:textSize="@dimen/tr_abc_text_size_body_1_material"
-            android:textColor="?android:textColorPrimary"/>
+            android:textColor="?android:textColorPrimary"
+            tools:text="Active"/>
         <TextView android:id="@+id/torrent_count"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end|center_vertical"
             android:layout_marginRight="@dimen/spinner_text_margin_horizontal"
             android:textSize="@dimen/tr_abc_text_size_body_1_material"
-            android:textColor="?android:textColorPrimary"/>
+            android:textColor="?android:textColorPrimary"
+            tools:text="10"/>
     </LinearLayout>
 
     <TextView android:id="@+id/header_text"
@@ -37,7 +41,8 @@
         android:paddingBottom="@dimen/spinner_text_margin_vertical"
         android:textSize="@dimen/abc_text_size_caption_material"
         android:textStyle="bold"
-        android:textColor="?android:textColorSecondary"/>
+        android:textColor="?android:textColorSecondary"
+        tools:text="Filters"/>
     <include layout="@layout/separator"/>
 
 </LinearLayout>

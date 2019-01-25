@@ -75,7 +75,7 @@ class MainActivity : BaseMvpActivity<MainActivityView, MainActivityPresenter>(),
 
     private lateinit var toolbarSpinnerAdapter: ActionBarNavigationAdapter
     private lateinit var drawer: Drawer
-    private var headerView: HeaderView? = null
+    private lateinit var headerView: HeaderView
 
     private var bottomBarDownSpeedMenuItem: MenuItem? = null
     private var bottomBarUpSpeedMenuItem: MenuItem? = null
@@ -247,13 +247,12 @@ class MainActivity : BaseMvpActivity<MainActivityView, MainActivityPresenter>(),
         toolbarSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                 Log.e("MainActivity", "onItemSelected")
-                if (id == ActionBarNavigationAdapter.ID_SERVER.toLong()) {
+                if (id == ActionBarNavigationAdapter.ID_SERVER) {
                     val server = toolbarSpinnerAdapter.getItem(position) as Server
                     presenter.activeServerSelected(server)
-                } else if (id == ActionBarNavigationAdapter.ID_FILTER.toLong()) {
+                } else if (id == ActionBarNavigationAdapter.ID_FILTER) {
                     val filter = toolbarSpinnerAdapter.getItem(position) as Filter
-
-                    TODO("Implement")
+                    presenter.filterSelected(filter)
                 }
                 toolbarSpinnerAdapter.notifyDataSetChanged()
             }
@@ -288,7 +287,7 @@ class MainActivity : BaseMvpActivity<MainActivityView, MainActivityPresenter>(),
                 }
 
         headerView = HeaderView(this)
-        headerView!!.setHeaderListener(object : HeaderView.HeaderListener {
+        headerView.setHeaderListener(object : HeaderView.HeaderListener {
             override fun onSettingsPressed() {
                 startActivity(Intent(this@MainActivity, ServerPreferencesActivity::class.java))
             }
@@ -315,7 +314,7 @@ class MainActivity : BaseMvpActivity<MainActivityView, MainActivityPresenter>(),
         drawer = DrawerBuilder()
                 .withActivity(this)
                 .withToolbar(binding.toolbar)
-                .withHeader(headerView!!)
+                .withHeader(headerView)
                 .addDrawerItems(SectionDrawerItem().withName(R.string.drawer_sort_by).withDivider(false))
                 .addDrawerItems(*sortItems as Array<IDrawerItem<*, *>>)
                 .addStickyDrawerItems(
@@ -355,7 +354,7 @@ class MainActivity : BaseMvpActivity<MainActivityView, MainActivityPresenter>(),
                     }
                 }).build()
 
-        headerView!!.setDrawer(drawer)
+        headerView.setDrawer(drawer)
 
         val persistedSortedBy = application!!.sortedBy
         val persistedSortOrder = application!!.sortOrder
@@ -416,7 +415,7 @@ class MainActivity : BaseMvpActivity<MainActivityView, MainActivityPresenter>(),
         super.onRestoreInstanceState(savedInstanceState)
 
         if (savedInstanceState.getBoolean(KEY_DRAWER_SERVER_LIST_EXPANDED, false)) {
-            headerView!!.showServersList()
+            headerView.showServersList()
         }
 
         restoredSearchMenuItemExpanded = savedInstanceState.getBoolean(KEY_SEARCH_ACTION_EXPANDED, false)
@@ -617,8 +616,8 @@ class MainActivity : BaseMvpActivity<MainActivityView, MainActivityPresenter>(),
     }
 
     override fun serverListChanged(servers: List<Server>, activeServer: Server) {
-        headerView!!.setServers(servers, activeServer)
-        toolbarSpinnerAdapter!!.setServers(servers, activeServer)
+        headerView.setServers(servers, activeServer)
+        toolbarSpinnerAdapter.setServers(servers, activeServer)
     }
 
     override fun showFab() {
@@ -669,6 +668,14 @@ class MainActivity : BaseMvpActivity<MainActivityView, MainActivityPresenter>(),
     override fun showLoadingSpeed(downloadSpeed: Long, uploadSpeed: Long) {
         downloadSpeedView?.setSpeed(downloadSpeed)
         uploadSpeedView?.setSpeed(uploadSpeed)
+    }
+
+    override fun showActiveFilter(filter: Filter) {
+        toolbarSpinnerAdapter.activeFilter = filter
+    }
+
+    override fun showTorrentCount(counts: Map<Filter, Int>) {
+        toolbarSpinnerAdapter.counts = counts
     }
 
     // endregion

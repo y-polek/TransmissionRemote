@@ -1,6 +1,7 @@
 package net.yupol.transmissionremote.app.home
 
 import com.hannesdorfmann.mosby3.mvp.MvpView
+import net.yupol.transmissionremote.app.home.filter.Filter
 import net.yupol.transmissionremote.app.model.TorrentViewModel
 import net.yupol.transmissionremote.domain.model.Server
 
@@ -47,6 +48,10 @@ interface MainActivityView: MvpView {
     fun setRenameActionEnabled(enabled: Boolean)
 
     fun setTurtleModeEnabled(enabled: Boolean)
+
+    fun showActiveFilter(filter: Filter)
+
+    fun showTorrentCount(counts: Map<Filter, Int>)
 
     // region Routing
     fun openAddServerScreen()
