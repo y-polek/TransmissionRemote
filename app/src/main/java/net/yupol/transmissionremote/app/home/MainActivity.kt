@@ -176,7 +176,6 @@ class MainActivity : BaseMvpActivity<MainActivityView, MainActivityPresenter>(),
 
     override fun onCreate(savedInstanceState: Bundle?) {
         TransmissionRemote.getInstance().appComponent().inject(this)
-        LayoutInflaterCompat.setFactory2(layoutInflater, IconicsLayoutInflater2(delegate))
         super.onCreate(savedInstanceState)
 
         binding = DataBindingUtil.setContentView(this, R.layout.main_activity)
