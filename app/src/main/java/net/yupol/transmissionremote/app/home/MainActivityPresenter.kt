@@ -55,7 +55,7 @@ class MainActivityPresenter @Inject constructor(
     private var inSelectionMode: Boolean = false
     private val selectedTorrents = mutableSetOf<Int>()
 
-    private var filter: (Torrent) -> Boolean = { true }
+    private var filter: Filter? = null
 
     private var searchQuery: String = ""
 
@@ -371,7 +371,7 @@ class MainActivityPresenter @Inject constructor(
     fun searchSubmitted(query: String) {
         searchQuery = query
 
-        filteredTorrents = torrents?.filteredAndHighlighted()
+        filteredTorrents = torrents?.filteredAndHighlighted(filter)
         if (filteredTorrents != null) {
             view.showTorrents(filteredTorrents!!)
         }
@@ -380,7 +380,14 @@ class MainActivityPresenter @Inject constructor(
     }
 
     fun filterSelected(filter: Filter) {
+        this.filter = filter
+
         view.showActiveFilter(filter)
+
+        filteredTorrents = torrents?.filteredAndHighlighted(filter)
+        if (filteredTorrents != null) {
+            view.showTorrents(filteredTorrents!!)
+        }
     }
 
     //////////////////////////////
@@ -412,7 +419,7 @@ class MainActivityPresenter @Inject constructor(
                     when (result.status) {
                         SUCCESS -> {
                             torrents = result.data
-                            filteredTorrents = torrents?.filteredAndHighlighted()
+                            filteredTorrents = torrents?.filteredAndHighlighted(filter)
                             view.showTorrents(filteredTorrents.orEmpty())
                             view.showLoadingSpeed(
                                     downloadSpeed = torrents!!.totalDownloadSpeed(),
@@ -452,7 +459,7 @@ class MainActivityPresenter @Inject constructor(
         torrents = torrents?.map { torrent ->
             torrent.copy(selected = selectedTorrents.contains(torrent.id))
         }
-        filteredTorrents = torrents?.filteredAndHighlighted()
+        filteredTorrents = torrents?.filteredAndHighlighted(filter)
         view.showTorrents(filteredTorrents ?: return)
     }
 
@@ -519,12 +526,15 @@ class MainActivityPresenter @Inject constructor(
                 }
     }
 
-    private fun List<TorrentViewModel>.filteredAndHighlighted(): List<TorrentViewModel> {
-        if (searchQuery.isBlank()) return this
-
-        return filter { torrent ->
-            torrent.name.contains(searchQuery, ignoreCase = true)
-        }.map { torrent ->
+    private fun List<TorrentViewModel>.filteredAndHighlighted(filter: Filter?): List<TorrentViewModel> {
+        var sequence = this.asSequence()
+        if (searchQuery.isNotBlank()) {
+            sequence = sequence.filter { torrent -> torrent.name.contains(searchQuery, ignoreCase = true) }
+        }
+        if (filter != null) {
+            sequence = sequence.filter(filter.apply)
+        }
+        return sequence.map { torrent ->
             val name = torrent.name.toString()
             val matchStartIdx = name.indexOf(searchQuery, ignoreCase = true)
             if (matchStartIdx < 0) return@map torrent
@@ -538,6 +548,6 @@ class MainActivityPresenter @Inject constructor(
                     .append(name.substring(matchEndIdx))
 
             return@map torrent.copy(name = nameWithHighlight)
-        }
+        }.toList()
     }
 }
