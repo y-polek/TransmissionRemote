@@ -14,7 +14,6 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.appcompat.view.ActionMode
 import androidx.appcompat.widget.Toolbar
-import androidx.core.view.LayoutInflaterCompat
 import androidx.databinding.DataBindingUtil
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -27,7 +26,6 @@ import com.getbase.floatingactionbutton.FloatingActionsMenu
 import com.mikepenz.community_material_typeface_library.CommunityMaterial
 import com.mikepenz.google_material_typeface_library.GoogleMaterial
 import com.mikepenz.iconics.IconicsDrawable
-import com.mikepenz.iconics.context.IconicsLayoutInflater2
 import com.mikepenz.materialdrawer.Drawer
 import com.mikepenz.materialdrawer.DrawerBuilder
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem
@@ -98,6 +96,7 @@ class MainActivity : BaseMvpActivity<MainActivityView, MainActivityPresenter>(),
     @BindView(R.id.swipe_refresh) lateinit var swipeRefresh: SwipeRefreshLayout
     @BindView(R.id.error_layout) lateinit var errorLayout: View
     @BindView(R.id.error_text) lateinit var errorText: TextView
+    @BindView(R.id.empty_view) lateinit var emptyView: TextView
     @BindView(R.id.detailed_error_text) lateinit var detailedErrorText: TextView
     @BindView(R.id.welcome_layout) lateinit var welcomeLayout: View
     @BindView(R.id.add_torrent_button) lateinit var addTorrentFab: View
@@ -612,6 +611,15 @@ class MainActivity : BaseMvpActivity<MainActivityView, MainActivityPresenter>(),
 
     override fun showErrorAlert(error: Throwable) {
         Toast.makeText(this, error.message, Toast.LENGTH_LONG).show()
+    }
+
+    override fun showEmptyMessage(msgId: Int) {
+        emptyView.setText(msgId)
+        emptyView.visibility = VISIBLE
+    }
+
+    override fun hideEmptyMessage() {
+        emptyView.visibility = GONE
     }
 
     override fun serverListChanged(servers: List<Server>, activeServer: Server) {

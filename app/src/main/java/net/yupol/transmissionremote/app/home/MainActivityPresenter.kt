@@ -11,6 +11,7 @@ import io.reactivex.functions.BiFunction
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers.io
+import net.yupol.transmissionremote.app.R
 import net.yupol.transmissionremote.app.home.filter.Filter
 import net.yupol.transmissionremote.app.model.*
 import net.yupol.transmissionremote.app.model.Status.*
@@ -371,10 +372,7 @@ class MainActivityPresenter @Inject constructor(
     fun searchSubmitted(query: String) {
         searchQuery = query
 
-        filteredTorrents = torrents?.filteredAndHighlighted(filter)
-        if (filteredTorrents != null) {
-            view.showTorrents(filteredTorrents!!)
-        }
+        applyFiltersAndShowTorrents()
 
         if (inSelectionMode) cleanupSelection()
     }
@@ -384,10 +382,7 @@ class MainActivityPresenter @Inject constructor(
 
         view.showActiveFilter(filter)
 
-        filteredTorrents = torrents?.filteredAndHighlighted(filter)
-        if (filteredTorrents != null) {
-            view.showTorrents(filteredTorrents!!)
-        }
+        applyFiltersAndShowTorrents()
     }
 
     //////////////////////////////
@@ -419,8 +414,7 @@ class MainActivityPresenter @Inject constructor(
                     when (result.status) {
                         SUCCESS -> {
                             torrents = result.data
-                            filteredTorrents = torrents?.filteredAndHighlighted(filter)
-                            view.showTorrents(filteredTorrents.orEmpty())
+                            applyFiltersAndShowTorrents()
                             view.showLoadingSpeed(
                                     downloadSpeed = torrents!!.totalDownloadSpeed(),
                                     uploadSpeed = torrents!!.totalUploadSpeed())
@@ -449,6 +443,28 @@ class MainActivityPresenter @Inject constructor(
                 }
     }
 
+    private fun applyFiltersAndShowTorrents() {
+        filteredTorrents = torrents?.filteredAndHighlighted(filter)
+        if (filteredTorrents != null) {
+            view.showTorrents(filteredTorrents!!)
+            if (filteredTorrents!!.isEmpty()) {
+                showEmptyMessage()
+            } else {
+                view.hideEmptyMessage()
+            }
+        }
+    }
+
+    private fun showEmptyMessage() {
+        val msgId = when {
+            searchQuery.isNotBlank() -> R.string.filter_empty_name
+            filter != null -> filter!!.emptyMsg
+            else -> R.string.filter_empty_all
+
+        }
+        view.showEmptyMessage(msgId)
+    }
+
     private fun updateTorrentSelection(torrentId: Int) {
         val selected = selectedTorrents.contains(torrentId)
         val torrent = torrents?.find { it.id == torrentId }?.copy(selected = selected)
@@ -459,8 +475,7 @@ class MainActivityPresenter @Inject constructor(
         torrents = torrents?.map { torrent ->
             torrent.copy(selected = selectedTorrents.contains(torrent.id))
         }
-        filteredTorrents = torrents?.filteredAndHighlighted(filter)
-        view.showTorrents(filteredTorrents ?: return)
+        applyFiltersAndShowTorrents()
     }
 
     private fun updateSelectionTitle() {
