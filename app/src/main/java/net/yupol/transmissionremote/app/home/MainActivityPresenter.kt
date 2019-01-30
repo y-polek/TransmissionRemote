@@ -17,6 +17,7 @@ import net.yupol.transmissionremote.app.model.*
 import net.yupol.transmissionremote.app.model.Status.*
 import net.yupol.transmissionremote.app.model.mapper.TorrentMapper
 import net.yupol.transmissionremote.app.mvp.MvpViewCallback
+import net.yupol.transmissionremote.app.preferences.Preferences
 import net.yupol.transmissionremote.app.res.ColorResources
 import net.yupol.transmissionremote.app.res.StringResources
 import net.yupol.transmissionremote.app.server.ServerManager
@@ -38,7 +39,8 @@ class MainActivityPresenter @Inject constructor(
         private val serverListRepo: ServerListRepository,
         private val torrentMapper: TorrentMapper,
         private val strRes: StringResources,
-        private val colorRes: ColorResources): MvpNullObjectBasePresenter<MainActivityView>(), MvpViewCallback
+        private val colorRes: ColorResources,
+        private val preferences: Preferences): MvpNullObjectBasePresenter<MainActivityView>(), MvpViewCallback
 {
     private lateinit var torrentInteractor: TorrentListInteractor
     private lateinit var serverInteractor: ServerInteractor
@@ -385,6 +387,33 @@ class MainActivityPresenter @Inject constructor(
         applyFiltersAndShowTorrents()
     }
 
+    fun addTorrentByFileSelected() {
+        if (view.isStoragePermissionGranted()) {
+            view.openTorrentFileChooser()
+        } else {
+            val shouldShowRationale = view.shouldShowStoragePermissionRationale()
+            val deniedBefore = preferences.storagePermissionDeniedBefore
+            val neverAskAgainSelected = !shouldShowRationale && deniedBefore
+            if (neverAskAgainSelected) {
+                view.openStoragePermissionRationale()
+            } else {
+                view.requestStoragePermission(REQUEST_CODE_ADD_TORRENT_BY_FILE)
+            }
+        }
+    }
+
+    fun permissionGranted(requestCode: Int) {
+        when (requestCode) {
+            REQUEST_CODE_ADD_TORRENT_BY_FILE -> view.openTorrentFileChooser()
+        }
+    }
+
+    fun permissionDenied(requestCode: Int) {
+        when (requestCode) {
+            REQUEST_CODE_ADD_TORRENT_BY_FILE -> preferences.storagePermissionDeniedBefore = true
+        }
+    }
+
     //////////////////////////////
     // endregion Public interface
     //////////////////////////////
@@ -564,5 +593,9 @@ class MainActivityPresenter @Inject constructor(
 
             return@map torrent.copy(name = nameWithHighlight)
         }.toList()
+    }
+
+    companion object {
+        private const val REQUEST_CODE_ADD_TORRENT_BY_FILE = 3001
     }
 }

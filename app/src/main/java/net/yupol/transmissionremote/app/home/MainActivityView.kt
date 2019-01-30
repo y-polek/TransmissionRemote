@@ -72,5 +72,17 @@ interface MainActivityView: MvpView {
     fun openDeleteTorrentDataConfirmation()
 
     fun openRenameTorrentDialog(torrent: TorrentViewModel)
+
+    fun openTorrentFileChooser()
+
+    fun openStoragePermissionRationale()
+    // endregion
+
+    // region Permissions
+    fun isStoragePermissionGranted(): Boolean
+
+    fun shouldShowStoragePermissionRationale(): Boolean
+
+    fun requestStoragePermission(requestCode: Int)
     // endregion
 }

@@ -1,8 +1,10 @@
 package net.yupol.transmissionremote.app.home
 
+import android.Manifest.permission.READ_EXTERNAL_STORAGE
 import android.app.SearchManager
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.os.Bundle
 import android.provider.Settings
 import android.text.method.ScrollingMovementMethod
@@ -14,6 +16,9 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.appcompat.view.ActionMode
 import androidx.appcompat.widget.Toolbar
+import androidx.core.app.ActivityCompat
+import androidx.core.app.ActivityCompat.shouldShowRequestPermissionRationale
+import androidx.core.content.ContextCompat.checkSelfPermission
 import androidx.databinding.DataBindingUtil
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -21,6 +26,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import butterknife.*
 import com.afollestad.materialdialogs.MaterialDialog
+import com.afollestad.materialdialogs.files.fileChooser
 import com.afollestad.materialdialogs.list.listItems
 import com.getbase.floatingactionbutton.FloatingActionsMenu
 import com.mikepenz.community_material_typeface_library.CommunityMaterial
@@ -226,6 +232,14 @@ class MainActivity : BaseMvpActivity<MainActivityView, MainActivityPresenter>(),
         return injectedPresenter
     }
 
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        if (grantResults.isNotEmpty() && grantResults[0] == PERMISSION_GRANTED) {
+            presenter.permissionGranted(requestCode)
+        } else {
+            presenter.permissionDenied(requestCode)
+        }
+    }
+
     @OnLongClick(R.id.detailed_error_text)
     internal fun onErrorDetailsLongClicked(): Boolean {
         clipboard.setPlainTextClip("Error text", detailedErrorText.text)
@@ -303,7 +317,14 @@ class MainActivity : BaseMvpActivity<MainActivityView, MainActivityPresenter>(),
             }
         })
 
-        val sortItems = arrayOf(SortDrawerItem(SortedBy.NAME).withName(R.string.drawer_sort_by_name), SortDrawerItem(SortedBy.DATE_ADDED).withName(R.string.drawer_sort_by_date_added), SortDrawerItem(SortedBy.SIZE).withName(R.string.drawer_sort_by_size), SortDrawerItem(SortedBy.TIME_REMAINING).withName(R.string.drawer_sort_by_time_remaining), SortDrawerItem(SortedBy.PROGRESS).withName(R.string.drawer_sort_by_progress), SortDrawerItem(SortedBy.QUEUE_POSITION).withName(R.string.drawer_sort_by_queue_position), SortDrawerItem(SortedBy.UPLOAD_RATIO).withName(R.string.drawer_sort_by_upload_ratio))
+        val sortItems = arrayOf(
+                SortDrawerItem(SortedBy.NAME).withName(R.string.drawer_sort_by_name),
+                SortDrawerItem(SortedBy.DATE_ADDED).withName(R.string.drawer_sort_by_date_added),
+                SortDrawerItem(SortedBy.SIZE).withName(R.string.drawer_sort_by_size),
+                SortDrawerItem(SortedBy.TIME_REMAINING).withName(R.string.drawer_sort_by_time_remaining),
+                SortDrawerItem(SortedBy.PROGRESS).withName(R.string.drawer_sort_by_progress),
+                SortDrawerItem(SortedBy.QUEUE_POSITION).withName(R.string.drawer_sort_by_queue_position),
+                SortDrawerItem(SortedBy.UPLOAD_RATIO).withName(R.string.drawer_sort_by_upload_ratio))
 
         freeSpaceFooterDrawerItem = FreeSpaceFooterDrawerItem()
         freeSpaceFooterDrawerItem!!.withSelectable(false)
@@ -736,9 +757,37 @@ class MainActivity : BaseMvpActivity<MainActivityView, MainActivityPresenter>(),
         presenter.renameTorrent(torrent, newName)
     }
 
+    override fun openTorrentFileChooser() {
+        MaterialDialog(this).show {
+            fileChooser { _, file ->
+                Toast.makeText(this@MainActivity, file.absolutePath, Toast.LENGTH_LONG).show()
+            }
+            positiveButton(R.string.add)
+            negativeButton(R.string.cancel)
+        }
+    }
+
+    override fun openStoragePermissionRationale() {
+        StoragePermissionRationaleDialog.instance().show(supportFragmentManager, "StoragePermissionRationale")
+    }
+
     // endregion
 
-    //region Click listeners
+    // region Permissions
+    override fun isStoragePermissionGranted(): Boolean {
+        return checkSelfPermission(this, READ_EXTERNAL_STORAGE) == PERMISSION_GRANTED
+    }
+
+    override fun shouldShowStoragePermissionRationale(): Boolean {
+        return shouldShowRequestPermissionRationale(this, READ_EXTERNAL_STORAGE)
+    }
+
+    override fun requestStoragePermission(requestCode: Int) {
+        ActivityCompat.requestPermissions(this, arrayOf(READ_EXTERNAL_STORAGE), requestCode)
+    }
+    // endregion
+
+    // region Click listeners
 
     @OnClick(R.id.add_server_button)
     internal fun onAddServerClicked() {
@@ -767,6 +816,17 @@ class MainActivity : BaseMvpActivity<MainActivityView, MainActivityPresenter>(),
         presenter.turtleModeToggled()
     }
 
+    @OnClick(R.id.add_torrent_by_magnet_button)
+    internal fun onAddTorrentByMagnetClicked() {
+        TODO("Implement")
+    }
+
+    @OnClick(R.id.add_torrent_by_file_button)
+    internal fun onAddTorrentByFileClicked() {
+        presenter.addTorrentByFileSelected()
+    }
+    // endregion
+
     companion object {
 
         private const val KEY_IN_SELECTION_MODE = "key_in_selection_mode"
@@ -778,5 +838,4 @@ class MainActivity : BaseMvpActivity<MainActivityView, MainActivityPresenter>(),
         private const val DRAWER_ITEM_ID_SETTINGS = 101
         private const val DRAWER_ITEM_FREE_SPACE = 102
     }
-    // endregion
 }

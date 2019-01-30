@@ -151,6 +151,7 @@ dependencies {
     // Material Dialogs
     implementation "com.afollestad.material-dialogs:core:$material_dialogs_version"
     implementation "com.afollestad.material-dialogs:input:$material_dialogs_version"
+    implementation "com.afollestad.material-dialogs:files:$material_dialogs_version"
 
     // Testing
     testImplementation 'junit:junit:4.12'
