@@ -65,7 +65,8 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent" />
 
-        <com.getbase.floatingactionbutton.FloatingActionsMenu android:id="@+id/add_torrent_button"
+        <com.getbase.floatingactionbutton.FloatingActionsMenu
+            android:id="@+id/add_torrent_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|end"
@@ -78,17 +79,21 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent">
 
-            <com.getbase.floatingactionbutton.FloatingActionButton android:id="@+id/add_torrent_by_file_button"
+            <com.getbase.floatingactionbutton.FloatingActionButton
+                android:id="@+id/add_torrent_by_file_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                app:fab_icon="@drawable/ic_file"
                 app:fab_colorNormal="?attr/colorAccent"
                 app:fab_colorPressed="?attr/colorAccent"
                 app:fab_size="mini"
                 app:fab_title="@string/add_torrent_by_file"/>
 
-            <com.getbase.floatingactionbutton.FloatingActionButton android:id="@+id/add_torrent_by_magnet_button"
+            <com.getbase.floatingactionbutton.FloatingActionButton
+                android:id="@+id/add_torrent_by_magnet_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                app:fab_icon="@drawable/ic_magnet"
                 app:fab_colorNormal="?attr/colorAccent"
                 app:fab_colorPressed="?attr/colorAccent"
                 app:fab_size="mini"

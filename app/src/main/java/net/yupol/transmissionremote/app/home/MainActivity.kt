@@ -28,10 +28,10 @@ import butterknife.*
 import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.files.fileChooser
 import com.afollestad.materialdialogs.list.listItems
+import com.getbase.floatingactionbutton.FloatingActionButton
 import com.getbase.floatingactionbutton.FloatingActionsMenu
 import com.mikepenz.community_material_typeface_library.CommunityMaterial
 import com.mikepenz.google_material_typeface_library.GoogleMaterial
-import com.mikepenz.iconics.IconicsDrawable
 import com.mikepenz.materialdrawer.Drawer
 import com.mikepenz.materialdrawer.DrawerBuilder
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem
@@ -105,9 +105,12 @@ class MainActivity : BaseMvpActivity<MainActivityView, MainActivityPresenter>(),
     @BindView(R.id.empty_view) lateinit var emptyView: TextView
     @BindView(R.id.detailed_error_text) lateinit var detailedErrorText: TextView
     @BindView(R.id.welcome_layout) lateinit var welcomeLayout: View
-    @BindView(R.id.add_torrent_button) lateinit var addTorrentFab: View
+    @BindView(R.id.add_torrent_button) lateinit var addTorrentFab: FloatingActionsMenu
     @BindView(R.id.bottom_toolbar) @JvmField var bottomToolbar: Toolbar? = null
     @BindView(R.id.turtle_mode_button) @JvmField var turtleModeButton: TurtleModeButton? = null
+    @BindView(R.id.add_torrent_by_file_button) lateinit var addTorrentByFileButton: FloatingActionButton
+    @BindView(R.id.add_torrent_by_magnet_button) lateinit var addTorrentByMagnetButton: FloatingActionButton
+    @BindView(R.id.fab_overlay) lateinit var fabOverlay: View
 
     private var turtleModeMenu: MenuItem? = null
 
@@ -387,30 +390,17 @@ class MainActivity : BaseMvpActivity<MainActivityView, MainActivityPresenter>(),
     }
 
     private fun setupFloatingActionButton() {
-
-        binding.addTorrentByFileButton.setIconDrawable(
-                IconicsDrawable(this, CommunityMaterial.Icon.cmd_file_outline)
-                        .paddingRes(R.dimen.fab_icon_padding)
-                        .colorRes(R.color.text_primary_inverse))
-
-        binding.addTorrentByMagnetButton.setIconDrawable(
-                IconicsDrawable(this, CommunityMaterial.Icon2.cmd_magnet)
-                        .paddingRes(R.dimen.fab_icon_padding)
-                        .colorRes(R.color.text_primary_inverse))
-
-        binding.addTorrentButton.setOnFloatingActionsMenuUpdateListener(object : FloatingActionsMenu.OnFloatingActionsMenuUpdateListener {
+        addTorrentFab.setOnFloatingActionsMenuUpdateListener(object : FloatingActionsMenu.OnFloatingActionsMenuUpdateListener {
             override fun onMenuExpanded() {
-                binding.fabOverlay.visibility = VISIBLE
+                fabOverlay.visibility = VISIBLE
             }
 
             override fun onMenuCollapsed() {
-                binding.fabOverlay.visibility = GONE
+                fabOverlay.visibility = GONE
             }
         })
 
-        binding.fabOverlay.setOnClickListener { binding.addTorrentButton.collapse() }
-
-        binding.fabOverlay.visibility = if (binding.addTorrentButton.isExpanded) VISIBLE else GONE
+        fabOverlay.visibility = if (addTorrentFab.isExpanded) VISIBLE else GONE
     }
 
     private fun switchTheme(nightMode: Boolean) {
@@ -427,7 +417,7 @@ class MainActivity : BaseMvpActivity<MainActivityView, MainActivityPresenter>(),
         outState.putBoolean(KEY_SEARCH_ACTION_EXPANDED, searchMenuItem.isActionViewExpanded)
         outState.putCharSequence(KEY_SEARCH_QUERY, searchView.query)
 
-        outState.putBoolean(KEY_FAB_EXPANDED, binding.addTorrentButton.isExpanded)
+        outState.putBoolean(KEY_FAB_EXPANDED, addTorrentFab.isExpanded)
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
@@ -442,9 +432,9 @@ class MainActivity : BaseMvpActivity<MainActivityView, MainActivityPresenter>(),
 
         val isFabExpanded = savedInstanceState.getBoolean(KEY_FAB_EXPANDED, false)
         if (isFabExpanded) {
-            binding.addTorrentButton.expand()
+            addTorrentFab.expand()
         } else {
-            binding.addTorrentButton.collapseImmediately()
+            addTorrentFab.collapseImmediately()
         }
         binding.fabOverlay.visibility = if (isFabExpanded) VISIBLE else GONE
     }
@@ -561,7 +551,7 @@ class MainActivity : BaseMvpActivity<MainActivityView, MainActivityPresenter>(),
         when {
             drawer.isDrawerOpen -> drawer.closeDrawer()
             searchMenuItem.isActionViewExpanded -> searchMenuItem.collapseActionView()
-            binding.addTorrentButton.isExpanded -> binding.addTorrentButton.collapse()
+            addTorrentFab.isExpanded -> addTorrentFab.collapse()
             else -> super.onBackPressed()
         }
     }
@@ -819,11 +809,18 @@ class MainActivity : BaseMvpActivity<MainActivityView, MainActivityPresenter>(),
     @OnClick(R.id.add_torrent_by_magnet_button)
     internal fun onAddTorrentByMagnetClicked() {
         TODO("Implement")
+        addTorrentFab.collapse()
     }
 
     @OnClick(R.id.add_torrent_by_file_button)
     internal fun onAddTorrentByFileClicked() {
         presenter.addTorrentByFileSelected()
+        addTorrentFab.collapse()
+    }
+    
+    @OnClick(R.id.fab_overlay)
+    internal fun onFabOverlayClicked() {
+        addTorrentFab.collapse()
     }
     // endregion
 
