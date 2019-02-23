@@ -55,7 +55,6 @@ public class TorrentDetailsActivity extends BaseActivity implements
 
     private static final String TAG_CHOOSE_LOCATION_DIALOG = "tag_choose_location_dialog";
 
-    private static final String KEY_TORRENT_INFO = "key_torrent_info";
     private static final String KEY_LAST_PAGE_POSITION = "key_last_position";
 
     private static final String RENAME_TORRENT_FRAGMENT_TAG = "rename_torrent_fragment_tag";
@@ -82,10 +81,6 @@ public class TorrentDetailsActivity extends BaseActivity implements
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(TorrentDetailsActivity.this);
         transport = new Transport(ServerMapper.toDomain(TransmissionRemote.getInstance().getActiveServer()));
-
-        if (savedInstanceState != null) {
-            torrentInfo = savedInstanceState.getParcelable(KEY_TORRENT_INFO);
-        }
 
         torrent = getIntent().getParcelableExtra(EXTRA_TORRENT);
         setupPager();
@@ -150,7 +145,6 @@ public class TorrentDetailsActivity extends BaseActivity implements
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        outState.putParcelable(KEY_TORRENT_INFO, torrentInfo);
         super.onSaveInstanceState(outState);
     }
 

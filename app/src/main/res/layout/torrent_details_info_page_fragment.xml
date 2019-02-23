@@ -173,6 +173,19 @@
                         style="@style/InfoPageSecondColumnStyle"
                         android:text="@{InfoPageBindingUtils.uploadedSize(torrentInfo)}" />
                 </TableRow>
+                <TableRow
+                    android:layout_marginTop="@dimen/default_text_margin">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        style="@style/InfoPageFirstColumnStyle"
+                        android:text="@string/average_speed"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        style="@style/InfoPageSecondColumnStyle"
+                        android:text="@{TextUtils.speedText(InfoPageBindingUtils.transferSpeed(torrentInfo))}" />
+                </TableRow>
 
                 <TextView
                     android:layout_width="wrap_content"

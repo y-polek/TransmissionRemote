@@ -62,7 +62,7 @@ public class TrackersPageFragment extends BasePageFragment implements TrackersAd
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
         binding = DataBindingUtil.inflate(
                 inflater, R.layout.torrent_details_trackers_page_fragment, container, false);

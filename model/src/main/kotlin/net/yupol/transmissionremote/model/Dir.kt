@@ -14,6 +14,10 @@ class Dir private constructor(
 
     constructor(name: String) : this(name, mutableListOf<Dir>(), mutableListOf<Int>()) {}
 
+    fun findDir(name: String): Dir? {
+        return dirs.find { it.name == name }
+    }
+
     companion object {
 
         @JvmStatic

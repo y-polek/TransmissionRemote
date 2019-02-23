@@ -1,6 +1,5 @@
 package net.yupol.transmissionremote.app.torrentdetails;
 
-import androidx.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.text.InputFilter;
 import android.util.Log;
@@ -18,22 +17,24 @@ import com.google.common.collect.ImmutableMap;
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.TransmissionRemote;
 import net.yupol.transmissionremote.app.databinding.TorrentDetailsOptionsPageFragmentBinding;
-import net.yupol.transmissionremote.model.mapper.ServerMapper;
 import net.yupol.transmissionremote.app.utils.MinMaxTextWatcher;
+import net.yupol.transmissionremote.data.api.Transport;
 import net.yupol.transmissionremote.data.api.model.ServerSettingsEntity;
 import net.yupol.transmissionremote.data.api.rpc.Parameter;
+import net.yupol.transmissionremote.data.api.rpc.RpcArgs;
+import net.yupol.transmissionremote.data.api.rpc.TorrentParameters;
 import net.yupol.transmissionremote.model.json.ServerSettings;
 import net.yupol.transmissionremote.model.json.TorrentInfo;
 import net.yupol.transmissionremote.model.json.TransferPriority;
 import net.yupol.transmissionremote.model.limitmode.IdleLimitMode;
 import net.yupol.transmissionremote.model.limitmode.LimitMode;
 import net.yupol.transmissionremote.model.limitmode.RatioLimitMode;
-import net.yupol.transmissionremote.data.api.Transport;
-import net.yupol.transmissionremote.data.api.rpc.RpcArgs;
-import net.yupol.transmissionremote.data.api.rpc.TorrentParameters;
 import net.yupol.transmissionremote.model.mapper.LimitModeMapper;
 import net.yupol.transmissionremote.model.mapper.PriorityMapper;
+import net.yupol.transmissionremote.model.mapper.ServerMapper;
 
+import androidx.annotation.NonNull;
+import androidx.databinding.DataBindingUtil;
 import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -89,7 +90,7 @@ public class OptionsPageFragment extends BasePageFragment implements
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
 
         binding = DataBindingUtil.inflate(inflater, R.layout.torrent_details_options_page_fragment, container, false);

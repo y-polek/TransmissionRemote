@@ -2,6 +2,7 @@ package net.yupol.transmissionremote.app.torrentdetails;
 
 import android.os.Bundle;
 import androidx.annotation.AnimRes;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -9,13 +10,18 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.common.base.Function;
+import com.google.common.collect.FluentIterable;
+
 import net.yupol.transmissionremote.app.ProgressbarFragment;
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.model.Dir;
 import net.yupol.transmissionremote.model.json.TorrentInfo;
 
-import java.util.ArrayList;
 import java.util.Stack;
+
+import static com.google.common.base.Strings.nullToEmpty;
+import static org.apache.commons.lang3.ArrayUtils.isNotEmpty;
 
 public class FilesPageFragment extends BasePageFragment implements DirectoryFragment.OnDirectorySelectedListener {
 
@@ -26,9 +32,11 @@ public class FilesPageFragment extends BasePageFragment implements DirectoryFrag
     private boolean viewCreated;
     private Stack<Dir> path = new Stack<>();
     private BreadcrumbView breadcrumbView;
+    @Nullable private String[] savedPath;
+    private Dir currentDir;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
 
         View view = inflater.inflate(R.layout.torrent_details_file_page_fragment, container, false);
@@ -46,9 +54,8 @@ public class FilesPageFragment extends BasePageFragment implements DirectoryFrag
         });
 
         if (savedInstanceState != null) {
-            ArrayList<Dir> dirs = savedInstanceState.getParcelableArrayList(KEY_PATH);
-            path.addAll(dirs);
-            breadcrumbView.setPath(path);
+            savedPath = savedInstanceState.getStringArray(KEY_PATH);
+
         }
 
         if (getTorrentInfo() != null) {
@@ -63,7 +70,6 @@ public class FilesPageFragment extends BasePageFragment implements DirectoryFrag
 
         viewCreated = true;
 
-
         return view;
     }
 
@@ -74,9 +80,18 @@ public class FilesPageFragment extends BasePageFragment implements DirectoryFrag
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelableArrayList(KEY_PATH, new ArrayList<>(path));
+        String[] pathNames = FluentIterable.from(path)
+                .transform(new Function<Dir, String>() {
+                    @Override
+                    public String apply(@NonNull Dir dir) {
+                        return dir.getName();
+                    }
+                })
+                .toArray(String.class);
+        outState.putStringArray(KEY_PATH, pathNames);
+
     }
 
 
@@ -86,11 +101,55 @@ public class FilesPageFragment extends BasePageFragment implements DirectoryFrag
         super.setTorrentInfo(torrentInfo);
         if (viewCreated) {
             if (!isUpdate) {
-                showRootDir();
+                if (isNotEmpty(savedPath)) {
+                    restoreSavedPath();
+                } else {
+                    showRootDir();
+                }
             } else {
                 updateFileStats();
             }
         }
+    }
+
+    public Dir getCurrentDir() {
+        return currentDir;
+    }
+
+    private void restoreSavedPath() {
+        path.clear();
+
+        if (isNotEmpty(savedPath)) {
+
+            final Dir root = Dir.createFileTree(getTorrentInfo().getFiles());
+
+            Dir dir = null;
+            for (String dirName : savedPath) {
+                Dir subDir;
+                if (dir == null) {
+                    subDir = root;
+                } else {
+                    subDir = dir.findDir(nullToEmpty(dirName));
+                }
+                if (subDir != null) {
+                    path.push(subDir);
+                    dir = subDir;
+                } else {
+                    path.clear();
+                    break;
+                }
+            }
+
+            breadcrumbView.setPath(path);
+
+            if (path.isEmpty()) {
+                showRootDir();
+            } else {
+                showDirectory(path.peek(), null);
+            }
+        }
+
+        savedPath = null;
     }
 
     public void updateFileStats() {

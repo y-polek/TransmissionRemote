@@ -14,6 +14,8 @@
     <string name="torrent_finished_notification_vibrate_key" translatable="false">torrent_finished_notification_vibrate_key</string>
     <string name="torrent_finished_notification_vibrate_default_value" translatable="false">false</string>
 
+    <string name="torrent_finished_notification_sound_and_vibrate_key" translatable="false">torrent_finished_notification_sound_and_vibrate_key</string>
+
     <string name="disable_free_space_check_key" translatable="false">disable_free_space_check_key</string>
     <string name="disable_free_space_check_default_value" translatable="false">false</string>
 

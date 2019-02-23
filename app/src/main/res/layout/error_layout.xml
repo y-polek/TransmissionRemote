@@ -31,11 +31,12 @@
     <TextView android:id="@+id/detailed_error_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="16dp"
+        android:layout_marginTop="16dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
         android:scrollbars="vertical"
         android:clickable="true"
         android:focusable="true"
         android:background="?android:attr/selectableItemBackground"
         tools:text="@tools:sample/lorem/random"/>
-
 </LinearLayout>

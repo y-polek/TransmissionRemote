@@ -3,6 +3,7 @@ package net.yupol.transmissionremote.app.torrentdetails;
 import android.content.Context;
 import android.os.Bundle;
 import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,7 +16,6 @@ import net.yupol.transmissionremote.model.json.TorrentInfo;
 public abstract class BasePageFragment extends BaseFragment implements OnDataAvailableListener<TorrentInfo> {
 
     private static final String KEY_TORRENT = "key_torrent";
-    private static final String KEY_TORRENT_INFO = "key_torrent_info";
 
     private Torrent torrent;
     private TorrentInfo torrentInfo;
@@ -44,10 +44,9 @@ public abstract class BasePageFragment extends BaseFragment implements OnDataAva
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelable(KEY_TORRENT, torrent);
-        outState.putParcelable(KEY_TORRENT_INFO, torrentInfo);
     }
 
     @Override
@@ -74,10 +73,9 @@ public abstract class BasePageFragment extends BaseFragment implements OnDataAva
     @Nullable
     @CallSuper
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         if (savedInstanceState != null) {
             if (torrent == null) torrent = savedInstanceState.getParcelable(KEY_TORRENT);
-            if (torrentInfo == null) torrentInfo = savedInstanceState.getParcelable(KEY_TORRENT_INFO);
         }
 
         return super.onCreateView(inflater, container, savedInstanceState);

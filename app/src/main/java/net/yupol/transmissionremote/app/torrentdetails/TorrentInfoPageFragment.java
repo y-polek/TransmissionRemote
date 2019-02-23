@@ -1,5 +1,6 @@
 package net.yupol.transmissionremote.app.torrentdetails;
 
+import androidx.annotation.NonNull;
 import androidx.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -16,7 +17,7 @@ public class TorrentInfoPageFragment extends BasePageFragment {
     private TorrentDetailsInfoPageFragmentBinding binding;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
 
         binding = DataBindingUtil.inflate(inflater, R.layout.torrent_details_info_page_fragment, container, false);

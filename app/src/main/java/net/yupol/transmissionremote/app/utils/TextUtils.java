@@ -1,6 +1,7 @@
 package net.yupol.transmissionremote.app.utils;
 
 import com.google.common.base.Strings;
+import com.vdurmont.emoji.EmojiManager;
 
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.TransmissionRemote;
@@ -93,5 +94,18 @@ public class TextUtils {
 
     public static String speedText(long bytes) {
         return Strings.padStart(TextUtils.displayableSize(bytes), 5, ' ') + "/s";
+    }
+
+    private static String firstSymbol(String str) {
+        if (str.isEmpty()) return "";
+
+        for (int i = str.length(); i >= 1; i--) {
+            String chunk = str.substring(0, i);
+            if (EmojiManager.isEmoji(chunk)) return chunk;
+        }
+
+        return new StringBuilder()
+                .appendCodePoint(str.codePointAt(0))
+                .toString();
     }
 }

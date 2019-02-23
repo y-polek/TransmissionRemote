@@ -63,4 +63,15 @@ public class InfoPageBindingUtils {
         return TransmissionRemote.getInstance().getString(R.string.uploaded_ever_text,
                 displayableSize(uploaded), ratio);
     }
+
+    public static long transferSpeed(TorrentInfo torrentInfo) {
+        if (torrentInfo == null) return 0;
+
+        long duration = torrentInfo.getSecondsDownloading();
+        if (duration <= 0) return 0;
+
+        long downloaded = torrentInfo.getSizeWhenDone() - torrentInfo.getLeftUntilDone();
+        return downloaded / duration;
+    }
+
 }

@@ -48,6 +48,7 @@ import javax.annotation.Nonnull;
 import javax.inject.Inject;
 
 import io.fabric.sdk.android.Fabric;
+
 import io.reactivex.Observable;
 import io.reactivex.disposables.Disposable;
 
@@ -96,6 +97,10 @@ public class TransmissionRemote extends MultiDexApplication implements SharedPre
         setupDi();
         appComponent.inject(this);
 
+        if (!BuildConfig.DEBUG) {
+            Fabric.with(this, new Crashlytics());
+        }
+
         AppCompatDelegate.setDefaultNightMode(ThemeUtils.isInNightMode(this) ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO);
 
         instance = this;
@@ -108,7 +113,6 @@ public class TransmissionRemote extends MultiDexApplication implements SharedPre
 
         JobManager.create(this)
                 .addJobCreator(new BackgroundUpdateJob.Creator());
-
 
         if (isNotificationEnabled()) {
             BackgroundUpdater.start(this);

@@ -1,6 +1,8 @@
 package net.yupol.transmissionremote.app.torrentdetails;
 
 import android.content.SharedPreferences;
+
+import androidx.annotation.NonNull;
 import androidx.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -47,7 +49,7 @@ public class PeersPageFragment extends BasePageFragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
         binding = DataBindingUtil.inflate(
                 inflater, R.layout.torrent_details_peers_page_fragment, container, false);
