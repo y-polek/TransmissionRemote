@@ -16,10 +16,6 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
 
-        <meta-data
-            android:name="io.fabric.ApiKey"
-            android:value="${fabricApiKey}" />
-
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"

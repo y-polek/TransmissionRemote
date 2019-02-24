@@ -13,7 +13,6 @@ import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatDelegate;
 
-import com.crashlytics.android.Crashlytics;
 import com.evernote.android.job.JobManager;
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
@@ -41,8 +40,6 @@ import java.util.Set;
 import java.util.WeakHashMap;
 
 import javax.annotation.Nonnull;
-
-import io.fabric.sdk.android.Fabric;
 
 public class TransmissionRemote extends Application implements SharedPreferences.OnSharedPreferenceChangeListener {
 
@@ -93,10 +90,6 @@ public class TransmissionRemote extends Application implements SharedPreferences
     @Override
     public void onCreate() {
         super.onCreate();
-
-        if (!BuildConfig.DEBUG) {
-            Fabric.with(this, new Crashlytics());
-        }
 
         AppCompatDelegate.setDefaultNightMode(ThemeUtils.isInNightMode(this) ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO);
 

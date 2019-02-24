@@ -41,7 +41,6 @@ import android.widget.SearchView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import com.crashlytics.android.Crashlytics;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.mikepenz.community_material_typeface_library.CommunityMaterial;
 import com.mikepenz.fontawesome_typeface_library.FontAwesome;
@@ -559,7 +558,6 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
             } catch (SecurityException e) {
                 Toast.makeText(this, R.string.error_failed_to_open_downloaded_torrent, Toast.LENGTH_LONG).show();
                 Log.e(TAG, "Can't open torrent file", e);
-                Crashlytics.logException(e);
             }
         }
     }
