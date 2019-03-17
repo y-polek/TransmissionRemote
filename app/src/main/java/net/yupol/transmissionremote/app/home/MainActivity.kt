@@ -26,7 +26,6 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import butterknife.*
 import com.afollestad.materialdialogs.MaterialDialog
-import com.afollestad.materialdialogs.files.fileChooser
 import com.afollestad.materialdialogs.list.listItems
 import com.getbase.floatingactionbutton.FloatingActionButton
 import com.getbase.floatingactionbutton.FloatingActionsMenu
@@ -46,6 +45,8 @@ import net.yupol.transmissionremote.app.actionbar.SpeedTextView
 import net.yupol.transmissionremote.app.actionbar.TurtleModeButton
 import net.yupol.transmissionremote.app.databinding.MainActivityBinding
 import net.yupol.transmissionremote.app.dialogs.RenameTorrentDialog
+import net.yupol.transmissionremote.app.dialogs.StoragePermissionRationaleDialog
+import net.yupol.transmissionremote.app.dialogs.TorrentFileChooserDialog
 import net.yupol.transmissionremote.app.drawer.FreeSpaceFooterDrawerItem
 import net.yupol.transmissionremote.app.drawer.HeaderView
 import net.yupol.transmissionremote.app.drawer.SortDrawerItem
@@ -67,13 +68,15 @@ import net.yupol.transmissionremote.app.utils.hideKeyboard
 import net.yupol.transmissionremote.device.clipboard.Clipboard
 import net.yupol.transmissionremote.domain.model.Server
 import net.yupol.transmissionremote.model.json.Torrent
+import java.io.File
 import javax.inject.Inject
 
 class MainActivity : BaseMvpActivity<MainActivityView, MainActivityPresenter>(),
         MainActivityView,
         TorrentListFragment.OnTorrentSelectedListener,
         TorrentListFragment.ContextualActionBarListener,
-        RenameTorrentDialog.Listener
+        RenameTorrentDialog.Listener,
+        TorrentFileChooserDialog.Listener
 {
     private var application: TransmissionRemote? = null
 
@@ -747,14 +750,12 @@ class MainActivity : BaseMvpActivity<MainActivityView, MainActivityPresenter>(),
         presenter.renameTorrent(torrent, newName)
     }
 
-    override fun openTorrentFileChooser() {
-        MaterialDialog(this).show {
-            fileChooser { _, file ->
-                Toast.makeText(this@MainActivity, file.absolutePath, Toast.LENGTH_LONG).show()
-            }
-            positiveButton(R.string.add)
-            negativeButton(R.string.cancel)
-        }
+    override fun openTorrentFileChooser(initDirPath: String?) {
+        TorrentFileChooserDialog.instance(initDirPath).show(supportFragmentManager, "TorrentFileChooser")
+    }
+
+    override fun onTorrentFileChosen(file: File) {
+        presenter.torrentFileChosen(file)
     }
 
     override fun openStoragePermissionRationale() {

@@ -30,6 +30,7 @@ import net.yupol.transmissionremote.domain.usecase.torrent.TorrentListInteractor
 import net.yupol.transmissionremote.utils.deleteIf
 import net.yupol.transmissionremote.utils.isNullOrEmpty
 import net.yupol.transmissionremote.utils.toArray
+import java.io.File
 import java.util.concurrent.TimeUnit.MILLISECONDS
 import java.util.concurrent.TimeUnit.SECONDS
 import javax.inject.Inject
@@ -389,7 +390,7 @@ class MainActivityPresenter @Inject constructor(
 
     fun addTorrentByFileSelected() {
         if (view.isStoragePermissionGranted()) {
-            view.openTorrentFileChooser()
+            view.openTorrentFileChooser(preferences.lastUsedTorrentFileDirectory)
         } else {
             val shouldShowRationale = view.shouldShowStoragePermissionRationale()
             val deniedBefore = preferences.storagePermissionDeniedBefore
@@ -404,7 +405,7 @@ class MainActivityPresenter @Inject constructor(
 
     fun permissionGranted(requestCode: Int) {
         when (requestCode) {
-            REQUEST_CODE_ADD_TORRENT_BY_FILE -> view.openTorrentFileChooser()
+            REQUEST_CODE_ADD_TORRENT_BY_FILE -> view.openTorrentFileChooser(preferences.lastUsedTorrentFileDirectory)
         }
     }
 
@@ -412,6 +413,10 @@ class MainActivityPresenter @Inject constructor(
         when (requestCode) {
             REQUEST_CODE_ADD_TORRENT_BY_FILE -> preferences.storagePermissionDeniedBefore = true
         }
+    }
+
+    fun torrentFileChosen(file: File) {
+        preferences.lastUsedTorrentFileDirectory = file.parent
     }
 
     //////////////////////////////

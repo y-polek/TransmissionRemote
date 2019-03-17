@@ -73,7 +73,7 @@ interface MainActivityView: MvpView {
 
     fun openRenameTorrentDialog(torrent: TorrentViewModel)
 
-    fun openTorrentFileChooser()
+    fun openTorrentFileChooser(initDirPath: String?)
 
     fun openStoragePermissionRationale()
     // endregion

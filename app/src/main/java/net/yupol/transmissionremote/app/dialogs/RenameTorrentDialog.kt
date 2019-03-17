@@ -18,7 +18,7 @@ class RenameTorrentDialog: DialogFragment() {
     private val torrent: TorrentViewModel by lazy { arguments!![KEY_TORRENT] as TorrentViewModel }
 
     private val listener: Listener? by lazy {
-        return@lazy if (activity is Listener) activity as Listener else null
+        return@lazy activity as? Listener
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -30,7 +30,7 @@ class RenameTorrentDialog: DialogFragment() {
                 dialog.setActionButtonEnabled(WhichButton.POSITIVE, text.isValidName())
             }
             positiveButton(R.string.rename) { dialog ->
-                val name = dialog.getInputField()!!.text.toName()
+                val name = dialog.getInputField().text.toName()
                 listener?.onTorrentNameSelected(torrent, name)
             }
             negativeButton(R.string.cancel)

@@ -1,4 +1,4 @@
-package net.yupol.transmissionremote.app.home
+package net.yupol.transmissionremote.app.dialogs
 
 import android.app.Dialog
 import android.content.Intent
