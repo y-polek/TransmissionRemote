@@ -7,20 +7,13 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
 import android.preference.PreferenceManager;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
-import androidx.multidex.MultiDexApplication;
-import androidx.appcompat.app.AppCompatDelegate;
 import android.util.Log;
 
-import com.crashlytics.android.Crashlytics;
 import com.evernote.android.job.JobManager;
 
 import net.yupol.transmissionremote.app.di.AppComponent;
 import net.yupol.transmissionremote.app.di.DaggerAppComponent;
 import net.yupol.transmissionremote.app.filtering.Filter;
-import net.yupol.transmissionremote.app.filtering.Filters;
 import net.yupol.transmissionremote.app.notifications.BackgroundUpdateJob;
 import net.yupol.transmissionremote.app.notifications.BackgroundUpdater;
 import net.yupol.transmissionremote.app.server.ServerManager;
@@ -34,7 +27,6 @@ import net.yupol.transmissionremote.model.mapper.ServerMapper;
 
 import org.apache.commons.lang3.NotImplementedException;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -47,8 +39,11 @@ import java.util.WeakHashMap;
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
 
-import io.fabric.sdk.android.Fabric;
-
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatDelegate;
+import androidx.multidex.MultiDexApplication;
 import io.reactivex.Observable;
 import io.reactivex.disposables.Disposable;
 
@@ -93,13 +88,8 @@ public class TransmissionRemote extends MultiDexApplication implements SharedPre
     @Override
     public void onCreate() {
         super.onCreate();
-        setupCrashlytics();
         setupDi();
         appComponent.inject(this);
-
-        if (!BuildConfig.DEBUG) {
-            Fabric.with(this, new Crashlytics());
-        }
 
         AppCompatDelegate.setDefaultNightMode(ThemeUtils.isInNightMode(this) ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO);
 
@@ -146,7 +136,6 @@ public class TransmissionRemote extends MultiDexApplication implements SharedPre
                         serverManager::startServerSession,
                         error -> {
                             Log.e(TAG, "Active Server subscription error", error);
-                            if (!BuildConfig.DEBUG) Crashlytics.logException(error);
                         },
                         () -> {
                             serverManager.finishServerSession();
@@ -229,12 +218,6 @@ public class TransmissionRemote extends MultiDexApplication implements SharedPre
     @Deprecated
     public void persistServers() {
         // throw new NotImplementedException("Not implemented");
-    }
-
-    private void setupCrashlytics() {
-        if (!BuildConfig.DEBUG) {
-            Fabric.with(this, new Crashlytics());
-        }
     }
 
     @Override

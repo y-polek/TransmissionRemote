@@ -1,6 +1,5 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
-apply plugin: 'io.fabric'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'kotlin-android-extensions'
 
@@ -15,7 +14,6 @@ android {
         applicationId 'net.yupol.transmissionremote.app'
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
-        manifestPlaceholders = [fabricApiKey: "${apiKey('fabric_api_key')}"]
 
         vectorDrawables.useSupportLibrary = true
 
@@ -156,23 +154,4 @@ dependencies {
     // Testing
     testImplementation 'junit:junit:4.12'
     testImplementation 'org.hamcrest:hamcrest-library:1.3'
-}
-
-def property(String fileName, String propertyName) {
-    def propsFile = rootProject.file(fileName)
-    if (propsFile.exists()) {
-        def props = new Properties()
-        props.load(new FileInputStream(propsFile))
-        if (props[propertyName] != null) {
-            return props[propertyName]
-        } else {
-            throw new GradleException("There is no '" + propertyName + "' property in '" + propsFile.name + "' file")
-        }
-    } else {
-        throw new GradleException("'" + propsFile.name + "' file does not exist")
-    }
-}
-
-def apiKey(String name) {
-    return property("api_keys.properties", name)
 }
