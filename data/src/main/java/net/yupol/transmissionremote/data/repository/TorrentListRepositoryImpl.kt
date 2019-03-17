@@ -6,8 +6,10 @@ import io.reactivex.Single
 import net.yupol.transmissionremote.data.api.TransmissionRpcApi
 import net.yupol.transmissionremote.data.api.mapper.TorrentMapper
 import net.yupol.transmissionremote.data.api.rpc.RpcArgs
+import net.yupol.transmissionremote.domain.model.AddTorrentResult
 import net.yupol.transmissionremote.domain.model.Torrent
 import net.yupol.transmissionremote.domain.repository.TorrentListRepository
+import java.io.File
 import javax.inject.Inject
 
 class TorrentListRepositoryImpl @Inject constructor(
@@ -61,5 +63,17 @@ class TorrentListRepositoryImpl @Inject constructor(
 
     override fun renameTorrent(id: Int, oldName: String, newName: String): Completable {
         return api.renameTorrent(RpcArgs.renameTorrent(id = id, path = oldName, name = newName))
+    }
+
+    override fun addTorrentFile(file: File, destinationDir: String, paused: Boolean): Single<AddTorrentResult> {
+        return api.addTorrent(RpcArgs.addTorrent(torrentFileContent = file.readBytes(), destination = destinationDir, paused = paused))
+                .map { result ->
+                    return@map when {
+                        result.torrentAdded != null -> AddTorrentResult.success()
+                        result.torrentDuplicate != null -> AddTorrentResult.duplicate()
+                        else -> AddTorrentResult.error()
+                    }
+                }
+                .onErrorReturn { error -> AddTorrentResult.error(error.message) }
     }
 }

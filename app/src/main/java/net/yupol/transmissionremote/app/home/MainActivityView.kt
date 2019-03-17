@@ -36,7 +36,7 @@ interface MainActivityView: MvpView {
 
     fun hideError()
 
-    fun showErrorAlert(error: Throwable)
+    fun showErrorAlert(error: String)
 
     fun showEmptyMessage(@StringRes msgId: Int)
 

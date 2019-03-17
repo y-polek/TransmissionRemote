@@ -2,7 +2,9 @@ package net.yupol.transmissionremote.domain.repository
 
 import io.reactivex.Completable
 import io.reactivex.Single
+import net.yupol.transmissionremote.domain.model.AddTorrentResult
 import net.yupol.transmissionremote.domain.model.Torrent
+import java.io.File
 
 interface TorrentListRepository {
 
@@ -25,4 +27,6 @@ interface TorrentListRepository {
     fun reannounceTorrents(vararg ids: Int): Completable
 
     fun renameTorrent(id: Int, oldName: String, newName: String): Completable
+
+    fun addTorrentFile(file: File, destinationDir: String, paused: Boolean): Single<AddTorrentResult>
 }

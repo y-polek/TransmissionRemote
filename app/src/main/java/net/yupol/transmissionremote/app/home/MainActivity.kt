@@ -623,8 +623,8 @@ class MainActivity : BaseMvpActivity<MainActivityView, MainActivityPresenter>(),
         errorLayout.visibility = GONE
     }
 
-    override fun showErrorAlert(error: Throwable) {
-        Toast.makeText(this, error.message, Toast.LENGTH_LONG).show()
+    override fun showErrorAlert(error: String) {
+        Toast.makeText(this, error, Toast.LENGTH_LONG).show()
     }
 
     override fun showEmptyMessage(msgId: Int) {

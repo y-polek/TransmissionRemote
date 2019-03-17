@@ -24,6 +24,10 @@ class StringResources @Inject constructor(private val res: Resources) {
         res.getString(R.string.network_error_message_unauthorized)
     }
 
+    val unknownError: String by lazy {
+        res.getString(R.string.unknown_error_message)
+    }
+
     fun torrentsCount(count: Int): String {
         return res.getQuantityString(R.plurals.torrents, count, count)
     }

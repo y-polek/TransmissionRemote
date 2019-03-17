@@ -123,7 +123,7 @@ class MainActivityPresenter @Inject constructor(
                     view.updateTorrents(*torrent.toTypedArray())
                 }, { error ->
                     view.updateTorrent(torrentId)
-                    view.showErrorAlert(error)
+                    showErrorAlert(error)
                 })
     }
 
@@ -136,7 +136,7 @@ class MainActivityPresenter @Inject constructor(
                     view.updateTorrents(*torrent.toTypedArray())
                 }, { error ->
                     view.updateTorrent(torrentId)
-                    view.showErrorAlert(error)
+                    showErrorAlert(error)
                 })
     }
 
@@ -193,7 +193,7 @@ class MainActivityPresenter @Inject constructor(
                     refreshTorrentList()
                 }, { error ->
                     view.hideLoading()
-                    view.showErrorAlert(error)
+                    showErrorAlert(error)
                 })
     }
 
@@ -211,7 +211,7 @@ class MainActivityPresenter @Inject constructor(
                     refreshTorrentList()
                 }, { error ->
                     view.hideLoading()
-                    view.showErrorAlert(error)
+                    showErrorAlert(error)
                 })
     }
 
@@ -262,12 +262,12 @@ class MainActivityPresenter @Inject constructor(
                 .map { it.toViewModel() }
                 .subscribeOn(io())
                 .observeOn(mainThread())
-                .subscribe({ torrent ->
-                    view.updateTorrents(*torrent.toTypedArray())
-                }, { error ->
-                    view.showErrorAlert(error)
-                })
-
+                .subscribeBy(
+                        onSuccess = { torrent ->
+                            view.updateTorrents(*torrent.toTypedArray())
+                        },
+                        onError = ::showErrorAlert
+                )
         view.finishSelection()
     }
 
@@ -279,11 +279,12 @@ class MainActivityPresenter @Inject constructor(
                 .map { it.toViewModel() }
                 .subscribeOn(io())
                 .observeOn(mainThread())
-                .subscribe({ torrents ->
-                    view.updateTorrents(*torrents.toTypedArray())
-                }, { error ->
-                    view.showErrorAlert(error)
-                })
+                .subscribeBy(
+                        onSuccess = { torrents ->
+                            view.updateTorrents(*torrents.toTypedArray())
+                        },
+                        onError = ::showErrorAlert
+                )
 
         view.finishSelection()
     }
@@ -296,11 +297,12 @@ class MainActivityPresenter @Inject constructor(
                 .map { it.toViewModel() }
                 .subscribeOn(io())
                 .observeOn(mainThread())
-                .subscribe({ torrents ->
-                    view.updateTorrents(*torrents.toTypedArray())
-                }, { error ->
-                    view.showErrorAlert(error)
-                })
+                .subscribeBy(
+                        onSuccess = { torrents ->
+                            view.updateTorrents(*torrents.toTypedArray())
+                        },
+                        onError = ::showErrorAlert
+                )
 
         view.finishSelection()
     }
@@ -319,7 +321,7 @@ class MainActivityPresenter @Inject constructor(
                 .observeOn(mainThread())
                 .subscribeBy(
                         onSuccess = { view.updateTorrents(it) },
-                        onError = view::showErrorAlert)
+                        onError = ::showErrorAlert)
 
         view.finishSelection()
     }
@@ -339,7 +341,7 @@ class MainActivityPresenter @Inject constructor(
                         onSuccess = { torrents ->
                             view.updateTorrents(*torrents.toTypedArray())
                         },
-                        onError = view::showErrorAlert)
+                        onError = ::showErrorAlert)
 
         view.finishSelection()
     }
@@ -350,7 +352,7 @@ class MainActivityPresenter @Inject constructor(
         requests += torrentInteractor.reannounceTorrents(*selectedTorrents.toArray())
                 .subscribeOn(io())
                 .observeOn(mainThread())
-                .subscribeBy(onError = view::showErrorAlert)
+                .subscribeBy(onError = ::showErrorAlert)
 
         view.finishSelection()
     }
@@ -367,7 +369,7 @@ class MainActivityPresenter @Inject constructor(
                             view.setTurtleModeEnabled(enabled)
                         },
                         onError = { error ->
-                            view.showErrorAlert(error)
+                            showErrorAlert(error)
                             view.setTurtleModeEnabled(turtleModeEnabled)
                         })
     }
@@ -533,7 +535,7 @@ class MainActivityPresenter @Inject constructor(
                         },
                         onError = { error ->
                             view.hideLoading()
-                            view.showErrorAlert(error)
+                            showErrorAlert(error)
                         })
 
         view.finishSelection()
@@ -549,6 +551,11 @@ class MainActivityPresenter @Inject constructor(
         updateAllTorrentsSelection()
         updateSelectionTitle()
         updateSelectionMenu()
+    }
+
+    private fun showErrorAlert(error: Throwable) {
+        val message = error.message ?: strRes.unknownError
+        view.showErrorAlert(message)
     }
 
     private fun Iterable<Torrent>.toViewModel(): List<TorrentViewModel> {
