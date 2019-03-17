@@ -21,9 +21,5 @@ allprojects {
         maven { url "https://jitpack.io" }
         maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
         jcenter()
-
-        // Workaround for material-dialogs:input
-        // https://github.com/afollestad/material-dialogs/issues/1575
-        maven { url "https://dl.bintray.com/drummer-aidan/maven/" }
     }
 }

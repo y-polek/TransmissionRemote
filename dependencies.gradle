@@ -22,7 +22,7 @@ ext {
     butterknife_version = '10.1.0'
     ktx_version = '1.0.1'
     crashlytics_version = '2.9.7@aar'
-    material_dialogs_version = '2.0.0-rc5'
+    material_dialogs_version = '2.1.0'
     material_drawer_version = '6.0.8@aar'
     evernote_android_job_version = '1.2.2'
     indeterminate_checkbox_version = '1.0.5@aar'
