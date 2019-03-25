@@ -48,57 +48,75 @@
         app:layout_constraintEnd_toStartOf="@id/end_guideline"
         tools:text="123 files, 240.88 GB (150.33 GB selected)"/>
 
-    <net.yupol.transmissionremote.app.torrentdetails.BreadcrumbView
-        android:id="@+id/breadcrumb_view"
+    <LinearLayout
+        android:id="@+id/files_layout"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintStart_toEndOf="@id/start_guideline"
-        app:layout_constraintTop_toBottomOf="@id/size_text"
-        app:layout_constraintEnd_toStartOf="@id/end_guideline"/>
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recycler_view"
-        android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:scrollbars="vertical"
+        android:layout_marginTop="8dp"
+        android:orientation="vertical"
+        android:background="@drawable/transparent_bordered_background"
         app:layout_constraintVertical_chainStyle="spread"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/breadcrumb_view"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/trash_torrent_file_checkbox"/>
+        app:layout_constraintStart_toStartOf="@id/start_guideline"
+        app:layout_constraintTop_toBottomOf="@id/size_text"
+        app:layout_constraintEnd_toEndOf="@id/end_guideline"
+        app:layout_constraintBottom_toTopOf="@id/select_none_button">
+        <net.yupol.transmissionremote.app.torrentdetails.BreadcrumbView
+            android:id="@+id/breadcrumb_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <include layout="@layout/divider" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scrollbars="vertical" />
+
+    </LinearLayout>
 
     <Button
         android:id="@+id/select_none_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/select_none"
-
-        android:background="@drawable/transparent_bordered_button"
-        android:textSize="12sp"
-        android:textAllCaps="false"
-        android:minHeight="0dp"
-        android:paddingTop="8dp"
-        android:paddingBottom="8dp"
-
-        app:layout_constraintTop_toBottomOf="@id/recycler_view"
+        app:layout_constraintTop_toBottomOf="@id/files_layout"
         app:layout_constraintEnd_toStartOf="@id/end_guideline"
-        app:layout_constraintBottom_toTopOf="@id/trash_torrent_file_checkbox"/>
+        app:layout_constraintBottom_toTopOf="@id/download_to_text"
+        style="@style/SelectButtonStyle"/>
 
     <Button
         android:id="@+id/select_all_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/select_all"
-
-        android:background="@drawable/transparent_bordered_button"
-        android:textSize="12sp"
-        android:textAllCaps="false"
-        android:minHeight="0dp"
-        android:paddingTop="8dp"
-        android:paddingBottom="8dp"
-
         app:layout_constraintBaseline_toBaselineOf="@id/select_none_button"
-        app:layout_constraintEnd_toStartOf="@id/select_none_button"/>
+        app:layout_constraintEnd_toStartOf="@id/select_none_button"
+        style="@style/SelectButtonStyle"/>
+
+    <TextView
+        android:id="@+id/download_to_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/download_to"
+        app:layout_constraintBaseline_toBaselineOf="@id/download_to_text"
+        app:layout_constraintStart_toEndOf="@id/start_guideline"
+        app:layout_constraintTop_toBottomOf="@id/select_none_button"/>
+
+    <EditText
+        android:id="@+id/download_to_text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:padding="8dp"
+        android:singleLine="true"
+        android:background="@drawable/transparent_bordered_background"
+        app:layout_constraintStart_toEndOf="@id/download_to_title"
+        app:layout_constraintTop_toBottomOf="@id/select_none_button"
+        app:layout_constraintEnd_toStartOf="@id/end_guideline" />
 
     <CheckBox
         android:id="@+id/trash_torrent_file_checkbox"
@@ -106,7 +124,7 @@
         android:layout_height="wrap_content"
         android:text="@string/trash_torrent_file"
         app:layout_constraintStart_toEndOf="@id/start_guideline"
-        app:layout_constraintTop_toBottomOf="@id/select_none_button"
+        app:layout_constraintTop_toBottomOf="@id/download_to_text"
         app:layout_constraintEnd_toStartOf="@id/end_guideline"
         app:layout_constraintBottom_toTopOf="@id/start_when_added_checkbox"/>
 

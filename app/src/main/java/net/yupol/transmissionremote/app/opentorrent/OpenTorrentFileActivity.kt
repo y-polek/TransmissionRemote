@@ -46,7 +46,7 @@ class OpenTorrentFileActivity: BaseActivity(), DirectoryAdapter.OnItemSelectedLi
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.add_torrent_activity)
+        setContentView(R.layout.open_torrent_file_activity)
         ButterKnife.bind(this)
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
