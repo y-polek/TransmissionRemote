@@ -151,6 +151,9 @@ dependencies {
     implementation "com.afollestad.material-dialogs:input:$material_dialogs_version"
     implementation "com.afollestad.material-dialogs:files:$material_dialogs_version"
 
+    // Ttorrent
+    implementation "com.turn:ttorrent-core:$ttorrent_version"
+
     // Testing
     testImplementation 'junit:junit:4.12'
     testImplementation 'org.hamcrest:hamcrest-library:1.3'

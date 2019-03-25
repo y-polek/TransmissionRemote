@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginTop="16dp"
+    android:orientation="vertical">
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/start_guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="16dp" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/end_guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_end="16dp" />
+    
+    <TextView
+        android:id="@+id/name_text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:singleLine="true"
+        android:ellipsize="end"
+        android:textSize="@dimen/tr_abc_text_size_subhead_material"
+        android:textStyle="bold"
+        android:textColor="?android:attr/textColorPrimary"
+        app:layout_constraintStart_toEndOf="@id/start_guideline"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/end_guideline"
+        tools:text="file.txt"/>
+
+    <TextView
+        android:id="@+id/size_text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:singleLine="true"
+        android:ellipsize="end"
+        android:textSize="@dimen/tr_abc_text_size_subhead_material"
+        android:textColor="?android:attr/textColorPrimary"
+        app:layout_constraintStart_toEndOf="@id/start_guideline"
+        app:layout_constraintTop_toBottomOf="@id/name_text"
+        app:layout_constraintEnd_toStartOf="@id/end_guideline"
+        tools:text="123 files, 240.88 GB (150.33 GB selected)"/>
+
+    <net.yupol.transmissionremote.app.torrentdetails.BreadcrumbView
+        android:id="@+id/breadcrumb_view"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toEndOf="@id/start_guideline"
+        app:layout_constraintTop_toBottomOf="@id/size_text"
+        app:layout_constraintEnd_toStartOf="@id/end_guideline"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:scrollbars="vertical"
+        app:layout_constraintVertical_chainStyle="spread"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/breadcrumb_view"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/trash_torrent_file_checkbox"/>
+
+    <Button
+        android:id="@+id/select_none_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/select_none"
+
+        android:background="@drawable/transparent_bordered_button"
+        android:textSize="12sp"
+        android:textAllCaps="false"
+        android:minHeight="0dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+
+        app:layout_constraintTop_toBottomOf="@id/recycler_view"
+        app:layout_constraintEnd_toStartOf="@id/end_guideline"
+        app:layout_constraintBottom_toTopOf="@id/trash_torrent_file_checkbox"/>
+
+    <Button
+        android:id="@+id/select_all_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/select_all"
+
+        android:background="@drawable/transparent_bordered_button"
+        android:textSize="12sp"
+        android:textAllCaps="false"
+        android:minHeight="0dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+
+        app:layout_constraintBaseline_toBaselineOf="@id/select_none_button"
+        app:layout_constraintEnd_toStartOf="@id/select_none_button"/>
+
+    <CheckBox
+        android:id="@+id/trash_torrent_file_checkbox"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/trash_torrent_file"
+        app:layout_constraintStart_toEndOf="@id/start_guideline"
+        app:layout_constraintTop_toBottomOf="@id/select_none_button"
+        app:layout_constraintEnd_toStartOf="@id/end_guideline"
+        app:layout_constraintBottom_toTopOf="@id/start_when_added_checkbox"/>
+
+    <CheckBox
+        android:id="@+id/start_when_added_checkbox"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/start_when_added"
+        app:layout_constraintStart_toEndOf="@id/start_guideline"
+        app:layout_constraintTop_toBottomOf="@id/trash_torrent_file_checkbox"
+        app:layout_constraintEnd_toStartOf="@id/end_guideline"
+        app:layout_constraintBottom_toTopOf="@id/add_button"/>
+
+    <Button
+        android:id="@+id/add_button"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        android:text="@string/add"
+        app:layout_constraintStart_toEndOf="@id/start_guideline"
+        app:layout_constraintTop_toBottomOf="@id/start_when_added_checkbox"
+        app:layout_constraintEnd_toStartOf="@id/end_guideline"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

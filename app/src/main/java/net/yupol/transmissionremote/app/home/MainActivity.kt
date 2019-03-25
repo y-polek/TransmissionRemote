@@ -52,6 +52,7 @@ import net.yupol.transmissionremote.app.drawer.HeaderView
 import net.yupol.transmissionremote.app.drawer.SortDrawerItem
 import net.yupol.transmissionremote.app.home.filter.Filter
 import net.yupol.transmissionremote.app.model.TorrentViewModel
+import net.yupol.transmissionremote.app.opentorrent.OpenTorrentFileActivity
 import net.yupol.transmissionremote.app.preferences.Preferences
 import net.yupol.transmissionremote.app.preferences.PreferencesActivity
 import net.yupol.transmissionremote.app.preferences.ServerListActivity
@@ -760,6 +761,10 @@ class MainActivity : BaseMvpActivity<MainActivityView, MainActivityPresenter>(),
 
     override fun openStoragePermissionRationale() {
         StoragePermissionRationaleDialog.instance().show(supportFragmentManager, "StoragePermissionRationale")
+    }
+
+    override fun openAddTorrentDialog(torrentFile: File) {
+        startActivity(OpenTorrentFileActivity.intent(this, torrentFile))
     }
 
     // endregion

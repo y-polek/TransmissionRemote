@@ -27,4 +27,5 @@ ext {
     evernote_android_job_version = '1.2.2'
     indeterminate_checkbox_version = '1.0.5@aar'
     floating_action_button_version = '1.10.1'
+    ttorrent_version = '1.5'
 }

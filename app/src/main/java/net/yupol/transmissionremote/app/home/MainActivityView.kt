@@ -5,6 +5,7 @@ import com.hannesdorfmann.mosby3.mvp.MvpView
 import net.yupol.transmissionremote.app.home.filter.Filter
 import net.yupol.transmissionremote.app.model.TorrentViewModel
 import net.yupol.transmissionremote.domain.model.Server
+import java.io.File
 
 interface MainActivityView: MvpView {
 
@@ -76,6 +77,8 @@ interface MainActivityView: MvpView {
     fun openTorrentFileChooser(initDirPath: String?)
 
     fun openStoragePermissionRationale()
+
+    fun openAddTorrentDialog(torrentFile: File)
     // endregion
 
     // region Permissions

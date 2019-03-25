@@ -144,6 +144,7 @@
     <string name="open">Open</string>
     <string name="download_to">Download to:</string>
     <string name="start_when_added">Start when added</string>
+    <string name="trash_torrent_file">Trash torrent file</string>
     <string name="add">Add</string>
     <string name="free_space">%1$s Free</string>
     <string name="free_space_unknown">Free space unknown</string>
@@ -156,6 +157,8 @@
     <string name="storage_permission_never_ask_again_message">Transmission Remote requires \"Storage\" permission in order to open local torrent files.\nYou can grant the permission in Application Settings.</string>
     <string name="app_settings">App Settings</string>
     <string name="select_server_title">Server:</string>
+    <string name="select_all">All</string>
+    <string name="select_none">None</string>
 
     <!-- Torrent details -->
     <string name="torrent_details">Torrent details</string>
