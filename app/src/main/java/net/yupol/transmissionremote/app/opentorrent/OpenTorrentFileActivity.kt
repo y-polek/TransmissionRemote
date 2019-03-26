@@ -76,7 +76,7 @@ class OpenTorrentFileActivity: BaseActivity(), DirectoryAdapter.OnItemSelectedLi
         currentDir = rootDir
         path.push(rootDir)
         breadcrumbView.setPath(path)
-        recyclerView.adapter = DirectoryAdapter(this, rootDir, files, fileStats, this)
+        recyclerView.adapter = FilesAdapter(torrentFile, rootDir)
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -89,7 +89,7 @@ class OpenTorrentFileActivity: BaseActivity(), DirectoryAdapter.OnItemSelectedLi
         currentDir = dir
         path.push(dir)
         breadcrumbView.setPath(path)
-        recyclerView.adapter = DirectoryAdapter(this, dir, files, fileStats, this)
+        recyclerView.adapter = FilesAdapter(torrentFile, dir)
     }
 
     override fun onDirectoryChecked(position: Int, isChecked: Boolean) {

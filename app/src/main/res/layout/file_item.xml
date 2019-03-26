@@ -5,6 +5,7 @@
         <variable name="file" type="net.yupol.transmissionremote.model.json.File" />
     </data>
     <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
         android:id="@+id/root_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -24,7 +25,7 @@
                 android:layout_width="@dimen/file_type_icon_size"
                 android:layout_height="@dimen/file_type_icon_size"
                 android:layout_marginRight="@dimen/default_text_margin"
-                android:src="@drawable/ic_turtle_black"/>
+                tools:src="@android:drawable/ic_menu_agenda"/>
             <LinearLayout
                 android:orientation="vertical"
                 android:layout_width="0dp"
@@ -39,14 +40,16 @@
                     android:textSize="@dimen/tr_abc_text_size_body_1_material"
                     android:textColor="@{dir != null ? @color/text_primary : @color/text_secondary}"
                     android:textStyle="bold"
-                    android:text="@{dir != null ? dir.name : file.name}"/>
+                    android:text="@{dir != null ? dir.name : file.name}"
+                    tools:text="File name" />
                 <TextView android:id="@+id/stats_text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginRight="@dimen/default_text_margin_small"
                     android:layout_marginBottom="@dimen/default_text_margin_small"
                     android:textSize="@dimen/tr_abc_text_size_body_2_material"
-                    android:textColor="?android:attr/textColorSecondary"/>
+                    android:textColor="?android:attr/textColorSecondary"
+                    tools:text="1.56 GB"/>
             </LinearLayout>
             <com.mikepenz.iconics.view.IconicsTextView android:id="@+id/priority_button"
                 android:layout_width="wrap_content"
