@@ -3,8 +3,10 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root_layout"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:background="?android:attr/selectableItemBackground">
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/start_guideline"
@@ -24,7 +26,6 @@
         android:id="@+id/file_type_icon"
         android:layout_width="@dimen/file_type_icon_size"
         android:layout_height="@dimen/file_type_icon_size"
-        android:tint="?android:attr/textColorPrimary"
         app:layout_constraintStart_toEndOf="@id/start_guideline"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"

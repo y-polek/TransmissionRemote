@@ -13,17 +13,15 @@ import com.turn.ttorrent.common.Torrent
 import net.yupol.transmissionremote.app.BaseActivity
 import net.yupol.transmissionremote.app.R
 import net.yupol.transmissionremote.app.torrentdetails.BreadcrumbView
-import net.yupol.transmissionremote.app.torrentdetails.DirectoryAdapter
 import net.yupol.transmissionremote.app.utils.DividerItemDecoration
 import net.yupol.transmissionremote.app.utils.TextUtils
 import net.yupol.transmissionremote.app.utils.fileStats
 import net.yupol.transmissionremote.app.utils.files
 import net.yupol.transmissionremote.model.Dir
-import net.yupol.transmissionremote.model.Priority
 import java.io.File
 import java.util.*
 
-class OpenTorrentFileActivity: BaseActivity(), DirectoryAdapter.OnItemSelectedListener {
+class OpenTorrentFileActivity: BaseActivity(), FilesAdapter.Listener {
 
     @BindView(R.id.name_text) lateinit var nameText: TextView
     @BindView(R.id.size_text) lateinit var sizeText: TextView
@@ -65,18 +63,13 @@ class OpenTorrentFileActivity: BaseActivity(), DirectoryAdapter.OnItemSelectedLi
             }
             breadcrumbView.setPath(path)
             currentDir = path.peek()
-            recyclerView.adapter = DirectoryAdapter(
-                    this@OpenTorrentFileActivity,
-                    currentDir,
-                    files,
-                    fileStats,
-                    this@OpenTorrentFileActivity)
+            recyclerView.adapter = FilesAdapter(torrentFile, currentDir, this@OpenTorrentFileActivity)
         }
 
         currentDir = rootDir
         path.push(rootDir)
         breadcrumbView.setPath(path)
-        recyclerView.adapter = FilesAdapter(torrentFile, rootDir)
+        recyclerView.adapter = FilesAdapter(torrentFile, rootDir, this)
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -84,28 +77,11 @@ class OpenTorrentFileActivity: BaseActivity(), DirectoryAdapter.OnItemSelectedLi
         return true
     }
 
-    override fun onDirectorySelected(position: Int) {
-        val dir = currentDir.dirs[position]
+    override fun onDirectorySelected(dir: Dir) {
         currentDir = dir
         path.push(dir)
         breadcrumbView.setPath(path)
-        recyclerView.adapter = FilesAdapter(torrentFile, dir)
-    }
-
-    override fun onDirectoryChecked(position: Int, isChecked: Boolean) {
-        TODO("not implemented")
-    }
-
-    override fun onFileChecked(fileIndex: Int, isChecked: Boolean) {
-        TODO("not implemented")
-    }
-
-    override fun onDirectoryPriorityChanged(position: Int, priority: Priority?) {
-        TODO("not implemented")
-    }
-
-    override fun onFilePriorityChanged(fileIndex: Int, priority: Priority?) {
-        TODO("not implemented")
+        recyclerView.adapter = FilesAdapter(torrentFile, dir, this)
     }
 
     companion object {

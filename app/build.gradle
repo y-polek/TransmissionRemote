@@ -155,6 +155,7 @@ dependencies {
     implementation "com.turn:ttorrent-core:$ttorrent_version"
 
     // Testing
-    testImplementation 'junit:junit:4.12'
-    testImplementation 'org.hamcrest:hamcrest-library:1.3'
+    testImplementation "junit:junit:$junit_version"
+    testImplementation "org.hamcrest:hamcrest-library:$hamcrest_version"
+    testImplementation "org.assertj:assertj-core:$assertj_version"
 }

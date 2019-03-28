@@ -2,8 +2,8 @@ package net.yupol.transmissionremote.app.notifications;
 
 import com.google.common.collect.ImmutableSet;
 
-import net.yupol.transmissionremote.model.json.Torrent;
 import net.yupol.transmissionremote.model.Server;
+import net.yupol.transmissionremote.model.json.Torrent;
 
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
@@ -44,7 +44,7 @@ public class FinishedTorrentsDetectorTest {
 
     @Test
     public void testFindLastFinishedDateWithEmptyList() {
-        assertThat(detector.findLastFinishedDate(Collections.<Torrent>emptyList()), equalTo(-1L));
+        assertThat(detector.findLastFinishedDate(Collections.emptyList()), equalTo(-1L));
     }
 
     @Test
