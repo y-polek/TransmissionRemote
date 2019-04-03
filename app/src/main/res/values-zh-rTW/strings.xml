@@ -140,6 +140,9 @@
     <string name="storage_permission_rationale">Transmission Remote 需要「儲存」許可權來開啟本地種子檔案。</string>
     <string name="storage_permission_deny">拒絕</string>
     <string name="storage_permission_never_ask_again_message">Transmission Remote 需要「儲存」許可權來開啟本地種子檔案。\n你可以在應用程式設定中授予該許可權。</string>
+    <string name="priority_high">高</string>
+    <string name="priority_normal">中</string>
+    <string name="priority_low">低</string>
 
     <!-- Torrent details -->
     <string name="torrent_details">種子詳情</string>

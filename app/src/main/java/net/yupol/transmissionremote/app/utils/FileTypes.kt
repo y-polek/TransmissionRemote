@@ -5,8 +5,8 @@ import net.yupol.transmissionremote.app.R
 import net.yupol.transmissionremote.model.json.File
 
 @DrawableRes
-fun File.icon(): Int {
-    return when (extension().toLowerCase()) {
+fun fileTypeIcon(extension: String): Int {
+    return when (extension.toLowerCase()) {
         "3g2", "3gp", "avi", "flv", "h264", "m4v", "mkv",
         "mov", "mp4", "mpg", "mpeg", "rm", "swf", "vob",
         "wmv"
@@ -47,9 +47,9 @@ fun File.icon(): Int {
     }
 }
 
-fun File.extension(): String {
-    val dotIdx = name.lastIndexOf('.')
+fun String.extension(): String {
+    val dotIdx = lastIndexOf('.')
     if (dotIdx <= 0) return ""
 
-    return name.substring(dotIdx + 1)
+    return substring(dotIdx + 1)
 }

@@ -140,6 +140,9 @@
     <string name="no_directory">해당 경로가 없습니다.</string>
     <string name="use_default_directory">기본 경로 사용</string>
     <string name="unknown_free_space_confirmation">해당 경로가 존재하지 않습니다. \n그래도 토렌트를 추가하시겠습니까?</string>
+    <string name="priority_high">높음</string>
+    <string name="priority_normal">보통</string>
+    <string name="priority_low">낮음</string>
 
     <!-- Torrent details -->
     <string name="torrent_details">토렌트 상세 정보</string>

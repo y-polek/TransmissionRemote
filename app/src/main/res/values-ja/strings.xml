@@ -140,6 +140,9 @@
     <string name="no_directory">そのようなディレクトリはありません</string>
     <string name="use_default_directory">既定のディレクトリを使う</string>
     <string name="unknown_free_space_confirmation">そのようなディレクトリはありません。\nそれでもtorrentを追加しますか?</string>
+    <string name="priority_high">高い</string>
+    <string name="priority_normal">普通</string>
+    <string name="priority_low">低い</string>
 
     <!-- Torrent details -->
     <string name="torrent_details">Torrentの詳細</string>

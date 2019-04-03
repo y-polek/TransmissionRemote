@@ -9,10 +9,6 @@ fun Torrent.files(): Array<File> {
     return torrentFiles().map { File(it.file.path, it.size) }.toTypedArray()
 }
 
-fun Torrent.fileStats(): Array<FileStat> {
-    return torrentFiles().map { FileStat(true, Priority.NORMAL.value, it.size) }.toTypedArray()
-}
-
 private fun Torrent.torrentFiles(): List<Torrent.TorrentFile> {
     val filesField = this::class.java.getDeclaredField("files")
     filesField.isAccessible = true

@@ -186,4 +186,7 @@
     <string name="night_mode">Modo nocturno</string>
     <string name="add_torrent_by_file">Archivo</string>
     <string name="add_torrent_by_address">Url</string>
+    <string name="priority_high">Alta</string>
+    <string name="priority_low">Baja</string>
+    <string name="priority_normal">Normal</string>
 </resources>

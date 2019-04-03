@@ -159,6 +159,9 @@
     <string name="select_server_title">Server:</string>
     <string name="select_all">All</string>
     <string name="select_none">None</string>
+    <string name="priority_high">High</string>
+    <string name="priority_normal">Normal</string>
+    <string name="priority_low">Low</string>
 
     <!-- Torrent details -->
     <string name="torrent_details">Torrent details</string>

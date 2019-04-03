@@ -215,4 +215,7 @@
     <string name="peers">Пиры</string>
     <string name="client_on_port">%1$s на порту %2$d</string>
     <string name="average_speed">Средняя скорость:</string>
+    <string name="priority_high">Высокий</string>
+    <string name="priority_low">Низкий</string>
+    <string name="priority_normal">Нормальный</string>
 </resources>

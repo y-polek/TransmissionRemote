@@ -140,6 +140,9 @@
     <string name="no_directory">Nincs ilyen mappa</string>
     <string name="use_default_directory">Használja az alapértelmezett mappát</string>
     <string name="unknown_free_space_confirmation">Nincs ilyen mappa. \nTutibiztos, hogy mégia hozzáadod a torrentet?</string>
+    <string name="priority_high">Magas</string>
+    <string name="priority_normal">Normál</string>
+    <string name="priority_low">Alacsony</string>
 
     <!-- Torrent details -->
     <string name="torrent_details">Torrent részletei</string>

@@ -9,14 +9,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import butterknife.BindView
 import butterknife.ButterKnife
-import com.turn.ttorrent.common.Torrent
 import net.yupol.transmissionremote.app.BaseActivity
 import net.yupol.transmissionremote.app.R
 import net.yupol.transmissionremote.app.torrentdetails.BreadcrumbView
 import net.yupol.transmissionremote.app.utils.DividerItemDecoration
 import net.yupol.transmissionremote.app.utils.TextUtils
-import net.yupol.transmissionremote.app.utils.fileStats
-import net.yupol.transmissionremote.app.utils.files
 import net.yupol.transmissionremote.model.Dir
 import java.io.File
 import java.util.*
@@ -30,14 +27,11 @@ class OpenTorrentFileActivity: BaseActivity(), FilesAdapter.Listener {
     @BindView(R.id.trash_torrent_file_checkbox) lateinit var trashTorrentFileCheckbox: CheckBox
     @BindView(R.id.start_when_added_checkbox) lateinit var startWhenAddedCheckbox: CheckBox
 
-    private val torrentFile: Torrent by lazy {
+    private val torrentFile: TorrentFile by lazy {
         val path = intent?.getStringExtra(KEY_TORRENT_FILE_PATH)
                 ?: throw IllegalArgumentException("Torrent file must be passed as an argument")
-        return@lazy Torrent(File(path).readBytes(), false)
+        return@lazy TorrentFile(path)
     }
-    private val files by lazy { torrentFile.files() }
-    private val fileStats by lazy { torrentFile.fileStats() }
-    private val rootDir by lazy { Dir.createFileTree(files) }
 
     private lateinit var currentDir: Dir
     private val path: Stack<Dir> = Stack()
@@ -66,10 +60,10 @@ class OpenTorrentFileActivity: BaseActivity(), FilesAdapter.Listener {
             recyclerView.adapter = FilesAdapter(torrentFile, currentDir, this@OpenTorrentFileActivity)
         }
 
-        currentDir = rootDir
-        path.push(rootDir)
+        currentDir = torrentFile.rootDir
+        path.push(torrentFile.rootDir)
         breadcrumbView.setPath(path)
-        recyclerView.adapter = FilesAdapter(torrentFile, rootDir, this)
+        recyclerView.adapter = FilesAdapter(torrentFile, torrentFile.rootDir, this)
     }
 
     override fun onSupportNavigateUp(): Boolean {

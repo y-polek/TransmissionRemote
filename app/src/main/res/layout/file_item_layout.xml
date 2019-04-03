@@ -31,18 +31,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         tools:src="@drawable/ic_file_regular" />
 
-    <ImageButton
-        android:id="@+id/priority_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginRight="16dp"
-        android:layout_marginEnd="16dp"
-        android:background="?android:attr/selectableItemBackground"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/checkbox"
-        tools:src="@drawable/priority_normal"/>
-
     <CheckBox
         android:id="@+id/checkbox"
         android:layout_width="wrap_content"
@@ -50,6 +38,20 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toStartOf="@id/end_guideline"
         app:layout_constraintBottom_toBottomOf="parent"/>
+
+    <ImageButton
+        android:id="@+id/priority_button"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:paddingStart="8dp"
+        android:paddingLeft="8dp"
+        android:paddingEnd="8dp"
+        android:paddingRight="8dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        app:layout_constraintTop_toTopOf="@id/checkbox"
+        app:layout_constraintBottom_toBottomOf="@id/checkbox"
+        app:layout_constraintEnd_toStartOf="@id/checkbox"
+        tools:src="@drawable/priority_normal"/>
 
     <TextView
         android:id="@+id/name_text"
@@ -59,6 +61,7 @@
         android:layout_marginLeft="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
+        android:layout_marginTop="4dp"
         android:maxLines="2"
         android:textSize="@dimen/tr_abc_text_size_body_1_material"
         android:textStyle="bold"
@@ -71,6 +74,7 @@
         android:id="@+id/size_text"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="4dp"
         android:singleLine="true"
         app:layout_constraintStart_toStartOf="@id/name_text"
         app:layout_constraintTop_toBottomOf="@id/name_text"

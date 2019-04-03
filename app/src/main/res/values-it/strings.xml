@@ -139,6 +139,9 @@
     <string name="no_directory">Directory non esistente</string>
     <string name="use_default_directory">Usa la directory di default</string>
     <string name="unknown_free_space_confirmation">Directory non esistente. \nSei sicurp di voler aggiungere il torrent?</string>
+    <string name="priority_high">Alta</string>
+    <string name="priority_normal">Normale</string>
+    <string name="priority_low">Bassa</string>
 
     <!-- Torrent details -->
     <string name="torrent_details">Dettagli torrent</string>

@@ -1,6 +1,5 @@
 package net.yupol.transmissionremote.app.utils
 
-import net.yupol.transmissionremote.model.json.File
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
@@ -25,9 +24,5 @@ class FileTypesTest {
     @Test
     fun testMultipleDots() {
         assertThat("file.tar.gz".extension()).isEqualTo("gz")
-    }
-
-    private fun String.extension(): String {
-        return File(this, 1).extension()
     }
 }

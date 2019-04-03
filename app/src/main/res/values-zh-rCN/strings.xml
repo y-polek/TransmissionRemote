@@ -155,6 +155,9 @@
     <string name="storage_permission_never_ask_again_message">Transmission Remote 需要“储存”权限来打开本地种子文件。\n你可以在应用程序设置中授予该权限。</string>
     <string name="app_settings">程序设置</string>
     <string name="select_server_title">服务器：</string>
+    <string name="priority_high">高</string>
+    <string name="priority_normal">中</string>
+    <string name="priority_low">低</string>
 
     <!-- Torrent details -->
     <string name="torrent_details">种子详情</string>

@@ -4,47 +4,62 @@ import android.content.res.ColorStateList
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
+import android.widget.CheckBox
+import android.widget.ImageButton
+import android.widget.ImageView
+import android.widget.TextView
+import androidx.annotation.DrawableRes
+import androidx.appcompat.widget.ListPopupWindow
 import androidx.core.widget.ImageViewCompat
 import androidx.recyclerview.widget.RecyclerView
 import butterknife.BindColor
 import butterknife.BindView
 import butterknife.ButterKnife
 import butterknife.OnClick
-import com.turn.ttorrent.common.Torrent
 import net.yupol.transmissionremote.app.R
+import net.yupol.transmissionremote.app.model.PriorityViewModel
 import net.yupol.transmissionremote.app.utils.*
 import net.yupol.transmissionremote.model.Dir
-import net.yupol.transmissionremote.model.json.File
+import net.yupol.transmissionremote.utils.toArray
 
 class FilesAdapter(
-        torrentFile: Torrent,
+        private val torrentFile: TorrentFile,
         private val dir: Dir,
         private val listener: Listener): RecyclerView.Adapter<FilesAdapter.ViewHolder>()
 {
-    private val files by lazy { torrentFile.files() }
-    private val fileStats by lazy { torrentFile.fileStats() }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val itemView = LayoutInflater.from(parent.context)
                 .inflate(R.layout.file_item_layout, parent, false)
-        return ViewHolder(itemView, onClick = { position ->
-            if (position < dir.dirs.size) {
-                listener.onDirectorySelected(dir.dirs[position])
-            } else {
-                val filePosition = position - dir.dirs.size
-                val file = files[filePosition]
-                parent.context.toast(file.name)
-            }
-        })
+        return ViewHolder(
+                itemView,
+                onClicked = { position ->
+                    if (position.isDirPosition()) {
+                        listener.onDirectorySelected(dirAt(position))
+                    } else {
+
+                        val file = fileAt(position)
+                        parent.context.toast(file.name)
+                    }
+                },
+                onPriorityClicked = { position ->
+                    showPriorityPopup(itemView) { priority ->
+                        if (position.isDirPosition()) {
+                            dirAt(position).setPriority(priority)
+                        } else {
+                            fileAt(position).priority = priority
+                        }
+                        notifyItemChanged(position)
+                    }
+                }
+        )
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        if (position < dir.dirs.size) {
-            bindDir(holder, dir.dirs[position])
+        if (position.isDirPosition()) {
+            bindDir(holder, dirAt(position))
         } else {
-            val filePosition = position - dir.dirs.size
-            bindFile(holder, files[filePosition])
+            bindFile(holder, fileAt(position))
         }
     }
 
@@ -58,9 +73,12 @@ class FilesAdapter(
 
         holder.fileTypeImage.setImageResource(R.drawable.ic_folder)
         ImageViewCompat.setImageTintList(holder.fileTypeImage, ColorStateList.valueOf(holder.primaryTextColor))
+
+        val priorityIcon = holder.itemView.context.joinedDrawables(*dir.priorities().map { it.iconRes }.toArray())
+        holder.priorityButton.setImageDrawable(priorityIcon)
     }
 
-    private fun bindFile(holder: ViewHolder, file: File) {
+    private fun bindFile(holder: ViewHolder, file: TorrentFile.File) {
         holder.nameText.text = file.name
         holder.nameText.setTextColor(holder.secondaryTextColor)
 
@@ -68,15 +86,75 @@ class FilesAdapter(
 
         holder.fileTypeImage.setImageResource(file.icon())
         ImageViewCompat.setImageTintList(holder.fileTypeImage, ColorStateList.valueOf(holder.secondaryTextColor))
+
+        holder.priorityButton.setImageResource(file.priority.iconRes)
+    }
+
+    private fun showPriorityPopup(itemView: View, prioritySelected: (PriorityViewModel) -> Unit) {
+        val popup = ListPopupWindow(itemView.context)
+        popup.isModal = true
+        popup.setAdapter(PriorityAdapter)
+        popup.setOnItemClickListener { parent, _, priorityPosition, _ ->
+            popup.dismiss()
+            val priority = parent.getItemAtPosition(priorityPosition) as PriorityViewModel
+            prioritySelected(priority)
+        }
+        popup.anchorView = itemView
+        val contentWidth = MetricsUtils.measurePopupSize(itemView.context, PriorityAdapter).width
+        popup.setContentWidth(contentWidth)
+        popup.horizontalOffset = itemView.width - contentWidth - itemView.context.resources.getDimensionPixelOffset(R.dimen.priority_popup_offset)
+        popup.show()
+    }
+
+    private fun Int.isDirPosition() = this < dir.dirs.size
+
+    private fun dirAt(position: Int): Dir {
+        if (position < 0 || position >= dir.dirs.size) {
+            throw IndexOutOfBoundsException("No subdirectory at position $position. " +
+                    "# of subdirectories: ${dir.dirs.size}, # of files: ${dir.fileIndices.size}")
+        }
+        return dir.dirs[position]
+    }
+
+    private fun fileAt(position: Int): TorrentFile.File {
+        if (position < dir.dirs.size || position >= (dir.dirs.size + dir.fileIndices.size)) {
+            throw IndexOutOfBoundsException("No file at position $position. " +
+                    "# of subdirectories: ${dir.dirs.size}, # of files: ${dir.fileIndices.size}")
+        }
+        val fileInDirPosition = position - dir.dirs.size
+        val fileIndex = dir.fileIndices[fileInDirPosition]
+        return torrentFile.files[fileIndex]
     }
 
     private fun Dir.size(): Long {
         val subDirsSize = dirs.map { it.size() }.sum()
-        val filesSize = fileIndices.map { files[it].length }.sum()
+        val filesSize = fileIndices.map { torrentFile.files[it].length }.sum()
         return subDirsSize + filesSize
     }
 
-    class ViewHolder(itemView: View, private val onClick: (position: Int) -> Unit): RecyclerView.ViewHolder(itemView) {
+    private fun Dir.priorities(): List<PriorityViewModel> {
+        val priorities = mutableSetOf<PriorityViewModel>()
+        dirs.forEach {
+            priorities.addAll(it.priorities())
+        }
+        fileIndices.forEach { fileIndex ->
+            priorities.add(torrentFile.files[fileIndex].priority)
+        }
+        return priorities.sorted()
+    }
+
+    private fun Dir.setPriority(priority: PriorityViewModel) {
+        dirs.forEach { it.setPriority(priority) }
+        fileIndices.forEach { index -> torrentFile.files[index].priority = priority }
+    }
+
+    @DrawableRes
+    private fun TorrentFile.File.icon(): Int = fileTypeIcon(name.extension())
+
+    class ViewHolder(
+            itemView: View,
+            private val onClicked: (position: Int) -> Unit,
+            private val onPriorityClicked: (position: Int) -> Unit): RecyclerView.ViewHolder(itemView) {
 
         @BindView(R.id.name_text) lateinit var nameText: TextView
         @BindView(R.id.size_text) lateinit var sizeText: TextView
@@ -95,7 +173,15 @@ class FilesAdapter(
         fun onClicked() {
             val position = adapterPosition
             if (position != RecyclerView.NO_POSITION) {
-                onClick(position)
+                onClicked(position)
+            }
+        }
+
+        @OnClick(R.id.priority_button)
+        fun onPriorityClicked() {
+            val position = adapterPosition
+            if (position != RecyclerView.NO_POSITION) {
+                onPriorityClicked(position)
             }
         }
     }
