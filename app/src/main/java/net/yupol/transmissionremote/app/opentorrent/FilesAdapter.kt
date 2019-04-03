@@ -4,7 +4,6 @@ import android.content.res.ColorStateList
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.CheckBox
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
@@ -12,10 +11,8 @@ import androidx.annotation.DrawableRes
 import androidx.appcompat.widget.ListPopupWindow
 import androidx.core.widget.ImageViewCompat
 import androidx.recyclerview.widget.RecyclerView
-import butterknife.BindColor
-import butterknife.BindView
-import butterknife.ButterKnife
-import butterknife.OnClick
+import butterknife.*
+import com.buildware.widget.indeterm.IndeterminateCheckBox
 import net.yupol.transmissionremote.app.R
 import net.yupol.transmissionremote.app.model.PriorityViewModel
 import net.yupol.transmissionremote.app.utils.*
@@ -37,7 +34,6 @@ class FilesAdapter(
                     if (position.isDirPosition()) {
                         listener.onDirectorySelected(dirAt(position))
                     } else {
-
                         val file = fileAt(position)
                         parent.context.toast(file.name)
                     }
@@ -50,6 +46,13 @@ class FilesAdapter(
                             fileAt(position).priority = priority
                         }
                         notifyItemChanged(position)
+                    }
+                },
+                onChecked = { position, checked ->
+                    if (position.isDirPosition()) {
+                        dirAt(position).setWanted(checked)
+                    } else {
+                        fileAt(position).wanted = checked
                     }
                 }
         )
@@ -76,6 +79,12 @@ class FilesAdapter(
 
         val priorityIcon = holder.itemView.context.joinedDrawables(*dir.priorities().map { it.iconRes }.toArray())
         holder.priorityButton.setImageDrawable(priorityIcon)
+
+        val wanted = dir.isWanted()
+        holder.checkbox.isIndeterminate = wanted == null
+        if (wanted != null) {
+            holder.checkbox.isChecked = wanted
+        }
     }
 
     private fun bindFile(holder: ViewHolder, file: TorrentFile.File) {
@@ -88,6 +97,8 @@ class FilesAdapter(
         ImageViewCompat.setImageTintList(holder.fileTypeImage, ColorStateList.valueOf(holder.secondaryTextColor))
 
         holder.priorityButton.setImageResource(file.priority.iconRes)
+
+        holder.checkbox.isChecked = file.wanted
     }
 
     private fun showPriorityPopup(itemView: View, prioritySelected: (PriorityViewModel) -> Unit) {
@@ -148,18 +159,57 @@ class FilesAdapter(
         fileIndices.forEach { index -> torrentFile.files[index].priority = priority }
     }
 
+    /**
+     * @return 1) `true` if all files in directory (and subdirectories) are wanted
+     * 2) `false` if all files in directory are unwanted
+     * 3) `null` if directory contain both wanted and unwanted files
+     */
+    private fun Dir.isWanted(): Boolean? {
+        var hasWanted = false
+        var hasUnwanted = false
+
+        for (subDir in dirs) {
+            val isWanted = subDir.isWanted() ?: return null
+            if (isWanted) {
+                hasWanted = true
+            } else {
+                hasUnwanted = true
+            }
+            if (hasWanted and hasUnwanted) return null
+        }
+
+        for (fileIndex in fileIndices) {
+            val file = torrentFile.files[fileIndex]
+            if (file.wanted) {
+                hasWanted = true
+            } else {
+                hasUnwanted = true
+            }
+            if (hasWanted and hasUnwanted) return null
+        }
+        return hasWanted
+    }
+
+    private fun Dir.setWanted(wanted: Boolean) {
+        dirs.forEach { it.setWanted(wanted) }
+        fileIndices.forEach { index ->
+            torrentFile.files[index].wanted = wanted
+        }
+    }
+
     @DrawableRes
     private fun TorrentFile.File.icon(): Int = fileTypeIcon(name.extension())
 
     class ViewHolder(
             itemView: View,
             private val onClicked: (position: Int) -> Unit,
-            private val onPriorityClicked: (position: Int) -> Unit): RecyclerView.ViewHolder(itemView) {
+            private val onPriorityClicked: (position: Int) -> Unit,
+            private val onChecked: (position: Int, checked: Boolean) -> Unit): RecyclerView.ViewHolder(itemView) {
 
         @BindView(R.id.name_text) lateinit var nameText: TextView
         @BindView(R.id.size_text) lateinit var sizeText: TextView
         @BindView(R.id.file_type_icon) lateinit var fileTypeImage: ImageView
-        @BindView(R.id.checkbox) lateinit var checkbox: CheckBox
+        @BindView(R.id.checkbox) lateinit var checkbox: IndeterminateCheckBox
         @BindView(R.id.priority_button) lateinit var priorityButton: ImageButton
 
         @BindColor(R.color.text_color_primary) @JvmField var primaryTextColor: Int = 0
@@ -182,6 +232,14 @@ class FilesAdapter(
             val position = adapterPosition
             if (position != RecyclerView.NO_POSITION) {
                 onPriorityClicked(position)
+            }
+        }
+
+        @OnCheckedChanged(R.id.checkbox)
+        fun onChecked(checked: Boolean) {
+            val position = adapterPosition
+            if (position != RecyclerView.NO_POSITION) {
+                onChecked(position, checked)
             }
         }
     }
