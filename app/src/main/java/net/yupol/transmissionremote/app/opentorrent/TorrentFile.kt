@@ -23,6 +23,16 @@ class TorrentFile(path: String) {
                 }.toTypedArray())
     }
 
+    fun selectAllFilesIn(dir: Dir) {
+        dir.dirs.forEach { subDir -> selectAllFilesIn(subDir) }
+        dir.fileIndices.forEach { index -> files[index].wanted = true }
+    }
+
+    fun selectNoneFilesIn(dir: Dir) {
+        dir.dirs.forEach { subDir -> selectNoneFilesIn(subDir) }
+        dir.fileIndices.forEach { index -> files[index].wanted = false }
+    }
+
     private fun Torrent.files(): List<Torrent.TorrentFile> {
         val filesField = this::class.java.getDeclaredField("files")
         filesField.isAccessible = true

@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import butterknife.BindView
 import butterknife.ButterKnife
+import butterknife.OnClick
 import net.yupol.transmissionremote.app.BaseActivity
 import net.yupol.transmissionremote.app.R
 import net.yupol.transmissionremote.app.torrentdetails.BreadcrumbView
@@ -76,6 +77,18 @@ class OpenTorrentFileActivity: BaseActivity(), FilesAdapter.Listener {
         path.push(dir)
         breadcrumbView.setPath(path)
         recyclerView.adapter = FilesAdapter(torrentFile, dir, this)
+    }
+
+    @OnClick(R.id.select_all_button)
+    fun onSelectAllFilesClicked() {
+        torrentFile.selectAllFilesIn(currentDir)
+        recyclerView.adapter?.notifyDataSetChanged()
+    }
+
+    @OnClick(R.id.select_none_button)
+    fun onSelectNoneFilesClicked() {
+        torrentFile.selectNoneFilesIn(currentDir)
+        recyclerView.adapter?.notifyDataSetChanged()
     }
 
     companion object {
