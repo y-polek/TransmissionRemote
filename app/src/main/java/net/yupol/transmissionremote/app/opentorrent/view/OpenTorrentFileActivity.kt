@@ -2,6 +2,7 @@ package net.yupol.transmissionremote.app.opentorrent.view
 
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.widget.CheckBox
 import android.widget.TextView
@@ -38,6 +39,10 @@ class OpenTorrentFileActivity: BaseMvpActivity<OpenTorrentFileView, OpenTorrentF
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        if (!resources.getBoolean(R.bool.is_tablet)) {
+            requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        }
+
         setContentView(R.layout.open_torrent_file_activity)
         ButterKnife.bind(this)
 
