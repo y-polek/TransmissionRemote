@@ -1,4 +1,4 @@
-package net.yupol.transmissionremote.app.opentorrent
+package net.yupol.transmissionremote.app.opentorrent.model
 
 import com.turn.ttorrent.common.Torrent
 import net.yupol.transmissionremote.app.model.PriorityViewModel

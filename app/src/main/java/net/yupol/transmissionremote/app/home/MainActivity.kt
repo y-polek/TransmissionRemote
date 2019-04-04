@@ -52,7 +52,7 @@ import net.yupol.transmissionremote.app.drawer.HeaderView
 import net.yupol.transmissionremote.app.drawer.SortDrawerItem
 import net.yupol.transmissionremote.app.home.filter.Filter
 import net.yupol.transmissionremote.app.model.TorrentViewModel
-import net.yupol.transmissionremote.app.opentorrent.OpenTorrentFileActivity
+import net.yupol.transmissionremote.app.opentorrent.view.OpenTorrentFileActivity
 import net.yupol.transmissionremote.app.preferences.Preferences
 import net.yupol.transmissionremote.app.preferences.PreferencesActivity
 import net.yupol.transmissionremote.app.preferences.ServerListActivity

@@ -126,7 +126,7 @@
             <meta-data android:name="android.support.PARENT_ACTIVITY" android:value=".preferences.PreferencesActivity"/>
         </activity>
         <activity android:name=".server.ServerDetailsActivity" />
-        <activity android:name=".opentorrent.OpenTorrentFileActivity"
+        <activity android:name=".opentorrent.view.OpenTorrentFileActivity"
             android:windowSoftInputMode="stateAlwaysHidden|adjustPan"/>
 
         <receiver android:name=".notifications.BootCompleteBroadcastReceiver">

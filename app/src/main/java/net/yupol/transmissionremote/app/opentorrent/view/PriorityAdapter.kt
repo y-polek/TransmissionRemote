@@ -1,4 +1,4 @@
-package net.yupol.transmissionremote.app.opentorrent
+package net.yupol.transmissionremote.app.opentorrent.view
 
 import android.view.LayoutInflater
 import android.view.View

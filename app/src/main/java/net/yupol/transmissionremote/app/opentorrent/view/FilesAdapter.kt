@@ -1,4 +1,4 @@
-package net.yupol.transmissionremote.app.opentorrent
+package net.yupol.transmissionremote.app.opentorrent.view
 
 import android.content.res.ColorStateList
 import android.view.LayoutInflater
@@ -15,6 +15,7 @@ import butterknife.*
 import com.buildware.widget.indeterm.IndeterminateCheckBox
 import net.yupol.transmissionremote.app.R
 import net.yupol.transmissionremote.app.model.PriorityViewModel
+import net.yupol.transmissionremote.app.opentorrent.model.TorrentFile
 import net.yupol.transmissionremote.app.utils.*
 import net.yupol.transmissionremote.model.Dir
 import net.yupol.transmissionremote.utils.toArray
