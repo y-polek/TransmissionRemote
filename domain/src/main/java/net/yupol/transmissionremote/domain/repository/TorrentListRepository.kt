@@ -28,5 +28,5 @@ interface TorrentListRepository {
 
     fun renameTorrent(id: Int, oldName: String, newName: String): Completable
 
-    fun addTorrentFile(file: File, destinationDir: String, paused: Boolean): Single<AddTorrentResult>
+    fun addTorrentFile(file: File, destinationDir: String, paused: Boolean, filesUnwanted: List<Int>): Single<AddTorrentResult>
 }

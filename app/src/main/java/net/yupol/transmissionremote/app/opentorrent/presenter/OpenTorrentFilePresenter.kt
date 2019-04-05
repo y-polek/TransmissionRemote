@@ -1,17 +1,29 @@
 package net.yupol.transmissionremote.app.opentorrent.presenter
 
+import android.util.Log
 import com.hannesdorfmann.mosby3.mvp.MvpNullObjectBasePresenter
+import io.reactivex.android.schedulers.AndroidSchedulers.mainThread
+import io.reactivex.disposables.Disposable
+import io.reactivex.rxkotlin.subscribeBy
+import io.reactivex.schedulers.Schedulers.io
 import net.yupol.transmissionremote.app.opentorrent.model.TorrentFile
 import net.yupol.transmissionremote.app.opentorrent.view.OpenTorrentFileView
+import net.yupol.transmissionremote.app.server.ServerManager
 import net.yupol.transmissionremote.model.Dir
+import java.io.File
 import java.util.*
 
-class OpenTorrentFilePresenter(torrentFilePath: String): MvpNullObjectBasePresenter<OpenTorrentFileView>() {
+class OpenTorrentFilePresenter(
+        private val torrentFilePath: String,
+        private val serverManager: ServerManager): MvpNullObjectBasePresenter<OpenTorrentFileView>()
+{
 
     val torrentFile = TorrentFile(torrentFilePath)
 
     private var currentDir: Dir
     private val breadcrumbs: Stack<Dir> = Stack()
+
+    private var addTorrentRequest: Disposable? = null
 
     init {
         currentDir = torrentFile.rootDir
@@ -59,5 +71,32 @@ class OpenTorrentFilePresenter(torrentFilePath: String): MvpNullObjectBasePresen
     fun onSelectNoneFilesClicked() {
         torrentFile.selectNoneFilesIn(currentDir)
         view.updateFileList()
+    }
+
+    fun onAddButtonClicked() {
+        val addTorrentFile = serverManager.serverComponent?.addTorrentFileUseCase()
+                ?: throw IllegalStateException("No server found while adding torrent file")
+
+        val paused = !view.isStartWhenAddedChecked()
+        val filesUnwanted = mutableListOf<Int>()
+        torrentFile.files.forEachIndexed { index, file ->
+            if (!file.wanted) filesUnwanted.add(index)
+        }
+
+        addTorrentRequest = addTorrentFile.execute(
+                file = File(torrentFilePath),
+                destinationDir = view.getDownloadDirectory(),
+                paused = paused,
+                filesUnwanted = filesUnwanted)
+                .subscribeOn(io())
+                .observeOn(mainThread())
+                .subscribeBy(
+                        onSuccess = { result ->
+                            Log.d("Add torrent", "result: $result")
+                        },
+                        onError = { error ->
+                            Log.e("Add torrent", "Error: ${error.message}", error)
+                        }
+                )
     }
 }

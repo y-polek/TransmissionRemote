@@ -7,6 +7,7 @@ import net.yupol.transmissionremote.app.TransmissionRemote
 import net.yupol.transmissionremote.app.drawer.HeaderView
 import net.yupol.transmissionremote.app.home.MainActivity
 import net.yupol.transmissionremote.app.opentorrent.DownloadLocationDialogFragment
+import net.yupol.transmissionremote.app.opentorrent.view.OpenTorrentFileActivity
 import net.yupol.transmissionremote.app.preferences.ServerListActivity
 import net.yupol.transmissionremote.app.server.AddServerActivity
 import net.yupol.transmissionremote.app.server.ServerDetailsActivity
@@ -35,6 +36,8 @@ interface AppComponent {
     fun inject(activity: AddServerActivity)
 
     fun inject(activity: ServerDetailsActivity)
+
+    fun inject(activity: OpenTorrentFileActivity)
 
     @Component.Builder
     interface Builder {

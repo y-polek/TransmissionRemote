@@ -13,13 +13,16 @@ import butterknife.ButterKnife
 import butterknife.OnClick
 import net.yupol.transmissionremote.app.BaseMvpActivity
 import net.yupol.transmissionremote.app.R
+import net.yupol.transmissionremote.app.TransmissionRemote
 import net.yupol.transmissionremote.app.opentorrent.presenter.OpenTorrentFilePresenter
+import net.yupol.transmissionremote.app.server.ServerManager
 import net.yupol.transmissionremote.app.torrentdetails.BreadcrumbView
 import net.yupol.transmissionremote.app.utils.DividerItemDecoration
 import net.yupol.transmissionremote.app.utils.TextUtils
 import net.yupol.transmissionremote.model.Dir
 import java.io.File
 import java.util.*
+import javax.inject.Inject
 
 class OpenTorrentFileActivity: BaseMvpActivity<OpenTorrentFileView, OpenTorrentFilePresenter>(),
         OpenTorrentFileView, FilesAdapter.Listener {
@@ -28,16 +31,20 @@ class OpenTorrentFileActivity: BaseMvpActivity<OpenTorrentFileView, OpenTorrentF
     @BindView(R.id.size_text) lateinit var sizeText: TextView
     @BindView(R.id.breadcrumb_view) lateinit var breadcrumbView: BreadcrumbView
     @BindView(R.id.recycler_view) lateinit var recyclerView: RecyclerView
+    @BindView(R.id.download_to_text) lateinit var downloadDirText: TextView
     @BindView(R.id.trash_torrent_file_checkbox) lateinit var trashTorrentFileCheckbox: CheckBox
     @BindView(R.id.start_when_added_checkbox) lateinit var startWhenAddedCheckbox: CheckBox
+
+    @Inject lateinit var serverManager: ServerManager
 
     override fun createPresenter(): OpenTorrentFilePresenter {
         val torrentFilePath = intent?.getStringExtra(KEY_TORRENT_FILE_PATH)
                 ?: throw IllegalArgumentException("Torrent file must be passed as an argument")
-        return OpenTorrentFilePresenter(torrentFilePath)
+        return OpenTorrentFilePresenter(torrentFilePath, serverManager)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        TransmissionRemote.getInstance().appComponent().inject(this)
         super.onCreate(savedInstanceState)
         if (!resources.getBoolean(R.bool.is_tablet)) {
             requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
@@ -75,6 +82,14 @@ class OpenTorrentFileActivity: BaseMvpActivity<OpenTorrentFileView, OpenTorrentF
         breadcrumbView.setPath(path)
     }
 
+    override fun getDownloadDirectory(): String {
+        return downloadDirText.text.trim().toString()
+    }
+
+    override fun isTrashTorrentFileChecked() = trashTorrentFileCheckbox.isChecked
+
+    override fun isStartWhenAddedChecked() = startWhenAddedCheckbox.isChecked
+
     override fun updateFileList() {
         recyclerView.adapter?.notifyDataSetChanged()
     }
@@ -91,6 +106,11 @@ class OpenTorrentFileActivity: BaseMvpActivity<OpenTorrentFileView, OpenTorrentF
     @OnClick(R.id.select_none_button)
     fun onSelectNoneFilesClicked() {
         presenter.onSelectNoneFilesClicked()
+    }
+
+    @OnClick(R.id.add_button)
+    fun onAddButtonClicked() {
+        presenter.onAddButtonClicked()
     }
 
     companion object {

@@ -11,4 +11,10 @@ interface OpenTorrentFileView: MvpView {
     fun showBreadcrumbs(path: Stack<Dir>)
 
     fun updateFileList()
+
+    fun getDownloadDirectory(): String
+
+    fun isTrashTorrentFileChecked(): Boolean
+
+    fun isStartWhenAddedChecked(): Boolean
 }

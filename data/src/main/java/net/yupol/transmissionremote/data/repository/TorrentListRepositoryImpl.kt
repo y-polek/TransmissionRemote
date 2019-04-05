@@ -65,8 +65,18 @@ class TorrentListRepositoryImpl @Inject constructor(
         return api.renameTorrent(RpcArgs.renameTorrent(id = id, path = oldName, name = newName))
     }
 
-    override fun addTorrentFile(file: File, destinationDir: String, paused: Boolean): Single<AddTorrentResult> {
-        return api.addTorrent(RpcArgs.addTorrent(torrentFileContent = file.readBytes(), destination = destinationDir, paused = paused))
+    override fun addTorrentFile(
+            file: File,
+            destinationDir: String,
+            paused: Boolean,
+            filesUnwanted: List<Int>): Single<AddTorrentResult>
+    {
+        val args = RpcArgs.addTorrent(
+                torrentFileContent = file.readBytes(),
+                destination = destinationDir,
+                paused = paused,
+                filesUnwanted = filesUnwanted)
+        return api.addTorrent(args)
                 .map { result ->
                     return@map when {
                         result.torrentAdded != null -> AddTorrentResult.success()

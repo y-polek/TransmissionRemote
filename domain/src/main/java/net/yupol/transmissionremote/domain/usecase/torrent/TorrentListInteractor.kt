@@ -14,8 +14,7 @@ class TorrentListInteractor @Inject constructor(
         private val removeTorrent: RemoveTorrent,
         private val verifyTorrent: VerifyTorrent,
         private val reannounceTorrent: ReannounceTorrent,
-        private val renameTorrent: RenameTorrent,
-        private val addTorrentFile: AddTorrentFile)
+        private val renameTorrent: RenameTorrent)
 {
     fun loadTorrentList(): Observable<List<Torrent>> {
         return loadTorrentList.execute()
@@ -51,9 +50,5 @@ class TorrentListInteractor @Inject constructor(
 
     fun renameTorrent(id: Int, oldName: String, newName: String): Single<Torrent> {
         return renameTorrent.execute(id = id, oldName = oldName, newName = newName)
-    }
-
-    fun addTorrentFile(file: File, destinationDir: String, paused: Boolean): Single<AddTorrentResult> {
-        return addTorrentFile.execute(file, destinationDir, paused)
     }
 }

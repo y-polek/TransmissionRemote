@@ -68,13 +68,20 @@ data class RpcArgs(val method: String, val arguments: Map<String, Any>? = null) 
         }
 
         @JvmStatic
-        fun addTorrent(torrentFileContent: ByteArray, destination: String, paused: Boolean): Map<String, Any> {
-            val metaInfo = Base64.encodeToString(torrentFileContent, Base64.DEFAULT)
-            return mapOf(
-                    "metainfo" to metaInfo,
-                    "download-dir" to destination,
-                    "paused" to paused
-            )
+        fun addTorrent(
+                torrentFileContent: ByteArray,
+                destination: String,
+                paused: Boolean,
+                filesUnwanted: List<Int>): Map<String, Any>
+        {
+            val args = mutableMapOf<String, Any>()
+            args["metainfo"] = Base64.encodeToString(torrentFileContent, Base64.DEFAULT)
+            args["download-dir"] = destination
+            args["paused"] = paused
+            if (filesUnwanted.isNotEmpty()) {
+                args["files-unwanted"] = filesUnwanted
+            }
+            return args
         }
     }
 }

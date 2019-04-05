@@ -422,26 +422,6 @@ class MainActivityPresenter @Inject constructor(
         view.openAddTorrentDialog(file)
     }
 
-    fun addTorrent(file: File, destinationDir: String, paused: Boolean, removeTorrentFile: Boolean) {
-        requests += torrentInteractor.addTorrentFile(file, destinationDir, paused)
-                .subscribeOn(io())
-                .observeOn(mainThread())
-                .subscribeBy { result ->
-                    when {
-                        result.success -> {
-                            if (removeTorrentFile) {
-                                TODO("Remove torrent file")
-                            }
-                        }
-                        result.duplicate -> TODO("Implement")
-                        result.error -> {
-                            val message = result.errorMessage ?: strRes.unknownError
-                            view.showErrorAlert(message)
-                        }
-                    }
-                }
-    }
-
     //////////////////////////////
     // endregion Public interface
     //////////////////////////////
