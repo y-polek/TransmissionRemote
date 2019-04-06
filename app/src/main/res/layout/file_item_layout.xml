@@ -6,6 +6,8 @@
     android:id="@+id/root_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:paddingTop="4dp"
+    android:paddingBottom="4dp"
     android:background="?android:attr/selectableItemBackground">
 
     <androidx.constraintlayout.widget.Guideline
@@ -13,14 +15,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_begin="16dp" />
+        app:layout_constraintGuide_begin="12dp" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/end_guideline"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_end="16dp" />
+        app:layout_constraintGuide_end="8dp" />
 
     <ImageView
         android:id="@+id/file_type_icon"
@@ -34,7 +36,7 @@
     <com.buildware.widget.indeterm.IndeterminateCheckBox
         android:id="@+id/checkbox"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:checked="true"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toStartOf="@id/end_guideline"
@@ -49,20 +51,16 @@
         android:paddingEnd="8dp"
         android:paddingRight="8dp"
         android:background="?attr/selectableItemBackgroundBorderless"
-        app:layout_constraintTop_toTopOf="@id/checkbox"
-        app:layout_constraintBottom_toBottomOf="@id/checkbox"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toStartOf="@id/checkbox"
+        app:layout_constraintBottom_toBottomOf="parent"
         tools:src="@drawable/priority_normal"/>
 
     <TextView
         android:id="@+id/name_text"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginRight="16dp"
-        android:layout_marginTop="4dp"
+        android:layout_marginStart="12dp"
         android:maxLines="2"
         android:textSize="@dimen/tr_abc_text_size_body_1_material"
         android:textStyle="bold"
@@ -75,8 +73,8 @@
         android:id="@+id/size_text"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="4dp"
         android:singleLine="true"
+        android:textSize="@dimen/tr_abc_text_size_caption_material"
         app:layout_constraintStart_toStartOf="@id/name_text"
         app:layout_constraintTop_toBottomOf="@id/name_text"
         app:layout_constraintEnd_toEndOf="@id/name_text"
