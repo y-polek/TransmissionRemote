@@ -72,7 +72,9 @@ data class RpcArgs(val method: String, val arguments: Map<String, Any>? = null) 
                 torrentFileContent: ByteArray,
                 destination: String,
                 paused: Boolean,
-                filesUnwanted: List<Int>): Map<String, Any>
+                filesUnwanted: List<Int>,
+                priorityHigh: List<Int>,
+                priorityLow: List<Int>): Map<String, Any>
         {
             val args = mutableMapOf<String, Any>()
             args["metainfo"] = Base64.encodeToString(torrentFileContent, Base64.DEFAULT)
@@ -80,6 +82,12 @@ data class RpcArgs(val method: String, val arguments: Map<String, Any>? = null) 
             args["paused"] = paused
             if (filesUnwanted.isNotEmpty()) {
                 args["files-unwanted"] = filesUnwanted
+            }
+            if (priorityHigh.isNotEmpty()) {
+                args["priority-high"] = priorityHigh
+            }
+            if (priorityLow.isNotEmpty()) {
+                args["priority-low"] = priorityLow
             }
             return args
         }

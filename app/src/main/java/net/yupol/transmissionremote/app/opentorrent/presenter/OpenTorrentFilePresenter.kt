@@ -6,6 +6,8 @@ import io.reactivex.android.schedulers.AndroidSchedulers.mainThread
 import io.reactivex.disposables.Disposable
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers.io
+import net.yupol.transmissionremote.app.model.PriorityViewModel.HIGH
+import net.yupol.transmissionremote.app.model.PriorityViewModel.LOW
 import net.yupol.transmissionremote.app.opentorrent.model.TorrentFile
 import net.yupol.transmissionremote.app.opentorrent.view.OpenTorrentFileView
 import net.yupol.transmissionremote.app.server.ServerManager
@@ -79,15 +81,24 @@ class OpenTorrentFilePresenter(
 
         val paused = !view.isStartWhenAddedChecked()
         val filesUnwanted = mutableListOf<Int>()
+        val priorityHigh = mutableListOf<Int>()
+        val priorityLow = mutableListOf<Int>()
         torrentFile.files.forEachIndexed { index, file ->
             if (!file.wanted) filesUnwanted.add(index)
+            when (file.priority) {
+                HIGH -> priorityHigh.add(index)
+                LOW -> priorityLow.add(index)
+                else -> {}
+            }
         }
 
         addTorrentRequest = addTorrentFile.execute(
                 file = File(torrentFilePath),
                 destinationDir = view.getDownloadDirectory(),
                 paused = paused,
-                filesUnwanted = filesUnwanted)
+                filesUnwanted = filesUnwanted,
+                priorityHigh = priorityHigh,
+                priorityLow = priorityLow)
                 .subscribeOn(io())
                 .observeOn(mainThread())
                 .subscribeBy(

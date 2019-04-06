@@ -8,7 +8,20 @@ import javax.inject.Inject
 
 class AddTorrentFile @Inject constructor(private val repo: TorrentListRepository) {
 
-    fun execute(file: File, destinationDir: String, paused: Boolean, filesUnwanted: List<Int>): Single<AddTorrentResult> {
-        return repo.addTorrentFile(file, destinationDir, paused, filesUnwanted)
+    fun execute(
+            file: File,
+            destinationDir: String,
+            paused: Boolean,
+            filesUnwanted: List<Int>,
+            priorityHigh: List<Int>,
+            priorityLow: List<Int>): Single<AddTorrentResult>
+    {
+        return repo.addTorrentFile(
+                file = file,
+                destinationDir = destinationDir,
+                paused = paused,
+                filesUnwanted = filesUnwanted,
+                priorityHigh = priorityHigh,
+                priorityLow = priorityLow)
     }
 }

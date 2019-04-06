@@ -69,13 +69,17 @@ class TorrentListRepositoryImpl @Inject constructor(
             file: File,
             destinationDir: String,
             paused: Boolean,
-            filesUnwanted: List<Int>): Single<AddTorrentResult>
+            filesUnwanted: List<Int>,
+            priorityHigh: List<Int>,
+            priorityLow: List<Int>): Single<AddTorrentResult>
     {
         val args = RpcArgs.addTorrent(
                 torrentFileContent = file.readBytes(),
                 destination = destinationDir,
                 paused = paused,
-                filesUnwanted = filesUnwanted)
+                filesUnwanted = filesUnwanted,
+                priorityHigh = priorityHigh,
+                priorityLow = priorityLow)
         return api.addTorrent(args)
                 .map { result ->
                     return@map when {
