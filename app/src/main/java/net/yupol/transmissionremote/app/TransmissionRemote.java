@@ -1,5 +1,6 @@
 package net.yupol.transmissionremote.app;
 
+import android.app.Application;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
@@ -43,11 +44,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatDelegate;
-import androidx.multidex.MultiDexApplication;
 import io.reactivex.Observable;
 import io.reactivex.disposables.Disposable;
 
-public class TransmissionRemote extends MultiDexApplication implements SharedPreferences.OnSharedPreferenceChangeListener {
+public class TransmissionRemote extends Application implements SharedPreferences.OnSharedPreferenceChangeListener {
 
     private static final String TAG = "TransmissionRemote";
     private static final String SHARED_PREFS_NAME = "transmission_remote_shared_prefs";
