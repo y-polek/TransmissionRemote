@@ -133,6 +133,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="@string/start_when_added"
+        android:checked="true"
         app:layout_constraintStart_toEndOf="@id/start_guideline"
         app:layout_constraintTop_toBottomOf="@id/trash_torrent_file_checkbox"
         app:layout_constraintEnd_toStartOf="@id/end_guideline"
