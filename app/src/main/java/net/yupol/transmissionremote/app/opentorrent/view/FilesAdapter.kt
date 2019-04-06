@@ -55,6 +55,7 @@ class FilesAdapter(
                     } else {
                         fileAt(position).wanted = checked
                     }
+                    listener.onFileSelectionChanged()
                 }
         )
     }
@@ -81,11 +82,7 @@ class FilesAdapter(
         val priorityIcon = holder.itemView.context.joinedDrawables(*dir.priorities().map { it.iconRes }.toArray())
         holder.priorityButton.setImageDrawable(priorityIcon)
 
-        val wanted = dir.isWanted()
-        holder.checkbox.isIndeterminate = wanted == null
-        if (wanted != null) {
-            holder.checkbox.isChecked = wanted
-        }
+        holder.setChecked(dir.isWanted())
     }
 
     private fun bindFile(holder: ViewHolder, file: TorrentFile.File) {
@@ -99,7 +96,7 @@ class FilesAdapter(
 
         holder.priorityButton.setImageResource(file.priority.iconRes)
 
-        holder.checkbox.isChecked = file.wanted
+        holder.setChecked(file.wanted)
     }
 
     private fun showPriorityPopup(itemView: View, prioritySelected: (PriorityViewModel) -> Unit) {
@@ -216,8 +213,25 @@ class FilesAdapter(
         @BindColor(R.color.text_color_primary) @JvmField var primaryTextColor: Int = 0
         @BindColor(R.color.text_color_secondary) @JvmField var secondaryTextColor: Int = 0
 
+        private var checkboxListenerDisabled = false
+
         init {
             ButterKnife.bind(this, itemView)
+            checkbox.setOnStateChangedListener { _, isChecked ->
+                if (checkboxListenerDisabled) return@setOnStateChangedListener
+                isChecked ?: return@setOnStateChangedListener
+
+                val position = adapterPosition
+                if (position == RecyclerView.NO_POSITION) return@setOnStateChangedListener
+
+                onChecked(position, isChecked)
+            }
+        }
+
+        fun setChecked(isChecked: Boolean?) {
+            checkboxListenerDisabled = true
+            checkbox.state = isChecked
+            checkboxListenerDisabled = false
         }
 
         @OnClick(R.id.root_layout)
@@ -235,17 +249,10 @@ class FilesAdapter(
                 onPriorityClicked(position)
             }
         }
-
-        @OnCheckedChanged(R.id.checkbox)
-        fun onChecked(checked: Boolean) {
-            val position = adapterPosition
-            if (position != RecyclerView.NO_POSITION) {
-                onChecked(position, checked)
-            }
-        }
     }
 
     interface Listener {
         fun onDirectorySelected(dir: Dir)
+        fun onFileSelectionChanged()
     }
 }

@@ -162,6 +162,7 @@
     <string name="priority_high">High</string>
     <string name="priority_normal">Normal</string>
     <string name="priority_low">Low</string>
+    <string name="torrent_file_size_summary">%1$d files, %2$s (%3$s selected)</string>
 
     <!-- Torrent details -->
     <string name="torrent_details">Torrent details</string>

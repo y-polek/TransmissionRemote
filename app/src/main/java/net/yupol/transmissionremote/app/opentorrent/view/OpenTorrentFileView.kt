@@ -6,6 +6,10 @@ import java.util.*
 
 interface OpenTorrentFileView: MvpView {
 
+    fun showNameText(text: String)
+
+    fun showSizeText(text: String)
+
     fun showDir(dir: Dir)
 
     fun showBreadcrumbs(path: Stack<Dir>)

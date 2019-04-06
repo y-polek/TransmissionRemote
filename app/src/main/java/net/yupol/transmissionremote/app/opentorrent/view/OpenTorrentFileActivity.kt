@@ -15,10 +15,10 @@ import net.yupol.transmissionremote.app.BaseMvpActivity
 import net.yupol.transmissionremote.app.R
 import net.yupol.transmissionremote.app.TransmissionRemote
 import net.yupol.transmissionremote.app.opentorrent.presenter.OpenTorrentFilePresenter
+import net.yupol.transmissionremote.app.res.StringResources
 import net.yupol.transmissionremote.app.server.ServerManager
 import net.yupol.transmissionremote.app.torrentdetails.BreadcrumbView
 import net.yupol.transmissionremote.app.utils.DividerItemDecoration
-import net.yupol.transmissionremote.app.utils.TextUtils
 import net.yupol.transmissionremote.model.Dir
 import java.io.File
 import java.util.*
@@ -36,11 +36,12 @@ class OpenTorrentFileActivity: BaseMvpActivity<OpenTorrentFileView, OpenTorrentF
     @BindView(R.id.start_when_added_checkbox) lateinit var startWhenAddedCheckbox: CheckBox
 
     @Inject lateinit var serverManager: ServerManager
+    @Inject lateinit var strRes: StringResources
 
     override fun createPresenter(): OpenTorrentFilePresenter {
         val torrentFilePath = intent?.getStringExtra(KEY_TORRENT_FILE_PATH)
                 ?: throw IllegalArgumentException("Torrent file must be passed as an argument")
-        return OpenTorrentFilePresenter(torrentFilePath, serverManager)
+        return OpenTorrentFilePresenter(torrentFilePath, serverManager, strRes)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -56,9 +57,6 @@ class OpenTorrentFileActivity: BaseMvpActivity<OpenTorrentFileView, OpenTorrentF
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         setTitle(R.string.open_torrent)
 
-        nameText.text = presenter.torrentFile.name
-        sizeText.text = TextUtils.displayableSize(presenter.torrentFile.size)
-
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.addItemDecoration(DividerItemDecoration(this))
 
@@ -72,6 +70,14 @@ class OpenTorrentFileActivity: BaseMvpActivity<OpenTorrentFileView, OpenTorrentF
     override fun onSupportNavigateUp(): Boolean {
         finish()
         return true
+    }
+
+    override fun showNameText(text: String) {
+        nameText.text = text
+    }
+
+    override fun showSizeText(text: String) {
+        sizeText.text = text
     }
 
     override fun showDir(dir: Dir) {
@@ -96,6 +102,10 @@ class OpenTorrentFileActivity: BaseMvpActivity<OpenTorrentFileView, OpenTorrentF
 
     override fun onDirectorySelected(dir: Dir) {
         presenter.onDirectorySelected(dir)
+    }
+
+    override fun onFileSelectionChanged() {
+        presenter.onFileSelectionChanged()
     }
 
     @OnClick(R.id.select_all_button)

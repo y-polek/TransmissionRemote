@@ -10,14 +10,17 @@ import net.yupol.transmissionremote.app.model.PriorityViewModel.HIGH
 import net.yupol.transmissionremote.app.model.PriorityViewModel.LOW
 import net.yupol.transmissionremote.app.opentorrent.model.TorrentFile
 import net.yupol.transmissionremote.app.opentorrent.view.OpenTorrentFileView
+import net.yupol.transmissionremote.app.res.StringResources
 import net.yupol.transmissionremote.app.server.ServerManager
+import net.yupol.transmissionremote.app.utils.TextUtils
 import net.yupol.transmissionremote.model.Dir
 import java.io.File
 import java.util.*
 
 class OpenTorrentFilePresenter(
         private val torrentFilePath: String,
-        private val serverManager: ServerManager): MvpNullObjectBasePresenter<OpenTorrentFileView>()
+        private val serverManager: ServerManager,
+        private val strRes: StringResources): MvpNullObjectBasePresenter<OpenTorrentFileView>()
 {
 
     val torrentFile = TorrentFile(torrentFilePath)
@@ -38,8 +41,10 @@ class OpenTorrentFilePresenter(
     }
 
     fun viewCreated() {
+        view.showNameText(torrentFile.name)
         view.showDir(currentDir)
         view.showBreadcrumbs(breadcrumbs)
+        calculateAndDisplaySizeSummary()
     }
 
     fun onDirectorySelected(dir: Dir) {
@@ -68,11 +73,17 @@ class OpenTorrentFilePresenter(
     fun onSelectAllFilesClicked() {
         torrentFile.selectAllFilesIn(currentDir)
         view.updateFileList()
+        calculateAndDisplaySizeSummary()
     }
 
     fun onSelectNoneFilesClicked() {
         torrentFile.selectNoneFilesIn(currentDir)
         view.updateFileList()
+        calculateAndDisplaySizeSummary()
+    }
+
+    fun onFileSelectionChanged() {
+        calculateAndDisplaySizeSummary()
     }
 
     fun onAddButtonClicked() {
@@ -109,5 +120,17 @@ class OpenTorrentFilePresenter(
                             Log.e("Add torrent", "Error: ${error.message}", error)
                         }
                 )
+    }
+
+    private fun calculateAndDisplaySizeSummary() {
+        val selectedSize = torrentFile.files.asSequence()
+                .filter { it.wanted }
+                .map { it.length }
+                .sum()
+        val text = strRes.torrentFileSizeSummary(
+                torrentFile.files.size,
+                TextUtils.displayableSize(torrentFile.size),
+                TextUtils.displayableSize(selectedSize))
+        view.showSizeText(text)
     }
 }
