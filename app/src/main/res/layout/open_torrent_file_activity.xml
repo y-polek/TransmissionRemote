@@ -112,11 +112,26 @@
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
         android:padding="8dp"
+        android:paddingEnd="36dp"
+        android:paddingRight="36dp"
         android:singleLine="true"
+        android:inputType="textUri"
         android:background="@drawable/transparent_bordered_background"
         app:layout_constraintStart_toEndOf="@id/download_to_title"
         app:layout_constraintTop_toBottomOf="@id/select_none_button"
         app:layout_constraintEnd_toStartOf="@id/end_guideline" />
+
+    <ImageButton
+        android:id="@+id/download_location_history_button"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        android:background="?android:attr/selectableItemBackground"
+        app:srcCompat="@drawable/ic_history"
+        app:layout_constraintTop_toTopOf="@id/download_to_text"
+        app:layout_constraintEnd_toEndOf="@id/download_to_text"
+        app:layout_constraintBottom_toBottomOf="@id/download_to_text" />
 
     <CheckBox
         android:id="@+id/trash_torrent_file_checkbox"
