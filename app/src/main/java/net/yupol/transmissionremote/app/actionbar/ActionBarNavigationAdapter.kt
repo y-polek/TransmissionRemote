@@ -9,6 +9,7 @@ import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import net.yupol.transmissionremote.app.R
 import net.yupol.transmissionremote.app.home.filter.FILTERS
 import net.yupol.transmissionremote.app.home.filter.Filter
@@ -21,7 +22,7 @@ class ActionBarNavigationAdapter(context: Context) : BaseAdapter() {
 
     private val textColorPrimary: Int = resolveColor(context, android.R.attr.textColorPrimary, R.color.text_primary)
     private val accentColor: Int = resolveColor(context, R.attr.colorAccent, R.color.accent)
-    private val alternativeAccentColor: Int = context.resources.getColor(R.color.alternative_accent)
+    private val alternativeAccentColor: Int = ContextCompat.getColor(context, R.color.alternative_accent)
     private val textColorPrimaryInverse: Int = resolveColor(context, android.R.attr.textColorPrimaryInverse, R.color.text_primary_inverse)
 
     private var servers = emptyList<Server>()

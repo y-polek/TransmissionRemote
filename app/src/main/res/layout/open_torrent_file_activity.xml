@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginTop="16dp"
+    android:layout_marginTop="12dp"
     android:orientation="vertical">
 
     <androidx.constraintlayout.widget.Guideline
@@ -107,13 +107,11 @@
         android:id="@+id/download_to_text"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
         android:padding="8dp"
         android:paddingEnd="36dp"
-        android:paddingRight="36dp"
         android:singleLine="true"
         android:inputType="textUri"
         android:background="@drawable/transparent_bordered_background"

@@ -12,7 +12,6 @@ fun Context.joinedDrawables(@DrawableRes vararg drawableRes: Int): Drawable {
     val drawables = drawableRes.map { ContextCompat.getDrawable(this, it) ?: throw RuntimeException("Unknown drawable ID: $it") }
 
     val width = drawables.sumBy { it.intrinsicWidth }
-    val height = drawables.maxBy { it.intrinsicHeight }?.intrinsicHeight ?: 0
 
     val joinedDrawable = LayerDrawable(drawables.toTypedArray())
 

@@ -36,6 +36,7 @@ class TorrentFile(path: String) {
     private fun Torrent.files(): List<Torrent.TorrentFile> {
         val filesField = this::class.java.getDeclaredField("files")
         filesField.isAccessible = true
+        @Suppress("UNCHECKED_CAST")
         return filesField.get(this) as List<Torrent.TorrentFile>
     }
 
