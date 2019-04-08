@@ -16,9 +16,9 @@ interface OpenTorrentFileView: MvpView {
 
     fun updateFileList()
 
-    fun getDownloadDirectory(): String
+    fun setDownloadDirectory(text: String)
 
-    fun isTrashTorrentFileChecked(): Boolean
+    fun setTrashTorrentFile(trash: Boolean)
 
-    fun isStartWhenAddedChecked(): Boolean
+    fun setStartTorrentWhenAdded(start: Boolean)
 }

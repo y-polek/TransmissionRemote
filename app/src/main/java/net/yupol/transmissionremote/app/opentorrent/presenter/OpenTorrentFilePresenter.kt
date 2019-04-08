@@ -4,6 +4,7 @@ import android.util.Log
 import com.hannesdorfmann.mosby3.mvp.MvpNullObjectBasePresenter
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
+import io.reactivex.SingleObserver
 import io.reactivex.android.schedulers.AndroidSchedulers.mainThread
 import io.reactivex.disposables.Disposable
 import io.reactivex.rxkotlin.subscribeBy
@@ -32,6 +33,10 @@ class OpenTorrentFilePresenter @AssistedInject constructor(
     private var currentDir: Dir
     private val breadcrumbs: Stack<Dir> = Stack()
 
+    private var downloadDirectory: String = ""
+    private var trashTorrentFile: Boolean = false
+    private var startTorrentWhenAdded: Boolean = true
+
     private var addTorrentRequest: Disposable? = null
 
     init {
@@ -42,12 +47,34 @@ class OpenTorrentFilePresenter @AssistedInject constructor(
             currentDir = currentDir.dirs.first()
             breadcrumbs.push(currentDir)
         }
+
+        serverRepository.defaultDownloadDir()
+                .subscribeOn(io())
+                .observeOn(mainThread())
+                .subscribe(object : SingleObserver<String> {
+                    override fun onSubscribe(d: Disposable) {}
+
+                    override fun onSuccess(dir: String) {
+                        if (downloadDirectory.isEmpty()) {
+                            downloadDirectory = dir
+                            view.setDownloadDirectory(downloadDirectory)
+                        }
+                    }
+
+                    override fun onError(e: Throwable) {
+                        Log.e("Presenter", "Error", e)
+                    }
+
+                })
     }
 
     fun viewCreated() {
         view.showNameText(torrentFile.name)
         view.showDir(currentDir)
         view.showBreadcrumbs(breadcrumbs)
+        view.setDownloadDirectory(downloadDirectory)
+        view.setTrashTorrentFile(trashTorrentFile)
+        view.setStartTorrentWhenAdded(startTorrentWhenAdded)
         calculateAndDisplaySizeSummary()
     }
 
@@ -92,7 +119,7 @@ class OpenTorrentFilePresenter @AssistedInject constructor(
 
     fun onAddButtonClicked() {
 
-        val paused = !view.isStartWhenAddedChecked()
+        val paused = !startTorrentWhenAdded
         val filesUnwanted = mutableListOf<Int>()
         val priorityHigh = mutableListOf<Int>()
         val priorityLow = mutableListOf<Int>()
@@ -107,7 +134,7 @@ class OpenTorrentFilePresenter @AssistedInject constructor(
 
         addTorrentRequest = addTorrentFile.execute(
                 file = File(torrentFilePath),
-                destinationDir = view.getDownloadDirectory(),
+                destinationDir = downloadDirectory,
                 paused = paused,
                 filesUnwanted = filesUnwanted,
                 priorityHigh = priorityHigh,
@@ -122,6 +149,20 @@ class OpenTorrentFilePresenter @AssistedInject constructor(
                             Log.e("Add torrent", "Error: ${error.message}", error)
                         }
                 )
+    }
+
+    fun onDownloadLocationTextChanged(text: String) {
+        if (text == downloadDirectory) return
+
+        downloadDirectory = text
+    }
+
+    fun onTrashTorrentFileChanged(trashTorrentFile: Boolean) {
+        this.trashTorrentFile = trashTorrentFile
+    }
+
+    fun onStartTorrentWhenAddedChanged(startTorrentWhenAdded: Boolean) {
+        this.startTorrentWhenAdded = startTorrentWhenAdded
     }
 
     private fun calculateAndDisplaySizeSummary() {

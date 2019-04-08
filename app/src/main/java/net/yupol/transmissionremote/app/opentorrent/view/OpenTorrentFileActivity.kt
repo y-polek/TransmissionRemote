@@ -8,9 +8,7 @@ import android.widget.CheckBox
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import butterknife.BindView
-import butterknife.ButterKnife
-import butterknife.OnClick
+import butterknife.*
 import net.yupol.transmissionremote.app.BaseMvpActivity
 import net.yupol.transmissionremote.app.R
 import net.yupol.transmissionremote.app.TransmissionRemote
@@ -69,6 +67,8 @@ class OpenTorrentFileActivity: BaseMvpActivity<OpenTorrentFileView, OpenTorrentF
         return true
     }
 
+    // region OpenTorrentFileView implementation
+
     override fun showNameText(text: String) {
         nameText.text = text
     }
@@ -85,17 +85,25 @@ class OpenTorrentFileActivity: BaseMvpActivity<OpenTorrentFileView, OpenTorrentF
         breadcrumbView.setPath(path)
     }
 
-    override fun getDownloadDirectory(): String {
-        return downloadDirText.text.trim().toString()
-    }
-
-    override fun isTrashTorrentFileChecked() = trashTorrentFileCheckbox.isChecked
-
-    override fun isStartWhenAddedChecked() = startWhenAddedCheckbox.isChecked
-
     override fun updateFileList() {
         recyclerView.adapter?.notifyDataSetChanged()
     }
+
+    override fun setDownloadDirectory(text: String) {
+        downloadDirText.text = text
+    }
+
+    override fun setTrashTorrentFile(trash: Boolean) {
+        trashTorrentFileCheckbox.isChecked = trash
+    }
+
+    override fun setStartTorrentWhenAdded(start: Boolean) {
+        startWhenAddedCheckbox.isChecked = start
+    }
+
+    // endregion
+
+    // region Event Listeners
 
     override fun onDirectorySelected(dir: Dir) {
         presenter.onDirectorySelected(dir)
@@ -119,6 +127,23 @@ class OpenTorrentFileActivity: BaseMvpActivity<OpenTorrentFileView, OpenTorrentF
     fun onAddButtonClicked() {
         presenter.onAddButtonClicked()
     }
+
+    @OnTextChanged(R.id.download_to_text)
+    fun onDownloadLocationTextChanged(text: CharSequence) {
+        presenter.onDownloadLocationTextChanged(text.trim().toString())
+    }
+
+    @OnCheckedChanged(R.id.trash_torrent_file_checkbox)
+    fun onTrashTorrentFileChanged(checked: Boolean) {
+        presenter.onTrashTorrentFileChanged(checked)
+    }
+
+    @OnCheckedChanged(R.id.start_when_added_checkbox)
+    fun onStartTorrentWhenAddedChanged(checked: Boolean) {
+        presenter.onStartTorrentWhenAddedChanged(checked)
+    }
+
+    // endregion
 
     companion object {
 
