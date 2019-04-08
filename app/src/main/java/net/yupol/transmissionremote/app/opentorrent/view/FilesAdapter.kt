@@ -1,6 +1,7 @@
 package net.yupol.transmissionremote.app.opentorrent.view
 
 import android.content.res.ColorStateList
+import android.graphics.Typeface
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -55,6 +56,7 @@ class FilesAdapter(
                     } else {
                         fileAt(position).wanted = checked
                     }
+                    notifyItemChanged(position)
                     listener.onFileSelectionChanged()
                 }
         )
@@ -71,13 +73,18 @@ class FilesAdapter(
     override fun getItemCount() = dir.dirs.size + dir.fileIndices.size
 
     private fun bindDir(holder: ViewHolder, dir: Dir) {
+        val wanted = dir.isWanted()
+        val textColor = if (wanted != false) holder.primaryTextColor else holder.disabledTextColor
+
         holder.nameText.text = dir.name
-        holder.nameText.setTextColor(holder.primaryTextColor)
+        holder.nameText.setTextColor(textColor)
+        holder.nameText.typeface = Typeface.DEFAULT_BOLD
 
         holder.sizeText.text = TextUtils.displayableSize(dir.size())
+        holder.sizeText.setTextColor(textColor)
 
         holder.fileTypeImage.setImageResource(R.drawable.ic_folder)
-        ImageViewCompat.setImageTintList(holder.fileTypeImage, ColorStateList.valueOf(holder.primaryTextColor))
+        ImageViewCompat.setImageTintList(holder.fileTypeImage, ColorStateList.valueOf(textColor))
 
         val priorityIcon = holder.itemView.context.joinedDrawables(*dir.priorities().map { it.iconRes }.toArray())
         holder.priorityButton.setImageDrawable(priorityIcon)
@@ -86,13 +93,17 @@ class FilesAdapter(
     }
 
     private fun bindFile(holder: ViewHolder, file: TorrentFile.File) {
+        val textColor = if (file.wanted) holder.primaryTextColor else holder.disabledTextColor
+
         holder.nameText.text = file.name
-        holder.nameText.setTextColor(holder.secondaryTextColor)
+        holder.nameText.setTextColor(textColor)
+        holder.nameText.typeface = Typeface.DEFAULT
 
         holder.sizeText.text = TextUtils.displayableSize(file.length)
+        holder.sizeText.setTextColor(textColor)
 
         holder.fileTypeImage.setImageResource(file.icon())
-        ImageViewCompat.setImageTintList(holder.fileTypeImage, ColorStateList.valueOf(holder.secondaryTextColor))
+        ImageViewCompat.setImageTintList(holder.fileTypeImage, ColorStateList.valueOf(textColor))
 
         holder.priorityButton.setImageResource(file.priority.iconRes)
 
@@ -212,6 +223,7 @@ class FilesAdapter(
 
         @BindColor(R.color.text_color_primary) @JvmField var primaryTextColor: Int = 0
         @BindColor(R.color.text_color_secondary) @JvmField var secondaryTextColor: Int = 0
+        @BindColor(R.color.text_primary_disabled) @JvmField var disabledTextColor: Int = 0
 
         private var checkboxListenerDisabled = false
 

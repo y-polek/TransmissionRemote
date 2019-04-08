@@ -63,7 +63,6 @@
         android:layout_marginStart="12dp"
         android:maxLines="2"
         android:textSize="@dimen/tr_abc_text_size_body_1_material"
-        android:textStyle="bold"
         app:layout_constraintStart_toEndOf="@id/file_type_icon"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toStartOf="@id/priority_button"
