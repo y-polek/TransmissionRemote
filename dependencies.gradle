@@ -6,6 +6,7 @@ ext {
     hamcrest_version = '1.3'
     rxandroid_version = '2.0.2'
     dagger_version = '2.18'
+    assisted_inject_version = '0.4.0'
     moshi_version = '1.8.0'
     moshi_lazy_adapters_version = '2.2'
     gson_version = '2.8.2'

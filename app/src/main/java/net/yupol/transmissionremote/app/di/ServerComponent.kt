@@ -5,7 +5,6 @@ import dagger.Subcomponent
 import net.yupol.transmissionremote.app.opentorrent.view.OpenTorrentFileActivity
 import net.yupol.transmissionremote.domain.model.Server
 import net.yupol.transmissionremote.domain.usecase.server.ServerInteractor
-import net.yupol.transmissionremote.domain.usecase.torrent.AddTorrentFile
 import net.yupol.transmissionremote.domain.usecase.torrent.TorrentListInteractor
 
 @ServerScope
@@ -18,7 +17,7 @@ interface ServerComponent {
 
     fun serverInteractor(): ServerInteractor
 
-    fun addTorrentFileUseCase(): AddTorrentFile
+    fun inject(activity: OpenTorrentFileActivity)
 
     @Subcomponent.Builder
     interface Builder {

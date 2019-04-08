@@ -1,5 +1,6 @@
 package net.yupol.transmissionremote.app.di
 
+import com.squareup.inject.assisted.dagger2.AssistedModule
 import com.squareup.moshi.Moshi
 import dagger.Module
 import dagger.Provides
@@ -21,7 +22,8 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
 import javax.inject.Named
 
-@Module
+@AssistedModule
+@Module(includes = [AssistedInject_ServerModule::class])
 class ServerModule {
 
     @Provides

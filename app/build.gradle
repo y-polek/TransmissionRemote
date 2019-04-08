@@ -134,6 +134,9 @@ dependencies {
     implementation "com.google.dagger:dagger:$dagger_version"
     kapt "com.google.dagger:dagger-compiler:$dagger_version"
     implementation "javax.inject:javax.inject:$javax_inject_version"
+    compileOnly "com.squareup.inject:assisted-inject-annotations-dagger2:$assisted_inject_version"
+    kapt "com.squareup.inject:assisted-inject-processor-dagger2:$assisted_inject_version"
+
 
     // Moshi
     implementation "com.squareup.moshi:moshi:$moshi_version"

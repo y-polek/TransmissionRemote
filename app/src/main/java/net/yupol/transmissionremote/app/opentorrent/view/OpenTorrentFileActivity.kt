@@ -15,8 +15,6 @@ import net.yupol.transmissionremote.app.BaseMvpActivity
 import net.yupol.transmissionremote.app.R
 import net.yupol.transmissionremote.app.TransmissionRemote
 import net.yupol.transmissionremote.app.opentorrent.presenter.OpenTorrentFilePresenter
-import net.yupol.transmissionremote.app.res.StringResources
-import net.yupol.transmissionremote.app.server.ServerManager
 import net.yupol.transmissionremote.app.torrentdetails.BreadcrumbView
 import net.yupol.transmissionremote.app.utils.DividerItemDecoration
 import net.yupol.transmissionremote.model.Dir
@@ -35,17 +33,16 @@ class OpenTorrentFileActivity: BaseMvpActivity<OpenTorrentFileView, OpenTorrentF
     @BindView(R.id.trash_torrent_file_checkbox) lateinit var trashTorrentFileCheckbox: CheckBox
     @BindView(R.id.start_when_added_checkbox) lateinit var startWhenAddedCheckbox: CheckBox
 
-    @Inject lateinit var serverManager: ServerManager
-    @Inject lateinit var strRes: StringResources
+    @Inject lateinit var presenterFactory: OpenTorrentFilePresenter.Factory
 
     override fun createPresenter(): OpenTorrentFilePresenter {
         val torrentFilePath = intent?.getStringExtra(KEY_TORRENT_FILE_PATH)
                 ?: throw IllegalArgumentException("Torrent file must be passed as an argument")
-        return OpenTorrentFilePresenter(torrentFilePath, serverManager, strRes)
+        return presenterFactory.create(torrentFilePath)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        TransmissionRemote.getInstance().appComponent().inject(this)
+        TransmissionRemote.getInstance().appComponent().serverManager().serverComponent?.inject(this)
         super.onCreate(savedInstanceState)
         if (!resources.getBoolean(R.bool.is_tablet)) {
             requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT

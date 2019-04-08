@@ -2,6 +2,8 @@ package net.yupol.transmissionremote.app.opentorrent.presenter
 
 import android.util.Log
 import com.hannesdorfmann.mosby3.mvp.MvpNullObjectBasePresenter
+import com.squareup.inject.assisted.Assisted
+import com.squareup.inject.assisted.AssistedInject
 import io.reactivex.android.schedulers.AndroidSchedulers.mainThread
 import io.reactivex.disposables.Disposable
 import io.reactivex.rxkotlin.subscribeBy
@@ -11,15 +13,17 @@ import net.yupol.transmissionremote.app.model.PriorityViewModel.LOW
 import net.yupol.transmissionremote.app.opentorrent.model.TorrentFile
 import net.yupol.transmissionremote.app.opentorrent.view.OpenTorrentFileView
 import net.yupol.transmissionremote.app.res.StringResources
-import net.yupol.transmissionremote.app.server.ServerManager
 import net.yupol.transmissionremote.app.utils.TextUtils
+import net.yupol.transmissionremote.domain.repository.ServerRepository
+import net.yupol.transmissionremote.domain.usecase.torrent.AddTorrentFile
 import net.yupol.transmissionremote.model.Dir
 import java.io.File
 import java.util.*
 
-class OpenTorrentFilePresenter(
-        private val torrentFilePath: String,
-        private val serverManager: ServerManager,
+class OpenTorrentFilePresenter @AssistedInject constructor(
+        @Assisted private val torrentFilePath: String,
+        private val addTorrentFile: AddTorrentFile,
+        private val serverRepository: ServerRepository,
         private val strRes: StringResources): MvpNullObjectBasePresenter<OpenTorrentFileView>()
 {
 
@@ -87,8 +91,6 @@ class OpenTorrentFilePresenter(
     }
 
     fun onAddButtonClicked() {
-        val addTorrentFile = serverManager.serverComponent?.addTorrentFileUseCase()
-                ?: throw IllegalStateException("No server found while adding torrent file")
 
         val paused = !view.isStartWhenAddedChecked()
         val filesUnwanted = mutableListOf<Int>()
@@ -132,5 +134,10 @@ class OpenTorrentFilePresenter(
                 TextUtils.displayableSize(torrentFile.size),
                 TextUtils.displayableSize(selectedSize))
         view.showSizeText(text)
+    }
+
+    @AssistedInject.Factory
+    interface Factory {
+        fun create(torrentFilePath: String): OpenTorrentFilePresenter
     }
 }
