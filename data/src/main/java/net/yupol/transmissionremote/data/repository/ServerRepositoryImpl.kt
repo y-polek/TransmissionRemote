@@ -15,4 +15,8 @@ class ServerRepositoryImpl @Inject constructor(private val api: TransmissionRpcA
     override fun setTurtleModeEnabled(enabled: Boolean): Completable {
         return api.setServerSettings(mapOf("alt-speed-enabled" to enabled))
     }
+
+    override fun defaultDownloadDir(): Single<String> {
+        return api.defaultDownloadDir()
+    }
 }

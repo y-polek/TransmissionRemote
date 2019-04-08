@@ -8,4 +8,6 @@ interface ServerRepository {
     fun isTurtleModeEnabled(): Single<Boolean>
 
     fun setTurtleModeEnabled(enabled: Boolean): Completable
+
+    fun defaultDownloadDir(): Single<String>
 }

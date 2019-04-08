@@ -112,4 +112,10 @@ interface TransmissionRpcApi {
     @RpcFields(fields = ["alt-speed-enabled"])
     @Wrapped(path = ["arguments", "alt-speed-enabled"])
     fun isTurtleModeEnabled(@Body args: Map<String, @JvmSuppressWildcards Any> = emptyMap()): Single<Boolean>
+
+    @POST("./")
+    @RpcMethod("session-get")
+    @RpcFields(fields = ["download-dir"])
+    @Wrapped(path = ["arguments", "download-dir"])
+    fun defaultDownloadDir(@Body args: Map<String, @JvmSuppressWildcards Any> = emptyMap()): Single<String>
 }

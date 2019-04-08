@@ -114,6 +114,7 @@
         android:paddingEnd="36dp"
         android:singleLine="true"
         android:inputType="textUri"
+        android:textSize="@dimen/tr_abc_text_size_body_1_material"
         android:background="@drawable/transparent_bordered_background"
         app:layout_constraintStart_toEndOf="@id/download_to_title"
         app:layout_constraintTop_toBottomOf="@id/select_none_button"
