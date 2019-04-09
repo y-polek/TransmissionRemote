@@ -73,8 +73,14 @@ dependencies {
     implementation "io.reactivex.rxjava2:rxkotlin:$rxkotlin_version"
     implementation "io.reactivex.rxjava2:rxandroid:$rxandroid_version"
 
+    // RxBindings
+    implementation "com.jakewharton.rxbinding3:rxbinding:$rxbindings_version"
+
     // Retrofit
     implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
+
+    // Timber
+    implementation "com.jakewharton.timber:timber:$timber_version"
 
     // Guava
     implementation "com.google.guava:guava:$guava_version"
@@ -136,7 +142,6 @@ dependencies {
     implementation "javax.inject:javax.inject:$javax_inject_version"
     compileOnly "com.squareup.inject:assisted-inject-annotations-dagger2:$assisted_inject_version"
     kapt "com.squareup.inject:assisted-inject-processor-dagger2:$assisted_inject_version"
-
 
     // Moshi
     implementation "com.squareup.moshi:moshi:$moshi_version"

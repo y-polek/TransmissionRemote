@@ -4,11 +4,20 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.os.Bundle
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.widget.CheckBox
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import butterknife.*
+import butterknife.BindView
+import butterknife.ButterKnife
+import butterknife.OnCheckedChanged
+import butterknife.OnClick
+import com.jakewharton.rxbinding3.widget.textChanges
+import io.reactivex.android.schedulers.AndroidSchedulers.mainThread
+import io.reactivex.disposables.Disposable
 import net.yupol.transmissionremote.app.BaseMvpActivity
 import net.yupol.transmissionremote.app.R
 import net.yupol.transmissionremote.app.TransmissionRemote
@@ -18,6 +27,7 @@ import net.yupol.transmissionremote.app.utils.DividerItemDecoration
 import net.yupol.transmissionremote.model.Dir
 import java.io.File
 import java.util.*
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class OpenTorrentFileActivity: BaseMvpActivity<OpenTorrentFileView, OpenTorrentFilePresenter>(),
@@ -28,10 +38,14 @@ class OpenTorrentFileActivity: BaseMvpActivity<OpenTorrentFileView, OpenTorrentF
     @BindView(R.id.breadcrumb_view) lateinit var breadcrumbView: BreadcrumbView
     @BindView(R.id.recycler_view) lateinit var recyclerView: RecyclerView
     @BindView(R.id.download_to_text) lateinit var downloadDirText: TextView
+    @BindView(R.id.free_space_text) lateinit var freeSpaceText: TextView
+    @BindView(R.id.free_space_progress_bar) lateinit var freeSpaceProgressbar: ProgressBar
     @BindView(R.id.trash_torrent_file_checkbox) lateinit var trashTorrentFileCheckbox: CheckBox
     @BindView(R.id.start_when_added_checkbox) lateinit var startWhenAddedCheckbox: CheckBox
 
     @Inject lateinit var presenterFactory: OpenTorrentFilePresenter.Factory
+
+    private var downloadDirTextSubscription: Disposable? = null
 
     override fun createPresenter(): OpenTorrentFilePresenter {
         val torrentFilePath = intent?.getStringExtra(KEY_TORRENT_FILE_PATH)
@@ -60,6 +74,24 @@ class OpenTorrentFileActivity: BaseMvpActivity<OpenTorrentFileView, OpenTorrentF
         }
 
         presenter.viewCreated()
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        downloadDirTextSubscription = downloadDirText.textChanges()
+                .debounce(500, TimeUnit.MILLISECONDS)
+                .map { it.trim().toString() }
+                .distinct()
+                .observeOn(mainThread())
+                .subscribe { text ->
+                    presenter.onDownloadLocationTextChanged(text)
+                }
+    }
+
+    override fun onPause() {
+        downloadDirTextSubscription?.dispose()
+        super.onPause()
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -101,6 +133,18 @@ class OpenTorrentFileActivity: BaseMvpActivity<OpenTorrentFileView, OpenTorrentF
         startWhenAddedCheckbox.isChecked = start
     }
 
+    override fun showFreeSpaceLoading() {
+        freeSpaceProgressbar.visibility = VISIBLE
+    }
+
+    override fun hideFreeSpaceLoading() {
+        freeSpaceProgressbar.visibility = GONE
+    }
+
+    override fun showFreeSpaceText(text: String) {
+        freeSpaceText.text = text
+    }
+
     // endregion
 
     // region Event Listeners
@@ -126,11 +170,6 @@ class OpenTorrentFileActivity: BaseMvpActivity<OpenTorrentFileView, OpenTorrentF
     @OnClick(R.id.add_button)
     fun onAddButtonClicked() {
         presenter.onAddButtonClicked()
-    }
-
-    @OnTextChanged(R.id.download_to_text)
-    fun onDownloadLocationTextChanged(text: CharSequence) {
-        presenter.onDownloadLocationTextChanged(text.trim().toString())
     }
 
     @OnCheckedChanged(R.id.trash_torrent_file_checkbox)

@@ -1,6 +1,5 @@
 package net.yupol.transmissionremote.app.opentorrent.presenter
 
-import android.util.Log
 import com.hannesdorfmann.mosby3.mvp.MvpNullObjectBasePresenter
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
@@ -18,6 +17,7 @@ import net.yupol.transmissionremote.app.utils.TextUtils
 import net.yupol.transmissionremote.domain.repository.ServerRepository
 import net.yupol.transmissionremote.domain.usecase.torrent.AddTorrentFile
 import net.yupol.transmissionremote.model.Dir
+import timber.log.Timber
 import java.io.File
 import java.util.*
 
@@ -33,11 +33,12 @@ class OpenTorrentFilePresenter @AssistedInject constructor(
     private var currentDir: Dir
     private val breadcrumbs: Stack<Dir> = Stack()
 
-    private var downloadDirectory: String = ""
+    private var downloadLocation: String = ""
     private var trashTorrentFile: Boolean = false
     private var startTorrentWhenAdded: Boolean = true
 
     private var addTorrentRequest: Disposable? = null
+    private var freeSpaceRequest: Disposable? = null
 
     init {
         currentDir = torrentFile.rootDir
@@ -55,14 +56,15 @@ class OpenTorrentFilePresenter @AssistedInject constructor(
                     override fun onSubscribe(d: Disposable) {}
 
                     override fun onSuccess(dir: String) {
-                        if (downloadDirectory.isEmpty()) {
-                            downloadDirectory = dir
-                            view.setDownloadDirectory(downloadDirectory)
+                        if (downloadLocation.isEmpty()) {
+                            downloadLocation = dir
+                            view.setDownloadDirectory(downloadLocation)
+                            loadDownloadLocationFreeSpace()
                         }
                     }
 
-                    override fun onError(e: Throwable) {
-                        Log.e("Presenter", "Error", e)
+                    override fun onError(error: Throwable) {
+                        Timber.i("Failed to load default download location: $error")
                     }
 
                 })
@@ -72,7 +74,7 @@ class OpenTorrentFilePresenter @AssistedInject constructor(
         view.showNameText(torrentFile.name)
         view.showDir(currentDir)
         view.showBreadcrumbs(breadcrumbs)
-        view.setDownloadDirectory(downloadDirectory)
+        view.setDownloadDirectory(downloadLocation)
         view.setTrashTorrentFile(trashTorrentFile)
         view.setStartTorrentWhenAdded(startTorrentWhenAdded)
         calculateAndDisplaySizeSummary()
@@ -134,7 +136,7 @@ class OpenTorrentFilePresenter @AssistedInject constructor(
 
         addTorrentRequest = addTorrentFile.execute(
                 file = File(torrentFilePath),
-                destinationDir = downloadDirectory,
+                destinationDir = downloadLocation,
                 paused = paused,
                 filesUnwanted = filesUnwanted,
                 priorityHigh = priorityHigh,
@@ -143,18 +145,18 @@ class OpenTorrentFilePresenter @AssistedInject constructor(
                 .observeOn(mainThread())
                 .subscribeBy(
                         onSuccess = { result ->
-                            Log.d("Add torrent", "result: $result")
+                            TODO("Implement")
                         },
                         onError = { error ->
-                            Log.e("Add torrent", "Error: ${error.message}", error)
+                            TODO("Implement")
                         }
                 )
     }
 
     fun onDownloadLocationTextChanged(text: String) {
-        if (text == downloadDirectory) return
-
-        downloadDirectory = text
+        if (text == downloadLocation) return
+        downloadLocation = text
+        loadDownloadLocationFreeSpace()
     }
 
     fun onTrashTorrentFileChanged(trashTorrentFile: Boolean) {
@@ -175,6 +177,27 @@ class OpenTorrentFilePresenter @AssistedInject constructor(
                 TextUtils.displayableSize(torrentFile.size),
                 TextUtils.displayableSize(selectedSize))
         view.showSizeText(text)
+    }
+
+    private fun loadDownloadLocationFreeSpace() {
+        freeSpaceRequest?.dispose()
+
+        view.showFreeSpaceText("")
+        view.showFreeSpaceLoading()
+
+        freeSpaceRequest = serverRepository.freeSpace(downloadLocation)
+                .subscribeOn(io())
+                .observeOn(mainThread())
+                .subscribeBy(
+                        onSuccess = { bytes ->
+                            view.hideFreeSpaceLoading()
+                            view.showFreeSpaceText(strRes.freeSpace(TextUtils.displayableSize(bytes)))
+                        },
+                        onError = { error ->
+                            view.hideFreeSpaceLoading()
+                            view.showFreeSpaceText("")
+                        }
+                )
     }
 
     @AssistedInject.Factory

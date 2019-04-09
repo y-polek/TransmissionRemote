@@ -19,4 +19,8 @@ class ServerRepositoryImpl @Inject constructor(private val api: TransmissionRpcA
     override fun defaultDownloadDir(): Single<String> {
         return api.defaultDownloadDir()
     }
+
+    override fun freeSpace(path: String): Single<Long> {
+        return api.freeSpace(path)
+    }
 }

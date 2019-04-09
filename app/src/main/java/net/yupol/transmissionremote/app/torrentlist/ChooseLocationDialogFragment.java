@@ -5,13 +5,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import androidx.databinding.DataBindingUtil;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.Fragment;
-import androidx.appcompat.app.AlertDialog;
 import android.text.Editable;
 import android.view.LayoutInflater;
 
@@ -21,10 +15,15 @@ import net.yupol.transmissionremote.app.databinding.SetLocationDialogBinding;
 import net.yupol.transmissionremote.app.utils.SimpleTextWatcher;
 import net.yupol.transmissionremote.app.utils.TextUtils;
 import net.yupol.transmissionremote.data.api.Transport;
-import net.yupol.transmissionremote.data.api.model.FreeSpaceEntity;
 import net.yupol.transmissionremote.data.api.rpc.RpcFailureException;
 import net.yupol.transmissionremote.model.mapper.ServerMapper;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.databinding.DataBindingUtil;
+import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.Fragment;
 import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
@@ -109,18 +108,18 @@ public class ChooseLocationDialogFragment extends DialogFragment {
         new Transport(ServerMapper.toDomain(TransmissionRemote.getInstance().getActiveServer())).api().freeSpace(path)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new SingleObserver<FreeSpaceEntity>() {
+                .subscribe(new SingleObserver<Long>() {
                     @Override
                     public void onSubscribe(Disposable d) {
                         runningFreeSpaceRequest = d;
                     }
 
                     @Override
-                    public void onSuccess(FreeSpaceEntity freeSpace) {
+                    public void onSuccess(Long freeSpace) {
                         runningFreeSpaceRequest = null;
                         binding.setLoadingInProgress(false);
                         binding.freeSpaceText.setText(getString(R.string.free_space,
-                                TextUtils.displayableSize(freeSpace.getSize())));
+                                TextUtils.displayableSize(freeSpace)));
                     }
 
                     @Override

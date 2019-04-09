@@ -21,4 +21,10 @@ interface OpenTorrentFileView: MvpView {
     fun setTrashTorrentFile(trash: Boolean)
 
     fun setStartTorrentWhenAdded(start: Boolean)
+
+    fun showFreeSpaceLoading()
+
+    fun hideFreeSpaceLoading()
+
+    fun showFreeSpaceText(text: String)
 }

@@ -7,6 +7,7 @@ ext {
     rxandroid_version = '2.0.2'
     dagger_version = '2.18'
     assisted_inject_version = '0.4.0'
+    timber_version = '4.7.1'
     moshi_version = '1.8.0'
     moshi_lazy_adapters_version = '2.2'
     gson_version = '2.8.2'
@@ -32,4 +33,5 @@ ext {
     indeterminate_checkbox_version = '1.0.5@aar'
     floating_action_button_version = '1.10.1'
     ttorrent_version = '1.5'
+    rxbindings_version = '3.0.0-alpha2'
 }

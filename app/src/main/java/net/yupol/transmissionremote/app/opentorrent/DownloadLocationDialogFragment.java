@@ -3,13 +3,7 @@ package net.yupol.transmissionremote.app.opentorrent;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import androidx.databinding.DataBindingUtil;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.DialogFragment;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.widget.ListPopupWindow;
 import android.text.Editable;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -33,7 +27,6 @@ import net.yupol.transmissionremote.app.databinding.DownloadLocationDialogBindin
 import net.yupol.transmissionremote.app.utils.SimpleTextWatcher;
 import net.yupol.transmissionremote.app.utils.TextUtils;
 import net.yupol.transmissionremote.data.api.Transport;
-import net.yupol.transmissionremote.data.api.model.FreeSpaceEntity;
 import net.yupol.transmissionremote.data.api.model.ServerSettingsEntity;
 import net.yupol.transmissionremote.data.api.rpc.RpcFailureException;
 import net.yupol.transmissionremote.model.Server;
@@ -41,6 +34,12 @@ import net.yupol.transmissionremote.model.mapper.ServerMapper;
 
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.ListPopupWindow;
+import androidx.databinding.DataBindingUtil;
+import androidx.fragment.app.DialogFragment;
 import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -63,7 +62,7 @@ public class DownloadLocationDialogFragment extends DialogFragment {
 
     private OnDownloadLocationSelectedListener listener;
     private Disposable currentRequest;
-    private FreeSpaceEntity freeSpace;
+    private Long freeSpace;
     private DownloadLocationDialogBinding binding;
     private TransmissionRemote app;
     private CompositeDisposable requests = new CompositeDisposable();
@@ -225,7 +224,7 @@ public class DownloadLocationDialogFragment extends DialogFragment {
             addButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if (freeSpace != null && freeSpace.getSize() >= 0
+                    if (freeSpace != null && freeSpace >= 0
                             || TransmissionRemote.getInstance().isFreeSpaceCheckDisabled()) {
                         notifyListener();
                         dialog.dismiss();
@@ -298,21 +297,21 @@ public class DownloadLocationDialogFragment extends DialogFragment {
         new Transport(ServerMapper.toDomain(app.getActiveServer())).api().freeSpace(path)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new SingleObserver<FreeSpaceEntity>() {
+                .subscribe(new SingleObserver<Long>() {
                     @Override
                     public void onSubscribe(Disposable d) {
                         currentRequest = d;
                     }
 
                     @Override
-                    public void onSuccess(FreeSpaceEntity freeSpace) {
+                    public void onSuccess(Long freeSpace) {
                         DownloadLocationDialogFragment.this.freeSpace = freeSpace;
                         AlertDialog dialog = (AlertDialog) getDialog();
                         if (dialog != null) {
                             dialog.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(true);
-                            if (freeSpace.getSize() >= 0) {
+                            if (freeSpace >= 0) {
                                 binding.freeSpaceText.setText(getString(
-                                        R.string.free_space, TextUtils.displayableSize(freeSpace.getSize())));
+                                        R.string.free_space, TextUtils.displayableSize(freeSpace)));
                             } else {
                                 String useDefaultText = getString(R.string.use_default_directory);
                                 binding.freeSpaceText.setText(getString(R.string.no_directory) + ". " + useDefaultText);

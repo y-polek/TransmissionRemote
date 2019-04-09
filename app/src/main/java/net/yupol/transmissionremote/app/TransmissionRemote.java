@@ -46,6 +46,7 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatDelegate;
 import io.reactivex.Observable;
 import io.reactivex.disposables.Disposable;
+import timber.log.Timber;
 
 public class TransmissionRemote extends Application implements SharedPreferences.OnSharedPreferenceChangeListener {
 
@@ -88,6 +89,7 @@ public class TransmissionRemote extends Application implements SharedPreferences
     @Override
     public void onCreate() {
         super.onCreate();
+        setupTimber();
         setupDi();
         appComponent.inject(this);
 
@@ -118,6 +120,10 @@ public class TransmissionRemote extends Application implements SharedPreferences
                         BackgroundUpdater.start(this);
                     }
                 });
+    }
+
+    private void setupTimber() {
+        Timber.plant(new Timber.DebugTree());
     }
 
     public AppComponent appComponent() {

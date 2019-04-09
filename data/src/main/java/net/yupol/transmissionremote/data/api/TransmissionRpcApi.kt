@@ -73,8 +73,8 @@ interface TransmissionRpcApi {
 
     @POST(".")
     @RpcMethod("free-space")
-    @Wrapped(path = ["arguments"])
-    fun freeSpace(@Body @RpcArg("path") path: String): Single<FreeSpaceEntity>
+    @Wrapped(path = ["arguments", "size-bytes"])
+    fun freeSpace(@Body @RpcArg("path") path: String): Single<Long>
 
     @POST(".")
     @RpcMethod("torrent-remove")

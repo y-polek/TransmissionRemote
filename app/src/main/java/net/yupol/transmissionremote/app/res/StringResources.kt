@@ -35,4 +35,8 @@ class StringResources @Inject constructor(private val res: Resources) {
     fun torrentFileSizeSummary(filesCount: Int, totalSize: String, selectedSize: String): String {
         return res.getString(R.string.torrent_file_size_summary, filesCount, totalSize, selectedSize)
     }
+
+    fun freeSpace(size: String): String {
+        return res.getString(R.string.free_space, size)
+    }
 }

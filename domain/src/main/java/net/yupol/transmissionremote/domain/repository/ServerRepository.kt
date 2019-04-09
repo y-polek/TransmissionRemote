@@ -10,4 +10,6 @@ interface ServerRepository {
     fun setTurtleModeEnabled(enabled: Boolean): Completable
 
     fun defaultDownloadDir(): Single<String>
+
+    fun freeSpace(path: String): Single<Long>
 }

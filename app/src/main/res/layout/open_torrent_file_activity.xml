@@ -82,7 +82,7 @@
         android:text="@string/select_none"
         app:layout_constraintTop_toBottomOf="@id/files_layout"
         app:layout_constraintEnd_toStartOf="@id/end_guideline"
-        app:layout_constraintBottom_toTopOf="@id/download_to_text"
+        app:layout_constraintBottom_toTopOf="@id/free_space_text"
         style="@style/SelectButtonStyle"/>
 
     <Button
@@ -95,20 +95,42 @@
         style="@style/SelectButtonStyle"/>
 
     <TextView
+        android:id="@+id/free_space_text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="4dp"
+        android:gravity="end"
+        android:singleLine="true"
+        android:textSize="@dimen/tr_abc_text_size_body_1_material"
+        app:layout_constraintStart_toEndOf="@id/download_to_title"
+        app:layout_constraintTop_toBottomOf="@id/select_none_button"
+        app:layout_constraintEnd_toStartOf="@id/end_guideline"
+        app:layout_constraintBottom_toTopOf="@id/download_to_text"
+        tools:text="Free Space: 120 GB"/>
+
+    <ProgressBar
+        android:id="@+id/free_space_progress_bar"
+        android:layout_width="@dimen/free_space_progress_bar_size"
+        android:layout_height="@dimen/free_space_progress_bar_size"
+        app:layout_constraintEnd_toEndOf="@id/end_guideline"
+        app:layout_constraintBottom_toTopOf="@id/download_to_text"/>
+
+    <TextView
         android:id="@+id/download_to_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:singleLine="true"
+        android:textSize="@dimen/tr_abc_text_size_body_1_material"
         android:text="@string/download_to"
-        app:layout_constraintBaseline_toBaselineOf="@id/download_to_text"
         app:layout_constraintStart_toEndOf="@id/start_guideline"
-        app:layout_constraintTop_toBottomOf="@id/select_none_button"/>
+        app:layout_constraintBaseline_toBaselineOf="@id/free_space_text"/>
 
     <EditText
         android:id="@+id/download_to_text"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="4dp"
         android:layout_marginBottom="8dp"
         android:padding="8dp"
         android:paddingEnd="36dp"
@@ -116,8 +138,8 @@
         android:inputType="textUri"
         android:textSize="@dimen/tr_abc_text_size_body_1_material"
         android:background="@drawable/transparent_bordered_background"
-        app:layout_constraintStart_toEndOf="@id/download_to_title"
-        app:layout_constraintTop_toBottomOf="@id/select_none_button"
+        app:layout_constraintStart_toEndOf="@id/start_guideline"
+        app:layout_constraintTop_toBottomOf="@id/free_space_text"
         app:layout_constraintEnd_toStartOf="@id/end_guideline" />
 
     <ImageButton
