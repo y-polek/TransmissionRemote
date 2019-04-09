@@ -12,6 +12,7 @@
     <color name="text_primary_inverse">@android:color/white</color>
     <color name="divider">#B6B6B6</color>
     <color name="window_background">@android:color/white</color>
+    <color name="highlight_color">#FF5252</color>
 
                     <!-- Torrent list -->
     <color name="torrent_list_progressbar_background">#ffb9b9b9</color>

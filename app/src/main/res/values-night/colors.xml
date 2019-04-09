@@ -10,6 +10,7 @@
     <color name="text_primary_inverse">#f2f2f2</color>
     <color name="divider">#040404</color>
     <color name="window_background">#161f29</color>
+    <color name="highlight_color">#ff8a80</color>
 
                     <!-- Material Drawer -->
     <color name="drawer_background">#161f29</color>

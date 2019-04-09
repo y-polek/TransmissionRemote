@@ -13,7 +13,7 @@ import net.yupol.transmissionremote.app.model.PriorityViewModel.LOW
 import net.yupol.transmissionremote.app.opentorrent.model.TorrentFile
 import net.yupol.transmissionremote.app.opentorrent.view.OpenTorrentFileView
 import net.yupol.transmissionremote.app.res.StringResources
-import net.yupol.transmissionremote.app.utils.TextUtils
+import net.yupol.transmissionremote.app.utils.TextUtils.displayableSize
 import net.yupol.transmissionremote.domain.repository.ServerRepository
 import net.yupol.transmissionremote.domain.usecase.torrent.AddTorrentFile
 import net.yupol.transmissionremote.model.Dir
@@ -36,6 +36,9 @@ class OpenTorrentFilePresenter @AssistedInject constructor(
     private var downloadLocation: String = ""
     private var trashTorrentFile: Boolean = false
     private var startTorrentWhenAdded: Boolean = true
+
+    private var selectedFilesSize: Long = torrentFile.size
+    private var freeSpace: Long? = null
 
     private var addTorrentRequest: Disposable? = null
     private var freeSpaceRequest: Disposable? = null
@@ -78,6 +81,7 @@ class OpenTorrentFilePresenter @AssistedInject constructor(
         view.setTrashTorrentFile(trashTorrentFile)
         view.setStartTorrentWhenAdded(startTorrentWhenAdded)
         calculateAndDisplaySizeSummary()
+        updateFreeSpaceText()
     }
 
     fun onDirectorySelected(dir: Dir) {
@@ -107,16 +111,19 @@ class OpenTorrentFilePresenter @AssistedInject constructor(
         torrentFile.selectAllFilesIn(currentDir)
         view.updateFileList()
         calculateAndDisplaySizeSummary()
+        updateFreeSpaceText()
     }
 
     fun onSelectNoneFilesClicked() {
         torrentFile.selectNoneFilesIn(currentDir)
         view.updateFileList()
         calculateAndDisplaySizeSummary()
+        updateFreeSpaceText()
     }
 
     fun onFileSelectionChanged() {
         calculateAndDisplaySizeSummary()
+        updateFreeSpaceText()
     }
 
     fun onAddButtonClicked() {
@@ -168,14 +175,14 @@ class OpenTorrentFilePresenter @AssistedInject constructor(
     }
 
     private fun calculateAndDisplaySizeSummary() {
-        val selectedSize = torrentFile.files.asSequence()
+        selectedFilesSize = torrentFile.files.asSequence()
                 .filter { it.wanted }
                 .map { it.length }
                 .sum()
         val text = strRes.torrentFileSizeSummary(
                 torrentFile.files.size,
-                TextUtils.displayableSize(torrentFile.size),
-                TextUtils.displayableSize(selectedSize))
+                displayableSize(torrentFile.size),
+                displayableSize(selectedFilesSize))
         view.showSizeText(text)
     }
 
@@ -190,14 +197,24 @@ class OpenTorrentFilePresenter @AssistedInject constructor(
                 .observeOn(mainThread())
                 .subscribeBy(
                         onSuccess = { bytes ->
+                            freeSpace = bytes
                             view.hideFreeSpaceLoading()
-                            view.showFreeSpaceText(strRes.freeSpace(TextUtils.displayableSize(bytes)))
+                            updateFreeSpaceText()
                         },
                         onError = { error ->
+                            Timber.i("Failed to load free space: $error")
                             view.hideFreeSpaceLoading()
                             view.showFreeSpaceText("")
                         }
                 )
+    }
+
+    private fun updateFreeSpaceText() {
+        freeSpace ?: return
+
+        view.showFreeSpaceText(
+                text = strRes.freeSpace(displayableSize(freeSpace!!)),
+                highlight = selectedFilesSize > freeSpace!!)
     }
 
     @AssistedInject.Factory

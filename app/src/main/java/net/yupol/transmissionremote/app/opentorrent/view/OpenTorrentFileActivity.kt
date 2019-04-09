@@ -11,10 +11,7 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import butterknife.BindView
-import butterknife.ButterKnife
-import butterknife.OnCheckedChanged
-import butterknife.OnClick
+import butterknife.*
 import com.jakewharton.rxbinding3.widget.textChanges
 import io.reactivex.android.schedulers.AndroidSchedulers.mainThread
 import io.reactivex.disposables.Disposable
@@ -42,6 +39,9 @@ class OpenTorrentFileActivity: BaseMvpActivity<OpenTorrentFileView, OpenTorrentF
     @BindView(R.id.free_space_progress_bar) lateinit var freeSpaceProgressbar: ProgressBar
     @BindView(R.id.trash_torrent_file_checkbox) lateinit var trashTorrentFileCheckbox: CheckBox
     @BindView(R.id.start_when_added_checkbox) lateinit var startWhenAddedCheckbox: CheckBox
+
+    @BindColor(R.color.text_color_secondary) @JvmField var secondaryTextColor: Int = 0
+    @BindColor(R.color.highlight_color) @JvmField var accentColor: Int = 0
 
     @Inject lateinit var presenterFactory: OpenTorrentFilePresenter.Factory
 
@@ -141,8 +141,9 @@ class OpenTorrentFileActivity: BaseMvpActivity<OpenTorrentFileView, OpenTorrentF
         freeSpaceProgressbar.visibility = GONE
     }
 
-    override fun showFreeSpaceText(text: String) {
+    override fun showFreeSpaceText(text: String, highlight: Boolean) {
         freeSpaceText.text = text
+        freeSpaceText.setTextColor(if (highlight) accentColor else secondaryTextColor)
     }
 
     // endregion

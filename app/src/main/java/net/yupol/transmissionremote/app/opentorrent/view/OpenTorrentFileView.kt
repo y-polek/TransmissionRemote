@@ -26,5 +26,5 @@ interface OpenTorrentFileView: MvpView {
 
     fun hideFreeSpaceLoading()
 
-    fun showFreeSpaceText(text: String)
+    fun showFreeSpaceText(text: String, highlight: Boolean = false)
 }
