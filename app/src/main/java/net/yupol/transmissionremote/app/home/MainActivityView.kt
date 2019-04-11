@@ -78,7 +78,7 @@ interface MainActivityView: MvpView {
 
     fun openStoragePermissionRationale()
 
-    fun openAddTorrentDialog(torrentFile: File)
+    fun openAddTorrentScreen(torrentFile: File)
     // endregion
 
     // region Permissions

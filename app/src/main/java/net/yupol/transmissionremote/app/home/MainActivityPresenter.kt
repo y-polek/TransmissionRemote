@@ -419,7 +419,7 @@ class MainActivityPresenter @Inject constructor(
 
     fun torrentFileChosen(file: File) {
         preferences.lastUsedTorrentFileDirectory = file.parent
-        view.openAddTorrentDialog(file)
+        view.openAddTorrentScreen(file)
     }
 
     //////////////////////////////

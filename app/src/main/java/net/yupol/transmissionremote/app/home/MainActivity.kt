@@ -763,7 +763,7 @@ class MainActivity : BaseMvpActivity<MainActivityView, MainActivityPresenter>(),
         StoragePermissionRationaleDialog.instance().show(supportFragmentManager, "StoragePermissionRationale")
     }
 
-    override fun openAddTorrentDialog(torrentFile: File) {
+    override fun openAddTorrentScreen(torrentFile: File) {
         startActivity(OpenTorrentFileActivity.intent(this, torrentFile))
     }
 
