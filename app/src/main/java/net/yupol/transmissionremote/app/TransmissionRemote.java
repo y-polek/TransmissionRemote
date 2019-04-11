@@ -123,7 +123,9 @@ public class TransmissionRemote extends Application implements SharedPreferences
     }
 
     private void setupTimber() {
-        Timber.plant(new Timber.DebugTree());
+        if (BuildConfig.DEBUG) {
+            Timber.plant(new Timber.DebugTree());
+        }
     }
 
     public AppComponent appComponent() {
