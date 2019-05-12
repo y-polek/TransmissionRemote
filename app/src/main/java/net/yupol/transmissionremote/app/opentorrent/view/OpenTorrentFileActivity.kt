@@ -146,6 +146,10 @@ class OpenTorrentFileActivity: BaseMvpActivity<OpenTorrentFileView, OpenTorrentF
         freeSpaceText.setTextColor(if (highlight) accentColor else secondaryTextColor)
     }
 
+    override fun showDownloadLocationHistory() {
+        startActivity(DownloadLocationActivity.intent(this))
+    }
+
     // endregion
 
     // region Event Listeners
@@ -166,6 +170,11 @@ class OpenTorrentFileActivity: BaseMvpActivity<OpenTorrentFileView, OpenTorrentF
     @OnClick(R.id.select_none_button)
     fun onSelectNoneFilesClicked() {
         presenter.onSelectNoneFilesClicked()
+    }
+
+    @OnClick(R.id.download_location_history_button)
+    fun onDownloadLocationHistoryButtonClicked() {
+        presenter.onDownloadLocationHistoryButtonClicked()
     }
 
     @OnClick(R.id.add_button)

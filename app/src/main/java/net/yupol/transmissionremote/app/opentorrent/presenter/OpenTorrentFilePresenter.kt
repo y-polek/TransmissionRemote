@@ -126,6 +126,10 @@ class OpenTorrentFilePresenter @AssistedInject constructor(
         updateFreeSpaceText()
     }
 
+    fun onDownloadLocationHistoryButtonClicked() {
+        view.showDownloadLocationHistory()
+    }
+
     fun onAddButtonClicked() {
 
         val paused = !startTorrentWhenAdded

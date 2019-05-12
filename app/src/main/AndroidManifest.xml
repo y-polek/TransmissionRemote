@@ -128,6 +128,7 @@
         <activity android:name=".server.ServerDetailsActivity" />
         <activity android:name=".opentorrent.view.OpenTorrentFileActivity"
             android:windowSoftInputMode="stateAlwaysHidden|adjustPan"/>
+        <activity android:name=".opentorrent.view.DownloadLocationActivity"/>
 
         <receiver android:name=".notifications.BootCompleteBroadcastReceiver">
             <intent-filter>

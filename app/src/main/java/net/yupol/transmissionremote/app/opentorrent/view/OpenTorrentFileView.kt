@@ -27,4 +27,6 @@ interface OpenTorrentFileView: MvpView {
     fun hideFreeSpaceLoading()
 
     fun showFreeSpaceText(text: String, highlight: Boolean = false)
+
+    fun showDownloadLocationHistory()
 }

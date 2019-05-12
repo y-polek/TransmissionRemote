@@ -163,6 +163,10 @@
     <string name="priority_normal">Normal</string>
     <string name="priority_low">Low</string>
     <string name="torrent_file_size_summary">%1$d files, %2$s (%3$s selected)</string>
+    <string name="pinned">Pinned</string>
+    <string name="default_download_location">Default download location</string>
+    <string name="other_download_locations">Other</string>
+    <string name="select">Select</string>
 
     <!-- Torrent details -->
     <string name="torrent_details">Torrent details</string>
