@@ -1,5 +1,6 @@
 ext {
     support_version = '1.0.0'
+    rxjava_version = '2.2.11'
     rxkotlin_version = '2.3.0'
     junit_version = '4.12'
     assertj_version = '3.11.1'

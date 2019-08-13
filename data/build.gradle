@@ -33,7 +33,8 @@ dependencies {
     // Android KTX
     implementation "androidx.core:core-ktx:$ktx_version"
 
-    // RxKotlin
+    // RxJava
+    implementation "io.reactivex.rxjava2:rxjava:$rxjava_version"
     implementation "io.reactivex.rxjava2:rxkotlin:$rxkotlin_version"
 
     // Retrofit

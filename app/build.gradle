@@ -70,6 +70,7 @@ dependencies {
     implementation "androidx.constraintlayout:constraintlayout:$constraint_layout_version"
 
     // RxJava
+    implementation "io.reactivex.rxjava2:rxjava:$rxjava_version"
     implementation "io.reactivex.rxjava2:rxkotlin:$rxkotlin_version"
     implementation "io.reactivex.rxjava2:rxandroid:$rxandroid_version"
 
