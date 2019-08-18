@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import butterknife.BindView
 import butterknife.ButterKnife
@@ -18,7 +19,9 @@ class DownloadLocationBottomSheet : BottomSheetDialogFragment(), DownloadLocatio
 
     @Inject lateinit var repo: DownloadLocationRepository
 
-    @BindView(R.id.recycler_view) lateinit var recyclerView: RecyclerView
+    @BindView(R.id.default_location_text) lateinit var defaultLocation: TextView
+    @BindView(R.id.pinned_locations_list) lateinit var pinnedLocationsRecyclerView: RecyclerView
+    @BindView(R.id.previous_locations_list) lateinit var previousLocationsRecyclerView: RecyclerView
 
     private var listener: OnLocationSelectedListener? = null
 
@@ -38,13 +41,17 @@ class DownloadLocationBottomSheet : BottomSheetDialogFragment(), DownloadLocatio
         val view = inflater.inflate(R.layout.download_location_bottom_sheet, container, false)
         ButterKnife.bind(this, view)
 
+        defaultLocation.text = "~/Downloads"
+
         val adapter = DownloadLocationAdapter(this)
         adapter.locations = listOf(
                 "~/",
                 "~/Download",
                 "/Users/yury/home/Desktop",
+                "/Users/yury/home/Desktop",
                 "/Users/yury/Documents/iCloud/absdasdf/asdf/aasfa /asfasfasfa fsa/asdfaasfasdf/Src/TransmissionRemote/app/build/outputs/apk")
-        recyclerView.adapter = adapter
+        pinnedLocationsRecyclerView.adapter = adapter
+        previousLocationsRecyclerView.adapter = adapter
 
         return view
     }

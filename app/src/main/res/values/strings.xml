@@ -165,6 +165,7 @@
     <string name="torrent_file_size_summary">%1$d files, %2$s (%3$s selected)</string>
     <string name="pinned">Pinned</string>
     <string name="default_download_location">Default download location</string>
+    <string name="previously_used">Previously used</string>
     <string name="other_download_locations">Other</string>
     <string name="select">Select</string>
 
