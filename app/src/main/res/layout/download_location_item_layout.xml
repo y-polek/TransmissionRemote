@@ -10,12 +10,12 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="16dp"
-        android:maxLines="3"
-        android:ellipsize="end"
-        android:textSize="@dimen/tr_abc_text_size_subhead_material"
+        android:paddingStart="16dp"
+        android:paddingTop="12dp"
+        android:paddingBottom="12dp"
+        android:textSize="@dimen/tr_abc_text_size_body_1_material"
+        android:textColor="?android:attr/textColorPrimary"
+        android:background="?android:attr/selectableItemBackground"
         tools:text="/home/user/Downloads" />
 
     <ImageButton

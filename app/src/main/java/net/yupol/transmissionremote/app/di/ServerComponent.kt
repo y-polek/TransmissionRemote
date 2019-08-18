@@ -2,6 +2,7 @@ package net.yupol.transmissionremote.app.di
 
 import dagger.BindsInstance
 import dagger.Subcomponent
+import net.yupol.transmissionremote.app.downloadlocation.DownloadLocationBottomSheet
 import net.yupol.transmissionremote.app.opentorrent.view.OpenTorrentFileActivity
 import net.yupol.transmissionremote.domain.model.Server
 import net.yupol.transmissionremote.domain.usecase.server.ServerInteractor
@@ -18,6 +19,8 @@ interface ServerComponent {
     fun serverInteractor(): ServerInteractor
 
     fun inject(activity: OpenTorrentFileActivity)
+
+    fun inject(fragment: DownloadLocationBottomSheet)
 
     @Subcomponent.Builder
     interface Builder {

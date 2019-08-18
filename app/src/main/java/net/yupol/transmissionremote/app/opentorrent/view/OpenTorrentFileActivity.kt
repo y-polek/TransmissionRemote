@@ -18,9 +18,12 @@ import io.reactivex.disposables.Disposable
 import net.yupol.transmissionremote.app.BaseMvpActivity
 import net.yupol.transmissionremote.app.R
 import net.yupol.transmissionremote.app.TransmissionRemote
+import net.yupol.transmissionremote.app.downloadlocation.DownloadLocationBottomSheet
+import net.yupol.transmissionremote.app.downloadlocation.OnLocationSelectedListener
 import net.yupol.transmissionremote.app.opentorrent.presenter.OpenTorrentFilePresenter
 import net.yupol.transmissionremote.app.torrentdetails.BreadcrumbView
 import net.yupol.transmissionremote.app.utils.DividerItemDecoration
+import net.yupol.transmissionremote.app.utils.toast
 import net.yupol.transmissionremote.model.Dir
 import java.io.File
 import java.util.*
@@ -28,7 +31,7 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class OpenTorrentFileActivity: BaseMvpActivity<OpenTorrentFileView, OpenTorrentFilePresenter>(),
-        OpenTorrentFileView, FilesAdapter.Listener {
+        OpenTorrentFileView, FilesAdapter.Listener, OnLocationSelectedListener {
 
     @BindView(R.id.name_text) lateinit var nameText: TextView
     @BindView(R.id.size_text) lateinit var sizeText: TextView
@@ -147,7 +150,8 @@ class OpenTorrentFileActivity: BaseMvpActivity<OpenTorrentFileView, OpenTorrentF
     }
 
     override fun showDownloadLocationHistory() {
-        startActivity(DownloadLocationActivity.intent(this))
+        //startActivity(DownloadLocationActivity.intent(this))
+        DownloadLocationBottomSheet.instance().show(supportFragmentManager, DownloadLocationBottomSheet.TAG)
     }
 
     // endregion
@@ -190,6 +194,10 @@ class OpenTorrentFileActivity: BaseMvpActivity<OpenTorrentFileView, OpenTorrentF
     @OnCheckedChanged(R.id.start_when_added_checkbox)
     fun onStartTorrentWhenAddedChanged(checked: Boolean) {
         presenter.onStartTorrentWhenAddedChanged(checked)
+    }
+
+    override fun onLocationSelected(location: String) {
+        downloadDirText.text = location
     }
 
     // endregion

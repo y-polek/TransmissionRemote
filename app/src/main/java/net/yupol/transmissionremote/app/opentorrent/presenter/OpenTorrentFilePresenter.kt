@@ -14,6 +14,7 @@ import net.yupol.transmissionremote.app.opentorrent.model.TorrentFile
 import net.yupol.transmissionremote.app.opentorrent.view.OpenTorrentFileView
 import net.yupol.transmissionremote.app.res.StringResources
 import net.yupol.transmissionremote.app.utils.TextUtils.displayableSize
+import net.yupol.transmissionremote.domain.repository.DownloadLocationRepository
 import net.yupol.transmissionremote.domain.repository.ServerRepository
 import net.yupol.transmissionremote.domain.usecase.torrent.AddTorrentFile
 import net.yupol.transmissionremote.model.Dir

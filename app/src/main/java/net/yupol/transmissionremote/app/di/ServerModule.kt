@@ -7,9 +7,11 @@ import dagger.Provides
 import net.yupol.transmissionremote.app.preferences.Preferences
 import net.yupol.transmissionremote.data.api.*
 import net.yupol.transmissionremote.data.api.rpc.RpcRequestBodyConverterFactory
+import net.yupol.transmissionremote.data.repository.DownloadLocationRepositoryImpl
 import net.yupol.transmissionremote.data.repository.ServerRepositoryImpl
 import net.yupol.transmissionremote.data.repository.TorrentListRepositoryImpl
 import net.yupol.transmissionremote.domain.model.Server
+import net.yupol.transmissionremote.domain.repository.DownloadLocationRepository
 import net.yupol.transmissionremote.domain.repository.ServerRepository
 import net.yupol.transmissionremote.domain.repository.TorrentListRepository
 import net.yupol.transmissionremote.domain.usecase.torrent.LoadTorrentList
@@ -107,4 +109,8 @@ class ServerModule {
     @Provides
     @ServerScope
     fun serverRepository(impl: ServerRepositoryImpl): ServerRepository = impl
+
+    @Provides
+    @ServerScope
+    fun downloadLocationRepository(impl: DownloadLocationRepositoryImpl): DownloadLocationRepository = impl
 }
