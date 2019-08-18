@@ -9,6 +9,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import butterknife.BindView
 import butterknife.ButterKnife
+import butterknife.OnClick
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import net.yupol.transmissionremote.app.R
 import net.yupol.transmissionremote.app.TransmissionRemote
@@ -54,6 +55,11 @@ class DownloadLocationBottomSheet : BottomSheetDialogFragment(), DownloadLocatio
         previousLocationsRecyclerView.adapter = adapter
 
         return view
+    }
+
+    @OnClick(R.id.default_location_text)
+    fun onDefaultLocationSelected() {
+        listener?.onLocationSelected(repo.defaultDownloadLocation())
     }
 
     override fun onLocationSelected(location: String) {

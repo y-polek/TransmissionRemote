@@ -32,7 +32,7 @@ class DownloadLocationRepositoryImpl @Inject constructor() : DownloadLocationRep
     }
 
     override fun defaultDownloadLocation(): String {
-        TODO("not implemented")
+        return ""
     }
 
     private fun List<String>.containsIgnoreCase(value: String): Boolean {
