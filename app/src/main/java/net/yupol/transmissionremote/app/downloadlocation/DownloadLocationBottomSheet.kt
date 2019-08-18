@@ -24,6 +24,9 @@ class DownloadLocationBottomSheet : BottomSheetDialogFragment(), DownloadLocatio
     @BindView(R.id.pinned_locations_list) lateinit var pinnedLocationsRecyclerView: RecyclerView
     @BindView(R.id.previous_locations_list) lateinit var previousLocationsRecyclerView: RecyclerView
 
+    private lateinit var historyAdapter: DownloadLocationAdapter
+    private lateinit var pinnedAdapter: DownloadLocationAdapter
+
     private var listener: OnLocationSelectedListener? = null
 
     override fun onAttach(context: Context) {
@@ -36,42 +39,45 @@ class DownloadLocationBottomSheet : BottomSheetDialogFragment(), DownloadLocatio
     override fun onCreate(savedInstanceState: Bundle?) {
         TransmissionRemote.getInstance().appComponent().serverManager().serverComponent?.inject(this)
         super.onCreate(savedInstanceState)
+
+        historyAdapter = DownloadLocationAdapter(isPinnable = true, listener = this)
+        historyAdapter.locations = repo.getPreviousLocations()
+
+        pinnedAdapter = DownloadLocationAdapter(isPinnable = false, listener = this)
+        pinnedAdapter.locations = repo.getPinnedLocations()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.download_location_bottom_sheet, container, false)
         ButterKnife.bind(this, view)
 
-        defaultLocation.text = "~/Downloads"
+        defaultLocation.text = repo.getDefaultDownloadLocation()
 
-        val adapter = DownloadLocationAdapter(this)
-        adapter.locations = listOf(
-                "~/",
-                "~/Download",
-                "/Users/yury/home/Desktop",
-                "/Users/yury/home/Desktop",
-                "/Users/yury/Documents/iCloud/absdasdf/asdf/aasfa /asfasfasfa fsa/asdfaasfasdf/Src/TransmissionRemote/app/build/outputs/apk")
-        pinnedLocationsRecyclerView.adapter = adapter
-        previousLocationsRecyclerView.adapter = adapter
+        previousLocationsRecyclerView.adapter = historyAdapter
+        pinnedLocationsRecyclerView.adapter = pinnedAdapter
 
         return view
     }
 
     @OnClick(R.id.default_location_text)
     fun onDefaultLocationSelected() {
-        listener?.onLocationSelected(repo.defaultDownloadLocation())
+        listener?.onLocationSelected(repo.getDefaultDownloadLocation())
+        dismiss()
     }
 
     override fun onLocationSelected(location: String) {
         listener?.onLocationSelected(location)
+        dismiss()
     }
 
     override fun onLocationPinned(location: String) {
-        TODO("not implemented")
+        repo.pinLocation(location)
+        pinnedAdapter.locations = repo.getPinnedLocations()
     }
 
     override fun onLocationUnpinned(location: String) {
-        TODO("not implemented")
+        repo.unpinLocation(location)
+        pinnedAdapter.locations = repo.getPinnedLocations()
     }
 
     companion object {

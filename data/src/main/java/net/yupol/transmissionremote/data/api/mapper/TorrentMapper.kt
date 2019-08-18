@@ -43,7 +43,8 @@ class TorrentMapper @Inject constructor() {
                 webseedsSendingToUs = torrent.webseedsSendingToUs,
                 queuePosition = torrent.queuePosition,
                 recheckProgress = torrent.recheckProgress,
-                doneDate = torrent.doneDate)
+                doneDate = torrent.doneDate,
+                downloadDir = torrent.downloadDir)
     }
 
     fun toDomain(torrents: List<TorrentEntity>) = torrents.map { toDomain(it) }

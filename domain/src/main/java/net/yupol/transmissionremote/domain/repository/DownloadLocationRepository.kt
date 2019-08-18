@@ -14,5 +14,7 @@ interface DownloadLocationRepository {
 
     fun getPinnedLocations(): List<String>
 
-    fun defaultDownloadLocation(): String
+    fun setDefaultDownloadLocation(location: String)
+
+    fun getDefaultDownloadLocation(): String
 }

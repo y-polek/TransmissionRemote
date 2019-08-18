@@ -24,7 +24,8 @@ data class Torrent(
         val webseedsSendingToUs: Int,
         val queuePosition: Int,
         val recheckProgress: Double,
-        val doneDate: Long)
+        val doneDate: Long,
+        val downloadDir: String)
 {
     enum class Status {
         UNKNOWN,

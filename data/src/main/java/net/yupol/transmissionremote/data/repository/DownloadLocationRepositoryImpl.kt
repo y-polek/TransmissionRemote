@@ -5,7 +5,9 @@ import javax.inject.Inject
 
 class DownloadLocationRepositoryImpl @Inject constructor() : DownloadLocationRepository {
 
+    private var defaultLocation = ""
     private val previousLocations = mutableListOf<String>()
+    private val pinnedLocations = mutableListOf<String>()
 
     override fun addPreviousLocation(location: String) {
         if (previousLocations.containsIgnoreCase(location)) return
@@ -20,19 +22,25 @@ class DownloadLocationRepositoryImpl @Inject constructor() : DownloadLocationRep
     override fun getPreviousLocations() = previousLocations
 
     override fun pinLocation(location: String) {
-        TODO("not implemented")
+        if (pinnedLocations.containsIgnoreCase(location)) return
+
+        pinnedLocations.add(location)
     }
 
     override fun unpinLocation(location: String) {
-        TODO("not implemented")
+        pinnedLocations.removeAll { it.equals(location, ignoreCase = true) }
     }
 
     override fun getPinnedLocations(): List<String> {
-        TODO("not implemented")
+        return pinnedLocations
     }
 
-    override fun defaultDownloadLocation(): String {
-        return ""
+    override fun setDefaultDownloadLocation(location: String) {
+        defaultLocation = location
+    }
+
+    override fun getDefaultDownloadLocation(): String {
+        return defaultLocation
     }
 
     private fun List<String>.containsIgnoreCase(value: String): Boolean {

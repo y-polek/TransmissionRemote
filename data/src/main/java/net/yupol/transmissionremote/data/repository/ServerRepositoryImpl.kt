@@ -3,10 +3,13 @@ package net.yupol.transmissionremote.data.repository
 import io.reactivex.Completable
 import io.reactivex.Single
 import net.yupol.transmissionremote.data.api.TransmissionRpcApi
+import net.yupol.transmissionremote.domain.repository.DownloadLocationRepository
 import net.yupol.transmissionremote.domain.repository.ServerRepository
 import javax.inject.Inject
 
-class ServerRepositoryImpl @Inject constructor(private val api: TransmissionRpcApi): ServerRepository {
+class ServerRepositoryImpl @Inject constructor(
+        private val api: TransmissionRpcApi,
+        private val downloadLocationRepository: DownloadLocationRepository): ServerRepository {
 
     override fun isTurtleModeEnabled(): Single<Boolean> {
         return api.isTurtleModeEnabled()
@@ -17,7 +20,9 @@ class ServerRepositoryImpl @Inject constructor(private val api: TransmissionRpcA
     }
 
     override fun defaultDownloadDir(): Single<String> {
-        return api.defaultDownloadDir()
+        return api.defaultDownloadDir().doOnSuccess { location ->
+            downloadLocationRepository.setDefaultDownloadLocation(location)
+        }
     }
 
     override fun freeSpace(path: String): Single<Long> {

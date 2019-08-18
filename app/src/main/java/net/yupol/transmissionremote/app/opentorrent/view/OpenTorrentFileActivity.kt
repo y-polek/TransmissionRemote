@@ -23,7 +23,6 @@ import net.yupol.transmissionremote.app.downloadlocation.OnLocationSelectedListe
 import net.yupol.transmissionremote.app.opentorrent.presenter.OpenTorrentFilePresenter
 import net.yupol.transmissionremote.app.torrentdetails.BreadcrumbView
 import net.yupol.transmissionremote.app.utils.DividerItemDecoration
-import net.yupol.transmissionremote.app.utils.toast
 import net.yupol.transmissionremote.model.Dir
 import java.io.File
 import java.util.*

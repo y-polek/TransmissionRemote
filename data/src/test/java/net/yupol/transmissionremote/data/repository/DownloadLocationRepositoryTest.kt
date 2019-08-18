@@ -1,7 +1,6 @@
 package net.yupol.transmissionremote.data.repository
 
-import org.assertj.core.api.Java6Assertions.*
-import org.junit.Ignore
+import org.assertj.core.api.Java6Assertions.assertThat
 import org.junit.Test
 
 class DownloadLocationRepositoryTest {
@@ -61,34 +60,76 @@ class DownloadLocationRepositoryTest {
         assertThat(repo.getPreviousLocations()).containsOnly("~/")
     }
 
-
-
-
-
-
     @Test
-    @Ignore
-    fun `List of Previous Locations is sorted alphabetically`() {
-        repo.addPreviousLocation("~/Downloads")
-        repo.addPreviousLocation("~/")
-        repo.addPreviousLocation("~/Documents/Video")
-        repo.addPreviousLocation("~/Documents/Photo")
-        repo.addPreviousLocation("~/Documents")
-        repo.addPreviousLocation("~/Documents/Video/Movies")
-
-        assertThat(repo.getPreviousLocations()).containsExactly(
-                "~/",
-                "~/Documents",
-                "~/Documents/Photo",
-                "~/Documents/Video",
-                "~/Documents/Video/Movies",
-                "~/Downloads")
+    fun `getDefaultDownloadLocation() returns empty string if default location not set`() {
+        assertThat(repo.getDefaultDownloadLocation()).isEmpty()
     }
 
+    @Test
+    fun `getDefaultDownloadLocation() returns location passed via setDefaultDownloadLocation()`() {
+        repo.setDefaultDownloadLocation("~/Downloads")
+
+        assertThat(repo.getDefaultDownloadLocation()).isEqualTo("~/Downloads")
+    }
 
     @Test
-    @Ignore
     fun `List of Pinned Locations is empty at the beginning`() {
+        assertThat(repo.getPinnedLocations()).isEmpty()
+    }
+
+    @Test
+    fun `pinLocation() adds location to Pinned list`() {
+        repo.pinLocation("~/Downloads")
+        repo.pinLocation("~/")
+
+        assertThat(repo.getPinnedLocations()).hasSize(2)
+        assertThat(repo.getPinnedLocations()).containsExactlyInAnyOrder("~/Downloads", "~/")
+    }
+
+    @Test
+    fun `unpinLocation() removes location from Pinned list`() {
+        repo.pinLocation("~/Downloads")
+        repo.pinLocation("~/")
+
+        repo.unpinLocation("~/Downloads")
+
+        assertThat(repo.getPinnedLocations()).hasSize(1)
+        assertThat(repo.getPinnedLocations()).containsOnly("~/")
+    }
+
+    @Test
+    fun `pinLocation() is idempotent`() {
+        repo.pinLocation("~/Downloads")
+
+        repo.pinLocation("~/Downloads")
+
+        assertThat(repo.getPinnedLocations()).hasSize(1)
+        assertThat(repo.getPinnedLocations()).containsOnly("~/Downloads")
+    }
+
+    @Test
+    fun `Calling unpinLocation() for missing location takes no effect`() {
+        repo.unpinLocation("~/Downloads")
+
+        assertThat(repo.getPinnedLocations()).isEmpty()
+        assertThat(repo.getPreviousLocations()).isEmpty()
+    }
+
+    @Test
+    fun `pinLocation() is case insensitive`() {
+        repo.pinLocation("~/DOWNLOADS")
+
+        repo.pinLocation("~/downloads")
+
+        assertThat(repo.getPinnedLocations()).hasSize(1)
+    }
+
+    @Test
+    fun `unpinLocation() is case insensitive`() {
+        repo.pinLocation("~/DOWNLOADS")
+
+        repo.unpinLocation("~/downloads")
+
         assertThat(repo.getPinnedLocations()).isEmpty()
     }
 }

@@ -24,4 +24,5 @@ data class TorrentEntity(
         @JvmField @Json(name = "webseedsSendingToUs") val webseedsSendingToUs: Int,
         @JvmField @Json(name = "queuePosition") val queuePosition: Int,
         @JvmField @Json(name = "recheckProgress") val recheckProgress: Double,
-        @JvmField @Json(name = "doneDate") val doneDate: Long)
+        @JvmField @Json(name = "doneDate") val doneDate: Long,
+        @JvmField @Json(name = "downloadDir") val downloadDir: String)

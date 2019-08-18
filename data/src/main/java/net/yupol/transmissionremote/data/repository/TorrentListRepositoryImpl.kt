@@ -8,13 +8,15 @@ import net.yupol.transmissionremote.data.api.mapper.TorrentMapper
 import net.yupol.transmissionremote.data.api.rpc.RpcArgs
 import net.yupol.transmissionremote.domain.model.AddTorrentResult
 import net.yupol.transmissionremote.domain.model.Torrent
+import net.yupol.transmissionremote.domain.repository.DownloadLocationRepository
 import net.yupol.transmissionremote.domain.repository.TorrentListRepository
 import java.io.File
 import javax.inject.Inject
 
 class TorrentListRepositoryImpl @Inject constructor(
         private val api: TransmissionRpcApi,
-        private val mapper: TorrentMapper): TorrentListRepository
+        private val mapper: TorrentMapper,
+        private val downloadLocationRepository: DownloadLocationRepository): TorrentListRepository
 {
     override fun getAllTorrents(): Single<List<Torrent>> {
         return api.torrentList()
@@ -23,6 +25,14 @@ class TorrentListRepositoryImpl @Inject constructor(
                 }
                 .map(mapper::toDomain)
                 .toList()
+                .doOnSuccess { torrents ->
+                    torrents.asSequence()
+                            .map { it.downloadDir }
+                            .distinct()
+                            .forEach { location ->
+                                downloadLocationRepository.addPreviousLocation(location)
+                            }
+                }
     }
 
     override fun getTorrents(vararg ids: Int): Single<List<Torrent>> {

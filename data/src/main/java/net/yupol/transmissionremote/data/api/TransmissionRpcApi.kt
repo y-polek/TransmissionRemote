@@ -17,7 +17,7 @@ interface TransmissionRpcApi {
         ID, NAME, PERCENT_DONE, TOTAL_SIZE, ADDED_DATE, STATUS, RATE_DOWNLOAD, RATE_UPLOAD,
         UPLOADED_EVER, UPLOAD_RATIO, ETA, ERROR, ERROR_STRING, IS_FINISHED, SIZE_WHEN_DONE,
         LEFT_UNTIL_DONE, PEERS_GETTING_FROM_US, PEERS_SENDING_TO_US, WEBSEEDS_SENDING_TO_US,
-        QUEUE_POSITION, RECHECK_PROGRESS, DONE_DATE])
+        QUEUE_POSITION, RECHECK_PROGRESS, DONE_DATE, DOWNLOAD_DIR])
     @Wrapped(path = ["arguments", "torrents"])
     fun torrentList(@Body @RpcArg("ids") vararg ids: Int): Single<List<TorrentEntity>>
 
