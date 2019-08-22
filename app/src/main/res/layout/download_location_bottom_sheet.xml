@@ -106,7 +106,7 @@
                 android:id="@+id/pinned_locations_group"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                app:constraint_referenced_ids="pinned_divider, pinned_title, pinned_locations_list"/>
+                app:constraint_referenced_ids="pinned_divider,pinned_title,pinned_locations_list"/>
 
             <include layout="@layout/divider"
                 android:id="@+id/previous_divider"
@@ -143,7 +143,7 @@
                 android:id="@+id/previous_locations_group"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                app:constraint_referenced_ids="previous_divider, previous_title, previous_locations_list"/>
+                app:constraint_referenced_ids="previous_divider,previous_title,previous_locations_list"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>

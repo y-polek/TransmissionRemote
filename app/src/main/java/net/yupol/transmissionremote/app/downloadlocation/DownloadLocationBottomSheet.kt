@@ -6,6 +6,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.constraintlayout.widget.Group
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import butterknife.BindView
 import butterknife.ButterKnife
@@ -23,6 +25,8 @@ class DownloadLocationBottomSheet : BottomSheetDialogFragment(), DownloadLocatio
     @BindView(R.id.default_location_text) lateinit var defaultLocation: TextView
     @BindView(R.id.pinned_locations_list) lateinit var pinnedLocationsRecyclerView: RecyclerView
     @BindView(R.id.previous_locations_list) lateinit var previousLocationsRecyclerView: RecyclerView
+    @BindView(R.id.pinned_locations_group) lateinit var pinnedLocationsGroup: Group
+    @BindView(R.id.previous_locations_group) lateinit var previousLocationsGroup: Group
 
     private lateinit var historyAdapter: DownloadLocationAdapter
     private lateinit var pinnedAdapter: DownloadLocationAdapter
@@ -56,6 +60,8 @@ class DownloadLocationBottomSheet : BottomSheetDialogFragment(), DownloadLocatio
         previousLocationsRecyclerView.adapter = historyAdapter
         pinnedLocationsRecyclerView.adapter = pinnedAdapter
 
+        updateGroupVisibility()
+
         return view
     }
 
@@ -73,11 +79,18 @@ class DownloadLocationBottomSheet : BottomSheetDialogFragment(), DownloadLocatio
     override fun onLocationPinned(location: String) {
         repo.pinLocation(location)
         pinnedAdapter.locations = repo.getPinnedLocations()
+        updateGroupVisibility()
     }
 
     override fun onLocationUnpinned(location: String) {
         repo.unpinLocation(location)
         pinnedAdapter.locations = repo.getPinnedLocations()
+        updateGroupVisibility()
+    }
+
+    private fun updateGroupVisibility() {
+        previousLocationsGroup.isVisible = historyAdapter.itemCount > 0
+        pinnedLocationsGroup.isVisible = pinnedAdapter.itemCount > 0
     }
 
     companion object {
