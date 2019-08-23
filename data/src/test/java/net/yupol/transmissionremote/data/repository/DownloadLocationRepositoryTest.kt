@@ -173,4 +173,14 @@ class DownloadLocationRepositoryTest {
         assertThat(repo.getPreviousLocations()).hasSize(1)
         assertThat(repo.getPreviousLocations()).containsOnly("~/Downloads")
     }
+
+    @Test
+    fun `adding location to the list of Previous Locations does nothing if location is in Pinned List`() {
+        repo.pinLocation("~/Downloads")
+
+        repo.addPreviousLocation("~/Downloads")
+
+        assertThat(repo.getPinnedLocations()).containsExactly("~/Downloads")
+        assertThat(repo.getPreviousLocations()).isEmpty()
+    }
 }

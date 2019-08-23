@@ -10,7 +10,7 @@ class DownloadLocationRepositoryImpl @Inject constructor() : DownloadLocationRep
     private val pinnedLocations = mutableListOf<String>()
 
     override fun addPreviousLocation(location: String) {
-        if (previousLocations.containsIgnoreCase(location)) return
+        if (previousLocations.containsIgnoreCase(location) || pinnedLocations.containsIgnoreCase(location)) return
 
         previousLocations.add(location)
     }
