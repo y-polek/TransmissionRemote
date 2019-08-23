@@ -80,12 +80,18 @@ class DownloadLocationBottomSheet : BottomSheetDialogFragment(), DownloadLocatio
         repo.pinLocation(location)
         pinnedAdapter.locations = repo.getPinnedLocations()
         updateGroupVisibility()
+
+        previousLocationsRecyclerView.requestLayout()
+        pinnedLocationsRecyclerView.requestLayout()
     }
 
     override fun onLocationUnpinned(location: String) {
         repo.unpinLocation(location)
         pinnedAdapter.locations = repo.getPinnedLocations()
         updateGroupVisibility()
+
+        previousLocationsRecyclerView.requestLayout()
+        pinnedLocationsRecyclerView.requestLayout()
     }
 
     private fun updateGroupVisibility() {
