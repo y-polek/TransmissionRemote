@@ -132,4 +132,45 @@ class DownloadLocationRepositoryTest {
 
         assertThat(repo.getPinnedLocations()).isEmpty()
     }
+
+    @Test
+    fun `pinning location removes it from the list of Previous Locations`() {
+        repo.addPreviousLocation("~/Downloads")
+        repo.addPreviousLocation("~/Video")
+
+        repo.pinLocation("~/Downloads")
+
+        assertThat(repo.getPreviousLocations()).containsOnly("~/Video")
+    }
+
+    @Test
+    fun `pinLocation() is case insensitive when removing location from the list of Previous Locations`() {
+        repo.addPreviousLocation("~/Downloads")
+        repo.addPreviousLocation("~/Video")
+
+        repo.pinLocation("~/VIDEO")
+
+        assertThat(repo.getPreviousLocations()).containsOnly("~/Downloads")
+    }
+
+    @Test
+    fun `unpinning location returns it to the list of Previous Locations`() {
+        repo.pinLocation("~/Downloads")
+
+        repo.unpinLocation("~/Downloads")
+
+        assertThat(repo.getPreviousLocations()).containsOnly("~/Downloads")
+    }
+
+    @Test
+    fun `unpinning same location multiple times returns it to the list of Previous Locations only once`() {
+        repo.pinLocation("~/Downloads")
+
+        repo.unpinLocation("~/Downloads")
+        repo.unpinLocation("~/Downloads")
+
+        assertThat(repo.getPinnedLocations()).isEmpty()
+        assertThat(repo.getPreviousLocations()).hasSize(1)
+        assertThat(repo.getPreviousLocations()).containsOnly("~/Downloads")
+    }
 }

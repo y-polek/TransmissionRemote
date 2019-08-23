@@ -25,10 +25,14 @@ class DownloadLocationRepositoryImpl @Inject constructor() : DownloadLocationRep
         if (pinnedLocations.containsIgnoreCase(location)) return
 
         pinnedLocations.add(location)
+        previousLocations.removeAll { it.equals(location, ignoreCase = true) }
     }
 
     override fun unpinLocation(location: String) {
-        pinnedLocations.removeAll { it.equals(location, ignoreCase = true) }
+        val removed = pinnedLocations.removeAll { it.equals(location, ignoreCase = true) }
+        if (removed) {
+            addPreviousLocation(location)
+        }
     }
 
     override fun getPinnedLocations(): List<String> {
