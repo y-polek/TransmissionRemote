@@ -17,7 +17,7 @@ class DownloadLocationAdapter(
 {
     var locations: List<String> = emptyList()
         set(value) {
-            field = value
+            field = value.sorted()
             notifyDataSetChanged()
         }
 
