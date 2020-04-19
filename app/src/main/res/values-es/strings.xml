@@ -116,7 +116,7 @@
     <string name="speed_limit">Límite de velocidad</string>
     <string name="download_speed">Velocidad de descarga</string>
     <string name="upload_speed">Velocidad de subida</string>
-    <string name="remove_selected_torrents">Eliminar los torrents seleccionados...</string>
+    <string name="remove_selected_torrents">Eliminar los torrents seleccionados…</string>
     <string name="remove_from_list">Eliminar de la lista</string>
     <string name="remove_data">Eliminar los datos</string>
     <string name="remove_data_confirmation">¿Estás seguro de que quieres eliminar todos los datos?</string>
@@ -250,7 +250,6 @@
     <string name="trackers_menu_content_description">Menú del rastreador</string>
     <string name="trackers_menu_copy_to_clipboard">Copiar URL al portapapeles</string>
     <string name="trackers_menu_edit_url">Editar URL</string>
-    <string name="trackers_menu_remove">@string/eliminar</string>
     <string name="trackers_remove_confirmation_title">¿Estás seguro de que quiere eliminar este rastreador?</string>
     <string name="trackers_remove_confirmation_message">Una vez eliminado, Transmission no intentará ponerse en contacto con el.\nEsto no se puede deshacer.</string>
     <string name="trackers_add_tracker_title">Añadir rastreador</string>
@@ -290,7 +289,6 @@
     <string name="add_torrent_by_address">Dirección</string>
 
     <plurals name="torrents">
-        <item quantity="zero">%d torrents</item>
         <item quantity="one">%d torrent</item>
         <item quantity="other">%d torrents</item>
     </plurals>
