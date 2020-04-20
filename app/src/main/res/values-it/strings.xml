@@ -16,6 +16,8 @@
     <string name="action_start_now">Avvia ora (senza coda)</string>
     <string name="action_verify">Verifica i dati</string>
     <string name="action_request_more_peers">Chiedi per più peers</string>
+    <string name="action_set_location">Imposta la posizione</string>
+    <string name="action_rename">Rinomina</string>
 
     <!-- Filters -->
     <string name="filters">Filtri</string>
@@ -51,6 +53,7 @@
     <string name="notifications_pref_title">Notifiche</string>
     <string name="notification_settings">Configurazioni notifiche</string>
     <string name="advanced_pref_title">Impostazioni avanzate</string>
+    <string name="show_add_torrent_fab_title">Mostra il punsante fluttuante \"Aggiungi torrent\"</string>
 
     <!-- Servers -->
     <string name="add_new_server_title">Aggiungi nuovo server</string>
@@ -73,7 +76,6 @@
     <string name="remove_server">Server remoto</string>
     <string name="save_server">Salva</string>
     <string name="remove_server_confirmation">Server remoto?</string>
-    <string name="remove">Rimuovi</string>
     <string name="saved">Salvato</string>
     <string name="save_changes_question">Salvare i cambiamenti?</string>
     <string name="save_changes_save">Salva</string>
@@ -90,6 +92,8 @@
     <string name="torrent_finished_notification_summary">Controlla il completamento dei torrent in background</string>
     <string name="torrent_finished_notification_vibrate_title">Vibrazione</string>
     <string name="torrent_finished_notification_sound_title">Suono</string>
+    <string name="torrent_finished_notification_only_unmetered_wifi_title">Solo su WiFi spento</string>
+    <string name="torrent_finished_notification_only_unmetered_wifi_summary">Spegnendo questo permetterà aggiornamenti in background su rete dati o su reti simili</string>
     <string name="server_preferences">Configurazione server</string>
     <string name="remote_preferences">Impostazioni</string>
     <string name="global_bandwidth_limits">Limitazione globale di banda</string>
@@ -103,6 +107,7 @@
     <string name="preferences_advanced_summary">Impostazioni avanzate</string>
     <string name="disable_free_space_check_title">Disabilita controllo spazio libero</string>
     <string name="disable_free_space_check_summary">Permetti di aggiungere nuovi torrent senza verificare lo spazio libero su disco</string>
+    <string name="free_space_title">Spazio libero: %s</string>
 
     <!-- Torrent List -->
     <string name="unknown_error_message">Errore sconosciuto</string>
@@ -114,10 +119,14 @@
     <string name="remove_selected_torrents">Rimuovi torrent selezionati…</string>
     <string name="remove_from_list">Rimuovi dalla lista</string>
     <string name="remove_data">Rimuovi dati</string>
+    <string name="remove_data_confirmation">Sei sicuro di voler cancellare tutti i dati?</string>
     <string name="search">Cerca</string>
     <string name="eta_unknown">Tempo rimanente sconosciuto</string>
     <string name="eta_infinite">~ \u221e</string>
     <string name="eta">~ %1$s</string>
+    <string name="checking_progress_text">Controllando dati esistenti (%1$.2f%%)</string>
+    <string name="rename_file">Rinomina file</string>
+    <string name="rename">Rinomina</string>
 
     <!-- Open torrent -->
     <string name="error_install_file_manager_msg">Per piacere, installa un file manater</string>
@@ -125,6 +134,7 @@
     <string name="error_wrong_file_extension_msg">Impossibile aprire il file \'.%1$s\'. Selezionare un file con estensione \'.torrent\'</string>
     <string name="error_cannot_read_file_msg">Impossibile leggere il contenuto del file</string>
     <string name="error_failed_to_open_torrent">Impossibile aprire il torrent. Riprova</string>
+    <string name="error_failed_to_open_downloaded_torrent">Impossibile aprire il file. Prova ad aprirlo da menu \"Apri torrent\"</string>
     <string name="error_duplicate_torrent">Torrent duplicato già esistente</string>
     <string name="torrent_added_successfully">Torrent aggiunto con successo</string>
     <string name="select_torrent_file">Seleziona il file torrent</string>
@@ -139,11 +149,19 @@
     <string name="no_directory">Directory non esistente</string>
     <string name="use_default_directory">Usa la directory di default</string>
     <string name="unknown_free_space_confirmation">Directory non esistente. \nSei sicuro di voler aggiungere il torrent?</string>
+    <string name="storage_permission_rationale">Transmission Remote necessita dell\'autorizzazione di \"Archivio\" per poter aprire files torrent locali.</string>
+    <string name="storage_permission_allow">Permetti</string>
+    <string name="storage_permission_deny">Nega</string>
+    <string name="storage_permission_never_ask_again_message">Transmission Remote necessita dell\'autorizzazione di \"Archivio\" per poter aprire files torrent locali.\nPuoi concedere l\'autorizzazione in Impostazioni App.</string>
+    <string name="app_settings">Impostazioni App</string>
+    <string name="select_server_title">Server:</string>
 
     <!-- Torrent details -->
     <string name="torrent_details">Dettagli torrent</string>
     <string name="info">Info</string>
     <string name="files">Files</string>
+    <string name="trackers">Trackers</string>
+    <string name="peers">Peers</string>
     <string name="options">Opzioni</string>
     <string name="priority">Priorità</string>
     <string name="transfer_priority">Priorità trasferimento:</string>
@@ -191,6 +209,7 @@
     <string name="available">Disponibile:</string>
     <string name="downloaded">Scaricato:</string>
     <string name="uploaded">Inviato:</string>
+    <string name="average_speed">Velocità media:</string>
     <string name="dates">Attività</string>
     <string name="added">Aggiunto:</string>
     <string name="completed">Completato:</string>
@@ -199,6 +218,46 @@
     <string name="downloading">In download:</string>
     <string name="seeding">In seeding:</string>
     <string name="remove_failed">Impossibile rimuovere il torrent. Riprova.</string>
+    <string name="client_on_port">%1$s sulla porta %2$d</string>
+    <string name="peers_empty_message">Nessun peer connesso</string>
+    <string name="peers_sort_by">Ordina per</string>
+    <string name="peers_sort_by_address">Indirizzo</string>
+    <string name="peers_sort_by_client">Client</string>
+    <string name="peers_sort_by_progress">Avanzamento</string>
+    <string name="peers_sort_by_download_rate">In scaricamento</string>
+    <string name="peers_sort_by_upload_rate">In caricamento</string>
+
+    <string name="trackers_empty_message">Nessun tracker</string>
+    <string name="trackers_add">Aggiungi tracker</string>
+    <string name="trackers_tier_number">Tier %d</string>
+    <string name="trackers_last_announce">Ultimo aggiornamento: %s</string>
+    <string name="trackers_announce_error">Errore aggiornamento: %s</string>
+    <string name="trackers_next_announce_in">Prossimo aggiornamento in %s</string>
+    <string name="trackers_last_scrape">Ultima richiesta: %s</string>
+    <string name="trackers_scrape_error">Errore richiesta: %s</string>
+    <string name="trackers_seeders">Seeders: %s</string>
+    <string name="trackers_leechers">Leechers: %s</string>
+    <string name="trackers_downloaded">Scaricati: %s</string>
+    <plurals name="trackers_last_announce_with_results">
+        <item quantity="one">%1$s (ottenuti %2$d peer)</item>
+        <item quantity="other">%1$s (ottenuti %2$d peer)</item>
+    </plurals>
+    <string name="trackers_announce_in_progress">Aggiornamento in corso</string>
+    <string name="trackers_announce_is_queued">Aggiornamento è in coda</string>
+    <string name="trackers_tracked_will_be_used_as_backup">Tracker verrà usato come backup</string>
+    <string name="trackers_announce_not_scheduled">Aggiornamento non programmato</string>
+    <string name="trackers_unknown_announce_state">Stato aggiornamento sconosciuto: %d</string>
+    <string name="trackers_menu_content_description">Menu tracker</string>
+    <string name="trackers_menu_copy_to_clipboard">Copia l\'URL negli appunti</string>
+    <string name="trackers_menu_edit_url">Modifica l\'URL</string>
+    <string name="trackers_menu_remove">@string/remove</string>
+    <string name="trackers_remove_confirmation_title">Sei sicuro di voler rimuovere questo tracker?</string>
+    <string name="trackers_remove_confirmation_message">Una volta rimosso, Transmission non proverà più a contattarlo.\nQuesto non può essere annullato.</string>
+    <string name="trackers_add_tracker_title">Aggiungi Tracker</string>
+    <string name="trackers_edit_tracker_title">Modifica Tracker</string>
+    <string name="trackers_url_hint">URL</string>
+    <string name="trackers_add_button">Aggiungi</string>
+    <string name="trackers_done_button">Fatto</string>
 
     <string name="retry">Riprova</string>
     <string name="server_settings">Impostazioni server</string>
@@ -215,7 +274,23 @@
     <string name="welcome">Benvenuto!</string>
     <string name="error_msg_open_torrent_no_server">Devi configurare almeno un server prima di poter iniziare</string>
 
+    <string name="apply">Applica</string>
+    <string name="choose_location">Seleziona posizione</string>
+    <string name="move_data">Sposta i dati</string>
+
+    <string name="remove">Rimuovi</string>
+    <string name="delete">Cancella</string>
+    <string name="not_available">N/A</string>
+    <string name="copied">Copiato</string>
+    <string name="cancel">Annulla</string>
+
+    <string name="night_mode">Modalità notturna</string>
+
+    <string name="add_torrent_by_file">File</string>
+    <string name="add_torrent_by_address">Indirizzo</string>
+
     <plurals name="torrents">
+        <item quantity="zero">%d torrent</item>
         <item quantity="one">%d torrent</item>
         <item quantity="other">%d torrent</item>
     </plurals>
@@ -224,8 +299,7 @@
         <item quantity="one">Torrent è completato</item>
         <item quantity="other">%d torrent sono completati</item>
     </plurals>
-    <string name="night_mode">Modalità notturna</string>
-    <string name="add_torrent_by_file">File</string>
-    <string name="add_torrent_by_address">Indirizzo</string>
+
+    <string name="notification_channel_name">Scaricamento torrent finito</string>
 
 </resources>
