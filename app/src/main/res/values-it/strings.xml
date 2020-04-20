@@ -290,7 +290,6 @@
     <string name="add_torrent_by_address">Indirizzo</string>
 
     <plurals name="torrents">
-        <item quantity="zero">%d torrent</item>
         <item quantity="one">%d torrent</item>
         <item quantity="other">%d torrent</item>
     </plurals>
