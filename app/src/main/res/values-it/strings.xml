@@ -216,7 +216,6 @@
     <string name="error_msg_open_torrent_no_server">Devi configurare almeno un server prima di poter iniziare</string>
 
     <plurals name="torrents">
-        <item quantity="zero">%d torrent</item>
         <item quantity="one">%d torrent</item>
         <item quantity="other">%d torrent</item>
     </plurals>

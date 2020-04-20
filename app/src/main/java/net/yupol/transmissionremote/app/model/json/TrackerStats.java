@@ -25,7 +25,6 @@ public class TrackerStats implements Parcelable {
     @Key public long lastScrapeStartTime;
     @Key public boolean lastScrapeSucceeded;
     @Key public long lastScrapeTime;
-    @Key public byte lastScrapeTimedOut;
     @Key public int leecherCount;
     @Key public long nextAnnounceTime;
     @Key public long nextScrapeTime;
@@ -56,7 +55,6 @@ public class TrackerStats implements Parcelable {
             stats.lastScrapeStartTime = in.readLong();
             stats.lastScrapeSucceeded = in.readByte() != 0;
             stats.lastScrapeTime = in.readLong();
-            stats.lastScrapeTimedOut = in.readByte();
             stats.leecherCount = in.readInt();
             stats.nextAnnounceTime = in.readLong();
             stats.nextScrapeTime = in.readLong();
@@ -98,7 +96,6 @@ public class TrackerStats implements Parcelable {
         parcel.writeLong(lastScrapeStartTime);
         parcel.writeByte((byte) (lastScrapeSucceeded ? 1 : 0));
         parcel.writeLong(lastScrapeTime);
-        parcel.writeByte(lastScrapeTimedOut);
         parcel.writeInt(leecherCount);
         parcel.writeLong(nextAnnounceTime);
         parcel.writeLong(nextScrapeTime);
