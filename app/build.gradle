@@ -54,7 +54,7 @@ dependencies {
     implementation 'com.android.support:recyclerview-v7:28.0.0'
     implementation 'com.android.support:design:28.0.0'
     implementation 'com.google.guava:guava:23.6-android'
-    implementation 'com.google.code.gson:gson:2.8.2'
+    implementation 'com.google.code.gson:gson:2.8.5'
     implementation('com.octo.android.robospice:robospice:1.4.14') {
         exclude (group: 'commons-io', module: 'commons-io')
     }
