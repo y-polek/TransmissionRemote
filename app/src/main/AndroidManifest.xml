@@ -14,7 +14,8 @@
         android:allowBackup="true"
         android:icon="@drawable/transmission"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
+        android:theme="@style/AppTheme"
+        android:usesCleartextTraffic="true" >
 
         <meta-data
             android:name="io.fabric.ApiKey"
