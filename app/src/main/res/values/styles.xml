@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <style name="AppTheme" parent="Theme.AppCompat.DayNight">
         <item name="colorPrimary">@color/primary</item>
@@ -16,6 +16,8 @@
         <item name="actionBarPopupTheme">@style/ActionBarPopupTheme</item>
 
         <item name="windowActionModeOverlay">true</item>
+
+        <item name="android:navigationBarColor" tools:targetApi="21">@color/primary_dark</item>
 
         <!-- MaterialDrawer specific values -->
         <item name="material_drawer_background">@color/drawer_background</item>
