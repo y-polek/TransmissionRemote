@@ -124,7 +124,8 @@ public class Torrent implements ID, Parcelable {
         return peersGettingFromUs > 0
                 || peersSendingToUs > 0
                 || webseedsSendingToUs > 0
-                || isChecking();
+                || isChecking()
+                || isDownloading();
     }
 
     public boolean isChecking() {
