@@ -38,6 +38,11 @@
             android:showAsAction="never"
             app:showAsAction="never"
             tools:ignore="AppCompatResource" />
+        <item android:id="@+id/action_share_magnet"
+            android:title="@string/action_share_magnet"
+            android:showAsAction="never"
+            app:showAsAction="never"
+            tools:ignore="AppCompatResource" />
     </group>
 </menu>
 

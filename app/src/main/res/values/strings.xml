@@ -18,6 +18,7 @@
     <string name="action_request_more_peers">Ask for more peers</string>
     <string name="action_set_location">Set location</string>
     <string name="action_rename">Rename</string>
+    <string name="action_share_magnet">Share Magnet Link</string>
 
     <!-- Filters -->
     <string name="filters">Filters</string>

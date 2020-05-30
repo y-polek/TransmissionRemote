@@ -52,7 +52,8 @@ public class TorrentInfoGetRequest extends Request<TorrentInfo> {
             TorrentMetadata.SECONDS_SEEDING,
             TorrentMetadata.PEERS,
             TorrentMetadata.TRACKERS,
-            TorrentMetadata.TRACKER_STATS
+            TorrentMetadata.TRACKER_STATS,
+            TorrentMetadata.MAGNET_LINK
     );
 
     private int id;

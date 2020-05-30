@@ -61,4 +61,5 @@ public class TorrentMetadata {
     public static final String DONE_DATE = "doneDate";
     public static final String SECONDS_DOWNLOADING = "secondsDownloading";
     public static final String SECONDS_SEEDING = "secondsSeeding";
+    public static final String MAGNET_LINK = "magnetLink";
 }

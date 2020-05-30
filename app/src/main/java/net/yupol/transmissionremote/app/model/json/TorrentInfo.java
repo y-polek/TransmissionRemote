@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 
 import com.google.api.client.util.Key;
 
+import net.yupol.transmissionremote.app.model.TorrentMetadata;
 import net.yupol.transmissionremote.app.model.limitmode.IdleLimitMode;
 import net.yupol.transmissionremote.app.model.limitmode.LimitMode;
 import net.yupol.transmissionremote.app.model.limitmode.RatioLimitMode;
@@ -59,6 +60,7 @@ public class TorrentInfo implements Parcelable {
                 in.readParcelableArray(Tracker.class.getClassLoader()));
         i.trackerStats = ParcelableUtils.toArrayOfType(TrackerStats.class,
                 in.readParcelableArray(TrackerStats.class.getClassLoader()));
+        i.magnetLink = in.readString();
     }
 
     public TransferPriority getTransferPriority() {
@@ -220,6 +222,10 @@ public class TorrentInfo implements Parcelable {
         return items[0].trackerStats != null ? items[0].trackerStats : new TrackerStats[0];
     }
 
+    public String getMagnetLink() {
+        return items[0].magnetLink;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -263,6 +269,7 @@ public class TorrentInfo implements Parcelable {
         out.writeParcelableArray(i.peers, flags);
         out.writeParcelableArray(i.trackers, flags);
         out.writeParcelableArray(i.trackerStats, flags);
+        out.writeString(i.magnetLink);
     }
 
     public static final Creator<TorrentInfo> CREATOR = new Creator<TorrentInfo>() {
@@ -317,5 +324,6 @@ public class TorrentInfo implements Parcelable {
         @Key private Peer[] peers;
         @Key private Tracker[] trackers;
         @Key private TrackerStats[] trackerStats;
+        @Key(TorrentMetadata.MAGNET_LINK) private String magnetLink;
     }
 }

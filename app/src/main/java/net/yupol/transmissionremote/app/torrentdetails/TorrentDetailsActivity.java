@@ -1,5 +1,6 @@
 package net.yupol.transmissionremote.app.torrentdetails;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
@@ -65,6 +66,7 @@ public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveCha
     private List<OnActivityExitingListener<TorrentSetRequest.Builder>> activityExitingListeners = new LinkedList<>();
     private TorrentDetailsPagerAdapter pagerAdapter;
     private MenuItem setLocationMenuItem;
+    private MenuItem shareMagnetMenuItem;
     private TorrentInfoUpdater torrentInfoUpdater;
     private TorrentDetailsLayoutBinding binding;
     private SharedPreferences sharedPreferences;
@@ -96,6 +98,9 @@ public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveCha
         if (setLocationMenuItem != null) {
             setLocationMenuItem.setEnabled(torrentInfo != null);
         }
+        if (shareMagnetMenuItem != null) {
+            shareMagnetMenuItem.setEnabled(torrentInfo != null);
+        }
     }
 
     @Override
@@ -120,6 +125,9 @@ public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveCha
             notifyTorrentInfoListeners();
             if (setLocationMenuItem != null) {
                 setLocationMenuItem.setEnabled(true);
+            }
+            if (shareMagnetMenuItem != null) {
+                shareMagnetMenuItem.setEnabled(true);
             }
         } else {
             Log.e(TAG, "Empty TorrentInfo");
@@ -247,8 +255,13 @@ public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveCha
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.torrent_details_actions_menu, menu);
+
         setLocationMenuItem = menu.findItem(R.id.action_set_location);
         setLocationMenuItem.setEnabled(torrentInfo != null);
+
+        shareMagnetMenuItem = menu.findItem(R.id.action_share_magnet);
+        shareMagnetMenuItem.setEnabled(torrentInfo != null);
+
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -284,6 +297,9 @@ public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveCha
                 return true;
             case R.id.action_reannounce:
                 getTransportManager().doRequest(new ReannounceTorrentRequest(torrent.getId()), null);
+                return true;
+            case R.id.action_share_magnet:
+                shareMagnetLink();
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -388,5 +404,20 @@ public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveCha
     @Override
     public void onRefresh() {
         torrentInfoUpdater.updateNow(this);
+    }
+
+    private void shareMagnetLink() {
+        if (torrentInfo == null) return;
+
+        String name = torrent.getName();
+        String magnetLink = torrentInfo.getMagnetLink();
+        String text = String.format("%s \n\n%s\n", name, magnetLink);
+
+        Intent intent = new Intent()
+                .setAction(Intent.ACTION_SEND)
+                .putExtra(Intent.EXTRA_TEXT, text)
+                .setType("text/plain");
+
+        startActivity(Intent.createChooser(intent, null));
     }
 }
