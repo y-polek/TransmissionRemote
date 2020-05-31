@@ -347,15 +347,15 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
         });
 
         final SortDrawerItem[] sortItems = new SortDrawerItem[] {
-                new SortDrawerItem(SortedBy.NAME).withName(R.string.drawer_sort_by_name),
+                new SortDrawerItem(SortedBy.QUEUE_POSITION).withName(R.string.drawer_sort_by_queue_position),
+                new SortDrawerItem(SortedBy.ACTIVITY).withName(R.string.drawer_sort_by_activity),
                 new SortDrawerItem(SortedBy.DATE_ADDED).withName(R.string.drawer_sort_by_date_added),
+                new SortDrawerItem(SortedBy.NAME).withName(R.string.drawer_sort_by_name),
+                new SortDrawerItem(SortedBy.PROGRESS).withName(R.string.drawer_sort_by_progress),
                 new SortDrawerItem(SortedBy.SIZE).withName(R.string.drawer_sort_by_size),
                 new SortDrawerItem(SortedBy.STATE).withName(R.string.drawer_sort_by_state),
                 new SortDrawerItem(SortedBy.TIME_REMAINING).withName(R.string.drawer_sort_by_time_remaining),
-                new SortDrawerItem(SortedBy.PROGRESS).withName(R.string.drawer_sort_by_progress),
-                new SortDrawerItem(SortedBy.QUEUE_POSITION).withName(R.string.drawer_sort_by_queue_position),
-                new SortDrawerItem(SortedBy.UPLOAD_RATIO).withName(R.string.drawer_sort_by_upload_ratio),
-                new SortDrawerItem(SortedBy.ACTIVITY).withName(R.string.drawer_sort_by_activity)
+                new SortDrawerItem(SortedBy.UPLOAD_RATIO).withName(R.string.drawer_sort_by_upload_ratio)
         };
 
         freeSpaceFooterDrawerItem = new FreeSpaceFooterDrawerItem();
