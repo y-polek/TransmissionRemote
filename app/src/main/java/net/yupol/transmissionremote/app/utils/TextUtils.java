@@ -1,5 +1,8 @@
 package net.yupol.transmissionremote.app.utils;
 
+import android.support.annotation.Nullable;
+import android.support.v4.text.HtmlCompat;
+
 import com.google.common.base.Strings;
 import com.vdurmont.emoji.EmojiManager;
 
@@ -92,6 +95,11 @@ public class TextUtils {
 
     public static String speedText(long bytes) {
         return Strings.padStart(TextUtils.displayableSize(bytes), 5, ' ') + "/s";
+    }
+
+    public static CharSequence link(@Nullable String url) {
+        if (url == null || url.isEmpty()) return "";
+        return HtmlCompat.fromHtml("<a href=\"" + url + "\">" + url + "</a>", HtmlCompat.FROM_HTML_MODE_LEGACY);
     }
 
     private static String firstSymbol(String str) {

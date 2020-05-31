@@ -3,6 +3,7 @@ package net.yupol.transmissionremote.app.torrentdetails;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +24,7 @@ public class TorrentInfoPageFragment extends BasePageFragment {
         super.onCreateView(inflater, container, savedInstanceState);
 
         binding = DataBindingUtil.inflate(inflater, R.layout.torrent_details_info_page_fragment, container, false);
+        binding.magnetText.setMovementMethod(LinkMovementMethod.getInstance());
         binding.setTorrent(getTorrent());
         binding.setTorrentInfo(getTorrentInfo());
 

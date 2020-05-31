@@ -205,6 +205,7 @@
     <string name="creator">Creator:</string>
     <string name="created_on">Created On:</string>
     <string name="comment">Comment:</string>
+    <string name="magnet">Magnet:</string>
     <string name="transfer">Transfer</string>
     <string name="have">Have:</string>
     <string name="available">Available:</string>
