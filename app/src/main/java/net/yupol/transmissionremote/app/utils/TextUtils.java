@@ -24,6 +24,8 @@ public class TextUtils {
     private static final DateFormat DATE_FORMAT = DateFormat.getDateInstance(DateFormat.MEDIUM);
     private static final DateFormat TIME_FORMAT = DateFormat.getTimeInstance(DateFormat.SHORT);
 
+    private static final int MAX_MAGNET_LINK_DISPLAY_LENGTH = 150;
+
     public static String abbreviate(String text) {
         String[] words = text.split("\\s");
 
@@ -99,9 +101,14 @@ public class TextUtils {
         return Strings.padStart(TextUtils.displayableSize(bytes), 5, ' ') + "/s";
     }
 
-    public static CharSequence link(@Nullable String url) {
+    public static CharSequence linkifyMagnet(@Nullable String url) {
         if (url == null || url.isEmpty()) return "";
-        return HtmlCompat.fromHtml("<a href=\"" + url + "\">" + decode(url) + "</a>", HtmlCompat.FROM_HTML_MODE_LEGACY);
+
+        String decodedUrl = decode(url);
+        if (decodedUrl.length() > 1.2 * MAX_MAGNET_LINK_DISPLAY_LENGTH) {
+            decodedUrl = decodedUrl.substring(0, MAX_MAGNET_LINK_DISPLAY_LENGTH) + "…";
+        }
+        return HtmlCompat.fromHtml("<a href=\"" + url + "\">" + decodedUrl + "</a>", HtmlCompat.FROM_HTML_MODE_LEGACY);
     }
 
     private static String decode(String url) {

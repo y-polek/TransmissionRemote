@@ -128,7 +128,7 @@
                         android:layout_height="wrap_content"
                         android:autoLink="none"
                         style="@style/InfoPageSecondColumnStyle"
-                        android:text="@{TextUtils.link(torrentInfo.magnetLink)}"/>
+                        android:text="@{TextUtils.linkifyMagnet(torrentInfo.magnetLink)}"/>
                 </TableRow>
 
                 <TextView
