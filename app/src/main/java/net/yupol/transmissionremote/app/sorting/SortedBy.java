@@ -22,7 +22,7 @@ public enum SortedBy {
     SIZE(new Comparator<Torrent>() {
         @Override
         public int compare(Torrent t1, Torrent t2) {
-            return Long.signum(t2.getTotalSize() - t1.getTotalSize());
+            return Long.signum(t1.getTotalSize() - t2.getTotalSize());
         }
     }),
 
@@ -40,14 +40,17 @@ public enum SortedBy {
     DATE_ADDED(new Comparator<Torrent>() {
         @Override
         public int compare(Torrent t1, Torrent t2) {
-            return Long.signum(t2.getAddedDate() - t1.getAddedDate());
+            return ComparisonChain.start()
+                    .compare(t2.getAddedDate(), t1.getAddedDate())
+                    .compare(t1.getQueuePosition(), t2.getQueuePosition())
+                    .result();
         }
     }),
 
     PROGRESS(new Comparator<Torrent>() {
         @Override
         public int compare(Torrent t1, Torrent t2) {
-            return Double.compare(t2.getPercentDone(), t1.getPercentDone());
+            return Double.compare(t1.getPercentDone(), t2.getPercentDone());
         }
     }),
 
