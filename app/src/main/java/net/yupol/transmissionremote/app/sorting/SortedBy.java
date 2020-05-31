@@ -74,6 +74,16 @@ public enum SortedBy {
                     .compare(t1.getQueuePosition(), t2.getQueuePosition())
                     .result();
         }
+    }),
+
+    STATE(new Comparator<Torrent>() {
+        @Override
+        public int compare(Torrent t1, Torrent t2) {
+            return ComparisonChain.start()
+                    .compare(t2.getStatus().value, t1.getStatus().value)
+                    .compare(t1.getQueuePosition(), t2.getQueuePosition())
+                    .result();
+        }
     });
 
     private Comparator<Torrent> comparator;
