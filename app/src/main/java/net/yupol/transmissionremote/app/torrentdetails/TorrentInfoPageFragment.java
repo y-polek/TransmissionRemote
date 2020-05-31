@@ -6,6 +6,7 @@ import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,6 +29,15 @@ public class TorrentInfoPageFragment extends BasePageFragment {
         super.onCreateView(inflater, container, savedInstanceState);
 
         binding = DataBindingUtil.inflate(inflater, R.layout.torrent_details_info_page_fragment, container, false);
+
+        binding.commentText.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                copyCommentToClipboard();
+                return true;
+            }
+        });
+
         binding.magnetText.setMovementMethod(LinkMovementMethod.getInstance());
         binding.magnetText.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
@@ -36,6 +46,7 @@ public class TorrentInfoPageFragment extends BasePageFragment {
                 return true;
             }
         });
+
         binding.setTorrent(getTorrent());
         binding.setTorrentInfo(getTorrentInfo());
 
@@ -58,14 +69,26 @@ public class TorrentInfoPageFragment extends BasePageFragment {
         }
     }
 
+    private void copyCommentToClipboard() {
+        Torrent torrent = getTorrent();
+        TorrentInfo torrentInfo = getTorrentInfo();
+        if (torrent == null || torrentInfo == null) return;
+
+        copyToClipboard(torrent.getName(), torrentInfo.getComment());
+    }
+
     private void copyMagnetLinkToClipboard() {
         Torrent torrent = getTorrent();
         TorrentInfo torrentInfo = getTorrentInfo();
         if (torrent == null || torrentInfo == null) return;
 
+        copyToClipboard(torrent.getName(), torrentInfo.getMagnetLink());
+    }
+
+    private void copyToClipboard(@Nullable String label, @Nullable String text) {
         ClipboardManager clipboard = (ClipboardManager) requireActivity().getSystemService(Context.CLIPBOARD_SERVICE);
         if (clipboard != null) {
-            ClipData clip = ClipData.newPlainText(nullToEmpty(torrent.getName()), nullToEmpty(torrentInfo.getMagnetLink()));
+            ClipData clip = ClipData.newPlainText(nullToEmpty(label), nullToEmpty(text));
             clipboard.setPrimaryClip(clip);
             Toast.makeText(getContext(), R.string.copied, Toast.LENGTH_SHORT).show();
         }
