@@ -168,6 +168,10 @@ public class Torrent implements ID, Parcelable {
         return doneDate;
     }
 
+    public int getActivity() {
+        return getDownloadRate() + getUploadRate();
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -242,7 +246,7 @@ public class Torrent implements ID, Parcelable {
         SEED_WAIT(5),
         SEED(6);
 
-        private int value;
+        public final int value;
 
         Status(int value) {
             this.value = value;

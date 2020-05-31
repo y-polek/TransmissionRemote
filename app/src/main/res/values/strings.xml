@@ -48,6 +48,7 @@
     <string name="drawer_sort_by_progress">Progress</string>
     <string name="drawer_sort_by_queue_position">Queue order</string>
     <string name="drawer_sort_by_upload_ratio">Ratio</string>
+    <string name="drawer_sort_by_activity">Activity</string>
 
     <!-- Preferences -->
     <string name="action_settings">Settings</string>
