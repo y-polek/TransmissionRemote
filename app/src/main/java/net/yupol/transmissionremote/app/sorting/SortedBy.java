@@ -22,7 +22,10 @@ public enum SortedBy {
     SIZE(new Comparator<Torrent>() {
         @Override
         public int compare(Torrent t1, Torrent t2) {
-            return Long.signum(t1.getTotalSize() - t2.getTotalSize());
+            return ComparisonChain.start()
+                    .compare(t1.getTotalSize(), t2. getTotalSize())
+                    .compare(t1, t2, NAME.comparator)
+                    .result();
         }
     }),
 
@@ -42,7 +45,7 @@ public enum SortedBy {
         public int compare(Torrent t1, Torrent t2) {
             return ComparisonChain.start()
                     .compare(t2.getAddedDate(), t1.getAddedDate())
-                    .compare(t1.getQueuePosition(), t2.getQueuePosition())
+                    .compare(t1, t2, QUEUE_POSITION.comparator)
                     .result();
         }
     }),
@@ -50,7 +53,10 @@ public enum SortedBy {
     PROGRESS(new Comparator<Torrent>() {
         @Override
         public int compare(Torrent t1, Torrent t2) {
-            return Double.compare(t1.getPercentDone(), t2.getPercentDone());
+            return ComparisonChain.start()
+                    .compare(t1.getPercentDone(), t2.getPercentDone())
+                    .compare(t1, t2, UPLOAD_RATIO.comparator)
+                    .result();
         }
     }),
 
@@ -64,7 +70,10 @@ public enum SortedBy {
     UPLOAD_RATIO(new Comparator<Torrent>() {
         @Override
         public int compare(Torrent t1, Torrent t2) {
-            return Double.compare(t1.getUploadRatio(), t2.getUploadRatio());
+            return ComparisonChain.start()
+                    .compare(t2.getUploadRatio(), t1.getUploadRatio())
+                    .compare(t1, t2, STATE.comparator)
+                    .result();
         }
     }),
 
@@ -73,8 +82,7 @@ public enum SortedBy {
         public int compare(Torrent t1, Torrent t2) {
             return ComparisonChain.start()
                     .compare(t2.getActivity(), t1.getActivity())
-                    .compare(t2.getStatus().value, t1.getStatus().value)
-                    .compare(t1.getQueuePosition(), t2.getQueuePosition())
+                    .compare(t1, t2, STATE.comparator)
                     .result();
         }
     }),
@@ -84,7 +92,7 @@ public enum SortedBy {
         public int compare(Torrent t1, Torrent t2) {
             return ComparisonChain.start()
                     .compare(t2.getStatus().value, t1.getStatus().value)
-                    .compare(t1.getQueuePosition(), t2.getQueuePosition())
+                    .compare(t1, t2, QUEUE_POSITION.comparator)
                     .result();
         }
     });
