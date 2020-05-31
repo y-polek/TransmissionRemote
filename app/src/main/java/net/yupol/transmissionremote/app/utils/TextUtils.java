@@ -9,6 +9,8 @@ import com.vdurmont.emoji.EmojiManager;
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.TransmissionRemote;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -99,7 +101,15 @@ public class TextUtils {
 
     public static CharSequence link(@Nullable String url) {
         if (url == null || url.isEmpty()) return "";
-        return HtmlCompat.fromHtml("<a href=\"" + url + "\">" + url + "</a>", HtmlCompat.FROM_HTML_MODE_LEGACY);
+        return HtmlCompat.fromHtml("<a href=\"" + url + "\">" + decode(url) + "</a>", HtmlCompat.FROM_HTML_MODE_LEGACY);
+    }
+
+    private static String decode(String url) {
+        try {
+            return URLDecoder.decode(url, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            return url;
+        }
     }
 
     private static String firstSymbol(String str) {
