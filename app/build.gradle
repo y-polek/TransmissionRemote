@@ -11,8 +11,8 @@ android {
     defaultConfig {
         minSdkVersion 15
         targetSdkVersion 28
-        versionCode 91106
-        versionName '0.9.11.6'
+        versionCode 91107
+        versionName '0.9.11.7'
         applicationId 'net.yupol.transmissionremote.app'
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         manifestPlaceholders = [fabricApiKey: "${apiKey('fabric_api_key')}"]
