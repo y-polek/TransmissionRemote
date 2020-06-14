@@ -18,6 +18,7 @@
     <string name="action_request_more_peers">Pedir más nodos</string>
     <string name="action_set_location">Establecer ubicación</string>
     <string name="action_rename">Renombrar</string>
+    <string name="action_share_magnet">Compartir enlace Magnet</string>
 
     <!-- Filtros -->
     <string name="filters">Filtros</string>
@@ -31,8 +32,8 @@
     <string name="filter_name">Nombre</string>
     <string name="filter_empty_all">No hay torrents</string>
     <string name="filter_empty_active">No hay torrents activos</string>
-    <string name="filter_empty_downloading">No hay torrents descargándo</string>
-    <string name="filter_empty_seeding">No hay torrents sembrándo</string>
+    <string name="filter_empty_downloading">No hay torrents descargando</string>
+    <string name="filter_empty_seeding">No hay torrents sembrando</string>
     <string name="filter_empty_paused">No hay torrents pausados</string>
     <string name="filter_empty_download_completed">No hay torrents descargados</string>
     <string name="filter_empty_finished">No hay torrents finalizados</string>
@@ -88,12 +89,12 @@
     <!-- Preferencias -->
     <string name="update_interval_title">Intervalo de actualización</string>
     <string name="update_interval_summary">Intervalo de actualizacion de la lista de torrents</string>
-    <string name="torrent_finished_notification_title">Activar notificacion de torrent finalizado</string>
+    <string name="torrent_finished_notification_title">Activar notificación de torrent finalizado</string>
     <string name="torrent_finished_notification_summary">Revisar torrents en segundo plano</string>
     <string name="torrent_finished_notification_vibrate_title">Vibración</string>
     <string name="torrent_finished_notification_sound_title">Sonido</string>
     <string name="torrent_finished_notification_only_unmetered_wifi_title">Solo en WiFi no medido</string>
-    <string name="torrent_finished_notification_only_unmetered_wifi_summary">Desactivar esto permitirá la actualización en segundo plano en redes de telefonía y otras redes medidas</string>
+    <string name="torrent_finished_notification_only_unmetered_wifi_summary">Desactivar ésto permitirá la actualización en segundo plano en redes de telefonía y otras redes medidas</string>
     <string name="server_preferences">Preferencias del servidor</string>
     <string name="remote_preferences">Preferencias</string>
     <string name="global_bandwidth_limits">Límites de ancho de banda globales</string>
