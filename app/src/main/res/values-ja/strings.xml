@@ -16,7 +16,9 @@
     <string name="action_start_now">今すぐ開始 (キューなし)</string>
     <string name="action_verify">ローカルデータを検証</string>
     <string name="action_request_more_peers">他のピアを要求</string>
-    <string name="action_set_location">場所を設定する</string>
+    <string name="action_set_location">場所を設定</string>
+    <string name="action_rename">名前の変更</string>
+    <string name="action_share_magnet">マグネットリンクを共有</string>
 
     <!-- Filters -->
     <string name="filters">フィルタ</string>
@@ -46,12 +48,15 @@
     <string name="drawer_sort_by_progress">進捗率</string>
     <string name="drawer_sort_by_queue_position">キュー</string>
     <string name="drawer_sort_by_upload_ratio">負荷率</string>
+    <string name="drawer_sort_by_activity">アクティブ</string>
+    <string name="drawer_sort_by_state">ステータス</string>
 
     <!-- Preferences -->
     <string name="action_settings">設定</string>
     <string name="notifications_pref_title">通知</string>
     <string name="notification_settings">通知の設定</string>
     <string name="advanced_pref_title">詳細設定</string>
+    <string name="show_add_torrent_fab_title">Torrentを追加するボタンを表示</string>
 
     <!-- Servers -->
     <string name="add_new_server_title">新しいサーバを追加</string>
@@ -74,7 +79,6 @@
     <string name="remove_server">サーバを削除</string>
     <string name="save_server">保存</string>
     <string name="remove_server_confirmation">サーバを削除しますか?</string>
-    <string name="remove">削除</string>
     <string name="saved">保存しました</string>
     <string name="save_changes_question">変更を保存しますか?</string>
     <string name="save_changes_save">保存</string>
@@ -91,6 +95,8 @@
     <string name="torrent_finished_notification_summary">バックグラウンドでtorrentを確認します</string>
     <string name="torrent_finished_notification_vibrate_title">バイブレーション</string>
     <string name="torrent_finished_notification_sound_title">通知音</string>
+    <string name="torrent_finished_notification_only_unmetered_wifi_title">従量制課金接続がない時のみ</string>
+    <string name="torrent_finished_notification_only_unmetered_wifi_summary">これはオフにするとセルラーおよび他の従量制課金接続でバックグラウンド更新を許可します</string>
     <string name="server_preferences">サーバ設定</string>
     <string name="remote_preferences">設定</string>
     <string name="global_bandwidth_limits">速度制限</string>
@@ -104,6 +110,7 @@
     <string name="preferences_advanced_summary">高度なオプション</string>
     <string name="disable_free_space_check_title">空き容量の確認を無効にする</string>
     <string name="disable_free_space_check_summary">利用可能な空き容量を検証せずにtorrentを追加することを許可する</string>
+    <string name="free_space_title">空き容量： %s</string>
 
     <!-- Torrent List -->
     <string name="unknown_error_message">不明なエラー</string>
@@ -115,10 +122,15 @@
     <string name="remove_selected_torrents">選択したtorrentを削除</string>
     <string name="remove_from_list">リストから削除</string>
     <string name="remove_data">データを削除</string>
+    <string name="remove_data_confirmation">すべてのデータを削除するのがよろしいですか？</string>
     <string name="search">検索</string>
     <string name="eta_unknown">残り時間不明</string>
     <string name="eta_infinite">~ \u221e</string>
     <string name="eta">~ %1$s</string>
+    <string name="checking_progress_text">ローカルデータを検証中… (%1$.2f%%)</string>
+    <string name="rename_file">ファイル名の変更</string>
+    <string name="rename">名前の変更</string> 
+
 
     <!-- Open torrent -->
     <string name="error_install_file_manager_msg">ファイルマネージャをインストールしてください</string>
@@ -126,6 +138,7 @@
     <string name="error_wrong_file_extension_msg">「.%1$s」ファイルは開けません。「.torrent」ファイルを開いてください。</string>
     <string name="error_cannot_read_file_msg">ファイルの内容を読み取れません</string>
     <string name="error_failed_to_open_torrent">Torrentを開けませんでした。もう一度お試しください</string>
+    <string name="error_failed_to_open_downloaded_torrent">ファイルを開けませんでした。「Torrentを開く」メニューからしてみてください。</string>
     <string name="error_duplicate_torrent">重複するtorrentがすでに存在します</string>
     <string name="torrent_added_successfully">正常にtorrentを追加しました</string>
     <string name="select_torrent_file">Torrentファイルを選択</string>
@@ -140,11 +153,19 @@
     <string name="no_directory">そのようなディレクトリはありません</string>
     <string name="use_default_directory">既定のディレクトリを使う</string>
     <string name="unknown_free_space_confirmation">そのようなディレクトリはありません。\nそれでもtorrentを追加しますか?</string>
+    <string name="storage_permission_rationale">ローカルのTorrentファイルを開くのためにストレージの権限を許可する必要があります。</string>
+    <string name="storage_permission_allow">許可する</string>
+    <string name="storage_permission_deny">許可しない</string>
+    <string name="storage_permission_never_ask_again_message">ローカルのTorrentファイルを開くのためにストレージの権限を許可する必要があります。\nシステム設定で権限を許可できます。</string>
+    <string name="app_settings">アプリの内設定</string>
+    <string name="select_server_title">サーバ:</string>
 
     <!-- Torrent details -->
     <string name="torrent_details">Torrentの詳細</string>
     <string name="info">情報</string>
     <string name="files">ファイル</string>
+    <string name="trackers">トラッカー</string>
+    <string name="peers">ピア</string>
     <string name="options">オプション</string>
     <string name="priority">優先度</string>
     <string name="transfer_priority">転送優先度:</string>
@@ -187,11 +208,13 @@
     <string name="creator">作成者:</string>
     <string name="created_on">作成日時:</string>
     <string name="comment">コメント:</string>
+    <string name="magnet">マグネットリンク:</string>
     <string name="transfer">転送</string>
     <string name="have">ダウンロード済み:</string>
     <string name="available">利用可能:</string>
     <string name="downloaded">ダウンロード済み:</string>
     <string name="uploaded">アップロード済み:</string>
+    <string name="average_speed">平均の速度:</string>
     <string name="dates">日時</string>
     <string name="added">追加:</string>
     <string name="completed">完了:</string>
@@ -200,6 +223,46 @@
     <string name="downloading">ダウンロード中:</string>
     <string name="seeding">シード中:</string>
     <string name="remove_failed">Torrentの削除に失敗しました。もう一度お試しください</string>
+    <string name="client_on_port">ボート%2$dで%1$sのクライアント</string>
+    <string name="peers_empty_message">接続済みのビアはありません</string>
+    <string name="peers_sort_by">並び替え</string>
+    <string name="peers_sort_by_address">アドレス</string>
+    <string name="peers_sort_by_client">クライアント</string>
+    <string name="peers_sort_by_progress">ダウンロード済み</string>
+    <string name="peers_sort_by_download_rate">ダウンロードの速度</string>
+    <string name="peers_sort_by_upload_rate">アップロードの速度</string>
+
+    <string name="trackers_empty_message">トラッカーはまだありません</string>
+    <string name="trackers_add">トラッカーを追加</string>
+    <string name="trackers_tier_number">%dのティア</string>
+    <string name="trackers_last_announce">最終の報告時: %s</string>
+    <string name="trackers_announce_error">報告エラー: %s</string>
+    <string name="trackers_next_announce_in">%sまで次の告げる</string>
+    <string name="trackers_last_scrape">最終の抽出時: %s</string>
+    <string name="trackers_scrape_error">抽出エラー %s</string>
+    <string name="trackers_seeders">シーダー: %s</string>
+    <string name="trackers_leechers">リーチャー: %s</string>
+    <string name="trackers_downloaded">ダウンロード済み: %s</string>
+    <plurals name="trackers_last_announce_with_results">
+        <item quantity="one">%1$s (%2$d個のピアを抽出された)</item>
+        <item quantity="other">%1$s (%2$d個のピアを抽出された)</item>
+    </plurals>
+    <string name="trackers_announce_in_progress">トラッカーからの報告中</string>
+    <string name="trackers_announce_is_queued">報告がキューしました</string>
+    <string name="trackers_tracked_will_be_used_as_backup">トラッカーはバックアップとして使います</string>
+    <string name="trackers_announce_not_scheduled">報告がキューしません</string>
+    <string name="trackers_unknown_announce_state">報告の不明なステータス: %d</string>
+    <string name="trackers_menu_content_description">トラッカーメニュー</string>
+    <string name="trackers_menu_copy_to_clipboard">URLはクリップボードにコピー</string>
+    <string name="trackers_menu_edit_url">URLを編集</string>
+    <string name="trackers_menu_remove">@string/remove</string>
+    <string name="trackers_remove_confirmation_title">このトラッカーを削除するのがよろしいですか？</string>
+    <string name="trackers_remove_confirmation_message">削除すると、今からこのトラッカーに接続しないです。\nこのアクションは元に戻すことができません。</string>
+    <string name="trackers_add_tracker_title">トラッカーを追加</string>
+    <string name="trackers_edit_tracker_title">トラッカーを編集</string>
+    <string name="trackers_url_hint">URL</string>
+    <string name="trackers_add_button">追加</string>
+    <string name="trackers_done_button">完了</string>
 
     <string name="retry">再試行</string>
     <string name="server_settings">サーバ設定</string>
@@ -220,6 +283,17 @@
     <string name="choose_location">場所を選択</string>
     <string name="move_data">データを移動</string>
 
+    <string name="remove">削除</string>
+    <string name="delete">削除</string>
+    <string name="not_available">入手不可</string>
+    <string name="copied">コピーしました</string>
+    <string name="cancel">キャンセル</string>
+
+    <string name="night_mode">ダークモード</string>
+
+    <string name="add_torrent_by_file">ファイル</string>
+    <string name="add_torrent_by_address">URL</string>
+
     <plurals name="torrents">
         <item quantity="zero">%d トレント</item>
         <item quantity="one">%d トレント</item>
@@ -231,7 +305,5 @@
         <item quantity="other">%d個のTorrentが完了しました</item>
     </plurals>
 
-    <string name="add_torrent_by_file">ファイル</string>
-    <string name="add_torrent_by_address">URL</string>
-
+     <string name="notification_channel_name">Torrentダウンロードが完了</string>
 </resources>
