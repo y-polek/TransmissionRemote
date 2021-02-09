@@ -263,6 +263,12 @@
     <string name="trackers_add_button">Add</string>
     <string name="trackers_done_button">Done</string>
 
+    <string name="trackers_sort_by">Sort by</string>
+    <string name="trackers_sort_by_tiers">Tiers</string>
+    <string name="trackers_sort_by_seeders">Seeders</string>
+    <string name="trackers_sort_by_leechers">Leechers</string>
+    <string name="trackers_sort_by_downloaded">Downloaded</string>
+
     <string name="retry">Retry</string>
     <string name="server_settings">Server settings</string>
     <string name="network_settings">Network settings</string>

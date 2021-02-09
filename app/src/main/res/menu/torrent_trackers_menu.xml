@@ -4,4 +4,7 @@
     <item android:id="@+id/action_add"
         app:showAsAction="always"
         android:title="@string/trackers_add"/>
+    <item android:id="@+id/action_sort_trackers"
+        app:showAsAction="always"
+        android:title="@string/trackers_sort_by"/>
 </menu>
