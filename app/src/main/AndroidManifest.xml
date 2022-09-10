@@ -17,13 +17,9 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true" >
 
-        <meta-data
-            android:name="io.fabric.ApiKey"
-            android:value="${fabricApiKey}" />
-
         <activity
             android:name=".MainActivity"
-            android:label="@string/app_name"
+            android:exported="true"
             android:launchMode="singleTop"
             android:uiOptions="splitActionBarWhenNarrow"
             android:windowSoftInputMode="adjustResize"
@@ -103,6 +99,7 @@
             <meta-data android:name="android.support.PARENT_ACTIVITY" android:value=".MainActivity"/>
         </activity>
         <activity android:name=".preferences.ServersActivity"
+            android:exported="false"
             android:label="@string/servers">
             <intent-filter>
                 <action android:name=".preferences.ServersActivity"/>
@@ -115,6 +112,7 @@
             <meta-data android:name="android.support.PARENT_ACTIVITY" android:value=".MainActivity"/>
         </activity>
         <activity android:name=".preferences.NotificationsPreferencesActivity"
+            android:exported="false"
             android:label="@string/notifications_pref_title">
             <intent-filter>
                 <action android:name=".preferences.NotificationsPreferencesActivity"/>
@@ -122,6 +120,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".preferences.AdvancedPreferencesActivity"
+            android:exported="false"
             android:label="@string/advanced_pref_title">
             <intent-filter>
                 <action android:name=".preferences.AdvancedPreferencesActivity" />
@@ -133,7 +132,8 @@
         <service android:name=".transport.NoCacheGoogleHttpClientSpiceService"
             android:exported="false" />
 
-        <receiver android:name=".notifications.BootCompleteBroadcastReceiver">
+        <receiver android:name=".notifications.BootCompleteBroadcastReceiver"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="android.intent.action.QUICKBOOT_POWERED" />
