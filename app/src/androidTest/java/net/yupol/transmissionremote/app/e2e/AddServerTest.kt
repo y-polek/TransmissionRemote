@@ -5,9 +5,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import net.yupol.transmissionremote.app.MainActivity
 import net.yupol.transmissionremote.app.e2e.mockserver.mockWebServer
-import net.yupol.transmissionremote.app.e2e.pageobjects.AddServerScreen.Companion.addServerScreen
-import net.yupol.transmissionremote.app.e2e.pageobjects.TorrentListScreen.Companion.torrentListScreen
-import net.yupol.transmissionremote.app.e2e.pageobjects.WelcomeScreen.Companion.welcomeScreen
+import net.yupol.transmissionremote.app.e2e.robots.WelcomeRobot.Companion.welcome
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -44,19 +42,13 @@ class AddServerTest {
 
     @Test
     fun add_server() {
-        welcomeScreen {
+        welcome {
             assertAddServerButtonDisplayed()
-            clickAddServerButton()
-        }
-
-        addServerScreen {
+        } clickAddServerButton {
             enterServerName("Test server")
             enterHostName(server.hostName)
             enterPort(server.port)
-            clickOk()
-        }
-
-        torrentListScreen {
+        } clickOk {
             assertProgressbarDisplayed()
             assertProgressbarHidden()
         }

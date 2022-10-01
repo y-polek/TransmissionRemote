@@ -1,10 +1,10 @@
-package net.yupol.transmissionremote.app.e2e.pageobjects
+package net.yupol.transmissionremote.app.e2e.robots
 
 import net.yupol.transmissionremote.app.R
 import net.yupol.transmissionremote.app.e2e.utils.clickId
 import net.yupol.transmissionremote.app.e2e.utils.inputText
 
-class AddServerScreen {
+class AddServerRobot {
 
     fun enterServerName(name: String) {
         inputText(R.id.server_name_edit_text, name)
@@ -18,13 +18,8 @@ class AddServerScreen {
         inputText(R.id.port_edit_text, port.toString())
     }
 
-    fun clickOk() {
+    infix fun clickOk(func: ProgressRobot.() -> Unit): ProgressRobot {
         clickId(R.id.ok_button)
-    }
-
-    companion object {
-        fun addServerScreen(init: AddServerScreen.() -> Unit) {
-            AddServerScreen().init()
-        }
+        return ProgressRobot().apply(func)
     }
 }
