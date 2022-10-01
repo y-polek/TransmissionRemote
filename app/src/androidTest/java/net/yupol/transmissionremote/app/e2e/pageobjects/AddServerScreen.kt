@@ -14,6 +14,10 @@ class AddServerScreen {
         inputText(R.id.host_edit_text, name)
     }
 
+    fun enterPort(port: Int) {
+        inputText(R.id.port_edit_text, port.toString())
+    }
+
     fun clickOk() {
         clickId(R.id.ok_button)
     }
