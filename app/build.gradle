@@ -1,6 +1,8 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
+apply plugin: 'com.google.gms.google-services'
+apply plugin: 'com.google.firebase.crashlytics'
 
 repositories {
     mavenCentral()
@@ -22,10 +24,14 @@ android {
         targetCompatibility JavaVersion.VERSION_11
     }
     buildTypes {
+        debug {
+            manifestPlaceholders = [crashlyticsEnabled:'false']
+        }
         release {
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            manifestPlaceholders = [crashlyticsEnabled:'true']
 
             lintOptions {
                 disable 'MissingTranslation'
@@ -91,6 +97,12 @@ dependencies {
 
     // Emoji
     implementation 'com.vdurmont:emoji-java:4.0.0'
+
+    // Crashlytics
+    implementation platform('com.google.firebase:firebase-bom:31.0.2')
+    implementation 'com.google.firebase:firebase-crashlytics'
+    implementation 'com.google.firebase:firebase-analytics'
+
 
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'com.google.truth:truth:1.1.3'
