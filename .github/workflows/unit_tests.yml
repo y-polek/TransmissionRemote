@@ -12,5 +12,13 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: Create google-services.json
+        id: create-json
+        uses: jsdaniell/create-json@v1.2.2
+        with:
+          name: "google-services.json"
+          json: ${{ secrets.GOOGLE_SERVICES_JSON }}
+          dir: 'app/'
+
       - name: Unit tests
         run: ./gradlew test
