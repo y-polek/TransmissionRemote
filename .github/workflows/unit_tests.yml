@@ -20,5 +20,11 @@ jobs:
           json: ${{ secrets.GOOGLE_SERVICES_JSON }}
           dir: 'app/'
 
-      - name: Unit tests
+      - name: Run Unit Tests
         run: ./gradlew test
+
+      - name: Publish Test Report
+        uses: mikepenz/action-junit-report@v3
+        if: always()
+        with:
+          report_paths: '**/build/test-results/test/TEST-*.xml'
