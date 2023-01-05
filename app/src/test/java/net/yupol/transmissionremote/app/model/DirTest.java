@@ -7,6 +7,7 @@ import com.google.common.collect.Ordering;
 
 import net.yupol.transmissionremote.app.model.json.File;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -55,6 +56,11 @@ public class DirTest {
         JacksonFactory jsonFactory = new JacksonFactory();
         nestedFiles = jsonFactory.fromString(NESTED_FILES, File[].class);
         singleFile = jsonFactory.fromString(SINGLE_FILE, File[].class);
+    }
+
+    @Test
+    public void fail() {
+        Assert.fail("Test failure");
     }
 
     @Test
