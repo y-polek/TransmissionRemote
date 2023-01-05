@@ -26,8 +26,8 @@ jobs:
       - name: Upload report
         uses: actions/upload-artifact@v3
         with:
-          name: Unit Test Report
-          path: ${{ github.workspace }}/TransmissionRemote/TransmissionRemote/app/build/reports/tests/testDebugUnitTest/index.html
+          name: unit_tests_report.html
+          path: app/build/reports/tests/testDebugUnitTest/index.html
 
       - name: Publish Test Report
         uses: mikepenz/action-junit-report@v3
