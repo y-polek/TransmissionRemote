@@ -20,5 +20,13 @@ jobs:
           json: ${{ secrets.GOOGLE_SERVICES_JSON }}
           dir: 'app/'
 
-      - name: Unit tests
+      - name: Run Unit Tests
         run: ./gradlew test
+
+      - name: Upload report
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: reports
+          path: app/build/reports/tests/
+          retention-days: 7

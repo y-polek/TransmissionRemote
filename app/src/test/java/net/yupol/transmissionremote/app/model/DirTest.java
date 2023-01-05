@@ -7,6 +7,7 @@ import com.google.common.collect.Ordering;
 
 import net.yupol.transmissionremote.app.model.json.File;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
