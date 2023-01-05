@@ -59,11 +59,6 @@ public class DirTest {
     }
 
     @Test
-    public void fail() {
-        Assert.fail("Test failure");
-    }
-
-    @Test
     public void testCreateFileTreeNestedFiles() {
         Dir dir = Dir.createFileTree(nestedFiles);
 

@@ -27,6 +27,6 @@ jobs:
         uses: actions/upload-artifact@v3
         if: always()
         with:
-          name: reports_tests
+          name: reports
           path: app/build/reports/tests/
           retention-days: 7
