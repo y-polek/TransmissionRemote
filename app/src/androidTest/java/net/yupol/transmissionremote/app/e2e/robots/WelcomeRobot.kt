@@ -13,12 +13,14 @@ class WelcomeRobot {
         }
     }
 
-    infix fun clickAddServerButton(func: AddServerRobot.() -> Unit): AddServerRobot {
+    fun clickAddServerButton() {
         clickId(R.id.add_server_button)
-        return AddServerRobot().apply(func)
     }
 
     companion object {
-        fun welcome(func: WelcomeRobot.() -> Unit) = WelcomeRobot().apply { func() }
+        fun welcome(func: WelcomeRobot.() -> Unit): WelcomeRobot {
+            assertViewWithIdDisplayed(R.id.welcome_text)
+            return WelcomeRobot().apply(func)
+        }
     }
 }

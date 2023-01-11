@@ -1,6 +1,7 @@
 package net.yupol.transmissionremote.app.e2e.robots
 
 import net.yupol.transmissionremote.app.R
+import net.yupol.transmissionremote.app.e2e.utils.assertViewWithIdDisplayed
 import net.yupol.transmissionremote.app.e2e.utils.clickId
 import net.yupol.transmissionremote.app.e2e.utils.inputText
 
@@ -18,8 +19,14 @@ class AddServerRobot {
         inputText(R.id.port_edit_text, port.toString())
     }
 
-    infix fun clickOk(func: ProgressRobot.() -> Unit): ProgressRobot {
+    fun clickOk() {
         clickId(R.id.ok_button)
-        return ProgressRobot().apply(func)
+    }
+
+    companion object {
+        fun addServer(func: AddServerRobot.() -> Unit): AddServerRobot {
+            assertViewWithIdDisplayed(R.id.add_server_fragment_container)
+            return AddServerRobot().apply(func)
+        }
     }
 }

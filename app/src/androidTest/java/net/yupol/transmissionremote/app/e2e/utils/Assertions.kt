@@ -34,3 +34,21 @@ fun assertViewWithIdHidden(@IdRes id: Int) = assertViewHidden(allOf(withId(id)))
 
 fun assertViewOfTypeHidden(type: Class<out View>) = assertViewHidden(allOf(isAssignableFrom(type)))
 //endregion
+
+//region View exists
+fun assertViewExists(matcher: Matcher<View>) {
+    onView(matcher).check(matches(not(doesNotExist())))
+}
+
+fun assertViewWithIdExists(@IdRes id: Int) = assertViewExists(withId(id))
+//endregion
+
+//region RecyclerView
+fun recyclerViewHasItemCount(matcher: Matcher<View>, expectedCount: Int) {
+    onView(matcher).check(RecyclerViewItemCountAssertion(expectedCount))
+}
+
+fun recyclerViewWithIdHasItemCount(@IdRes id: Int, expectedCount: Int) {
+    recyclerViewHasItemCount(withId(id), expectedCount)
+}
+//endregion
