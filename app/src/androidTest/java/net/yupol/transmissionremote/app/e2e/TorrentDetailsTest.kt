@@ -17,7 +17,7 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 @LargeTest
-class StartPauseTest {
+class TorrentDetailsTest {
 
     @get:Rule
     var activityScenarioRule = activityScenarioRule<MainActivity>()
@@ -52,7 +52,7 @@ class StartPauseTest {
     }
 
     @Test
-    fun start_pause_test() {
+    fun torrent_details_test() {
         welcome {
             clickAddServerButton()
         }
