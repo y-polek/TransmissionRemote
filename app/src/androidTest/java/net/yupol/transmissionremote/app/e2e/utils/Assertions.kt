@@ -18,6 +18,8 @@ fun assertViewDisplayed(matcher: Matcher<View>) {
 
 fun assertViewWithIdDisplayed(@IdRes id: Int) = assertViewDisplayed(withId(id))
 
+fun assertViewWithTextDisplayed(text: String) = assertViewDisplayed(withText(text))
+
 fun assertViewOfTypeDisplayed(type: Class<out View>) = assertViewDisplayed(isAssignableFrom(type))
 //endregion
 

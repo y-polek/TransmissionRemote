@@ -1,0 +1,131 @@
+{
+  "arguments": {
+    "torrents": [
+      {
+        "activityDate": 0,
+        "addedDate": 1674401936,
+        "bandwidthPriority": 0,
+        "comment": "Ubuntu CD releases.ubuntu.com",
+        "corruptEver": 0,
+        "creator": "mktorrent 1.1",
+        "dateCreated": 1660215352,
+        "desiredAvailable": 0,
+        "downloadDir": "/Users/ypolek/Downloads",
+        "downloadLimit": 100,
+        "downloadLimited": false,
+        "downloadedEver": 0,
+        "fileStats": [
+          {
+            "bytesCompleted": 0,
+            "priority": 0,
+            "wanted": true
+          }
+        ],
+        "files": [
+          {
+            "bytesCompleted": 0,
+            "length": 3826831360,
+            "name": "ubuntu-22.04.1-desktop-amd64.iso"
+          }
+        ],
+        "haveUnchecked": 0,
+        "haveValid": 0,
+        "honorsSessionLimits": true,
+        "id": 16,
+        "isPrivate": false,
+        "leftUntilDone": 3826831360,
+        "magnetLink": "magnet:?xt=urn:btih:3b245504cf5f11bbdbe1201cea6a6bf45aee1bc0&dn=ubuntu-22.04.1-desktop-amd64.iso&tr=https%3A%2F%2Ftorrent.ubuntu.com%2Fannounce&tr=https%3A%2F%2Fipv6.torrent.ubuntu.com%2Fannounce",
+        "peers": [],
+        "pieceCount": 14599,
+        "pieceSize": 262144,
+        "secondsDownloading": 97,
+        "secondsSeeding": 0,
+        "seedIdleLimit": 30,
+        "seedIdleMode": 0,
+        "seedRatioLimit": 2,
+        "seedRatioMode": 0,
+        "sizeWhenDone": 3826831360,
+        "trackerStats": [
+          {
+            "announce": "https://torrent.ubuntu.com/announce",
+            "announceState": 1,
+            "downloadCount": 21738,
+            "hasAnnounced": true,
+            "hasScraped": true,
+            "host": "torrent.ubuntu.com:443",
+            "id": 39,
+            "isBackup": false,
+            "lastAnnouncePeerCount": 0,
+            "lastAnnounceResult": "Success",
+            "lastAnnounceStartTime": 1674401942,
+            "lastAnnounceSucceeded": true,
+            "lastAnnounceTime": 1674401942,
+            "lastAnnounceTimedOut": false,
+            "lastScrapeResult": "",
+            "lastScrapeStartTime": 1674401940,
+            "lastScrapeSucceeded": true,
+            "lastScrapeTime": 1674401941,
+            "lastScrapeTimedOut": false,
+            "leecherCount": 59,
+            "nextAnnounceTime": 1674403742,
+            "nextScrapeTime": 1674403750,
+            "scrape": "https://torrent.ubuntu.com/scrape",
+            "scrapeState": 1,
+            "seederCount": 2557,
+            "sitename": "torrent",
+            "tier": 0
+          },
+          {
+            "announce": "https://ipv6.torrent.ubuntu.com/announce",
+            "announceState": 1,
+            "downloadCount": 21738,
+            "hasAnnounced": true,
+            "hasScraped": true,
+            "host": "ipv6.torrent.ubuntu.com:443",
+            "id": 40,
+            "isBackup": false,
+            "lastAnnouncePeerCount": 1,
+            "lastAnnounceResult": "Success",
+            "lastAnnounceStartTime": 1674401942,
+            "lastAnnounceSucceeded": true,
+            "lastAnnounceTime": 1674401942,
+            "lastAnnounceTimedOut": false,
+            "lastScrapeResult": "",
+            "lastScrapeStartTime": 1674401940,
+            "lastScrapeSucceeded": true,
+            "lastScrapeTime": 1674401941,
+            "lastScrapeTimedOut": false,
+            "leecherCount": 59,
+            "nextAnnounceTime": 1674403742,
+            "nextScrapeTime": 1674403750,
+            "scrape": "https://ipv6.torrent.ubuntu.com/scrape",
+            "scrapeState": 1,
+            "seederCount": 2557,
+            "sitename": "ipv6",
+            "tier": 1
+          }
+        ],
+        "trackers": [
+          {
+            "announce": "https://torrent.ubuntu.com/announce",
+            "id": 39,
+            "scrape": "https://torrent.ubuntu.com/scrape",
+            "sitename": "torrent",
+            "tier": 0
+          },
+          {
+            "announce": "https://ipv6.torrent.ubuntu.com/announce",
+            "id": 40,
+            "scrape": "https://ipv6.torrent.ubuntu.com/scrape",
+            "sitename": "ipv6",
+            "tier": 1
+          }
+        ],
+        "uploadLimit": 50,
+        "uploadLimited": false,
+        "uploadedEver": 0
+      }
+    ]
+  },
+  "result": "success"
+}

@@ -39,6 +39,12 @@ class TorrentDetailsTest {
                 filePath = "torrent-get-1.json"
             }
         }
+        "torrent-get" to {
+            ids = listOf(2)
+            response = {
+                filePath = "torrent-get-2.json"
+            }
+        }
     }
 
     @Before
@@ -66,6 +72,18 @@ class TorrentDetailsTest {
             clickTorrentAtPosition(7)
         }
         torrentDetails {
+            assertInfoPageOpen()
+            scrollToFilesPage()
+            scrollToTrackersPage()
+            scrollToPeersPage()
+            scrollToOptionsPage()
+            exit()
+        }
+        torrentList {
+            clickTorrentAtPosition(9)
+        }
+        torrentDetails {
+            assertOptionsPageOpen()
         }
     }
 }
