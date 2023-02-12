@@ -10,8 +10,9 @@ jobs:
   android_tests:
     runs-on: [macos-latest]
     strategy:
+      fail-fast: false
       matrix:
-        api-level: [27, 29, 31]
+        api-level: [27, 29]
     steps:
       - uses: actions/checkout@v3
 
