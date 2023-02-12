@@ -9,6 +9,10 @@ on:
 jobs:
   android_tests:
     runs-on: [macos-latest]
+    strategy:
+      matrix:
+        api-level: [27, 29, 31]
+        target: [default, google_apis]
     steps:
       - uses: actions/checkout@v3
 
@@ -33,7 +37,9 @@ jobs:
       - name: Instrumentation Tests
         uses: reactivecircus/android-emulator-runner@v2
         with:
-          api-level: 29
+          api-level: ${{ matrix.api-level }}
+          target: ${{ matrix.target }}
+          profile: Nexus 5
           script: |
             scrcpy --no-display --max-size 1024 --max-fps 15 --record=scrcpy_record.mp4&
             ./gradlew connectedAndroidTest
