@@ -27,11 +27,16 @@ jobs:
           json: ${{ secrets.GOOGLE_SERVICES_JSON }}
           dir: 'app/'
 
+      - name: Install scrcpy
+        run: brew install scrcpy
+
       - name: Instrumentation Tests
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 29
-          script: ./gradlew connectedAndroidTest
+          script: |
+            scrcpy --no-display --max-size 1024 --max-fps 15 --record=scrcpy_record.mp4&
+            ./gradlew connectedAndroidTest
 
       - name: Upload report
         uses: actions/upload-artifact@v3
@@ -40,3 +45,11 @@ jobs:
           name: reports
           path: app/build/reports/androidTests/
           retention-days: 7
+
+      - name: Upload screen record
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: screen-record
+          path: scrcpy_record.mp4
+          retention-days: 1
