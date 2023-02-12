@@ -35,8 +35,8 @@ jobs:
         with:
           api-level: 29
           script: |
+            scrcpy --no-display --max-size 1024 --max-fps 15 --record=scrcpy_record.mp4&
             ./gradlew connectedAndroidTest
-            scrcpy --no-display --max-size 1024 --max-fps 15 --record=scrcpy_record.mp4
 
       - name: Stop scrcpy
         if: always()
@@ -52,6 +52,7 @@ jobs:
 
       - name: Upload screen record
         uses: actions/upload-artifact@v3
+        if: always()
         with:
           name: screen-record
           path: scrcpy_record.mp4
