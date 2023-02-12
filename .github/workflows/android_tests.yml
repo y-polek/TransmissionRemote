@@ -38,10 +38,6 @@ jobs:
             scrcpy --no-display --max-size 1024 --max-fps 15 --record=scrcpy_record.mp4&
             ./gradlew connectedAndroidTest
 
-      - name: Stop scrcpy
-        if: always()
-        run: killall scrcpy
-
       - name: Upload report
         uses: actions/upload-artifact@v3
         if: always()
