@@ -1,5 +1,6 @@
 package net.yupol.transmissionremote.app.e2e.mockserver
 
+import android.util.Log
 import androidx.test.platform.app.InstrumentationRegistry
 import com.google.gson.Gson
 import okhttp3.mockwebserver.Dispatcher
@@ -42,11 +43,11 @@ data class Request(
     val response: Response
 )
 
-class Response {
-    var code: Int = 200
-    var filePath: String? = null
+data class Response(
+    var code: Int = 200,
+    var filePath: String? = null,
     var delay: Duration? = null
-}
+)
 
 private data class RequestBody(
     val method: String,
@@ -63,7 +64,9 @@ fun mockWebServer(setup: RequestMap.() -> Unit): MockWebServer {
     val server = MockWebServer()
     server.dispatcher = object : Dispatcher() {
         override fun dispatch(request: RecordedRequest): MockResponse {
+            Log.d("MockWebServer", "-".repeat(120))
             val requestBodyStr = request.body.readUtf8()
+            Log.d("MockWebServer", "Request: ${request.requestLine} $requestBodyStr")
             val requestBody = Gson().fromJson(requestBodyStr, RequestBody::class.java)
             val response = requestMap.requests
                 .filter { (method, ids) ->
@@ -71,8 +74,8 @@ fun mockWebServer(setup: RequestMap.() -> Unit): MockWebServer {
                 }
                 .map { it.response }
                 .firstOrNull()
-
-
+            Log.d("MockWebServer", "Response: $response")
+            Log.d("MockWebServer", "-".repeat(120))
             return response?.toMockResponse()
                 ?: throw IllegalStateException("Unknown request: ${request.requestLine} $requestBodyStr")
         }
