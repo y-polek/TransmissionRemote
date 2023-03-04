@@ -15,6 +15,9 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @RunWith(AndroidJUnit4::class)
 @LargeTest
@@ -74,7 +77,7 @@ class TorrentDetailsInfoPageTest {
             assertLocation("/Users/ypolek/Downloads")
             assertPrivacy("Public Torrent")
             assertCreator("mktorrent 1.1")
-            assertCreatedOn("Aug 11, 2022 at 1:55 PM")
+            assertCreatedOn(1660215352000.formatDate())
             assertComment("Ubuntu CD releases.ubuntu.com")
             assertMagnet("magnet:?xt=urn:btih:3b245504cf5f11bbdbe1201cea6a6bf45aee1bc0&dn=ubuntu-22.04.1-desktop-amd64.iso&tr=https://torrent.ubuntu.com/announce&tr=https://ipv6.torrent.ubuntu.com/announce")
             assertHave("131.1 MB of 3.6 GB (4.3%), 25.1 MB Unverified")
@@ -82,10 +85,15 @@ class TorrentDetailsInfoPageTest {
             assertDownloaded("156.6 MB")
             assertUploaded("336.3 KB (Ratio: 0.00)")
             assertAverageSpeed("374.5 KB/s")
-            assertAdded("Jan 22, 2023 at 5:38 PM")
-            assertLastActivity("Jan 22, 2023 at 6:11 PM")
+            assertAdded(1674401936000.formatDate())
+            assertLastActivity(1674403869000.formatDate())
             assertDownloading("7m 7s")
             assertSeeding("1m 5s")
         }
     }
+
+    private fun Long.formatDate() = SimpleDateFormat(
+        "MMM dd, yyyy 'at' h:mm a",
+        Locale.getDefault()
+    ).format(Date(this))
 }
