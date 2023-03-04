@@ -3,8 +3,8 @@ name: Unit Tests
 on:
   push:
     branches: [ "develop" ]
-  pull_request:
-    branches: [ "develop" ]
+#  pull_request:
+#    branches: [ "develop" ]
 
 jobs:
   unit_tests:

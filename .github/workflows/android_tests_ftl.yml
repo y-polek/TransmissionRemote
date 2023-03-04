@@ -18,5 +18,10 @@ jobs:
         with:
           credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
 
+      - name: 'Set up Cloud SDK'
+        uses: 'google-github-actions/setup-gcloud@v1'
+        with:
+          skip_install: true
+
       - name: 'Use gcloud CLI'
         run: 'gcloud info'
