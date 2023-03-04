@@ -21,7 +21,7 @@ jobs:
       - name: 'Set up Cloud SDK'
         uses: 'google-github-actions/setup-gcloud@v1'
         with:
-          skip_install: true
+          version: '>= 420.0.0'
 
       - name: 'Use gcloud CLI'
         run: 'gcloud info'
