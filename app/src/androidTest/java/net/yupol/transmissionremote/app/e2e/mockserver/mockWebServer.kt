@@ -1,8 +1,8 @@
 package net.yupol.transmissionremote.app.e2e.mockserver
 
+import android.util.Log
 import androidx.test.platform.app.InstrumentationRegistry
 import com.google.gson.Gson
-import com.google.gson.JsonSyntaxException
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -14,43 +14,70 @@ import kotlin.time.Duration
 annotation class NodeMarker
 
 @NodeMarker
-class ResponseMap {
+class RequestMap {
 
-    val responses = mutableMapOf<String, Response>()
+    val requests = mutableListOf<Request>()
 
-    infix fun String.to(setup: Response.() -> Unit) {
-        val response = Response()
-        response.setup()
-        responses[this] = response
+    infix fun String.to(setup: Params.() -> Unit) {
+        val params = Params()
+        params.setup()
+        requests.add(
+            Request(
+                method = this,
+                ids = params.ids,
+                response = Response().apply(params.response)
+            )
+        )
     }
 }
 
 @NodeMarker
-class Response {
-    var code: Int = 200
-    var filePath: String? = null
-    var delay: Duration? = null
+class Params {
+    var ids: List<Int> = emptyList()
+    var response: Response.() -> Unit = {}
 }
 
-private data class RequestBody(
-    val method: String
+data class Request(
+    val method: String,
+    val ids: List<Int>,
+    val response: Response
 )
 
-fun mockWebServer(setup: ResponseMap.() -> Unit): MockWebServer {
-    val responseMap = ResponseMap()
-    responseMap.setup()
+data class Response(
+    var code: Int = 200,
+    var filePath: String? = null,
+    var delay: Duration? = null
+)
+
+private data class RequestBody(
+    val method: String,
+    val arguments: Arguments?
+)
+
+private data class Arguments(
+    val ids: List<Int>?
+)
+
+fun mockWebServer(setup: RequestMap.() -> Unit): MockWebServer {
+    val requestMap = RequestMap()
+    requestMap.setup()
     val server = MockWebServer()
     server.dispatcher = object : Dispatcher() {
         override fun dispatch(request: RecordedRequest): MockResponse {
-            val requestBody = request.body.readUtf8()
-            val method = try {
-                Gson().fromJson(requestBody, RequestBody::class.java).method
-            } catch (e: JsonSyntaxException) {
-                ""
-            }
-
-            return responseMap.responses[method]?.toMockResponse()
-                ?: throw IllegalStateException("Unknown request: ${request.requestLine} $requestBody")
+            Log.d("MockWebServer", "-".repeat(120))
+            val requestBodyStr = request.body.readUtf8()
+            Log.d("MockWebServer", "Request: ${request.requestLine} $requestBodyStr")
+            val requestBody = Gson().fromJson(requestBodyStr, RequestBody::class.java)
+            val response = requestMap.requests
+                .filter { (method, ids) ->
+                    method == requestBody.method && ids == requestBody.arguments?.ids.orEmpty()
+                }
+                .map { it.response }
+                .firstOrNull()
+            Log.d("MockWebServer", "Response: $response")
+            Log.d("MockWebServer", "-".repeat(120))
+            return response?.toMockResponse()
+                ?: throw IllegalStateException("Unknown request: ${request.requestLine} $requestBodyStr")
         }
     }
     return server
