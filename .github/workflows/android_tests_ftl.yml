@@ -22,6 +22,7 @@ jobs:
         uses: google-github-actions/setup-gcloud@v1
         with:
           version: '>= 420.0.0'
+          install_components: 'beta'
 
       - name: Checkout
         uses: actions/checkout@v3
