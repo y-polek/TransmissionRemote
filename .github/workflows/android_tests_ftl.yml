@@ -23,5 +23,25 @@ jobs:
         with:
           version: '>= 420.0.0'
 
-      - name: 'Use gcloud CLI'
-        run: 'gcloud info'
+      - uses: actions/checkout@v3
+
+      - name: Create google-services.json
+        id: create-json
+        uses: jsdaniell/create-json@v1.2.2
+        with:
+          name: "google-services.json"
+          json: ${{ secrets.GOOGLE_SERVICES_JSON }}
+          dir: 'app/'
+
+      - name: Build
+        run: ./gradlew assembleDebug
+
+      - name: 'Run Tests'
+        run: |
+          gcloud beta firebase test android run \
+            --type instrumentation \
+            --app app/build/outputs/apk/debug/app-debug.apk \
+            --test app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk \
+            --use-orchestrator \
+            --num-uniform-shards=4 \
+            --environment-variables clearPackageData=true
