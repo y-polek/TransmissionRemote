@@ -13,17 +13,6 @@ jobs:
       contents: 'read'
       id-token: 'write'
     steps:
-      - id: 'auth'
-        uses: google-github-actions/auth@v1
-        with:
-          credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
-
-      - name: Set up Cloud SDK
-        uses: google-github-actions/setup-gcloud@v1
-        with:
-          version: '>= 420.0.0'
-          install_components: 'beta'
-
       - name: Checkout
         uses: actions/checkout@v3
 
@@ -44,6 +33,17 @@ jobs:
 
       - name: Build
         run: ./gradlew assembleDebug assembleDebugAndroidTest
+
+      - id: 'auth'
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+        with:
+          version: '>= 420.0.0'
+          install_components: 'beta'
 
       - name: Run Tests
         run: |
