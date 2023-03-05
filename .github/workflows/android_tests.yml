@@ -34,7 +34,7 @@ jobs:
       - name: Build
         run: ./gradlew assembleDebug assembleDebugAndroidTest
 
-      - id: 'auth'
+      - name: Auth
         uses: google-github-actions/auth@v1
         with:
           credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
