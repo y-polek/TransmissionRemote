@@ -54,4 +54,5 @@ jobs:
             --test app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk \
             --use-orchestrator \
             --num-uniform-shards=4 \
+            --num-flaky-test-attempts=2 \
             --environment-variables clearPackageData=true
