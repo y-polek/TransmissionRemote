@@ -54,6 +54,7 @@ android {
     }
 
     useLibrary 'org.apache.http.legacy'
+    namespace 'net.yupol.transmissionremote.app'
 }
 
 dependencies {
