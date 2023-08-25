@@ -12,20 +12,18 @@ import android.view.ViewGroup;
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.databinding.TrackerItemLayoutBinding;
 import net.yupol.transmissionremote.app.model.json.TrackerStats;
+import net.yupol.transmissionremote.app.sorting.SortOrder;
+import net.yupol.transmissionremote.app.sorting.TrackersSortedBy;
+
+import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 
 public class TrackersAdapter extends RecyclerView.Adapter<TrackersAdapter.ViewHolder> {
-
-    private Comparator<TrackerStats> COMPARATOR = new Comparator<TrackerStats>() {
-        @Override
-        public int compare(TrackerStats t1, TrackerStats t2) {
-            int x = t1.tier;
-            int y = t2.tier;
-            return (x < y) ? -1 : (x == y ? 0 : 1);
-        }
-    };
+    private Comparator<TrackerStats> comparator;
+    private SortOrder order;
 
     private TrackerStats[] trackerStats = {};
     private TrackerActionListener listener;
@@ -37,8 +35,20 @@ public class TrackersAdapter extends RecyclerView.Adapter<TrackersAdapter.ViewHo
 
     public void setTrackerStats(@NonNull TrackerStats[] trackerStats) {
         this.trackerStats = trackerStats;
-        Arrays.sort(this.trackerStats, COMPARATOR);
+        sort();
         notifyDataSetChanged();
+    }
+
+    public void setSorting(TrackersSortedBy sorting, SortOrder order) {
+        comparator = sorting.comparator;
+        this.order = order;
+        sort();
+        notifyDataSetChanged();
+    }
+
+    private void sort() {
+        if (ArrayUtils.isEmpty(trackerStats) || comparator == null) return;
+        Arrays.sort(trackerStats, order == SortOrder.ASCENDING ? comparator : Collections.reverseOrder(comparator));
     }
 
     @Override
