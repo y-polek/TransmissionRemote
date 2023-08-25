@@ -1,24 +1,17 @@
 package net.yupol.transmissionremote.app.notifications;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import com.google.common.collect.ImmutableSet;
 
 import net.yupol.transmissionremote.app.model.json.Torrent;
 import net.yupol.transmissionremote.app.server.Server;
 
-import org.hamcrest.BaseMatcher;
-import org.hamcrest.Description;
-import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Collection;
 import java.util.Collections;
-
-import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
-import static org.hamcrest.collection.IsEmptyCollection.emptyCollectionOf;
-import static org.hamcrest.core.IsCollectionContaining.hasItem;
-import static org.hamcrest.core.IsEqual.equalTo;
-import static org.junit.Assert.assertThat;
 
 public class FinishedTorrentsDetectorTest {
 
@@ -39,12 +32,12 @@ public class FinishedTorrentsDetectorTest {
                 new Torrent.Builder().doneDate(0L).build()
         );
 
-        assertThat(detector.findLastFinishedDate(torrents), equalTo(873L));
+        assertThat(detector.findLastFinishedDate(torrents)).isEqualTo(873L);
     }
 
     @Test
     public void testFindLastFinishedDateWithEmptyList() {
-        assertThat(detector.findLastFinishedDate(Collections.<Torrent>emptyList()), equalTo(-1L));
+        assertThat(detector.findLastFinishedDate(Collections.emptyList())).isEqualTo(-1L);
     }
 
     @Test
@@ -60,7 +53,7 @@ public class FinishedTorrentsDetectorTest {
 
         Collection<Torrent> filteredTorrents = detector.filterFinishedTorrentsToNotify(torrents, server);
 
-        assertThat(filteredTorrents, emptyCollectionOf(Torrent.class));
+        assertThat(filteredTorrents).isEmpty();
     }
 
     @Test
@@ -75,24 +68,10 @@ public class FinishedTorrentsDetectorTest {
                 new Torrent.Builder().doneDate(0L).build()
         );
 
-        Collection<Torrent> filteredTorrents = detector.filterFinishedTorrentsToNotify(torrents, server);
+        Torrent[] filteredTorrents = detector.filterFinishedTorrentsToNotify(torrents, server).toArray(new Torrent[0]);
 
-        assertThat(filteredTorrents, hasSize(2));
-        assertThat(filteredTorrents, hasItem(withDoneDate(555L)));
-        assertThat(filteredTorrents, hasItem(withDoneDate(873L)));
-    }
-
-    private static Matcher<Torrent> withDoneDate(final long date) {
-        return new BaseMatcher<Torrent>() {
-            @Override
-            public boolean matches(Object item) {
-                return ((Torrent) item).getDoneDate() == date;
-            }
-
-            @Override
-            public void describeTo(Description description) {
-                description.appendText("getDoneDate() should return ").appendValue(date);
-            }
-        };
+        assertThat(filteredTorrents).hasLength(2);
+        assertThat(filteredTorrents[0].getDoneDate()).isEqualTo(555L);
+        assertThat(filteredTorrents[1].getDoneDate()).isEqualTo(873L);
     }
 }

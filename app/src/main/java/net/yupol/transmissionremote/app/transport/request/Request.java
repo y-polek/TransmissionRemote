@@ -1,6 +1,6 @@
 package net.yupol.transmissionremote.app.transport.request;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.util.Log;
 
 import com.google.api.client.http.ByteArrayContent;

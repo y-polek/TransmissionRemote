@@ -2,7 +2,7 @@ package net.yupol.transmissionremote.app.utils;
 
 
 import android.os.Parcelable;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import java.lang.reflect.Array;
 

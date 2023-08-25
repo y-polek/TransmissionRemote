@@ -1,7 +1,7 @@
 package net.yupol.transmissionremote.app.transport;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import android.util.Log;
 
 import com.octo.android.robospice.exception.NetworkException;

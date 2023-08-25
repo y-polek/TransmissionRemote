@@ -1,6 +1,6 @@
 package net.yupol.transmissionremote.app.sorting;
 
-import android.support.annotation.StringRes;
+import androidx.annotation.StringRes;
 
 import com.google.common.base.Strings;
 

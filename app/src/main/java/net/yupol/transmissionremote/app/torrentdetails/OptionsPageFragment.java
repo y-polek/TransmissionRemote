@@ -2,9 +2,9 @@ package net.yupol.transmissionremote.app.torrentdetails;
 
 import android.app.Activity;
 import android.content.Context;
-import android.databinding.DataBindingUtil;
+import androidx.databinding.DataBindingUtil;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.text.InputFilter;
 import android.util.Log;
 import android.view.LayoutInflater;
