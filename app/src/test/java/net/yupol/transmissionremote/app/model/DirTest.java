@@ -1,19 +1,20 @@
 package net.yupol.transmissionremote.app.model;
 
-import android.support.annotation.NonNull;
+import static com.google.common.truth.Truth.assertThat;
 
 import com.google.api.client.json.jackson2.JacksonFactory;
-import com.google.common.base.Function;
-import com.google.common.collect.FluentIterable;
 import com.google.common.collect.Ordering;
-
-import junit.framework.TestCase;
 
 import net.yupol.transmissionremote.app.model.json.File;
 
-import java.util.List;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
-public class DirTest extends TestCase {
+import java.util.List;
+import java.util.stream.Collectors;
+
+public class DirTest {
 
     private static final String NESTED_FILES = "[" +
             "{\"bytesCompleted\":1937408,\"length\":1937408,\"name\":\"Test Tree/d1/d1-1/f1-1-1\"}," +
@@ -50,88 +51,82 @@ public class DirTest extends TestCase {
     private File[] nestedFiles;
     private File[] singleFile;
 
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         JacksonFactory jsonFactory = new JacksonFactory();
         nestedFiles = jsonFactory.fromString(NESTED_FILES, File[].class);
         singleFile = jsonFactory.fromString(SINGLE_FILE, File[].class);
     }
 
+    @Test
     public void testCreateFileTreeNestedFiles() {
         Dir dir = Dir.createFileTree(nestedFiles);
 
-        assertEquals("/", dir.getName());
-        assertEquals(1, dir.getDirs().size());
-        assertEquals(0, dir.getFileIndices().size());
+        assertThat(dir.getName()).isEqualTo("/");
+        assertThat(dir.getDirs().size()).isEqualTo(1);
+        assertThat(dir.getFileIndices().size()).isEqualTo(0);
 
         Dir d0 = dir.getDirs().get(0);
-        assertEquals("Test Tree", d0.getName());
-        assertEquals(3, d0.getDirs().size());
-        assertEquals(1, d0.getFileIndices().size());
-        assertEquals("r1.txt", nestedFiles[d0.getFileIndices().get(0)].getName());
+        assertThat(d0.getName()).isEqualTo("Test Tree");
+        assertThat(d0.getDirs().size()).isEqualTo(3);
+        assertThat(d0.getFileIndices().size()).isEqualTo(1);
+        assertThat(nestedFiles[d0.getFileIndices().get(0)].getName()).isEqualTo("r1.txt");
 
         Dir d01 = d0.getDirs().get(0);
-        assertEquals("d1", d01.getName());
-        assertEquals(3, d01.getDirs().size());
-        assertEquals(0, d01.getFileIndices().size());
+        assertThat(d01.getName()).isEqualTo("d1");
+        assertThat(d01.getDirs().size()).isEqualTo(3);
+        assertThat(d01.getFileIndices().size()).isEqualTo(0);
 
         Dir d011 = d01.getDirs().get(0);
-        assertEquals("d1-1", d011.getName());
-        assertEquals(0, d011.getDirs().size());
-        assertEquals(3, d011.getFileIndices().size());
-        assertEquals("f1-1-1", nestedFiles[d011.getFileIndices().get(0)].getName());
-        assertEquals("f1-1-2", nestedFiles[d011.getFileIndices().get(1)].getName());
-        assertEquals("f1-1-3", nestedFiles[d011.getFileIndices().get(2)].getName());
+        assertThat(d011.getName()).isEqualTo("d1-1");
+        assertThat(d011.getDirs().size()).isEqualTo(0);
+        assertThat(d011.getFileIndices().size()).isEqualTo(3);
+        assertThat(nestedFiles[d011.getFileIndices().get(0)].getName()).isEqualTo("f1-1-1");
+        assertThat(nestedFiles[d011.getFileIndices().get(1)].getName()).isEqualTo("f1-1-2");
+        assertThat(nestedFiles[d011.getFileIndices().get(2)].getName()).isEqualTo("f1-1-3");
     }
 
+    @Test
     public void testCreateFileTreeSingleFile() {
         Dir dir = Dir.createFileTree(singleFile);
 
-        assertEquals("/", dir.getName());
-        assertEquals(0, dir.getDirs().size());
-        assertEquals(1, dir.getFileIndices().size());
-        assertEquals("r1.txt", singleFile[dir.getFileIndices().get(0)].getName());
+        assertThat(dir.getName()).isEqualTo("/");
+        assertThat(dir.getDirs().size()).isEqualTo(0);
+        assertThat(dir.getFileIndices().size()).isEqualTo(1);
+        assertThat(singleFile[dir.getFileIndices().get(0)].getName()).isEqualTo("r1.txt");
     }
 
+    @Test
     public void testFilesSorted() {
         Dir dir = Dir.createFileTree(nestedFiles);
 
         testFilesSortedRecursively(dir);
     }
 
-    private void testFilesSortedRecursively(Dir dir) {
-        List<String> fileNames = FluentIterable.from(dir.getFileIndices())
-                .transform(new Function<Integer, String>() {
-                    @Override
-                    public String apply(@NonNull Integer index) {
-                        String[] segments = nestedFiles[index].getPath().split("/");
-                        return segments[segments.length - 1];
-                    }
-                }).toList();
-
-        assertTrue("Files are not sorted", Ordering.natural().isOrdered(fileNames));
-
-        for (Dir subDir : dir.getDirs()) {
-            testFilesSortedRecursively(subDir);
-        }
-    }
-
+    @Test
     public void testDirsSorted() {
         Dir dir = Dir.createFileTree(nestedFiles);
 
         testDirsSortedRecursively(dir);
     }
 
-    private void testDirsSortedRecursively(Dir dir) {
-        List<String> dirNames = FluentIterable.from(dir.getDirs())
-                .transform(new Function<Dir, String>() {
-                    @Override
-                    public String apply(@NonNull Dir subDir) {
-                        return subDir.getName();
-                    }
-                }).toList();
+    private void testFilesSortedRecursively(Dir dir) {
+        List<String> fileNames = dir.getFileIndices().stream().map(index -> {
+            String[] segments = nestedFiles[index].getPath().split("/");
+            return segments[segments.length - 1];
+        }).collect(Collectors.toList());
 
-        assertTrue("Dirs are not sorted", Ordering.natural().isOrdered(dirNames));
+        assertThat(Ordering.natural().isOrdered(fileNames)).isTrue();
+
+        for (Dir subDir : dir.getDirs()) {
+            testFilesSortedRecursively(subDir);
+        }
+    }
+
+    private void testDirsSortedRecursively(Dir dir) {
+        List<String> dirNames = dir.getDirs().stream().map(Dir::getName).collect(Collectors.toList());
+
+        assertThat(Ordering.natural().isOrdered(dirNames)).isTrue();
 
         for (Dir subDir : dir.getDirs()) {
             testDirsSortedRecursively(subDir);

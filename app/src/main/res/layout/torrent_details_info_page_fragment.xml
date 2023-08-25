@@ -40,6 +40,7 @@
                         style="@style/InfoPageFirstColumnStyle"
                         android:text="@string/total_size"/>
                     <TextView
+                        android:id="@+id/total_size_text"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         style="@style/InfoPageSecondColumnStyle"
@@ -53,6 +54,7 @@
                         style="@style/InfoPageFirstColumnStyle"
                         android:text="@string/location"/>
                     <TextView
+                        android:id="@+id/location_text"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         style="@style/InfoPageSecondColumnStyle"
@@ -66,6 +68,7 @@
                         style="@style/InfoPageFirstColumnStyle"
                         android:text="@string/privacy"/>
                     <TextView
+                        android:id="@+id/privacy_text"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         style="@style/InfoPageSecondColumnStyle"
@@ -80,6 +83,7 @@
                         style="@style/InfoPageFirstColumnStyle"
                         android:text="@string/creator"/>
                     <TextView
+                        android:id="@+id/creator_text"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         style="@style/InfoPageSecondColumnStyle"
@@ -94,6 +98,7 @@
                         style="@style/InfoPageFirstColumnStyle"
                         android:text="@string/created_on"/>
                     <TextView
+                        android:id="@+id/created_on_text"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         style="@style/InfoPageSecondColumnStyle"
@@ -146,6 +151,7 @@
                         style="@style/InfoPageFirstColumnStyle"
                         android:text="@string/have"/>
                     <TextView
+                        android:id="@+id/have_text"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         style="@style/InfoPageSecondColumnStyle"
@@ -159,6 +165,7 @@
                         style="@style/InfoPageFirstColumnStyle"
                         android:text="@string/available"/>
                     <TextView
+                        android:id="@+id/available_text"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         style="@style/InfoPageSecondColumnStyle"
@@ -172,6 +179,7 @@
                         style="@style/InfoPageFirstColumnStyle"
                         android:text="@string/downloaded"/>
                     <TextView
+                        android:id="@+id/downloaded_text"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         style="@style/InfoPageSecondColumnStyle"
@@ -185,6 +193,7 @@
                         style="@style/InfoPageFirstColumnStyle"
                         android:text="@string/uploaded"/>
                     <TextView
+                        android:id="@+id/uploaded_text"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         style="@style/InfoPageSecondColumnStyle"
@@ -198,6 +207,7 @@
                         style="@style/InfoPageFirstColumnStyle"
                         android:text="@string/average_speed"/>
                     <TextView
+                        android:id="@+id/average_speed_text"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         style="@style/InfoPageSecondColumnStyle"
@@ -218,6 +228,7 @@
                         style="@style/InfoPageFirstColumnStyle"
                         android:text="@string/added"/>
                     <TextView
+                        android:id="@+id/added_text"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         style="@style/InfoPageSecondColumnStyle"
@@ -232,6 +243,7 @@
                         style="@style/InfoPageFirstColumnStyle"
                         android:text="@string/completed"/>
                     <TextView
+                        android:id="@+id/completed_text"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         style="@style/InfoPageSecondColumnStyle"
@@ -246,6 +258,7 @@
                         style="@style/InfoPageFirstColumnStyle"
                         android:text="@string/last_activity"/>
                     <TextView
+                        android:id="@+id/last_activity_text"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         style="@style/InfoPageSecondColumnStyle"
@@ -266,6 +279,7 @@
                         style="@style/InfoPageFirstColumnStyle"
                         android:text="@string/downloading"/>
                     <TextView
+                        android:id="@+id/downloading_text"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         style="@style/InfoPageSecondColumnStyle"
@@ -279,6 +293,7 @@
                         style="@style/InfoPageFirstColumnStyle"
                         android:text="@string/seeding"/>
                     <TextView
+                        android:id="@+id/seeding_text"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         style="@style/InfoPageSecondColumnStyle"

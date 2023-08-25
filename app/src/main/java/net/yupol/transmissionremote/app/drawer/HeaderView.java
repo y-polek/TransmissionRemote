@@ -3,8 +3,8 @@ package net.yupol.transmissionremote.app.drawer;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-import android.support.annotation.NonNull;
-import android.support.v4.content.ContextCompat;
+import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
@@ -143,6 +143,17 @@ public class HeaderView extends RelativeLayout implements View.OnClickListener {
         serverCircleSmallFirst.setOnClickListener(this);
         serverCircleSmallSecond = findViewById(R.id.circle_2);
         serverCircleSmallSecond.setOnClickListener(this);
+
+        ((LayoutParams) serverCircleCurrent.getLayoutParams()).topMargin += getStatusBarHeight();
+    }
+
+    private int getStatusBarHeight() {
+        int result = 0;
+        int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
+        if (resourceId > 0) {
+            result = getResources().getDimensionPixelSize(resourceId);
+        }
+        return result;
     }
 
     public void setServers(List<Server> servers, int currentServerPosition) {

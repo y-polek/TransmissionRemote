@@ -1,6 +1,12 @@
 package net.yupol.transmissionremote.app.transport;
 
-import android.support.test.runner.AndroidJUnit4;
+import static com.google.common.truth.Truth.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
+
+import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.google.api.client.http.HttpStatusCodes;
 import com.octo.android.robospice.persistence.exception.SpiceException;
@@ -15,14 +21,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
-import static org.hamcrest.core.IsEqual.equalTo;
-import static org.junit.Assert.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
 
 @RunWith(AndroidJUnit4.class)
 public class SpiceTransportManagerTest {
@@ -61,9 +59,9 @@ public class SpiceTransportManagerTest {
 
         fakeTransportManager.doRequest(request, server, requestListener);
 
-        verify(requestListener, times(1)).onRequestFailure(any(SpiceException.class));
+        verify(requestListener).onRequestFailure(any(SpiceException.class));
         verifyNoMoreInteractions(requestListener);
-        assertThat(server.getLastSessionId(), equalTo(SESSION_ID));
+        assertThat(server.getLastSessionId()).isEqualTo(SESSION_ID);
     }
 
     @Test
@@ -85,8 +83,8 @@ public class SpiceTransportManagerTest {
 
         fakeTransportManager.doRequest(request, server, requestListener);
 
-        verify(requestListener, times(1)).onRequestFailure(any(SpiceException.class));
+        verify(requestListener).onRequestFailure(any(SpiceException.class));
         verifyNoMoreInteractions(requestListener);
-        assertThat(server.getRedirectLocation(), equalTo(REDIRECT_LOCATION));
+        assertThat(server.getRedirectLocation()).isEqualTo(REDIRECT_LOCATION);
     }
 }

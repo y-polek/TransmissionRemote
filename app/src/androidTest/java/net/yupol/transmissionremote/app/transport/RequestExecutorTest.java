@@ -1,8 +1,15 @@
 package net.yupol.transmissionremote.app.transport;
 
+import static com.google.common.truth.Truth.assertThat;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
+
 import android.content.Context;
-import android.support.test.InstrumentationRegistry;
-import android.support.test.runner.AndroidJUnit4;
+
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import com.google.api.client.http.HttpStatusCodes;
 import com.octo.android.robospice.networkstate.NetworkStateChecker;
@@ -12,8 +19,6 @@ import com.octo.android.robospice.request.listener.RequestListener;
 import net.yupol.transmissionremote.app.server.Server;
 import net.yupol.transmissionremote.app.transport.request.Request;
 
-import org.hamcrest.core.IsEqual;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,13 +31,6 @@ import java.io.IOException;
 import java.util.concurrent.CountDownLatch;
 
 import javax.annotation.Nonnull;
-
-import static org.hamcrest.core.IsEqual.equalTo;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
 
 @RunWith(AndroidJUnit4.class)
 public class RequestExecutorTest {
@@ -72,7 +70,7 @@ public class RequestExecutorTest {
         server = new Server("Test Server", "http://localhost", 9091);
 
         executor = new RequestExecutor(
-                InstrumentationRegistry.getContext(),
+                InstrumentationRegistry.getInstrumentation().getContext(),
                 FakeNetworkStateChecker.INSTANCE);
     }
 
@@ -95,8 +93,8 @@ public class RequestExecutorTest {
 
         latch.await();
         verify(mockListener).onRequestFailure(spiceExceptionArgumentCaptor.capture());
-        Assert.assertThat(spiceExceptionArgumentCaptor.getValue().getCause(),
-                IsEqual.<Throwable>equalTo(FAKE_EXCEPTION));
+        assertThat(spiceExceptionArgumentCaptor.getValue().getCause())
+                .isEqualTo(FAKE_EXCEPTION);
         verifyNoMoreInteractions(mockListener);
     }
 
@@ -134,7 +132,7 @@ public class RequestExecutorTest {
         latch.await();
         verify(mockListener, times(1)).onRequestSuccess(FAKE_RESULT);
         verifyNoMoreInteractions(mockListener);
-        assertThat(server.getLastSessionId(), equalTo(SESSION_ID));
+        assertThat(server.getLastSessionId()).isEqualTo(SESSION_ID);
     }
 
     @Test
@@ -157,7 +155,7 @@ public class RequestExecutorTest {
         latch.await();
         verify(mockListener, times(1)).onRequestSuccess(FAKE_RESULT);
         verifyNoMoreInteractions(mockListener);
-        assertThat(server.getRedirectLocation(), equalTo(REDIRECT_LOCATION));
+        assertThat(server.getRedirectLocation()).isEqualTo(REDIRECT_LOCATION);
     }
 
     //region Helper Classes
@@ -178,8 +176,8 @@ public class RequestExecutorTest {
 
     private static class CountDownRequestListenerWrapper<T> implements RequestListener<T> {
 
-        private RequestListener<T> listener;
-        private CountDownLatch latch;
+        private final RequestListener<T> listener;
+        private final CountDownLatch latch;
 
         CountDownRequestListenerWrapper(@Nonnull RequestListener<T> listener, CountDownLatch latch) {
             this.listener = listener;
