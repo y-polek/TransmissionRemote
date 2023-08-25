@@ -1,7 +1,7 @@
 package net.yupol.transmissionremote.app.utils;
 
-import android.support.annotation.Nullable;
-import android.support.v4.text.HtmlCompat;
+import androidx.annotation.Nullable;
+import androidx.core.text.HtmlCompat;
 
 import com.google.common.base.Strings;
 import com.vdurmont.emoji.EmojiManager;

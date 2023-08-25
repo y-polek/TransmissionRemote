@@ -1,0 +1,32 @@
+name: Unit Tests
+
+on:
+  push:
+    branches: [ "develop" ]
+  pull_request:
+    branches: [ "develop" ]
+
+jobs:
+  unit_tests:
+    runs-on: [ubuntu-latest]
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Create google-services.json
+        id: create-json
+        uses: jsdaniell/create-json@v1.2.2
+        with:
+          name: "google-services.json"
+          json: ${{ secrets.GOOGLE_SERVICES_JSON }}
+          dir: 'app/'
+
+      - name: Run Unit Tests
+        run: ./gradlew test
+
+      - name: Upload report
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: reports
+          path: app/build/reports/tests/
+          retention-days: 7

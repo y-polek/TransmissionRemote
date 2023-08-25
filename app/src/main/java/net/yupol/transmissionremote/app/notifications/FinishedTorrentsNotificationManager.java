@@ -7,8 +7,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.TaskStackBuilder;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.TaskStackBuilder;
 
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
@@ -94,15 +94,24 @@ public class FinishedTorrentsNotificationManager {
         }
         builder.setStyle(inboxStyle);
 
-        PendingIntent contentPendingIntent = PendingIntent.getActivity(context, 0,
+        int flags;
+        if (Build.VERSION.SDK_INT >= 31) {
+            flags = PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE;
+        } else {
+            flags = PendingIntent.FLAG_UPDATE_CURRENT;
+        }
+        PendingIntent contentPendingIntent = PendingIntent.getActivity(
+                context,
+                0,
                 new Intent(context, MainActivity.class),
-                PendingIntent.FLAG_UPDATE_CURRENT);
+                flags
+        );
         builder.setContentIntent(contentPendingIntent);
 
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
         stackBuilder.addNextIntentWithParentStack(new Intent(context, PreferencesActivity.class));
         stackBuilder.addNextIntent(new Intent(context, NotificationsPreferencesActivity.class));
-        PendingIntent preferencesPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent preferencesPendingIntent = stackBuilder.getPendingIntent(0, flags);
         builder.addAction(R.drawable.ic_settings_black_18dp, context.getString(R.string.notification_settings), preferencesPendingIntent);
 
         notificationManager.notify(NOTIFICATION_ID_TORRENT_FINISHED, builder.build());

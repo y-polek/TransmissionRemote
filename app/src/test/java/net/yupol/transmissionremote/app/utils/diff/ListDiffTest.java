@@ -1,15 +1,20 @@
 package net.yupol.transmissionremote.app.utils.diff;
 
-import junit.framework.TestCase;
+import static com.google.common.truth.Truth.assertThat;
+
+import androidx.annotation.NonNull;
 
 import net.yupol.transmissionremote.app.model.ID;
+
+import org.junit.Before;
+import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public class ListDiffTest extends TestCase {
+public class ListDiffTest {
 
     private List<Value> initialList;
     private List<Value> nonStructuralChangesList;
@@ -18,7 +23,8 @@ public class ListDiffTest extends TestCase {
     private List<Value> allStructuralChangesList;
     private List<Value> changedSecondValue;
 
-    public void setUp() throws Exception {
+    @Before
+    public void setUp() {
         initialList = Arrays.asList(
                 new Value(0, 0),
                 new Value(1, 1),
@@ -57,79 +63,83 @@ public class ListDiffTest extends TestCase {
         changedSecondValue.get(0).value2 += 10;
     }
 
+    @Test
     public void testNoChanges() {
         ListDiff<Value> diff = new ListDiff<>(initialList, Value.deepCopyOf(initialList));
 
-        assertFalse(diff.containStructuralChanges());
-        assertEquals(0, diff.getChangedItems().size());
+        assertThat(diff.containStructuralChanges()).isFalse();
+        assertThat(diff.getChangedItems()).isEmpty();
     }
 
+    @Test
     public void testNoStructuralChanges() {
         ListDiff<Value> diff = new ListDiff<>(initialList, nonStructuralChangesList);
         List<Range> changedItems = diff.getChangedItems();
 
-        assertFalse(diff.containStructuralChanges());
+        assertThat(diff.containStructuralChanges()).isFalse();
 
-        assertEquals(3, changedItems.size()); // 3 changed ranges
+        assertThat(changedItems).hasSize(3); // 3 changed ranges
         // Range 1:
         Range range = changedItems.get(0);
-        assertEquals(1, range.start); // starts at index 1,
-        assertEquals(1, range.count); // contain 1 item
+        assertThat(range.start).isEqualTo(1); // starts at index 1,
+        assertThat(range.count).isEqualTo(1); // contain 1 item
 
         // Range 2:
         range = changedItems.get(1);
-        assertEquals(3, range.start); // starts at index 3,
-        assertEquals(3, range.count); // contain 3 item
+        assertThat(range.start).isEqualTo(3); // starts at index 3,
+        assertThat(range.count).isEqualTo(3); // contain 3 item
 
         // Range 3:
         range = changedItems.get(2);
-        assertEquals(9, range.start); // starts at index 9,
-        assertEquals(1, range.count); // contain 1 item
+        assertThat(range.start).isEqualTo(9); // starts at index 9,
+        assertThat(range.count).isEqualTo(1); // contain 1 item
     }
 
+    @Test
     public void testStructuralChanges() {
-
-        assertTrue(new ListDiff<>(initialList, insertsOnlyList).containStructuralChanges());
-        assertTrue(new ListDiff<>(initialList, removesOnlyList).containStructuralChanges());
-        assertTrue(new ListDiff<>(initialList, allStructuralChangesList).containStructuralChanges());
+        assertThat(new ListDiff<>(initialList, insertsOnlyList).containStructuralChanges()).isTrue();
+        assertThat(new ListDiff<>(initialList, removesOnlyList).containStructuralChanges()).isTrue();
+        assertThat(new ListDiff<>(initialList, allStructuralChangesList).containStructuralChanges()).isTrue();
     }
 
+    @Test
     public void testGetChangedItemsReturnNullIfStructuralChanges() {
         ListDiff<Value> diff = new ListDiff<>(initialList, allStructuralChangesList);
 
-        assertTrue(diff.containStructuralChanges());
-        assertNull(diff.getChangedItems());
+        assertThat(diff.containStructuralChanges()).isTrue();
+        assertThat(diff.getChangedItems()).isNull();
     }
 
+    @Test
     public void testGetChangedItemsWithoutCallingContainStructuralChanges() {
         ListDiff<Value> diff = new ListDiff<>(initialList, nonStructuralChangesList);
 
-        assertEquals(3, diff.getChangedItems().size());
+        assertThat(diff.getChangedItems()).hasSize(3);
     }
 
+    @Test
     public void testEmptyLists() {
-        assertTrue(new ListDiff<>(initialList, Collections.<Value>emptyList()).containStructuralChanges());
-        assertTrue(new ListDiff<>(Collections.<Value>emptyList(), initialList).containStructuralChanges());
-        assertFalse(new ListDiff<>(Collections.<ID>emptyList(), Collections.<ID>emptyList()).containStructuralChanges());
+        assertThat(new ListDiff<>(initialList, Collections.emptyList()).containStructuralChanges()).isTrue();
+        assertThat(new ListDiff<>(Collections.emptyList(), initialList).containStructuralChanges()).isTrue();
+        assertThat(new ListDiff<>(Collections.emptyList(), Collections.emptyList()).containStructuralChanges()).isFalse();
     }
 
+    @Test
     public void testDefaultEqualsImpl() {
         ListDiff<Value> diff = new ListDiff<>(initialList, changedSecondValue);
 
-        assertEquals(1, diff.getChangedItems().size());
+        assertThat(diff.getChangedItems()).hasSize(1);
     }
 
+    @Test
     public void testCustomEqualsImpl() {
-        Equals<Value> ignoreSecondValueEquals = new Equals<Value>() {
-            @Override
-            public boolean equals(Value o1, Value o2) {
-                if (o1 == null) return o2 == null;
-                return o1.id == o2.id && o1.value == o2.value;
-            }
+        Equals<Value> ignoreSecondValueEquals = (o1, o2) -> {
+            if (o1 == null) return o2 == null;
+            return o1.id == o2.id && o1.value == o2.value;
         };
         ListDiff<Value> diff = new ListDiff<>(initialList, changedSecondValue, ignoreSecondValueEquals);
 
-        assertEquals(0, diff.getChangedItems().size());
+        assertThat(diff.getChangedItems()).isEmpty();
     }
 
     private static class Value implements ID {
@@ -161,6 +171,7 @@ public class ListDiffTest extends TestCase {
         }
 
         @Override
+        @NonNull
         public String toString() {
             return "Value{" +
                     "id=" + id +

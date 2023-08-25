@@ -78,7 +78,7 @@
                     android:lines="1"
                     android:singleLine="true"
                     android:textColor="?android:textColorPrimaryInverse"
-                    android:textSize="@dimen/material_drawer_account_header_text"
+                    android:textSize="@dimen/material_drawer_account_header_title"
                     android:textStyle="bold"/>
                 <ImageView android:id="@+id/server_list_button"
                     android:layout_width="@dimen/material_drawer_account_header_dropdown"
