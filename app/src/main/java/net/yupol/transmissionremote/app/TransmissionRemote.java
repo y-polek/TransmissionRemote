@@ -219,14 +219,10 @@ public class TransmissionRemote extends Application implements SharedPreferences
                 Boolean.parseBoolean(getString(R.string.torrent_finished_notification_enabled_default_value)));
     }
 
-    public boolean isNotificationVibroEnabled() {
-        return sharedPreferences.getBoolean(getString(R.string.torrent_finished_notification_vibrate_key), false);
-    }
-
-    @Nullable
-    public Uri getNotificationSound() {
-        String uri = sharedPreferences.getString(getString(R.string.torrent_finished_notification_sound_key), "");
-        return uri.isEmpty() ? null : Uri.parse(uri);
+    public void setNotificationEnabled(final boolean isEnabled) {
+        sharedPreferences.edit()
+                .putBoolean(getString(R.string.torrent_finished_notification_enabled_key), isEnabled)
+                .apply();
     }
 
     public boolean isFreeSpaceCheckDisabled() {

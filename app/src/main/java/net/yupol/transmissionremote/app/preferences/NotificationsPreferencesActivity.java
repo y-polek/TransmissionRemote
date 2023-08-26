@@ -12,8 +12,10 @@ public class NotificationsPreferencesActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        getFragmentManager().beginTransaction()
-                .replace(android.R.id.content, new NotificationsPreferencesFragment()).commit();
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(android.R.id.content, NotificationPreferencesFragment.newInstance())
+                .commit();
 
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -24,10 +26,9 @@ public class NotificationsPreferencesActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                finish();
-                return true;
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }

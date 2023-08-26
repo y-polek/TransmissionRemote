@@ -2,6 +2,7 @@ package net.yupol.transmissionremote.app;
 
 import static android.preference.PreferenceManager.getDefaultSharedPreferences;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.SearchManager;
@@ -10,9 +11,11 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
@@ -30,9 +33,12 @@ import android.widget.SearchView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.DialogFragment;
@@ -211,6 +217,15 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
     private boolean showFab;
     private FreeSpaceFooterDrawerItem freeSpaceFooterDrawerItem;
     private FinishedTorrentsNotificationManager finishedTorrentsNotificationManager;
+
+    private final ActivityResultLauncher<String> requestPermissionLauncher = registerForActivityResult(
+            new ActivityResultContracts.RequestPermission(),
+            isGranted -> {
+                if (!isGranted) {
+                    application.setNotificationEnabled(false);
+                }
+            }
+    );
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -768,6 +783,9 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
                 Server server = data.getParcelableExtra(AddServerActivity.EXTRA_SEVER);
                 addNewServer(server);
                 switchServer(server);
+                if (application.getServers().size() == 1 && application.isNotificationEnabled()) {
+                    requestNotificationsPermissionIfRequired();
+                }
             }
         } else if (requestCode == REQUEST_CODE_CHOOSE_TORRENT) {
             if (resultCode == RESULT_OK) {
@@ -775,6 +793,20 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
                 openTorrentUriOnResume = true;
             }
         }
+    }
+
+    private void requestNotificationsPermissionIfRequired() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+            return;
+        }
+        if (!application.isNotificationEnabled()) {
+            return;
+        }
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+
+        requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
     }
 
     @Override

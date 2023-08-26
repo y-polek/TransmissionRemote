@@ -5,7 +5,6 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Build;
 
 import androidx.core.app.NotificationCompat;
@@ -56,6 +55,10 @@ public class FinishedTorrentsNotificationManager {
     }
 
     private void showFinishedNotification(Collection<Torrent> finishedTorrents) {
+        if (!notificationManager.areNotificationsEnabled()) {
+            return;
+        }
+
         final int count = finishedTorrents.size();
         String title = context.getResources().getQuantityString(R.plurals.torrents_finished, count, count);
         final String text = finishedTorrents.stream()
@@ -69,16 +72,8 @@ public class FinishedTorrentsNotificationManager {
         builder.setSmallIcon(R.drawable.transmission)
                 .setContentTitle(title)
                 .setContentText(text)
-                .setAutoCancel(true);
-        Uri sound = app.getNotificationSound();
-        if (sound != null) {
-            builder.setSound(sound);
-        }
-        int defaults = Notification.DEFAULT_LIGHTS;
-        if (app.isNotificationVibroEnabled()) {
-            defaults |= Notification.DEFAULT_VIBRATE;
-        }
-        builder.setDefaults(defaults);
+                .setAutoCancel(true)
+                .setDefaults(Notification.DEFAULT_LIGHTS);
 
         NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
         inboxStyle.setBigContentTitle(title);
