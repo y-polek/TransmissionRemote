@@ -2,7 +2,6 @@ package net.yupol.transmissionremote.app.preferences;
 
 import android.content.Context;
 import android.os.Bundle;
-import androidx.fragment.app.ListFragment;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -13,7 +12,9 @@ import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
-import com.mikepenz.google_material_typeface_library.GoogleMaterial;
+import androidx.fragment.app.ListFragment;
+
+import com.mikepenz.iconics.typeface.library.googlematerial.GoogleMaterial;
 
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.TransmissionRemote;

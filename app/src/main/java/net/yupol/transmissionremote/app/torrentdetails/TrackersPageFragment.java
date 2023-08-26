@@ -27,7 +27,7 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.mikepenz.community_material_typeface_library.CommunityMaterial;
+import com.mikepenz.iconics.typeface.library.community.material.CommunityMaterial;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
 
@@ -56,7 +56,7 @@ public class TrackersPageFragment extends BasePageFragment implements TrackersAd
     private static final String KEY_SORT_BY = "key_sort_by";
     private static final String KEY_SORT_ORDER = "key_sort_order";
 
-    private TrackersAdapter adapter = new TrackersAdapter(this);
+    private final TrackersAdapter adapter = new TrackersAdapter(this);
     private TorrentDetailsTrackersPageFragmentBinding binding;
     private boolean viewCreated;
     private ClipboardManager clipboardManager;
@@ -118,7 +118,7 @@ public class TrackersPageFragment extends BasePageFragment implements TrackersAd
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+    public void onCreateOptionsMenu(@NonNull Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.torrent_trackers_menu, menu);
         IconUtils.setMenuIcon(getContext(), menu, R.id.action_add, CommunityMaterial.Icon2.cmd_plus);
         IconUtils.setMenuIcon(getContext(), menu, R.id.action_sort_trackers, CommunityMaterial.Icon2.cmd_sort_variant);
@@ -296,7 +296,7 @@ public class TrackersPageFragment extends BasePageFragment implements TrackersAd
 
     private void showEditTrackerUrlDialog(@Nullable TrackerStats tracker) {
         FragmentTransaction ft = getChildFragmentManager().beginTransaction();
-        Fragment prev = requireFragmentManager().findFragmentByTag(TAG_EDIT_URL_DIALOG);
+        Fragment prev = getParentFragmentManager().findFragmentByTag(TAG_EDIT_URL_DIALOG);
         if (prev != null) {
             ft.remove(prev);
         }

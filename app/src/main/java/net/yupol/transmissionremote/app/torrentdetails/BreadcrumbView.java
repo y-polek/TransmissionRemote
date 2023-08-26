@@ -2,9 +2,6 @@ package net.yupol.transmissionremote.app.torrentdetails;
 
 import android.content.Context;
 import android.graphics.Typeface;
-import androidx.annotation.ColorInt;
-import androidx.annotation.DrawableRes;
-import androidx.core.content.ContextCompat;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -14,10 +11,14 @@ import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.ColorInt;
+import androidx.annotation.DrawableRes;
+import androidx.core.content.ContextCompat;
+
 import com.mikepenz.iconics.IconicsDrawable;
+import com.mikepenz.iconics.typeface.library.community.material.CommunityMaterial;
 import com.mikepenz.iconics.view.IconicsButton;
 import com.mikepenz.iconics.view.IconicsImageView;
-import com.mikepenz.ionicons_typeface_library.Ionicons;
 
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.model.Dir;
@@ -27,14 +28,14 @@ import java.util.Stack;
 public class BreadcrumbView extends LinearLayout {
 
     private final LinearLayout pathLayout;
-    @DrawableRes private int buttonBackground;
-    private int textSize;
-    private int arrowIconSize;
-    @ColorInt private int primaryColor;
-    @ColorInt private int secondaryColor;
-    private int textPadding;
+    @DrawableRes private final int buttonBackground;
+    private final int textSize;
+    private final int arrowIconSize;
+    @ColorInt private final int primaryColor;
+    @ColorInt private final int secondaryColor;
+    private final int textPadding;
 
-    private Stack<Dir> path = new Stack<>();
+    private final Stack<Dir> path = new Stack<>();
     private OnNodeSelectedListener listener;
     private final HorizontalScrollView scrollView;
 
@@ -57,7 +58,7 @@ public class BreadcrumbView extends LinearLayout {
         IconicsButton homeButton = new IconicsButton(context);
         homeButton.setBackgroundResource(buttonBackground);
         homeButton.setPadding(0, 0, 0, 0);
-        homeButton.setText("{ion_ios_home_outline}");
+        homeButton.setText("{cmd_home_outline}");
         homeButton.setTextSize(TypedValue.COMPLEX_UNIT_PX, homeButtonTextSize);
         homeButton.setTextColor(primaryColor);
         LayoutParams homeLayoutParams = new LayoutParams(homeButtonSize, homeButtonSize);
@@ -127,7 +128,7 @@ public class BreadcrumbView extends LinearLayout {
 
     private void addSeparator() {
         IconicsImageView dividerView = new IconicsImageView(getContext());
-        dividerView.setIcon(new IconicsDrawable(getContext(), Ionicons.Icon.ion_ios_arrow_right));
+        dividerView.setIcon(new IconicsDrawable(getContext(), CommunityMaterial.Icon.cmd_chevron_right));
         dividerView.setColorFilter(secondaryColor);
         LayoutParams dividerLayoutParams = new LayoutParams(arrowIconSize, arrowIconSize);
         dividerLayoutParams.gravity = Gravity.CENTER_VERTICAL;

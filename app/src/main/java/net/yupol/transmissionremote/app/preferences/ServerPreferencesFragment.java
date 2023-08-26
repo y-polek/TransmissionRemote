@@ -2,7 +2,6 @@ package net.yupol.transmissionremote.app.preferences;
 
 import android.app.Activity;
 import android.os.Bundle;
-import androidx.fragment.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -13,7 +12,9 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.mikepenz.google_material_typeface_library.GoogleMaterial;
+import androidx.fragment.app.Fragment;
+
+import com.mikepenz.iconics.typeface.library.googlematerial.GoogleMaterial;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
 

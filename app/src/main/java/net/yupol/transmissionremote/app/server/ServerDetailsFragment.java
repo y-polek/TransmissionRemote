@@ -3,7 +3,6 @@ package net.yupol.transmissionremote.app.server;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import androidx.fragment.app.Fragment;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.TextUtils;
@@ -20,8 +19,12 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Spinner;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
 import com.google.api.client.repackaged.com.google.common.base.Strings;
-import com.mikepenz.google_material_typeface_library.GoogleMaterial;
+import com.mikepenz.iconics.typeface.library.googlematerial.GoogleMaterial;
 
 import net.yupol.transmissionremote.app.OnBackPressedListener;
 import net.yupol.transmissionremote.app.R;
@@ -33,8 +36,6 @@ import org.apache.commons.lang3.StringUtils;
 public class ServerDetailsFragment extends Fragment implements OnBackPressedListener {
 
     public static final String ARGUMENT_SERVER = "argument_server";
-
-    private static final String TAG = ServerDetailsFragment.class.getSimpleName();
     private static final int DEFAULT_PORT = 9091;
     private static final int DEFAULT_HTTPS_PORT = 443;
     private static final String KEY_IS_AUTH_ENABLED = "key_is_auth_enabled";
@@ -83,7 +84,7 @@ public class ServerDetailsFragment extends Fragment implements OnBackPressedList
         });
 
         ArrayAdapter<String> protocolAdapter = new ArrayAdapter<>(
-                getContext(), android.R.layout.simple_spinner_item, PROTOCOLS);
+                requireContext(), android.R.layout.simple_spinner_item, PROTOCOLS);
         protocolAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         protocolSpinner.setAdapter(protocolAdapter);
 
@@ -133,14 +134,14 @@ public class ServerDetailsFragment extends Fragment implements OnBackPressedList
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putBoolean(KEY_IS_AUTH_ENABLED, isAuthEnabled);
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         if (savedInstanceState != null && savedInstanceState.containsKey(KEY_IS_AUTH_ENABLED)) {
             isAuthEnabled = savedInstanceState.getBoolean(KEY_IS_AUTH_ENABLED);
             updateAuth(isAuthEnabled);
@@ -148,7 +149,7 @@ public class ServerDetailsFragment extends Fragment implements OnBackPressedList
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+    public void onCreateOptionsMenu(@NonNull Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.server_details_menu, menu);
         IconUtils.setMenuIcon(getActivity(), menu, R.id.action_remove, GoogleMaterial.Icon.gmd_delete);
         IconUtils.setMenuIcon(getActivity(), menu, R.id.action_save, GoogleMaterial.Icon.gmd_save);
@@ -372,7 +373,7 @@ public class ServerDetailsFragment extends Fragment implements OnBackPressedList
 
     private static class ClearErrorTextWatcher implements TextWatcher {
 
-        private EditText editText;
+        private final EditText editText;
 
         public ClearErrorTextWatcher(EditText editText) {
             this.editText = editText;

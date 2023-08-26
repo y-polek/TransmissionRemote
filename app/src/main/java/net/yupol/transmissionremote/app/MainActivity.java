@@ -1,5 +1,7 @@
 package net.yupol.transmissionremote.app;
 
+import static android.preference.PreferenceManager.getDefaultSharedPreferences;
+
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
@@ -12,7 +14,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
-import androidx.databinding.DataBindingUtil;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -20,14 +21,6 @@ import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.provider.OpenableColumns;
 import android.provider.Settings;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.core.view.LayoutInflaterCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.appcompat.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -41,12 +34,22 @@ import android.widget.SearchView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
+import androidx.databinding.DataBindingUtil;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
-import com.mikepenz.community_material_typeface_library.CommunityMaterial;
-import com.mikepenz.fontawesome_typeface_library.FontAwesome;
-import com.mikepenz.google_material_typeface_library.GoogleMaterial;
+import com.mikepenz.iconics.IconicsColor;
 import com.mikepenz.iconics.IconicsDrawable;
-import com.mikepenz.iconics.context.IconicsLayoutInflater2;
+import com.mikepenz.iconics.IconicsSize;
+import com.mikepenz.iconics.typeface.library.community.material.CommunityMaterial;
+import com.mikepenz.iconics.typeface.library.fonrawesome.FontAwesome;
+import com.mikepenz.iconics.typeface.library.googlematerial.GoogleMaterial;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.interfaces.OnCheckedChangeListener;
@@ -122,8 +125,6 @@ import permissions.dispatcher.OnShowRationale;
 import permissions.dispatcher.PermissionRequest;
 import permissions.dispatcher.RuntimePermissions;
 
-import static android.preference.PreferenceManager.getDefaultSharedPreferences;
-
 @RuntimePermissions
 public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.TorrentUpdateListener,
         SharedPreferences.OnSharedPreferenceChangeListener, TransmissionRemote.OnSpeedLimitChangedListener,
@@ -181,7 +182,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
     private Toolbar bottomToolbar;
     private Drawer drawer;
     private HeaderView headerView;
-    private RequestListener<AddTorrentResult> addTorrentResultListener = new RequestListener<AddTorrentResult>() {
+    private final RequestListener<AddTorrentResult> addTorrentResultListener = new RequestListener<>() {
         @Override
         public void onRequestFailure(SpiceException spiceException) {
             String message;
@@ -228,7 +229,6 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        LayoutInflaterCompat.setFactory2(getLayoutInflater(), new IconicsLayoutInflater2(getDelegate()));
         super.onCreate(savedInstanceState);
 
         binding = DataBindingUtil.setContentView(this, R.layout.main_activity);
@@ -317,7 +317,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
                 .withChecked(ThemeUtils.isInNightMode(this))
                 .withOnCheckedChangeListener(new OnCheckedChangeListener() {
                     @Override
-                    public void onCheckedChanged(IDrawerItem drawerItem, CompoundButton buttonView, boolean isChecked) {
+                    public void onCheckedChanged(@NonNull IDrawerItem drawerItem, @NonNull CompoundButton buttonView, boolean isChecked) {
                         switchTheme(isChecked);
                     }
                 });
@@ -374,7 +374,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
                 )
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                     @Override
-                    public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
+                    public boolean onItemClick(View view, int position, @NonNull IDrawerItem drawerItem) {
                         if (drawerItem instanceof SortDrawerItem) {
                             handleSortItemClick((SortDrawerItem) drawerItem);
                             return true;
@@ -393,7 +393,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
                         for (SortDrawerItem item : sortItems) {
                             if (item != selectedItem) {
                                 item.setSortOrder(null);
-                                item.withSetSelected(false);
+                                item.setSelected(false);
                                 drawer.updateItem(item);
                             }
                         }
@@ -412,7 +412,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
         for (SortDrawerItem item : sortItems) {
             if (item.getSortedBy() == persistedSortedBy) {
                 item.setSortOrder(persistedSortOrder);
-                item.withSetSelected(true);
+                item.setSelected(true);
                 break;
             }
         }
@@ -438,13 +438,13 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
 
         binding.addTorrentByFileButton.setIconDrawable(
                 new IconicsDrawable(this, CommunityMaterial.Icon.cmd_file_outline)
-                        .paddingRes(R.dimen.fab_icon_padding)
-                        .colorRes(R.color.text_primary_inverse));
+                        .padding(IconicsSize.res(R.dimen.fab_icon_padding))
+                        .color(IconicsColor.colorRes(R.color.text_primary_inverse)));
 
         binding.addTorrentByMagnetButton.setIconDrawable(
                 new IconicsDrawable(this, CommunityMaterial.Icon2.cmd_magnet)
-                        .paddingRes(R.dimen.fab_icon_padding)
-                        .colorRes(R.color.text_primary_inverse));
+                        .padding(IconicsSize.res(R.dimen.fab_icon_padding))
+                        .color(IconicsColor.colorRes(R.color.text_primary_inverse)));
 
         binding.addTorrentButton.setOnFloatingActionsMenuUpdateListener(new FloatingActionsMenu.OnFloatingActionsMenuUpdateListener() {
             @Override
@@ -654,7 +654,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putBoolean(KEY_DRAWER_SERVER_LIST_EXPANDED, drawer.switchedDrawerContent());
         if (searchMenuItem != null) {
@@ -673,7 +673,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
     }
 
     @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
 
         if (savedInstanceState.getBoolean(KEY_DRAWER_SERVER_LIST_EXPANDED, false)) {
@@ -731,7 +731,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
 
         searchMenuItem.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
             @Override
-            public boolean onMenuItemActionExpand(MenuItem item) {
+            public boolean onMenuItemActionExpand(@NonNull MenuItem item) {
                 if (bottomBarDownSpeedMenuItem != null) bottomBarDownSpeedMenuItem.setVisible(false);
                 if (bottomBarUpSpeedMenuItem != null) bottomBarUpSpeedMenuItem.setVisible(false);
 

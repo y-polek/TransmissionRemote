@@ -1,14 +1,8 @@
 package net.yupol.transmissionremote.app.torrentdetails;
 
 import android.content.SharedPreferences;
-import androidx.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.appcompat.widget.ListPopupWindow;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -17,7 +11,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 
-import com.mikepenz.community_material_typeface_library.CommunityMaterial;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.ListPopupWindow;
+import androidx.databinding.DataBindingUtil;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
+import com.mikepenz.iconics.typeface.library.community.material.CommunityMaterial;
 
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.databinding.TorrentDetailsPeersPageFragmentBinding;
@@ -35,7 +36,7 @@ public class PeersPageFragment extends BasePageFragment {
     private static final String KEY_SORT_BY = "key_sort_by";
     private static final String KEY_SORT_ORDER = "key_sort_order";
 
-    private PeersAdapter adapter = new PeersAdapter();
+    private final PeersAdapter adapter = new PeersAdapter();
     private TorrentDetailsPeersPageFragmentBinding binding;
     private boolean viewCreated;
     private SharedPreferences preferences;
@@ -83,7 +84,7 @@ public class PeersPageFragment extends BasePageFragment {
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+    public void onCreateOptionsMenu(@NonNull Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.torrent_peers_menu, menu);
         IconUtils.setMenuIcon(getContext(), menu, R.id.action_sort_peers, CommunityMaterial.Icon2.cmd_sort_variant);
     }

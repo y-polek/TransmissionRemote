@@ -2,8 +2,8 @@ package net.yupol.transmissionremote.app.model;
 
 import androidx.annotation.NonNull;
 
-import com.mikepenz.fontawesome_typeface_library.FontAwesome;
 import com.mikepenz.iconics.typeface.IIcon;
+import com.mikepenz.iconics.typeface.library.fonrawesome.FontAwesome;
 
 import org.apache.commons.io.FilenameUtils;
 

@@ -7,11 +7,6 @@ import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.Spanned;
@@ -28,10 +23,17 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.google.common.collect.FluentIterable;
-import com.mikepenz.fontawesome_typeface_library.FontAwesome;
-import com.mikepenz.google_material_typeface_library.GoogleMaterial;
+import com.mikepenz.iconics.IconicsColor;
 import com.mikepenz.iconics.IconicsDrawable;
+import com.mikepenz.iconics.typeface.library.fonrawesome.FontAwesome;
+import com.mikepenz.iconics.typeface.library.googlematerial.GoogleMaterial;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
 
@@ -587,7 +589,7 @@ public class TorrentListFragment extends Fragment implements ChooseLocationDialo
                     holder.errorMsgView.setText(errorMsg);
                     IconicsDrawable msgIcon = new IconicsDrawable(getContext(),
                             error.isWarning() ? GoogleMaterial.Icon.gmd_warning : GoogleMaterial.Icon.gmd_error);
-                    msgIcon.color(ColorUtils.resolveColor(context, android.R.attr.textColorSecondary, R.color.text_secondary));
+                    msgIcon.color(IconicsColor.colorInt(ColorUtils.resolveColor(context, android.R.attr.textColorSecondary, R.color.text_secondary)));
                     int size = context.getResources().getDimensionPixelSize(R.dimen.torrent_list_error_icon_size);
                     msgIcon.setBounds(0, 0, size, size);
                     holder.errorMsgView.setCompoundDrawables(msgIcon, null, null, null);

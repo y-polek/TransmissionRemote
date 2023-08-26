@@ -1,21 +1,23 @@
 package net.yupol.transmissionremote.app.torrentdetails;
 
 import android.content.Context;
-import androidx.databinding.DataBindingUtil;
 import android.graphics.drawable.Drawable;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
-import androidx.appcompat.widget.ListPopupWindow;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.ListPopupWindow;
+import androidx.core.content.ContextCompat;
+import androidx.databinding.DataBindingUtil;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.buildware.widget.indeterm.IndeterminateCheckBox;
-import com.mikepenz.fontawesome_typeface_library.FontAwesome;
+import com.mikepenz.iconics.IconicsColor;
 import com.mikepenz.iconics.IconicsDrawable;
+import com.mikepenz.iconics.typeface.library.fonrawesome.FontAwesome;
 
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.databinding.FileItemBinding;
@@ -35,11 +37,11 @@ import java.util.Set;
 
 public class DirectoryAdapter extends RecyclerView.Adapter<DirectoryAdapter.ViewHolder> {
 
-    private Context context;
+    private final Context context;
     private File[] files;
     private FileStat[] fileStats;
-    private Dir currentDir;
-    private OnItemSelectedListener listener;
+    private final Dir currentDir;
+    private final OnItemSelectedListener listener;
 
     public DirectoryAdapter(Context context, Dir dir, File[] files, FileStat[] fileStats, OnItemSelectedListener listener) {
         this.context = context;
@@ -92,7 +94,7 @@ public class DirectoryAdapter extends RecyclerView.Adapter<DirectoryAdapter.View
                 filesLength = calculateFilesLengthInDir(dir);
 
                 icon = new IconicsDrawable(context, FontAwesome.Icon.faw_folder)
-                        .color(ContextCompat.getColor(context, R.color.text_color_primary));
+                        .color(IconicsColor.colorInt(ContextCompat.getColor(context, R.color.text_color_primary)));
                 break;
             case R.id.view_type_file:
                 File file = getFile(position);
@@ -111,7 +113,7 @@ public class DirectoryAdapter extends RecyclerView.Adapter<DirectoryAdapter.View
                 filesLength = file.getLength();
 
                 icon = new IconicsDrawable(context, FileType.iconFromName(file.getName()))
-                        .color(ContextCompat.getColor(context, R.color.text_color_secondary));
+                        .color(IconicsColor.colorInt(ContextCompat.getColor(context, R.color.text_color_secondary)));
                 break;
         }
 
@@ -273,7 +275,7 @@ public class DirectoryAdapter extends RecyclerView.Adapter<DirectoryAdapter.View
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 
-        private FileItemBinding binding;
+        private final FileItemBinding binding;
 
         public ViewHolder(final FileItemBinding binding, final OnItemSelectedListener listener) {
             super(binding.getRoot());

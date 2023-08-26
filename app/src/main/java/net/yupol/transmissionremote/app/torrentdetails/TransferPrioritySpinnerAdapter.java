@@ -9,10 +9,12 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-import com.mikepenz.community_material_typeface_library.CommunityMaterial;
-import com.mikepenz.fontawesome_typeface_library.FontAwesome;
+import com.mikepenz.iconics.IconicsColor;
 import com.mikepenz.iconics.IconicsDrawable;
+import com.mikepenz.iconics.IconicsSize;
 import com.mikepenz.iconics.typeface.IIcon;
+import com.mikepenz.iconics.typeface.library.community.material.CommunityMaterial;
+import com.mikepenz.iconics.typeface.library.fonrawesome.FontAwesome;
 
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.model.json.TransferPriority;
@@ -67,8 +69,8 @@ public class TransferPrioritySpinnerAdapter extends BaseAdapter {
         }
         Drawable img = new IconicsDrawable(parent.getContext())
                 .icon(icon)
-                .color(ColorUtils.resolveColor(parent.getContext(), android.R.attr.textColorPrimary, R.color.text_primary))
-                .sizeRes(R.dimen.transfer_priority_icon_size);
+                .color(IconicsColor.colorInt(ColorUtils.resolveColor(parent.getContext(), android.R.attr.textColorPrimary, R.color.text_primary)))
+                .size(IconicsSize.res(R.dimen.transfer_priority_icon_size));
         text.setCompoundDrawables(img, null, null, null);
 
         return view;

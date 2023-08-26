@@ -4,18 +4,20 @@ import android.content.Context;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.util.TypedValue;
-import android.widget.TextView;
+
+import androidx.appcompat.widget.AppCompatTextView;
 
 import com.google.common.base.Strings;
-import com.mikepenz.fontawesome_typeface_library.FontAwesome;
+import com.mikepenz.iconics.IconicsColor;
 import com.mikepenz.iconics.IconicsDrawable;
+import com.mikepenz.iconics.typeface.library.fonrawesome.FontAwesome;
 
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.utils.CheatSheet;
 import net.yupol.transmissionremote.app.utils.MetricsUtils;
 import net.yupol.transmissionremote.app.utils.TextUtils;
 
-public abstract class SpeedTextView extends TextView {
+public abstract class SpeedTextView extends AppCompatTextView {
 
     private static final int PADDING_LEFT = 5; // dp
     private static final int PADDING_IMAGE = 8; // dp
@@ -52,7 +54,7 @@ public abstract class SpeedTextView extends TextView {
         public DownloadSpeedTextView(Context context) {
             super(context, new IconicsDrawable(context)
                     .icon(FontAwesome.Icon.faw_arrow_down)
-                    .colorRes(R.color.md_green_A700)
+                    .color(IconicsColor.colorRes(R.color.md_green_A700))
             );
 
             CheatSheet.setup(this, R.string.tooltip_total_download_speed);
@@ -63,7 +65,7 @@ public abstract class SpeedTextView extends TextView {
         public UploadSpeedTextView(Context context) {
             super(context, new IconicsDrawable(context)
                     .icon(FontAwesome.Icon.faw_arrow_up)
-                    .colorRes(R.color.md_red_A700)
+                    .color(IconicsColor.colorRes(R.color.md_red_A700))
             );
 
             CheatSheet.setup(this, R.string.tooltip_total_upload_speed);

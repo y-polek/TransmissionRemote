@@ -4,7 +4,9 @@ import android.content.Context;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.mikepenz.iconics.IconicsColor;
 import com.mikepenz.iconics.IconicsDrawable;
+import com.mikepenz.iconics.IconicsSize;
 import com.mikepenz.iconics.typeface.IIcon;
 
 import net.yupol.transmissionremote.app.R;
@@ -14,8 +16,8 @@ public class IconUtils {
     public static void setMenuIcon(Context context, MenuItem item, IIcon icon, int color) {
         item.setIcon(new IconicsDrawable(context)
                 .icon(icon)
-                .color(color)
-                .sizeRes(R.dimen.menu_item_icon_size)
+                .color(IconicsColor.colorInt(color))
+                .size(IconicsSize.res(R.dimen.menu_item_icon_size))
         );
     }
 

@@ -3,8 +3,6 @@ package net.yupol.transmissionremote.app.drawer;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
@@ -13,12 +11,16 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
+
 import com.google.common.base.Function;
 import com.google.common.collect.FluentIterable;
-import com.mikepenz.google_material_typeface_library.GoogleMaterial;
+import com.mikepenz.iconics.IconicsColor;
 import com.mikepenz.iconics.IconicsDrawable;
+import com.mikepenz.iconics.IconicsSize;
+import com.mikepenz.iconics.typeface.library.googlematerial.GoogleMaterial;
 import com.mikepenz.materialdrawer.Drawer;
-import com.mikepenz.materialdrawer.icons.MaterialDrawerFont;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.mikepenz.materialdrawer.view.BezelImageView;
@@ -63,14 +65,13 @@ public class HeaderView extends RelativeLayout implements View.OnClickListener {
 
     private HeaderListener listener;
 
-    private ArrayList<IDrawerItem> serverSelectionItems;
+    private List<IDrawerItem<?>> serverSelectionItems;
 
-    private int primaryInverseTextColor;
     private int secondaryTextColor;
 
-    private Drawer.OnDrawerItemClickListener drawerItemClickListener = new Drawer.OnDrawerItemClickListener() {
+    private final Drawer.OnDrawerItemClickListener drawerItemClickListener = new Drawer.OnDrawerItemClickListener() {
         @Override
-        public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
+        public boolean onItemClick(View view, int position, @NonNull IDrawerItem drawerItem) {
             if (listener == null) return false;
 
             int id = (int) drawerItem.getIdentifier();
@@ -93,6 +94,8 @@ public class HeaderView extends RelativeLayout implements View.OnClickListener {
         }
     };
 
+    private final Drawer.OnDrawerItemLongClickListener drawerItemLongClickListener = (view, position, iDrawerItem) -> false;
+
     public HeaderView(Context context) {
         this(context, null);
     }
@@ -101,17 +104,19 @@ public class HeaderView extends RelativeLayout implements View.OnClickListener {
         super(context, attrs);
         inflate(context, R.layout.drawer_header, this);
 
-        primaryInverseTextColor = ColorUtils.resolveColor(context, android.R.attr.textColorPrimaryInverse, R.color.text_primary_inverse);
+        final IconicsColor primaryInverseTextColor = IconicsColor.colorInt(
+                ColorUtils.resolveColor(context, android.R.attr.textColorPrimaryInverse, R.color.text_primary_inverse)
+        );
         secondaryTextColor = ColorUtils.resolveColor(context, android.R.attr.textColorSecondary, R.color.text_secondary);
 
         nameText = findViewById(R.id.name_text);
 
         final ImageView serverListButton = findViewById(R.id.server_list_button);
         expandIcon = new IconicsDrawable(context)
-                .icon(serverListExpanded ? MaterialDrawerFont.Icon.mdf_arrow_drop_up : MaterialDrawerFont.Icon.mdf_arrow_drop_down)
+                .icon(serverListExpanded ? GoogleMaterial.Icon.gmd_arrow_drop_up : GoogleMaterial.Icon.gmd_arrow_drop_down)
                 .color(primaryInverseTextColor)
-                .sizeRes(R.dimen.material_drawer_account_header_dropdown)
-                .paddingRes(R.dimen.material_drawer_account_header_dropdown_padding);
+                .size(IconicsSize.res(R.dimen.material_drawer_account_header_dropdown))
+                .padding(IconicsSize.res(R.dimen.material_drawer_account_header_dropdown_padding));
         serverListButton.setImageDrawable(expandIcon);
         View serverTextSection = findViewById(R.id.header_text_section);
         serverTextSection.setOnClickListener(new OnClickListener() {
@@ -128,8 +133,8 @@ public class HeaderView extends RelativeLayout implements View.OnClickListener {
         ImageButton settingsButton = findViewById(R.id.settings_button);
         settingsButton.setImageDrawable(new IconicsDrawable(context).icon(GoogleMaterial.Icon.gmd_settings)
                 .color(primaryInverseTextColor)
-                .sizeRes(R.dimen.header_settings_size)
-                .paddingRes(R.dimen.header_settings_padding));
+                .size(IconicsSize.res(R.dimen.header_settings_size))
+                .padding(IconicsSize.res(R.dimen.header_settings_padding)));
         settingsButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -275,14 +280,14 @@ public class HeaderView extends RelativeLayout implements View.OnClickListener {
 
         PrimaryDrawerItem addItem = new PrimaryDrawerItem()
                 .withName(R.string.add_server)
-                .withIcon(new IconicsDrawable(getContext(), GoogleMaterial.Icon.gmd_add).paddingDp(4).color(secondaryTextColor))
+                .withIcon(new IconicsDrawable(getContext(), GoogleMaterial.Icon.gmd_add).padding(IconicsSize.dp(4)).color(IconicsColor.colorInt(secondaryTextColor)))
                 .withSelectable(false)
                 .withIdentifier(DRAWER_ITEM_ID_ADD_SERVER);
         serverSelectionItems.add(addItem);
 
         PrimaryDrawerItem manageItem = new PrimaryDrawerItem()
                 .withName(R.string.manage_servers)
-                .withIcon(new IconicsDrawable(getContext(), GoogleMaterial.Icon.gmd_settings).paddingDp(2).color(secondaryTextColor))
+                .withIcon(new IconicsDrawable(getContext(), GoogleMaterial.Icon.gmd_settings).padding(IconicsSize.dp(2)).color(IconicsColor.colorInt(secondaryTextColor)))
                 .withSelectable(false)
                 .withIdentifier(DRAWER_ITEM_ID_MANAGE_SERVERS);
         serverSelectionItems.add(manageItem);
@@ -311,15 +316,19 @@ public class HeaderView extends RelativeLayout implements View.OnClickListener {
 
     public void showServersList() {
         serverListExpanded = true;
-        expandIcon.icon(MaterialDrawerFont.Icon.mdf_arrow_drop_up);
-        drawer.switchDrawerContent(drawerItemClickListener, null, serverSelectionItems,
-                servers.indexOf(serversInCircles[0]) + 1);
+        expandIcon.icon(GoogleMaterial.Icon.gmd_arrow_drop_up);
+        drawer.switchDrawerContent(
+                drawerItemClickListener,
+                drawerItemLongClickListener,
+                serverSelectionItems,
+                servers.indexOf(serversInCircles[0]) + 1
+        );
 
     }
 
     private void hideServersList() {
         serverListExpanded = false;
-        expandIcon.icon(MaterialDrawerFont.Icon.mdf_arrow_drop_down);
+        expandIcon.icon(GoogleMaterial.Icon.gmd_arrow_drop_down);
         drawer.resetDrawerContent();
     }
 
