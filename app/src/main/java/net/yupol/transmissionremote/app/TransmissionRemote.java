@@ -6,18 +6,13 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
-import android.os.Build;
 import android.preference.PreferenceManager;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatDelegate;
 
 import com.evernote.android.job.JobManager;
-import com.google.common.base.Function;
-import com.google.common.base.Predicate;
-import com.google.common.base.Predicates;
-import com.google.common.collect.FluentIterable;
 
 import net.yupol.transmissionremote.app.filtering.Filter;
 import net.yupol.transmissionremote.app.filtering.Filters;
@@ -36,8 +31,10 @@ import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.WeakHashMap;
+import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
 
@@ -64,27 +61,27 @@ public class TransmissionRemote extends Application implements SharedPreferences
 
     private static TransmissionRemote instance;
 
-    private List<Server> servers = new LinkedList<>();
+    private final List<Server> servers = new LinkedList<>();
     private Server activeServer;
-    private List<OnActiveServerChangedListener> activeServerListeners = new LinkedList<>();
+    private final List<OnActiveServerChangedListener> activeServerListeners = new LinkedList<>();
 
-    private List<OnServerListChangedListener> serverListListeners = new LinkedList<>();
+    private final List<OnServerListChangedListener> serverListListeners = new LinkedList<>();
     private boolean speedLimitEnabled;
 
-    private List<OnSpeedLimitChangedListener> speedLimitChangedListeners = new LinkedList<>();
+    private final List<OnSpeedLimitChangedListener> speedLimitChangedListeners = new LinkedList<>();
     private Collection<Torrent> torrents = Collections.emptyList();
 
-    private List<OnTorrentsUpdatedListener> torrentsUpdatedListeners = new LinkedList<>();
+    private final List<OnTorrentsUpdatedListener> torrentsUpdatedListeners = new LinkedList<>();
     private Filter activeFilter = Filters.ALL;
-    private List<OnFilterSelectedListener> filterSelectedListeners = new LinkedList<>();
+    private final List<OnFilterSelectedListener> filterSelectedListeners = new LinkedList<>();
 
     private SortedBy sortedBy = SortedBy.NAME;
     private SortOrder sortOrder = SortOrder.ASCENDING;
-    private List<OnSortingChangedListener> sortingChangedListeners = new LinkedList<>();
+    private final List<OnSortingChangedListener> sortingChangedListeners = new LinkedList<>();
 
     private String defaultDownloadDir;
 
-    private Map<Server, Boolean> speedLimitsCache = new WeakHashMap<>();
+    private final Map<Server, Boolean> speedLimitsCache = new WeakHashMap<>();
     private SharedPreferences sharedPreferences;
 
     @Override
@@ -105,9 +102,7 @@ public class TransmissionRemote extends Application implements SharedPreferences
             BackgroundUpdater.start(this);
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            createNotificationChannel();
-        }
+        createNotificationChannel();
     }
 
     @Override
@@ -185,7 +180,7 @@ public class TransmissionRemote extends Application implements SharedPreferences
         activeServer = server;
         persistActiveServer();
         fireActiveServerChangedEvent();
-        setSpeedLimitEnabled(speedLimitsCache.containsKey(server) ? speedLimitsCache.get(server) : false);
+        setSpeedLimitEnabled(speedLimitsCache.getOrDefault(server, false));
     }
 
     public void addOnActiveServerChangedListener(@Nonnull OnActiveServerChangedListener listener) {
@@ -359,12 +354,7 @@ public class TransmissionRemote extends Application implements SharedPreferences
     }
 
     public void persistServers() {
-        Set<String> serversInJson = FluentIterable.from(servers).transform(new Function<Server, String>() {
-            @Override
-            public String apply(Server server) {
-                return server.toJson();
-            }
-        }).toSet();
+        Set<String> serversInJson = servers.stream().map(Server::toJson).collect(Collectors.toSet());
 
         SharedPreferences sp = getSharedPreferences(SHARED_PREFS_NAME, MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();
@@ -375,22 +365,17 @@ public class TransmissionRemote extends Application implements SharedPreferences
     private void restoreServers() {
         SharedPreferences sp = getSharedPreferences(SHARED_PREFS_NAME, MODE_PRIVATE);
 
-        Set<String> serversInJson = sp.getStringSet(KEY_SERVERS, Collections.<String>emptySet());
-        servers.addAll(FluentIterable.from(serversInJson).transform(new Function<String, Server>() {
-            @Override public Server apply(String serverInJson) {
-                return Server.fromJson(serverInJson);
-            }
-        }).filter(Predicates.notNull()).toList());
+        Set<String> serversInJson = sp.getStringSet(KEY_SERVERS, Collections.emptySet());
+        servers.addAll(serversInJson.stream().map(Server::fromJson).filter(Objects::nonNull).collect(Collectors.toList()));
 
         String activeServerInJson = sp.getString(KEY_ACTIVE_SERVER, null);
         if (activeServerInJson != null) {
             final Server persistedActiveServer = Server.fromJson(activeServerInJson);
             // active server should point to object in all servers list
-            activeServer = FluentIterable.from(servers).firstMatch(new Predicate<Server>() {
-                @Override public boolean apply(Server server) {
-                    return server.equals(persistedActiveServer);
-                }
-            }).orNull();
+            activeServer = servers.stream()
+                    .filter(server -> server.equals(persistedActiveServer))
+                    .findFirst()
+                    .orElse(null);
             fireActiveServerChangedEvent();
         } else {
             activeServer = null;
@@ -436,7 +421,6 @@ public class TransmissionRemote extends Application implements SharedPreferences
         sortOrder = SortOrder.values()[sp.getInt(KEY_SORT_ORDER, 0)];
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     private void createNotificationChannel() {
         NotificationChannel channel = new NotificationChannel(
                 NOTIFICATION_CHANNEL_ID,
