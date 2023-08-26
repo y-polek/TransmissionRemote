@@ -2,15 +2,12 @@ package net.yupol.transmissionremote.app;
 
 import static android.preference.PreferenceManager.getDefaultSharedPreferences;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.app.SearchManager;
 import android.content.ActivityNotFoundException;
 import android.content.ContentResolver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -20,7 +17,6 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.provider.OpenableColumns;
-import android.provider.Settings;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -98,7 +94,6 @@ import net.yupol.transmissionremote.app.transport.request.SessionSetRequest;
 import net.yupol.transmissionremote.app.transport.request.StartTorrentRequest;
 import net.yupol.transmissionremote.app.transport.request.StopTorrentRequest;
 import net.yupol.transmissionremote.app.transport.request.TorrentRemoveRequest;
-import net.yupol.transmissionremote.app.utils.DialogUtils;
 import net.yupol.transmissionremote.app.utils.IconUtils;
 import net.yupol.transmissionremote.app.utils.ThemeUtils;
 
@@ -119,13 +114,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
-import permissions.dispatcher.NeedsPermission;
-import permissions.dispatcher.OnNeverAskAgain;
-import permissions.dispatcher.OnShowRationale;
-import permissions.dispatcher.PermissionRequest;
-import permissions.dispatcher.RuntimePermissions;
-
-@RuntimePermissions
 public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.TorrentUpdateListener,
         SharedPreferences.OnSharedPreferenceChangeListener, TransmissionRemote.OnSpeedLimitChangedListener,
         TorrentListFragment.OnTorrentSelectedListener, TorrentListFragment.ContextualActionBarListener,
@@ -147,7 +135,6 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
     private static final String TAG_OPEN_TORRENT_DIALOG = "tag_open_torrent_dialog";
     private static final String TAG_OPEN_TORRENT_BY_ADDRESS_DIALOG = "tag_open_torrent_by_address_dialog";
     private static final String TAG_DOWNLOAD_LOCATION_DIALOG = "tag_download_location_dialog";
-    private static final String TAG_STORAGE_PERMISSION_NEVER_ASK_AGAIN_DIALOG = "tag_storage_permission_never_ask_again_dialog";
 
     private static final String MIME_TYPE_TORRENT = "application/x-bittorrent";
     private static final String SCHEME_MAGNET = "magnet";
@@ -162,7 +149,6 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
     private static final String KEY_HAS_TORRENT_LIST = "has_torrent_list";
     private static final String KEY_OPEN_TORRENT_URI = "key_open_torrent_uri";
     private static final String KEY_OPEN_TORRENT_SCHEME = "key_open_torrent_scheme";
-    private static final String KEY_OPEN_TORRENT_PERMISSION_RATIONALE_OPEN = "key_open_torrent_permission_rationale_open";
     private static final String KEY_FAB_EXPANDED = "key_fab_expanded";
 
     private static final int DRAWER_ITEM_ID_SETTINGS = 101;
@@ -220,7 +206,6 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
     private String openTorrentScheme;
     private boolean openTorrentUriOnResume = false;
     private boolean openTorrentUriWithSchemeOnResume = false;
-    private boolean openTorrentPermissionRationaleOpen = false;
     private Spinner toolbarSpinner;
     private MainActivityBinding binding;
     private boolean showFab;
@@ -246,7 +231,6 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
         if (savedInstanceState != null) {
             openTorrentUri = savedInstanceState.getParcelable(KEY_OPEN_TORRENT_URI);
             openTorrentScheme = savedInstanceState.getString(KEY_OPEN_TORRENT_SCHEME);
-            openTorrentPermissionRationaleOpen = savedInstanceState.getBoolean(KEY_OPEN_TORRENT_PERMISSION_RATIONALE_OPEN);
         }
     }
 
@@ -483,12 +467,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
     @Override
     protected void onStart() {
         super.onStart();
-        if (openTorrentPermissionRationaleOpen) {
-            openTorrentPermissionRationaleOpen = false;
-            MainActivityPermissionsDispatcher.openTorrentFileByUriWithSchemeWithCheck(this, openTorrentUri, openTorrentScheme);
-        } else {
-            openTorrentFromIntent();
-        }
+        openTorrentFromIntent();
     }
 
     @Override
@@ -518,15 +497,14 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
         } else if (ContentResolver.SCHEME_FILE.equals(scheme) || ContentResolver.SCHEME_CONTENT.equals(scheme)) {
             openTorrentUri = data;
             openTorrentScheme = scheme;
-            MainActivityPermissionsDispatcher.openTorrentFileByUriWithSchemeWithCheck(this, data, scheme);
+            openTorrentFileByUriWithScheme(data, scheme);
         } else if (SCHEME_HTTP.equals(scheme) || SCHEME_HTTPS.equals(scheme)) {
             openTorrentByRemoteFile(data);
         }
     }
 
     @SuppressLint("InlinedApi")
-    @NeedsPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
-    public void openTorrentFileByUriWithScheme(Uri uri, String scheme) {
+    private void openTorrentFileByUriWithScheme(Uri uri, String scheme) {
         if (!isActivityResumed) {
             openTorrentUriWithSchemeOnResume = true;
             return;
@@ -562,44 +540,6 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
                 Log.e(TAG, "Can't open torrent file", e);
             }
         }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        MainActivityPermissionsDispatcher.onRequestPermissionsResult(this, requestCode, grantResults);
-    }
-
-    @SuppressLint("InlinedApi")
-    @OnShowRationale(Manifest.permission.READ_EXTERNAL_STORAGE)
-    public void showStoragePermissionRationale(final PermissionRequest request) {
-        openTorrentPermissionRationaleOpen = true;
-        new AlertDialog.Builder(this)
-                .setMessage(R.string.storage_permission_rationale)
-                .setPositiveButton(R.string.storage_permission_allow, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int which) {
-                        openTorrentPermissionRationaleOpen = false;
-                        request.proceed();
-                    }
-                })
-                .setNegativeButton(R.string.storage_permission_deny, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        openTorrentPermissionRationaleOpen = false;
-                        request.cancel();
-                    }
-                })
-                .setCancelable(false)
-                .show();
-    }
-
-    @SuppressLint("InlinedApi")
-    @OnNeverAskAgain(Manifest.permission.READ_EXTERNAL_STORAGE)
-    public void onStoragePermissionNeverAskAgain() {
-        DialogUtils.showDialogAllowingStateLoss(
-                new StoragePermissionNeverAskAgainDialog(),
-                getSupportFragmentManager(), TAG_STORAGE_PERMISSION_NEVER_ASK_AGAIN_DIALOG);
     }
 
     @Override
@@ -668,7 +608,6 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
 
         outState.putParcelable(KEY_OPEN_TORRENT_URI, openTorrentUri);
         outState.putString(KEY_OPEN_TORRENT_SCHEME, openTorrentScheme);
-        outState.putBoolean(KEY_OPEN_TORRENT_PERMISSION_RATIONALE_OPEN, openTorrentPermissionRationaleOpen);
         outState.putBoolean(KEY_FAB_EXPANDED, binding.addTorrentButton.isExpanded());
     }
 
@@ -743,7 +682,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
             }
 
             @Override
-            public boolean onMenuItemActionCollapse(MenuItem item) {
+            public boolean onMenuItemActionCollapse(@NonNull MenuItem item) {
                 searchView.setQuery("", false);
                 currentSearchQuery = null;
                 TorrentListFragment torrentListFragment = getTorrentListFragment();
@@ -821,6 +760,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_CODE_SERVER_PARAMS) {
             if (resultCode == RESULT_OK) {
                 Server server = data.getParcelableExtra(AddServerActivity.EXTRA_SEVER);
@@ -1265,30 +1205,6 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
                 }
             }
             return null;
-        }
-
-        @Override
-        protected abstract void onPostExecute(byte[] bytes);
-    }
-
-    public static class StoragePermissionNeverAskAgainDialog extends DialogFragment {
-        @NonNull
-        @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
-            return new AlertDialog.Builder(getContext())
-                    .setMessage(R.string.storage_permission_never_ask_again_message)
-                    .setPositiveButton(R.string.app_settings, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            Intent intent = new Intent();
-                            intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                            Uri uri = Uri.fromParts("package", getContext().getPackageName(), null);
-                            intent.setData(uri);
-                            startActivity(intent);
-                        }
-                    })
-                    .setNegativeButton(android.R.string.cancel, null)
-                    .create();
         }
     }
 }

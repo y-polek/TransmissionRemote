@@ -149,10 +149,8 @@
     <string name="no_directory">没有此目录</string>
     <string name="use_default_directory">使用默认目录</string>
     <string name="unknown_free_space_confirmation">没有此目录。\n确定要添加种子吗？</string>
-    <string name="storage_permission_rationale">Transmission Remote 需要“储存”权限来打开本地种子文件。</string>
     <string name="storage_permission_allow">允许</string>
     <string name="storage_permission_deny">拒绝</string>
-    <string name="storage_permission_never_ask_again_message">Transmission Remote 需要“储存”权限来打开本地种子文件。\n你可以在应用程序设置中授予该权限。</string>
     <string name="app_settings">程序设置</string>
     <string name="select_server_title">服务器：</string>
 

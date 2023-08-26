@@ -153,10 +153,8 @@
     <string name="no_directory">そのようなディレクトリはありません</string>
     <string name="use_default_directory">既定のディレクトリを使う</string>
     <string name="unknown_free_space_confirmation">そのようなディレクトリはありません。\nそれでもtorrentを追加しますか?</string>
-    <string name="storage_permission_rationale">ローカルのTorrentファイルを開くのためにストレージの権限を許可する必要があります。</string>
     <string name="storage_permission_allow">許可する</string>
     <string name="storage_permission_deny">許可しない</string>
-    <string name="storage_permission_never_ask_again_message">ローカルのTorrentファイルを開くのためにストレージの権限を許可する必要があります。\nシステム設定で権限を許可できます。</string>
     <string name="app_settings">アプリの内設定</string>
     <string name="select_server_title">サーバ:</string>
 

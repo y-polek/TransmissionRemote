@@ -149,10 +149,8 @@
     <string name="no_directory">Directory non esistente</string>
     <string name="use_default_directory">Usa la directory di default</string>
     <string name="unknown_free_space_confirmation">Directory non esistente. \nSei sicuro di voler aggiungere il torrent?</string>
-    <string name="storage_permission_rationale">Transmission Remote necessita dell\'autorizzazione di \"Archivio\" per poter aprire files torrent locali.</string>
     <string name="storage_permission_allow">Permetti</string>
     <string name="storage_permission_deny">Nega</string>
-    <string name="storage_permission_never_ask_again_message">Transmission Remote necessita dell\'autorizzazione di \"Archivio\" per poter aprire files torrent locali.\nPuoi concedere l\'autorizzazione in Impostazioni App.</string>
     <string name="app_settings">Impostazioni App</string>
     <string name="select_server_title">Server:</string>
 

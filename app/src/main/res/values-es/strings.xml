@@ -150,10 +150,8 @@
     <string name="no_directory">No existe el directorio</string>
     <string name="use_default_directory">Usar el directorio predeterminado</string>
     <string name="unknown_free_space_confirmation">No existe ese directorio. \n¿Está seguro de que desea añadir el torrent?</string>
-    <string name="storage_permission_rationale">Transmission Remote necesita el permiso \"Almacenamiento\" para abrir archivos torrent locales.</string>
     <string name="storage_permission_allow">Permitir</string>
     <string name="storage_permission_deny">Denegar</string>
-    <string name="storage_permission_never_ask_again_message">Transmission Remote necesita el permiso \"Almacenamiento\" para abrir archivos torrent locales.\nPuede conceder el permiso en los ajustes de la aplicación.</string>
     <string name="app_settings">Ajustes de Aplicacion</string>
     <string name="select_server_title">Servidor:</string>
 
