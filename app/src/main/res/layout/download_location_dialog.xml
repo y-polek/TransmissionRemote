@@ -56,7 +56,6 @@
                     android:background="?android:attr/selectableItemBackground"
                     android:textSize="@dimen/edit_text_drop_down_icon_text_size"
                     android:textColor="?android:attr/textColorSecondary"
-                    android:text="{gmd_arrow_drop_down}"
                     tools:ignore="HardcodedText,SpUsage" />
             </FrameLayout>
 

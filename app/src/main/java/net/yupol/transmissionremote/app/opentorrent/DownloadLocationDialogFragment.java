@@ -3,13 +3,7 @@ package net.yupol.transmissionremote.app.opentorrent;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import androidx.databinding.DataBindingUtil;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.DialogFragment;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.widget.ListPopupWindow;
 import android.text.Editable;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -23,6 +17,13 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.ListPopupWindow;
+import androidx.databinding.DataBindingUtil;
+import androidx.fragment.app.DialogFragment;
 
 import com.google.common.base.Strings;
 import com.octo.android.robospice.persistence.exception.SpiceException;
@@ -69,17 +70,16 @@ public class DownloadLocationDialogFragment extends DialogFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        app = TransmissionRemote.getApplication(getContext());
+        app = TransmissionRemote.getApplication(requireContext());
     }
 
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-
-        binding = DataBindingUtil.inflate(getActivity().getLayoutInflater(),
+        binding = DataBindingUtil.inflate(getLayoutInflater(),
                 R.layout.download_location_dialog, null, false);
 
-        AlertDialog dialog = new AlertDialog.Builder(getActivity())
+        AlertDialog dialog = new AlertDialog.Builder(requireContext())
                 .setView(binding.getRoot())
                 .setPositiveButton(R.string.add, null)
                 .setNegativeButton(android.R.string.cancel, null)
@@ -102,24 +102,27 @@ public class DownloadLocationDialogFragment extends DialogFragment {
                 }
             });
             sessionGetRequest = new SessionGetRequest();
-            getTransportManager().doRequest(new SessionGetRequest(), new RequestListener<ServerSettings>() {
+            getTransportManager().doRequest(new SessionGetRequest(), new RequestListener<>() {
                 @Override
                 public void onRequestSuccess(ServerSettings serverSettings) {
                     binding.setLoadingInProgress(false);
                     binding.downloadLocationText.setText(Strings.nullToEmpty(serverSettings.getDownloadDir()));
                     AlertDialog dialog = (AlertDialog) getDialog();
-                    if (dialog != null) dialog.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(true);
+                    if (dialog != null)
+                        dialog.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(true);
                 }
 
                 @Override
                 public void onRequestFailure(SpiceException spiceException) {
                     binding.setLoadingInProgress(false);
                     AlertDialog dialog = (AlertDialog) getDialog();
-                    if (dialog != null) dialog.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(true);
+                    if (dialog != null)
+                        dialog.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(true);
                 }
             });
         }
 
+        binding.downloadLocationDropdownButton.setText("{cmd_menu_down}");
         binding.downloadLocationDropdownButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -169,10 +172,10 @@ public class DownloadLocationDialogFragment extends DialogFragment {
 
     private void showDownloadLocationSuggestions(Server server) {
         if (downloadLocationsPopup != null && downloadLocationsPopup.isShowing()) return;
-        downloadLocationsPopup = new ListPopupWindow(getContext());
+        downloadLocationsPopup = new ListPopupWindow(requireContext());
         downloadLocationsPopup.setModal(false);
 
-        final ArrayAdapter<String> downloadLocationAdapter = new ArrayAdapter<>(getContext(),
+        final ArrayAdapter<String> downloadLocationAdapter = new ArrayAdapter<>(requireContext(),
                 android.R.layout.simple_spinner_dropdown_item, server.getSavedDownloadLocations());
         downloadLocationsPopup.setAdapter(downloadLocationAdapter);
         downloadLocationsPopup.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -199,7 +202,7 @@ public class DownloadLocationDialogFragment extends DialogFragment {
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putBoolean(KEY_LOADING_IN_PROGRESS, binding.getLoadingInProgress());
     }
@@ -218,7 +221,7 @@ public class DownloadLocationDialogFragment extends DialogFragment {
                         notifyListener();
                         dialog.dismiss();
                     } else {
-                        new AlertDialog.Builder(getContext())
+                        new AlertDialog.Builder(requireContext())
                                 .setMessage(R.string.unknown_free_space_confirmation)
                                 .setPositiveButton(R.string.add, new DialogInterface.OnClickListener() {
                                     @Override
@@ -255,14 +258,14 @@ public class DownloadLocationDialogFragment extends DialogFragment {
     }
 
     @Override
-    public void onDismiss(DialogInterface dialog) {
+    public void onDismiss(@NonNull DialogInterface dialog) {
         if (currentRequest != null) currentRequest.cancel();
         if (sessionGetRequest != null) sessionGetRequest.cancel();
         super.onDismiss(dialog);
     }
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         try {
             listener = (OnDownloadLocationSelectedListener) getActivity();
@@ -353,7 +356,7 @@ public class DownloadLocationDialogFragment extends DialogFragment {
         }
 
         MovementMethod m = view.getMovementMethod();
-        if ((m == null) || !(m instanceof LinkMovementMethod)) {
+        if (!(m instanceof LinkMovementMethod)) {
             view.setMovementMethod(LinkMovementMethod.getInstance());
         }
     }
@@ -364,14 +367,14 @@ public class DownloadLocationDialogFragment extends DialogFragment {
 
     private static class ClickSpan extends ClickableSpan {
 
-        private OnClickListener mListener;
+        private final OnClickListener mListener;
 
         ClickSpan(OnClickListener listener) {
             mListener = listener;
         }
 
         @Override
-        public void onClick(View widget) {
+        public void onClick(@NonNull View widget) {
             if (mListener != null) mListener.onClick();
         }
 
