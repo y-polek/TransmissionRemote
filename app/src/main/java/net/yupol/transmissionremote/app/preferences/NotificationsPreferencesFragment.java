@@ -1,8 +1,6 @@
 package net.yupol.transmissionremote.app.preferences;
 
-import android.annotation.TargetApi;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
@@ -48,12 +46,10 @@ public class NotificationsPreferencesFragment extends PreferenceFragment {
         }
     }
 
-    @TargetApi(Build.VERSION_CODES.O)
     private void openNotificationChannelSettings() {
         startActivity(notificationChannelScreen);
     }
 
-    @TargetApi(Build.VERSION_CODES.O)
     private void setupNotificationChannelIntent() {
         notificationChannelScreen = new Intent(Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS);
         notificationChannelScreen.putExtra(Settings.EXTRA_CHANNEL_ID, TransmissionRemote.NOTIFICATION_CHANNEL_ID);

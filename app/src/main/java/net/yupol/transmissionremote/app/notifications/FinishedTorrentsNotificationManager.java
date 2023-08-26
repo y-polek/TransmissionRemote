@@ -7,11 +7,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
+
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.TaskStackBuilder;
-
-import com.google.common.base.Function;
-import com.google.common.base.Joiner;
 
 import net.yupol.transmissionremote.app.MainActivity;
 import net.yupol.transmissionremote.app.R;
@@ -23,8 +21,7 @@ import net.yupol.transmissionremote.app.server.Server;
 
 import java.util.Collection;
 import java.util.List;
-
-import static com.google.common.collect.FluentIterable.from;
+import java.util.stream.Collectors;
 
 public class FinishedTorrentsNotificationManager {
 
@@ -61,18 +58,14 @@ public class FinishedTorrentsNotificationManager {
     private void showFinishedNotification(Collection<Torrent> finishedTorrents) {
         final int count = finishedTorrents.size();
         String title = context.getResources().getQuantityString(R.plurals.torrents_finished, count, count);
-        String text = from(finishedTorrents).limit(5).transform(new Function<Torrent, String>() {
-            @Override
-            public String apply(Torrent t) {
-                return t.getName();
-            }
-        }).join(Joiner.on(", "));
-        NotificationCompat.Builder builder;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            builder = new NotificationCompat.Builder(context, TransmissionRemote.NOTIFICATION_CHANNEL_ID);
-        } else {
-            builder = new NotificationCompat.Builder(context);
-        }
+        final String text = finishedTorrents.stream()
+                .limit(5)
+                .map(Torrent::getName)
+                .collect(Collectors.joining(", "));
+        final NotificationCompat.Builder builder = new NotificationCompat.Builder(
+                context,
+                TransmissionRemote.NOTIFICATION_CHANNEL_ID
+        );
         builder.setSmallIcon(R.drawable.transmission)
                 .setContentTitle(title)
                 .setContentText(text)

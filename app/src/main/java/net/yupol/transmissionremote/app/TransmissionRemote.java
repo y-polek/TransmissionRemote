@@ -427,7 +427,6 @@ public class TransmissionRemote extends Application implements SharedPreferences
                 getString(R.string.notification_channel_name),
                 NotificationManager.IMPORTANCE_DEFAULT);
         NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        assert manager != null;
         manager.createNotificationChannel(channel);
     }
 
