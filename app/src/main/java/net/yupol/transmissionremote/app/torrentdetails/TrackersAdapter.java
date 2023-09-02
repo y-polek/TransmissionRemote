@@ -26,7 +26,7 @@ public class TrackersAdapter extends RecyclerView.Adapter<TrackersAdapter.ViewHo
     private SortOrder order;
 
     private TrackerStats[] trackerStats = {};
-    private TrackerActionListener listener;
+    private final TrackerActionListener listener;
 
     public TrackersAdapter(TrackerActionListener listener) {
         this.listener = listener;
@@ -51,8 +51,9 @@ public class TrackersAdapter extends RecyclerView.Adapter<TrackersAdapter.ViewHo
         Arrays.sort(trackerStats, order == SortOrder.ASCENDING ? comparator : Collections.reverseOrder(comparator));
     }
 
+    @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         TrackerItemLayoutBinding binding = DataBindingUtil.inflate(
                 LayoutInflater.from(parent.getContext()), R.layout.tracker_item_layout, parent, false);
         return new ViewHolder(binding);
@@ -76,7 +77,7 @@ public class TrackersAdapter extends RecyclerView.Adapter<TrackersAdapter.ViewHo
 
     public class ViewHolder extends RecyclerView.ViewHolder implements PopupMenu.OnMenuItemClickListener {
 
-        private TrackerItemLayoutBinding binding;
+        private final TrackerItemLayoutBinding binding;
 
         public ViewHolder(TrackerItemLayoutBinding binding) {
             super(binding.getRoot());

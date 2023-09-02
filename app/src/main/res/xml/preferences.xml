@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <ListPreference
         android:key="@string/update_interval_key"
         android:title="@string/update_interval_title"
@@ -8,24 +9,29 @@
         android:summary="@string/update_interval_summary"
         android:entries="@array/pref_update_interval_entries"
         android:entryValues="@array/pref_update_interval_entry_values"
-        android:defaultValue="@string/update_interval_default_value" />
+        android:defaultValue="@string/update_interval_default_value"
+        app:iconSpaceReserved="false" />
     <PreferenceScreen
         android:title="@string/servers"
-        android:summary="@string/add_remove_servers">
+        android:summary="@string/add_remove_servers"
+        app:iconSpaceReserved="false">
         <intent android:action=".preferences.ServersActivity"/>
     </PreferenceScreen>
     <PreferenceScreen
         android:title="@string/preferences_notifications_title"
-        android:summary="@string/preferences_notifications_summary">
+        android:summary="@string/preferences_notifications_summary"
+        app:iconSpaceReserved="false">
         <intent android:action=".preferences.NotificationsPreferencesActivity"/>
     </PreferenceScreen>
     <CheckBoxPreference
         android:title="@string/show_add_torrent_fab_title"
         android:key="@string/show_add_torrent_fab_key"
-        android:defaultValue="@string/show_add_torrent_fab_default_value" />
+        android:defaultValue="@string/show_add_torrent_fab_default_value"
+        app:iconSpaceReserved="false" />
     <PreferenceScreen
         android:title="@string/preferences_advanced_title"
-        android:summary="@string/preferences_advanced_summary">
+        android:summary="@string/preferences_advanced_summary"
+        app:iconSpaceReserved="false">
         <intent android:action=".preferences.AdvancedPreferencesActivity" />
     </PreferenceScreen>
 </PreferenceScreen>

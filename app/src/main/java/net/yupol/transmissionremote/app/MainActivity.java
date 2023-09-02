@@ -50,8 +50,6 @@ import com.mikepenz.iconics.IconicsColor;
 import com.mikepenz.iconics.IconicsDrawable;
 import com.mikepenz.iconics.IconicsSize;
 import com.mikepenz.iconics.typeface.library.community.material.CommunityMaterial;
-import com.mikepenz.iconics.typeface.library.fonrawesome.FontAwesome;
-import com.mikepenz.iconics.typeface.library.googlematerial.GoogleMaterial;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.interfaces.OnCheckedChangeListener;
@@ -100,7 +98,6 @@ import net.yupol.transmissionremote.app.transport.request.SessionSetRequest;
 import net.yupol.transmissionremote.app.transport.request.StartTorrentRequest;
 import net.yupol.transmissionremote.app.transport.request.StopTorrentRequest;
 import net.yupol.transmissionremote.app.transport.request.TorrentRemoveRequest;
-import net.yupol.transmissionremote.app.utils.IconUtils;
 import net.yupol.transmissionremote.app.utils.ThemeUtils;
 
 import org.apache.commons.io.FileUtils;
@@ -307,11 +304,11 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
     private void setupDrawer() {
         PrimaryDrawerItem settingsItem = new PrimaryDrawerItem().withName(R.string.action_settings)
                 .withIdentifier(DRAWER_ITEM_ID_SETTINGS)
-                .withIcon(GoogleMaterial.Icon.gmd_settings)
+                .withIcon(R.drawable.ic_settings)
                 .withSelectable(false);
 
         SwitchDrawerItem nightModeItem = new SwitchDrawerItem().withName(R.string.night_mode)
-                .withIcon(CommunityMaterial.Icon2.cmd_theme_light_dark)
+                .withIcon(R.drawable.ic_dark_mode)
                 .withSelectable(false)
                 .withChecked(ThemeUtils.isInNightMode(this))
                 .withOnCheckedChangeListener(new OnCheckedChangeListener() {
@@ -365,7 +362,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
                 .withToolbar(binding.toolbar)
                 .withHeader(headerView)
                 .addDrawerItems(new SectionDrawerItem().withName(R.string.drawer_sort_by).withDivider(false))
-                .addDrawerItems((IDrawerItem[]) sortItems)
+                .addDrawerItems(sortItems)
                 .addStickyDrawerItems(
                         nightModeItem,
                         settingsItem,
@@ -435,16 +432,6 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
             }
         });
 
-        binding.addTorrentByFileButton.setIconDrawable(
-                new IconicsDrawable(this, CommunityMaterial.Icon.cmd_file_outline)
-                        .padding(IconicsSize.res(R.dimen.fab_icon_padding))
-                        .color(IconicsColor.colorRes(R.color.text_primary_inverse)));
-
-        binding.addTorrentByMagnetButton.setIconDrawable(
-                new IconicsDrawable(this, CommunityMaterial.Icon2.cmd_magnet)
-                        .padding(IconicsSize.res(R.dimen.fab_icon_padding))
-                        .color(IconicsColor.colorRes(R.color.text_primary_inverse)));
-
         binding.addTorrentButton.setOnFloatingActionsMenuUpdateListener(new FloatingActionsMenu.OnFloatingActionsMenuUpdateListener() {
             @Override
             public void onMenuExpanded() {
@@ -457,12 +444,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
             }
         });
 
-        binding.fabOverlay.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                binding.addTorrentButton.collapse();
-            }
-        });
+        binding.fabOverlay.setOnClickListener(v -> binding.addTorrentButton.collapse());
 
         binding.fabOverlay.setVisibility(binding.addTorrentButton.isExpanded() ? View.VISIBLE : View.GONE);
     }
@@ -654,9 +636,6 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.torrent_list_menu, menu);
 
-        IconUtils.setMenuIcon(this, menu, R.id.action_start_all_torrents, CommunityMaterial.Icon2.cmd_play);
-        IconUtils.setMenuIcon(this, menu, R.id.action_pause_all_torrents, CommunityMaterial.Icon2.cmd_pause);
-
         turtleModeItem = menu.findItem(R.id.action_turtle_mode);
         updateTurtleModeActionIcon();
 
@@ -673,7 +652,6 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
         if (searchMenuItem == null) {
             searchMenuItem = bottomToolbar.getMenu().findItem(R.id.action_search);
         }
-        IconUtils.setMenuIcon(this, searchMenuItem, FontAwesome.Icon.faw_search);
 
         searchView = (SearchView) searchMenuItem.getActionView();
         // iconifiedByDefault must be false to avoid closing SearchView by close button (close button only clears text)

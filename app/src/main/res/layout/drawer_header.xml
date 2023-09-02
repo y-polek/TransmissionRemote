@@ -8,9 +8,9 @@
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/content_layout"
+        android:layout_alignStart="@+id/content_layout"
         android:layout_alignTop="@id/content_layout"
-        android:layout_alignRight="@id/content_layout"
+        android:layout_alignEnd="@id/content_layout"
         android:layout_alignBottom="@id/content_layout"
         android:scaleType="fitXY"
         android:src="@drawable/bg_drawer_header" />
@@ -81,15 +81,21 @@
                     android:textSize="@dimen/material_drawer_account_header_title"
                     android:textStyle="bold"/>
                 <ImageView android:id="@+id/server_list_button"
-                    android:layout_width="@dimen/material_drawer_account_header_dropdown"
-                    android:layout_height="@dimen/material_drawer_account_header_dropdown"
-                    android:layout_gravity="center" />
+                    android:layout_width="@dimen/header_dropdown_size"
+                    android:layout_height="@dimen/header_dropdown_size"
+                    android:layout_gravity="center"
+                    app:tint="?android:textColorPrimaryInverse"
+                    />
             </LinearLayout>
             <ImageButton android:id="@+id/settings_button"
                 android:layout_width="@dimen/header_settings_size"
                 android:layout_height="@dimen/header_settings_size"
                 android:layout_gravity="center"
-                android:background="?android:selectableItemBackground"/>
+                android:padding="@dimen/header_settings_padding"
+                android:src="@drawable/ic_settings"
+                android:background="?android:selectableItemBackground"
+                android:contentDescription="@string/server_preferences"
+                app:tint="?android:textColorPrimaryInverse" />
         </LinearLayout>
     </RelativeLayout>
 

@@ -8,8 +8,6 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-import com.google.common.collect.FluentIterable;
-
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.TransmissionRemote;
 import net.yupol.transmissionremote.app.filtering.Filter;
@@ -26,12 +24,12 @@ public class ActionBarNavigationAdapter extends BaseAdapter {
     private static final int ID_SERVER_TITLE = 2;
     private static final int ID_FILTER_TITLE = 3;
 
-    private Context context;
-    private TransmissionRemote app;
-    private int textColorPrimary;
-    private int accentColor;
-    private int alternativeAccentColor;
-    private int textColorPrimaryInverse;
+    private final Context context;
+    private final TransmissionRemote app;
+    private final int textColorPrimary;
+    private final int accentColor;
+    private final int alternativeAccentColor;
+    private final int textColorPrimaryInverse;
 
     public ActionBarNavigationAdapter(Context context) {
         this.context = context;
@@ -121,7 +119,7 @@ public class ActionBarNavigationAdapter extends BaseAdapter {
                 countText.setVisibility(View.VISIBLE);
                 Filter filter = (Filter) getItem(position);
                 text.setText(filter.getNameResId());
-                countText.setText(String.valueOf(FluentIterable.from(app.getTorrents()).filter(filter).size()));
+                countText.setText(String.valueOf(app.getTorrents().stream().filter(filter).count()));
 
                 int textColor = dropDownTextColor(filter.equals(app.getActiveFilter()));
                 text.setTextColor(textColor);

@@ -1,15 +1,17 @@
 package net.yupol.transmissionremote.app.preferences;
 
 import android.os.Bundle;
-import android.preference.PreferenceFragment;
+
+import androidx.annotation.Nullable;
+import androidx.preference.PreferenceFragmentCompat;
 
 import net.yupol.transmissionremote.app.R;
 
 
-public class PreferencesFragment extends PreferenceFragment {
+public class PreferencesFragment extends PreferenceFragmentCompat {
+
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        addPreferencesFromResource(R.xml.preferences);
+    public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey) {
+        setPreferencesFromResource(R.xml.preferences, rootKey);
     }
 }

@@ -27,7 +27,6 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.mikepenz.iconics.typeface.library.community.material.CommunityMaterial;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
 
@@ -43,7 +42,6 @@ import net.yupol.transmissionremote.app.transport.request.TrackerAddRequest;
 import net.yupol.transmissionremote.app.transport.request.TrackerRemoveRequest;
 import net.yupol.transmissionremote.app.transport.request.TrackerReplaceRequest;
 import net.yupol.transmissionremote.app.utils.DividerItemDecoration;
-import net.yupol.transmissionremote.app.utils.IconUtils;
 import net.yupol.transmissionremote.app.utils.MetricsUtils;
 import net.yupol.transmissionremote.app.utils.Size;
 
@@ -120,8 +118,6 @@ public class TrackersPageFragment extends BasePageFragment implements TrackersAd
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.torrent_trackers_menu, menu);
-        IconUtils.setMenuIcon(getContext(), menu, R.id.action_add, CommunityMaterial.Icon2.cmd_plus);
-        IconUtils.setMenuIcon(getContext(), menu, R.id.action_sort_trackers, CommunityMaterial.Icon2.cmd_sort_variant);
     }
 
     @Override

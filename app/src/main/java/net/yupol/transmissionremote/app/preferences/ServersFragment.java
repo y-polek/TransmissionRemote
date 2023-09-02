@@ -12,14 +12,12 @@ import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.ListFragment;
-
-import com.mikepenz.iconics.typeface.library.googlematerial.GoogleMaterial;
 
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.TransmissionRemote;
 import net.yupol.transmissionremote.app.server.Server;
-import net.yupol.transmissionremote.app.utils.IconUtils;
 
 import java.util.Locale;
 
@@ -82,7 +80,7 @@ public class ServersFragment extends ListFragment {
     }
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         setEmptyText(getString(R.string.servers_empty_text));
     }
@@ -94,19 +92,18 @@ public class ServersFragment extends ListFragment {
     }
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NonNull Context context) {
         super.onAttach(context);
-        app = (TransmissionRemote) getActivity().getApplication();
+        app = (TransmissionRemote) requireActivity().getApplication();
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+    public void onCreateOptionsMenu(@NonNull Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.servers_menu, menu);
-        IconUtils.setMenuIcon(getActivity(), menu, R.id.action_add, GoogleMaterial.Icon.gmd_add);
     }
 
     @Override
-    public void onListItemClick(ListView l, View v, int position, long id) {
+    public void onListItemClick(@NonNull ListView l, @NonNull View v, int position, long id) {
         BaseAdapter adapter = (BaseAdapter) getListAdapter();
         Server server = (Server) adapter.getItem(position);
         if (!server.equals(app.getActiveServer())) {

@@ -19,7 +19,7 @@ public class NameFilter extends BaseFilter {
     }
 
     @Override
-    public boolean apply(Torrent torrent) {
+    public boolean test(Torrent torrent) {
         return torrent.getName().toLowerCase().contains(query);
     }
 }

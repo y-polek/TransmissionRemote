@@ -1,6 +1,7 @@
 package net.yupol.transmissionremote.app.preferences;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -12,9 +13,10 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.mikepenz.iconics.typeface.library.googlematerial.GoogleMaterial;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
 
@@ -25,7 +27,6 @@ import net.yupol.transmissionremote.app.transport.BaseSpiceActivity;
 import net.yupol.transmissionremote.app.transport.TransportManager;
 import net.yupol.transmissionremote.app.transport.request.SessionGetRequest;
 import net.yupol.transmissionremote.app.transport.request.SessionSetRequest;
-import net.yupol.transmissionremote.app.utils.IconUtils;
 
 public class ServerPreferencesFragment extends Fragment {
 
@@ -48,8 +49,9 @@ public class ServerPreferencesFragment extends Fragment {
     }
 
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        Activity activity = getActivity();
         if (activity instanceof BaseSpiceActivity) {
             transportManager = ((BaseSpiceActivity) activity).getTransportManager();
         }
@@ -69,9 +71,8 @@ public class ServerPreferencesFragment extends Fragment {
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         Bundle args = getArguments();
         if (args != null) {
             serverSettings = args.getParcelable(KEY_SERVER_SETTINGS);
@@ -83,16 +84,15 @@ public class ServerPreferencesFragment extends Fragment {
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelable(KEY_SERVER_SETTINGS, serverSettings);
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+    public void onCreateOptionsMenu(@NonNull Menu menu, MenuInflater inflater) {
         this.menu = menu;
         inflater.inflate(R.menu.server_preferences_menu, menu);
-        IconUtils.setMenuIcon(getContext(), menu, R.id.action_save, GoogleMaterial.Icon.gmd_save);
     }
 
     @Override

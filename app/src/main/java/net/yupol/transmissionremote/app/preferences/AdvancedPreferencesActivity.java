@@ -12,8 +12,10 @@ public class AdvancedPreferencesActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        getFragmentManager().beginTransaction()
-                .replace(android.R.id.content, new AdvancedPreferencesFragment()).commit();
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(android.R.id.content, new AdvancedPreferencesFragment())
+                .commit();
 
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {

@@ -14,12 +14,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 
-import com.google.common.base.Function;
-import com.google.common.collect.FluentIterable;
-import com.mikepenz.iconics.IconicsColor;
-import com.mikepenz.iconics.IconicsDrawable;
-import com.mikepenz.iconics.IconicsSize;
-import com.mikepenz.iconics.typeface.library.googlematerial.GoogleMaterial;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
@@ -38,6 +32,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class HeaderView extends RelativeLayout implements View.OnClickListener {
 
@@ -53,25 +48,24 @@ public class HeaderView extends RelativeLayout implements View.OnClickListener {
     private Drawer drawer;
     private List<Server> servers;
 
-    private TextView nameText;
-    private BezelImageView serverCircleCurrent;
-    private BezelImageView serverCircleSmallFirst;
-    private BezelImageView serverCircleSmallSecond;
+    private final TextView nameText;
+    private final BezelImageView serverCircleCurrent;
+    private final BezelImageView serverCircleSmallFirst;
+    private final BezelImageView serverCircleSmallSecond;
 
     private boolean serverListExpanded = false;
-    private IconicsDrawable expandIcon;
 
-    private Server[] serversInCircles = new Server[3];
+    private final Server[] serversInCircles = new Server[3];
 
     private HeaderListener listener;
 
     private List<IDrawerItem<?>> serverSelectionItems;
 
-    private int secondaryTextColor;
+    private final int secondaryTextColor;
 
     private final Drawer.OnDrawerItemClickListener drawerItemClickListener = new Drawer.OnDrawerItemClickListener() {
         @Override
-        public boolean onItemClick(View view, int position, @NonNull IDrawerItem drawerItem) {
+        public boolean onItemClick(View view, int position, @NonNull IDrawerItem<?> drawerItem) {
             if (listener == null) return false;
 
             int id = (int) drawerItem.getIdentifier();
@@ -95,6 +89,7 @@ public class HeaderView extends RelativeLayout implements View.OnClickListener {
     };
 
     private final Drawer.OnDrawerItemLongClickListener drawerItemLongClickListener = (view, position, iDrawerItem) -> false;
+    private final ImageView serverListButton;
 
     public HeaderView(Context context) {
         this(context, null);
@@ -104,20 +99,12 @@ public class HeaderView extends RelativeLayout implements View.OnClickListener {
         super(context, attrs);
         inflate(context, R.layout.drawer_header, this);
 
-        final IconicsColor primaryInverseTextColor = IconicsColor.colorInt(
-                ColorUtils.resolveColor(context, android.R.attr.textColorPrimaryInverse, R.color.text_primary_inverse)
-        );
         secondaryTextColor = ColorUtils.resolveColor(context, android.R.attr.textColorSecondary, R.color.text_secondary);
 
         nameText = findViewById(R.id.name_text);
 
-        final ImageView serverListButton = findViewById(R.id.server_list_button);
-        expandIcon = new IconicsDrawable(context)
-                .icon(serverListExpanded ? GoogleMaterial.Icon.gmd_arrow_drop_up : GoogleMaterial.Icon.gmd_arrow_drop_down)
-                .color(primaryInverseTextColor)
-                .size(IconicsSize.res(R.dimen.material_drawer_account_header_dropdown))
-                .padding(IconicsSize.res(R.dimen.material_drawer_account_header_dropdown_padding));
-        serverListButton.setImageDrawable(expandIcon);
+        serverListButton = findViewById(R.id.server_list_button);
+        serverListButton.setImageResource(serverListExpanded ? R.drawable.ic_arrow_drop_up : R.drawable.ic_arrow_drop_down);
         View serverTextSection = findViewById(R.id.header_text_section);
         serverTextSection.setOnClickListener(new OnClickListener() {
             @Override
@@ -131,10 +118,6 @@ public class HeaderView extends RelativeLayout implements View.OnClickListener {
         });
 
         ImageButton settingsButton = findViewById(R.id.settings_button);
-        settingsButton.setImageDrawable(new IconicsDrawable(context).icon(GoogleMaterial.Icon.gmd_settings)
-                .color(primaryInverseTextColor)
-                .size(IconicsSize.res(R.dimen.header_settings_size))
-                .padding(IconicsSize.res(R.dimen.header_settings_padding)));
         settingsButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -174,23 +157,15 @@ public class HeaderView extends RelativeLayout implements View.OnClickListener {
         if (sp.contains(KEY_ORDERED_SERVERS)) {
             orderedServers = serversFromJson(sp.getString(KEY_ORDERED_SERVERS, ""));
             // remove servers which are not in server list from ordered server list
-            Iterator<String> it = orderedServers.iterator();
-            while (it.hasNext()) {
-                if (app.getServerById(it.next()) == null) it.remove();
-            }
+            orderedServers.removeIf(s -> app.getServerById(s) == null);
             // add new servers to ordered server list
             for (Server server : servers) {
-                if (orderedServers.indexOf(server.getId()) < 0) {
+                if (!orderedServers.contains(server.getId())) {
                     orderedServers.add(server.getId());
                 }
             }
         } else {
-            orderedServers = FluentIterable.from(servers).transform(new Function<Server, String>() {
-                @Override
-                public String apply(@NonNull Server server) {
-                    return server.getId();
-                }
-            }).copyInto(new LinkedList<String>());
+            orderedServers = servers.stream().map(Server::getId).collect(Collectors.toCollection(LinkedList::new));
         }
 
         String currentServerId = servers.get(currentServerPosition).getId();
@@ -280,14 +255,14 @@ public class HeaderView extends RelativeLayout implements View.OnClickListener {
 
         PrimaryDrawerItem addItem = new PrimaryDrawerItem()
                 .withName(R.string.add_server)
-                .withIcon(new IconicsDrawable(getContext(), GoogleMaterial.Icon.gmd_add).padding(IconicsSize.dp(4)).color(IconicsColor.colorInt(secondaryTextColor)))
+                .withIcon(R.drawable.ic_add)
                 .withSelectable(false)
                 .withIdentifier(DRAWER_ITEM_ID_ADD_SERVER);
         serverSelectionItems.add(addItem);
 
         PrimaryDrawerItem manageItem = new PrimaryDrawerItem()
                 .withName(R.string.manage_servers)
-                .withIcon(new IconicsDrawable(getContext(), GoogleMaterial.Icon.gmd_settings).padding(IconicsSize.dp(2)).color(IconicsColor.colorInt(secondaryTextColor)))
+                .withIcon(R.drawable.ic_settings)
                 .withSelectable(false)
                 .withIdentifier(DRAWER_ITEM_ID_MANAGE_SERVERS);
         serverSelectionItems.add(manageItem);
@@ -316,7 +291,7 @@ public class HeaderView extends RelativeLayout implements View.OnClickListener {
 
     public void showServersList() {
         serverListExpanded = true;
-        expandIcon.icon(GoogleMaterial.Icon.gmd_arrow_drop_up);
+        serverListButton.setImageResource(R.drawable.ic_arrow_drop_up);
         drawer.switchDrawerContent(
                 drawerItemClickListener,
                 drawerItemLongClickListener,
@@ -328,7 +303,7 @@ public class HeaderView extends RelativeLayout implements View.OnClickListener {
 
     private void hideServersList() {
         serverListExpanded = false;
-        expandIcon.icon(GoogleMaterial.Icon.gmd_arrow_drop_down);
+        serverListButton.setImageResource(R.drawable.ic_arrow_drop_down);
         drawer.resetDrawerContent();
     }
 

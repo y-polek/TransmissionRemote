@@ -100,7 +100,7 @@ public class FinishedTorrentsNotificationManager {
         stackBuilder.addNextIntentWithParentStack(new Intent(context, PreferencesActivity.class));
         stackBuilder.addNextIntent(new Intent(context, NotificationsPreferencesActivity.class));
         PendingIntent preferencesPendingIntent = stackBuilder.getPendingIntent(0, flags);
-        builder.addAction(R.drawable.ic_settings_black_18dp, context.getString(R.string.notification_settings), preferencesPendingIntent);
+        builder.addAction(R.drawable.ic_settings, context.getString(R.string.notification_settings), preferencesPendingIntent);
 
         notificationManager.notify(NOTIFICATION_ID_TORRENT_FINISHED, builder.build());
     }

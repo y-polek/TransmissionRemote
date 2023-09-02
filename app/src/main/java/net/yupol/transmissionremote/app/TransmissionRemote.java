@@ -315,6 +315,7 @@ public class TransmissionRemote extends Application implements SharedPreferences
         return sortOrder;
     }
 
+    @Nonnull
     public Comparator<Torrent> getSortComparator() {
         return sortOrder.comparator(sortedBy.getComparator());
     }

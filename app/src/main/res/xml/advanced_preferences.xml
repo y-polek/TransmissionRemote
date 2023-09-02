@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <CheckBoxPreference
         android:key="@string/disable_free_space_check_key"
         android:title="@string/disable_free_space_check_title"
         android:summary="@string/disable_free_space_check_summary"
-        android:defaultValue="@string/disable_free_space_check_default_value"/>
+        android:defaultValue="@string/disable_free_space_check_default_value"
+        app:iconSpaceReserved="false" />
 </PreferenceScreen>

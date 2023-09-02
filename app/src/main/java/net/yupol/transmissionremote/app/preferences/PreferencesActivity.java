@@ -1,10 +1,11 @@
 package net.yupol.transmissionremote.app.preferences;
 
 import android.os.Bundle;
-import androidx.core.app.NavUtils;
+import android.view.MenuItem;
+
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-import android.view.MenuItem;
+import androidx.core.app.NavUtils;
 
 public class PreferencesActivity extends AppCompatActivity {
 
@@ -12,8 +13,10 @@ public class PreferencesActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        getFragmentManager().beginTransaction()
-                .replace(android.R.id.content, new PreferencesFragment()).commit();
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(android.R.id.content, new PreferencesFragment())
+                .commit();
 
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {

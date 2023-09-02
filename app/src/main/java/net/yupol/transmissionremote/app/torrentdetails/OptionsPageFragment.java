@@ -17,7 +17,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.databinding.DataBindingUtil;
 
-import com.mikepenz.iconics.typeface.library.googlematerial.GoogleMaterial;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
 
@@ -34,7 +33,6 @@ import net.yupol.transmissionremote.app.transport.TransportManager;
 import net.yupol.transmissionremote.app.transport.request.SessionGetRequest;
 import net.yupol.transmissionremote.app.transport.request.TorrentInfoGetRequest;
 import net.yupol.transmissionremote.app.transport.request.TorrentSetRequest;
-import net.yupol.transmissionremote.app.utils.IconUtils;
 import net.yupol.transmissionremote.app.utils.MinMaxTextWatcher;
 
 public class OptionsPageFragment extends BasePageFragment implements AdapterView.OnItemSelectedListener,
@@ -288,7 +286,6 @@ public class OptionsPageFragment extends BasePageFragment implements AdapterView
         inflater.inflate(R.menu.torrent_options_menu, menu);
         saveMenuItem = menu.findItem(R.id.action_save);
         saveMenuItem.setEnabled(getTorrentInfo() != null);
-        IconUtils.setMenuIcon(getContext(), saveMenuItem, GoogleMaterial.Icon.gmd_save);
     }
 
     @Override

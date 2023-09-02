@@ -11,6 +11,7 @@
         app:showAsAction="always" />
     <item android:id="@+id/action_search"
         android:title="@string/search"
+        android:icon="@drawable/ic_search"
         app:actionViewClass="android.widget.SearchView"
         app:showAsAction="always|collapseActionView" />
 </menu>

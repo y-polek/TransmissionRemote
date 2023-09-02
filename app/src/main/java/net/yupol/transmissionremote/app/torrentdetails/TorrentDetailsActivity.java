@@ -2,20 +2,19 @@ package net.yupol.transmissionremote.app.torrentdetails;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import androidx.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import androidx.core.view.LayoutInflaterCompat;
-import androidx.viewpager.widget.ViewPager;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-import androidx.appcompat.app.ActionBar;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import com.mikepenz.iconics.context.IconicsLayoutInflater2;
+import androidx.appcompat.app.ActionBar;
+import androidx.databinding.DataBindingUtil;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+import androidx.viewpager.widget.ViewPager;
+
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
 
@@ -62,8 +61,8 @@ public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveCha
     private Torrent torrent;
     private TorrentInfo torrentInfo;
     private SparseArray<TorrentSetRequest> saveChangesRequests = new SparseArray<>();
-    private List<OnDataAvailableListener<TorrentInfo>> torrentInfoListeners = new LinkedList<>();
-    private List<OnActivityExitingListener<TorrentSetRequest.Builder>> activityExitingListeners = new LinkedList<>();
+    private final List<OnDataAvailableListener<TorrentInfo>> torrentInfoListeners = new LinkedList<>();
+    private final List<OnActivityExitingListener<TorrentSetRequest.Builder>> activityExitingListeners = new LinkedList<>();
     private TorrentDetailsPagerAdapter pagerAdapter;
     private MenuItem setLocationMenuItem;
     private MenuItem shareMagnetMenuItem;
@@ -73,7 +72,6 @@ public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveCha
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        LayoutInflaterCompat.setFactory2(getLayoutInflater(), new IconicsLayoutInflater2(getDelegate()));
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.torrent_details_layout);
 
@@ -195,7 +193,7 @@ public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveCha
             restartUpdater = true;
         }
         torrentInfoUpdater = new TorrentInfoUpdater(getTransportManager(), torrent.getId(),
-                1000 * TransmissionRemote.getInstance().getUpdateInterval());
+                1000L * TransmissionRemote.getInstance().getUpdateInterval());
         if (restartUpdater) torrentInfoUpdater.start(this);
 
         if (torrentInfo != null) pagerAdapter.setTorrentInfo(torrentInfo);

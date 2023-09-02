@@ -14,6 +14,7 @@
     <dimen name="fab_icon_padding">6dp</dimen>
 
                 <!-- Drawer -->
+    <dimen name="header_dropdown_size">36dp</dimen>
     <dimen name="header_settings_size">48dp</dimen>
     <dimen name="header_settings_padding">16dp</dimen>
     <dimen name="header_server_current_size">64dp</dimen>

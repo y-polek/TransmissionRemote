@@ -3,5 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item android:id="@+id/action_save"
         app:showAsAction="always"
+        android:icon="@drawable/ic_save"
         android:title="@string/save_torrent_options"/>
 </menu>

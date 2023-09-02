@@ -94,8 +94,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="right|bottom"
+                android:padding="@dimen/default_padding"
                 android:contentDescription="@string/trackers_menu_content_description"
-                style="?android:attr/actionOverflowButtonStyle"/>
+                android:tooltipText="@string/trackers_menu_content_description"
+                android:background="?attr/actionBarItemBackground"
+                android:src="@drawable/ic_more_vert"/>
         </LinearLayout>
     </LinearLayout>
 </layout>

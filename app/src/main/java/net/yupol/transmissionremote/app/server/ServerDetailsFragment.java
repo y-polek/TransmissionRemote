@@ -24,11 +24,9 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.google.api.client.repackaged.com.google.common.base.Strings;
-import com.mikepenz.iconics.typeface.library.googlematerial.GoogleMaterial;
 
 import net.yupol.transmissionremote.app.OnBackPressedListener;
 import net.yupol.transmissionremote.app.R;
-import net.yupol.transmissionremote.app.utils.IconUtils;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -151,8 +149,6 @@ public class ServerDetailsFragment extends Fragment implements OnBackPressedList
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.server_details_menu, menu);
-        IconUtils.setMenuIcon(getActivity(), menu, R.id.action_remove, GoogleMaterial.Icon.gmd_delete);
-        IconUtils.setMenuIcon(getActivity(), menu, R.id.action_save, GoogleMaterial.Icon.gmd_save);
     }
 
     @Override

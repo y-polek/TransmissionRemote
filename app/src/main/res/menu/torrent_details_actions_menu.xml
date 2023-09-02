@@ -6,12 +6,15 @@
         android:menuCategory="secondary">
         <item android:id="@+id/action_remove_torrents"
             android:title="@string/action_remove_torrent"
+            android:icon="@drawable/ic_delete"
             app:showAsAction="never"/>
         <item android:id="@+id/action_pause"
             android:title="@string/action_pause"
+            android:icon="@drawable/ic_pause"
             app:showAsAction="never"/>
         <item android:id="@+id/action_start"
             android:title="@string/action_start"
+            android:icon="@drawable/ic_play"
             app:showAsAction="never"/>
         <item android:id="@+id/action_start_now"
             android:title="@string/action_start_now"
@@ -45,4 +48,3 @@
             tools:ignore="AppCompatResource" />
     </group>
 </menu>
-

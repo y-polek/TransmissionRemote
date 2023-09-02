@@ -18,8 +18,6 @@ import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.mikepenz.iconics.typeface.library.community.material.CommunityMaterial;
-
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.databinding.TorrentDetailsPeersPageFragmentBinding;
 import net.yupol.transmissionremote.app.model.json.Peer;
@@ -27,7 +25,6 @@ import net.yupol.transmissionremote.app.model.json.TorrentInfo;
 import net.yupol.transmissionremote.app.sorting.PeersSortedBy;
 import net.yupol.transmissionremote.app.sorting.SortOrder;
 import net.yupol.transmissionremote.app.utils.DividerItemDecoration;
-import net.yupol.transmissionremote.app.utils.IconUtils;
 import net.yupol.transmissionremote.app.utils.MetricsUtils;
 import net.yupol.transmissionremote.app.utils.Size;
 
@@ -86,7 +83,6 @@ public class PeersPageFragment extends BasePageFragment {
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.torrent_peers_menu, menu);
-        IconUtils.setMenuIcon(getContext(), menu, R.id.action_sort_peers, CommunityMaterial.Icon2.cmd_sort_variant);
     }
 
     @Override
