@@ -3,15 +3,16 @@ package net.yupol.transmissionremote.app.torrentdetails;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 
 import com.google.common.primitives.Ints;
 import com.octo.android.robospice.persistence.exception.SpiceException;
@@ -42,7 +43,6 @@ public class DirectoryFragment extends Fragment implements DirectoryAdapter.OnIt
     private DirectoryAdapter adapter;
     private TransportManager transportManager;
 
-    @SuppressWarnings("SuspiciousSystemArraycopy")
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -90,7 +90,7 @@ public class DirectoryFragment extends Fragment implements DirectoryAdapter.OnIt
     }
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         Activity activity = getActivity();
         if (!(activity instanceof BaseSpiceActivity)) {
@@ -156,7 +156,7 @@ public class DirectoryFragment extends Fragment implements DirectoryAdapter.OnIt
     @Override
     public void onFilePriorityChanged(int fileIndex, Priority priority) {
         transportManager.doRequest(TorrentSetRequest.builder(torrentId)
-                .filesWithPriority(priority, fileIndex).build(), new RequestListener<Void>() {
+                .filesWithPriority(priority, fileIndex).build(), new RequestListener<>() {
             @Override
             public void onRequestFailure(SpiceException spiceException) {
                 Log.d(TAG, "failed to change priority");

@@ -1,6 +1,7 @@
 package net.yupol.transmissionremote.app.torrentdetails;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
 import android.util.TypedValue;
@@ -8,17 +9,14 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.HorizontalScrollView;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
 import androidx.core.content.ContextCompat;
-
-import com.mikepenz.iconics.IconicsDrawable;
-import com.mikepenz.iconics.typeface.library.community.material.CommunityMaterial;
-import com.mikepenz.iconics.view.IconicsButton;
-import com.mikepenz.iconics.view.IconicsImageView;
 
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.model.Dir;
@@ -55,12 +53,12 @@ public class BreadcrumbView extends LinearLayout {
         secondaryColor = ContextCompat.getColor(context, R.color.text_color_secondary);
         textPadding = getResources().getDimensionPixelSize(R.dimen.text_padding_horizontal);
 
-        IconicsButton homeButton = new IconicsButton(context);
+        ImageButton homeButton = new ImageButton(context);
         homeButton.setBackgroundResource(buttonBackground);
         homeButton.setPadding(0, 0, 0, 0);
-        homeButton.setText("{cmd_home_outline}");
-        homeButton.setTextSize(TypedValue.COMPLEX_UNIT_PX, homeButtonTextSize);
-        homeButton.setTextColor(primaryColor);
+        homeButton.setImageResource(R.drawable.ic_home);
+        homeButton.setImageTintList(ColorStateList.valueOf(primaryColor));
+
         LayoutParams homeLayoutParams = new LayoutParams(homeButtonSize, homeButtonSize);
         homeLayoutParams.gravity = Gravity.CENTER_VERTICAL;
         addView(homeButton, homeLayoutParams);
@@ -127,8 +125,8 @@ public class BreadcrumbView extends LinearLayout {
     }
 
     private void addSeparator() {
-        IconicsImageView dividerView = new IconicsImageView(getContext());
-        dividerView.setIcon(new IconicsDrawable(getContext(), CommunityMaterial.Icon.cmd_chevron_right));
+        ImageView dividerView = new ImageView(getContext());
+        dividerView.setImageResource(R.drawable.ic_arrow_forward);
         dividerView.setColorFilter(secondaryColor);
         LayoutParams dividerLayoutParams = new LayoutParams(arrowIconSize, arrowIconSize);
         dividerLayoutParams.gravity = Gravity.CENTER_VERTICAL;

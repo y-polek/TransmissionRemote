@@ -1,19 +1,20 @@
 package net.yupol.transmissionremote.app.torrentdetails;
 
+import static com.google.common.base.Strings.nullToEmpty;
+import static org.apache.commons.lang3.ArrayUtils.isNotEmpty;
+
 import android.content.Context;
 import android.os.Bundle;
-import androidx.annotation.AnimRes;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.google.common.base.Function;
-import com.google.common.collect.FluentIterable;
+import androidx.annotation.AnimRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import net.yupol.transmissionremote.app.ProgressbarFragment;
 import net.yupol.transmissionremote.app.R;
@@ -23,9 +24,6 @@ import net.yupol.transmissionremote.app.transport.BaseSpiceActivity;
 
 import java.util.Stack;
 
-import static com.google.common.base.Strings.nullToEmpty;
-import static org.apache.commons.lang3.ArrayUtils.isNotEmpty;
-
 public class FilesPageFragment extends BasePageFragment implements DirectoryFragment.OnDirectorySelectedListener {
 
     private static final String TAG = FilesPageFragment.class.getSimpleName();
@@ -34,7 +32,7 @@ public class FilesPageFragment extends BasePageFragment implements DirectoryFrag
     private static final String KEY_PATH = "key_path";
 
     private boolean viewCreated;
-    private Stack<Dir> path = new Stack<>();
+    private final Stack<Dir> path = new Stack<>();
     private BreadcrumbView breadcrumbView;
     @Nullable private String[] savedPath;
     private Dir currentDir;
@@ -59,7 +57,6 @@ public class FilesPageFragment extends BasePageFragment implements DirectoryFrag
 
         if (savedInstanceState != null) {
             savedPath = savedInstanceState.getStringArray(KEY_PATH);
-
         }
 
         if (getTorrentInfo() != null) {
@@ -94,16 +91,8 @@ public class FilesPageFragment extends BasePageFragment implements DirectoryFrag
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        String[] pathNames = FluentIterable.from(path)
-                .transform(new Function<Dir, String>() {
-                    @Override
-                    public String apply(@NonNull Dir dir) {
-                        return dir.getName();
-                    }
-                })
-                .toArray(String.class);
+        String[] pathNames = path.stream().map(Dir::getName).toArray(String[]::new);
         outState.putStringArray(KEY_PATH, pathNames);
-
     }
 
 
