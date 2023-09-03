@@ -1,23 +1,19 @@
 package net.yupol.transmissionremote.app.torrentdetails;
 
 import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.ListPopupWindow;
-import androidx.core.content.ContextCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.buildware.widget.indeterm.IndeterminateCheckBox;
-import com.mikepenz.iconics.IconicsColor;
-import com.mikepenz.iconics.IconicsDrawable;
-import com.mikepenz.iconics.typeface.library.fonrawesome.FontAwesome;
 
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.databinding.FileItemBinding;
@@ -74,7 +70,7 @@ public class DirectoryAdapter extends RecyclerView.Adapter<DirectoryAdapter.View
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         final int viewType = getItemViewType(position);
-        Drawable icon = null;
+        @DrawableRes int iconRes = 0;
         long bytesCompleted = 0;
         long filesLength = 0;
         switch (viewType) {
@@ -93,8 +89,7 @@ public class DirectoryAdapter extends RecyclerView.Adapter<DirectoryAdapter.View
                 bytesCompleted = calculateBytesCompletedInDir(dir);
                 filesLength = calculateFilesLengthInDir(dir);
 
-                icon = new IconicsDrawable(context, FontAwesome.Icon.faw_folder)
-                        .color(IconicsColor.colorInt(ContextCompat.getColor(context, R.color.text_color_primary)));
+                iconRes = R.drawable.ic_file_type_folder;
                 break;
             case R.id.view_type_file:
                 File file = getFile(position);
@@ -112,8 +107,7 @@ public class DirectoryAdapter extends RecyclerView.Adapter<DirectoryAdapter.View
                 bytesCompleted = fileStat.getBytesCompleted();
                 filesLength = file.getLength();
 
-                icon = new IconicsDrawable(context, FileType.iconFromName(file.getName()))
-                        .color(IconicsColor.colorInt(ContextCompat.getColor(context, R.color.text_color_secondary)));
+                iconRes = FileType.byFileName(file.getName()).iconRes;
                 break;
         }
 
@@ -123,7 +117,7 @@ public class DirectoryAdapter extends RecyclerView.Adapter<DirectoryAdapter.View
                 (int) (100 * bytesCompleted/(double) filesLength));
         holder.binding.statsText.setText(stats);
 
-        holder.binding.icon.setImageDrawable(icon);
+        holder.binding.icon.setImageResource(iconRes);
         holder.binding.executePendingBindings();
     }
 

@@ -5,6 +5,7 @@
         <variable name="file" type="net.yupol.transmissionremote.app.model.json.File" />
     </data>
     <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/root_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -24,7 +25,8 @@
                 android:layout_width="@dimen/file_type_icon_size"
                 android:layout_height="@dimen/file_type_icon_size"
                 android:layout_marginRight="@dimen/default_text_margin"
-                android:src="@drawable/ic_turtle_black"/>
+                android:src="@drawable/ic_turtle_black"
+                app:tint="?android:textColorSecondary" />
             <LinearLayout
                 android:orientation="vertical"
                 android:layout_width="0dp"
