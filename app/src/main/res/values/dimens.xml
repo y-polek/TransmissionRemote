@@ -81,8 +81,8 @@
     <dimen name="priority_popup_offset">8dp</dimen>
     
                 <!-- Peers tab -->
-    <dimen name="encryption_icon_size">12dp</dimen>
-    <dimen name="speed_icon_size">18dp</dimen>
+    <dimen name="encryption_icon_size">16dp</dimen>
+    <dimen name="speed_icon_size">20dp</dimen>
     <dimen name="speed_text_margin">32dp</dimen>
     <dimen name="sort_popup_offset_horizontal">8dp</dimen>
     <dimen name="sort_popup_offset_vertical">24dp</dimen>

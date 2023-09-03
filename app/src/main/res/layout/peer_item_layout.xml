@@ -18,14 +18,14 @@
             android:paddingLeft="@dimen/default_padding_big"
             android:paddingRight="@dimen/default_padding_big"
             android:orientation="horizontal">
-            <com.mikepenz.iconics.view.IconicsImageView
+            <ImageView
                 android:layout_width="@dimen/encryption_icon_size"
                 android:layout_height="@dimen/encryption_icon_size"
                 android:layout_marginRight="@dimen/default_text_margin"
                 android:layout_gravity="center_vertical"
-                app:iiv_color="?android:attr/textColorPrimary"
-                app:iiv_icon="faw_lock"
-                android:visibility="@{peer.isEncrypted ? View.VISIBLE : View.GONE}"/>
+                android:src="@drawable/ic_encrypted"
+                android:visibility="@{peer.isEncrypted ? View.VISIBLE : View.GONE}"
+                app:tint="?android:attr/textColorPrimary" />
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -66,13 +66,13 @@
                 android:textSize="@dimen/tr_abc_text_size_caption_material"
                 android:textColor="?android:textColorSecondary"
                 android:text="@{TextUtils.speedText(peer.rateToClient)}"/>
-            <com.mikepenz.iconics.view.IconicsImageView
+            <ImageView
                 android:layout_width="@dimen/speed_icon_size"
                 android:layout_height="@dimen/speed_icon_size"
                 android:paddingTop="@dimen/default_padding_small"
                 android:paddingBottom="@dimen/default_padding_small"
-                app:iiv_color="@color/md_green_700"
-                app:iiv_icon="faw_arrow_down" />
+                android:src="@drawable/ic_arrow_downward"
+                app:tint="@color/md_green_700" />
 
             <TextView android:id="@+id/upload_rate"
                 android:layout_width="wrap_content"
@@ -82,15 +82,13 @@
                 android:textSize="@dimen/tr_abc_text_size_caption_material"
                 android:textColor="?android:textColorSecondary"
                 android:text="@{TextUtils.speedText(peer.rateToPeer)}"/>
-            <com.mikepenz.iconics.view.IconicsImageView android:id="@+id/upload_icon"
+            <ImageView
                 android:layout_width="@dimen/speed_icon_size"
                 android:layout_height="@dimen/speed_icon_size"
                 android:paddingTop="@dimen/default_padding_small"
                 android:paddingBottom="@dimen/default_padding_small"
-                app:iiv_padding="0dp"
-                app:iiv_color="@color/md_red_700"
-                app:iiv_size="@dimen/speed_icon_size"
-                app:iiv_icon="faw_arrow_up" />
+                android:src="@drawable/ic_arrow_upward"
+                app:tint="@color/md_red_700" />
         </LinearLayout>
     </LinearLayout>
 </layout>
