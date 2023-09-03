@@ -1,26 +1,24 @@
 package net.yupol.transmissionremote.app.model;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.StringRes;
-
-import com.mikepenz.iconics.typeface.IIcon;
-import com.mikepenz.iconics.typeface.library.community.material.CommunityMaterial;
 
 import net.yupol.transmissionremote.app.R;
 
 public enum Priority {
 
-    HIGH(1, R.string.priority_high, CommunityMaterial.Icon.cmd_chevron_up),
-    NORMAL(0, R.string.priority_normal, CommunityMaterial.Icon2.cmd_minus),
-    LOW(-1, R.string.priority_low, CommunityMaterial.Icon.cmd_chevron_down);
+    HIGH(1, R.string.priority_high, R.drawable.ic_priority_high),
+    NORMAL(0, R.string.priority_normal, R.drawable.ic_priority_normal),
+    LOW(-1, R.string.priority_low, R.drawable.ic_priority_low);
 
     public final int value;
     @StringRes public final int nameResId;
-    public final IIcon icon;
+    @DrawableRes public final int iconRes;
 
-    Priority(int value, @StringRes int nameResId, IIcon icon) {
+    Priority(int value, @StringRes int nameResId, @DrawableRes int iconRes) {
         this.value = value;
         this.nameResId = nameResId;
-        this.icon = icon;
+        this.iconRes = iconRes;
     }
 
     public static Priority fromValue(int value, Priority defaultPriority) {

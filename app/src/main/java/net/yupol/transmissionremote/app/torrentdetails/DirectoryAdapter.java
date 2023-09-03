@@ -25,7 +25,6 @@ import net.yupol.transmissionremote.app.model.json.FileStat;
 import net.yupol.transmissionremote.app.utils.MetricsUtils;
 import net.yupol.transmissionremote.app.utils.TextUtils;
 
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -83,8 +82,20 @@ public class DirectoryAdapter extends RecyclerView.Adapter<DirectoryAdapter.View
                 holder.binding.checkbox.setEnabled(!isDirectoryCompleted);
 
                 Set<Integer> priorities = dirPriorities(dir);
-                holder.binding.priorityButton.setText(formatDirPriorities(priorities));
-                holder.binding.priorityButton.setEnabled(!isDirectoryCompleted);
+                holder.binding.priorityLow.setVisibility(
+                        priorities.contains(Priority.LOW.value) ? View.VISIBLE : View.GONE
+                );
+                holder.binding.priorityNormal.setVisibility(
+                        priorities.contains(Priority.NORMAL.value) || priorities.isEmpty()
+                                ? View.VISIBLE : View.GONE
+                );
+                holder.binding.priorityHigh.setVisibility(
+                        priorities.contains(Priority.HIGH.value) ? View.VISIBLE : View.GONE
+                );
+                holder.binding.priorityLayout.setEnabled(!isDirectoryCompleted);
+                holder.binding.priorityLow.setEnabled(!isDirectoryCompleted);
+                holder.binding.priorityNormal.setEnabled(!isDirectoryCompleted);
+                holder.binding.priorityHigh.setEnabled(!isDirectoryCompleted);
 
                 bytesCompleted = calculateBytesCompletedInDir(dir);
                 filesLength = calculateFilesLengthInDir(dir);
@@ -101,8 +112,13 @@ public class DirectoryAdapter extends RecyclerView.Adapter<DirectoryAdapter.View
                 holder.binding.checkbox.setEnabled(!isFileCompleted);
 
                 Priority priority = filePriority(position);
-                holder.binding.priorityButton.setText(priority.icon.getFormattedName());
-                holder.binding.priorityButton.setEnabled(!isFileCompleted);
+                holder.binding.priorityLow.setVisibility(priority == Priority.LOW ? View.VISIBLE : View.GONE);
+                holder.binding.priorityNormal.setVisibility(priority == Priority.NORMAL ? View.VISIBLE : View.GONE);
+                holder.binding.priorityHigh.setVisibility(priority == Priority.HIGH ? View.VISIBLE : View.GONE);
+                holder.binding.priorityLayout.setEnabled(!isFileCompleted);
+                holder.binding.priorityLow.setEnabled(!isFileCompleted);
+                holder.binding.priorityNormal.setEnabled(!isFileCompleted);
+                holder.binding.priorityHigh.setEnabled(!isFileCompleted);
 
                 bytesCompleted = fileStat.getBytesCompleted();
                 filesLength = file.getLength();
@@ -217,16 +233,6 @@ public class DirectoryAdapter extends RecyclerView.Adapter<DirectoryAdapter.View
         return priorities;
     }
 
-    private String formatDirPriorities(Set<Integer> prioritiesSet) {
-        Integer[] priorities = prioritiesSet.toArray(new Integer[prioritiesSet.size()]);
-        Arrays.sort(priorities);
-        StringBuilder b = new StringBuilder();
-        for (Integer priority : priorities) {
-            b.append(Priority.fromValue(priority, Priority.NORMAL).icon.getFormattedName());
-        }
-        return b.toString();
-    }
-
     @Override
     public int getItemCount() {
         return currentDir.getDirs().size() + currentDir.getFileIndices().size();
@@ -305,7 +311,7 @@ public class DirectoryAdapter extends RecyclerView.Adapter<DirectoryAdapter.View
                     }
                 }
             });
-            binding.priorityButton.setOnClickListener(new View.OnClickListener() {
+            binding.priorityLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     final ListPopupWindow popup = new ListPopupWindow(context);

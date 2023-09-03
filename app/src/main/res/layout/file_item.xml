@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <data>
         <variable name="dir" type="net.yupol.transmissionremote.app.model.Dir" />
         <variable name="file" type="net.yupol.transmissionremote.app.model.json.File" />
     </data>
-    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
+    <FrameLayout
         android:id="@+id/root_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -50,15 +50,35 @@
                     android:textSize="@dimen/tr_abc_text_size_body_2_material"
                     android:textColor="?android:attr/textColorSecondary"/>
             </LinearLayout>
-            <com.mikepenz.iconics.view.IconicsTextView android:id="@+id/priority_button"
+            <LinearLayout
+                android:id="@+id/priority_layout"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
+                android:gravity="center_vertical"
                 android:paddingLeft="@dimen/default_padding_big"
-                android:paddingRight="@dimen/default_padding_big"
-                android:gravity="center"
+                android:paddingRight="@dimen/default_padding"
+                android:orientation="horizontal"
                 android:background="?android:selectableItemBackground"
-                android:textSize="@dimen/priority_icon_text_size"
-                android:contentDescription="@string/priority"/>
+                android:contentDescription="@string/priority">
+                <ImageView
+                    android:id="@+id/priority_low"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/ic_priority_low"
+                    android:importantForAccessibility="no" />
+                <ImageView
+                    android:id="@+id/priority_normal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/ic_priority_normal"
+                    android:importantForAccessibility="no" />
+                <ImageView
+                    android:id="@+id/priority_high"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/ic_priority_high"
+                    android:importantForAccessibility="no" />
+            </LinearLayout>
         </LinearLayout>
     </FrameLayout>
 </layout>

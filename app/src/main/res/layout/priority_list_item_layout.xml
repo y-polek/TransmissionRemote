@@ -1,17 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal"
+
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/text"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="@dimen/default_padding">
-    <com.mikepenz.iconics.view.IconicsImageView android:id="@+id/icon"
-        android:layout_width="@dimen/priority_icon_size"
-        android:layout_height="@dimen/priority_icon_size"
-        android:layout_gravity="center_vertical"/>
-    <TextView android:id="@+id/text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:layout_marginLeft="@dimen/default_text_margin"
-        android:textSize="@dimen/tr_abc_text_size_body_1_material"/>
-</LinearLayout>
+    android:layout_gravity="center_vertical"
+    android:paddingVertical="@dimen/default_padding"
+    android:paddingStart="@dimen/default_padding"
+    android:paddingEnd="@dimen/default_padding_big"
+    android:drawablePadding="@dimen/default_padding"
+    android:textSize="@dimen/tr_abc_text_size_body_1_material" />
