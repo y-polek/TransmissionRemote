@@ -22,6 +22,7 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
@@ -29,9 +30,6 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.mikepenz.iconics.IconicsColor;
-import com.mikepenz.iconics.IconicsDrawable;
-import com.mikepenz.iconics.typeface.library.googlematerial.GoogleMaterial;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
 
@@ -569,12 +567,8 @@ public class TorrentListFragment extends Fragment implements ChooseLocationDialo
                 if (errorMsg != null && !errorMsg.trim().isEmpty()) {
                     holder.errorMsgView.setVisibility(View.VISIBLE);
                     holder.errorMsgView.setText(errorMsg);
-                    IconicsDrawable msgIcon = new IconicsDrawable(requireContext(),
-                            error.isWarning() ? GoogleMaterial.Icon.gmd_warning : GoogleMaterial.Icon.gmd_error);
-                    msgIcon.color(IconicsColor.colorInt(ColorUtils.resolveColor(context, android.R.attr.textColorSecondary, R.color.text_secondary)));
-                    int size = context.getResources().getDimensionPixelSize(R.dimen.torrent_list_error_icon_size);
-                    msgIcon.setBounds(0, 0, size, size);
-                    holder.errorMsgView.setCompoundDrawables(msgIcon, null, null, null);
+                    @DrawableRes final int errorIconRes = error.isWarning() ? R.drawable.ic_warning : R.drawable.ic_error;
+                    holder.errorMsgView.setCompoundDrawablesWithIntrinsicBounds(errorIconRes, 0, 0, 0);
                 } else {
                     holder.errorMsgView.setVisibility(View.GONE);
                 }
