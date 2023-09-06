@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:tools="http://schemas.android.com/tools">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <data>
         <import type="android.view.View" />
         <variable name="loadingInProgress" type="boolean" />
     </data>
-    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
         <LinearLayout
@@ -48,14 +50,14 @@
                     android:paddingRight="@dimen/edit_text_with_icon_padding"
                     android:inputType="textUri"
                     tools:ignore="RtlSymmetry" />
-                <com.mikepenz.iconics.view.IconicsButton android:id="@+id/download_location_dropdown_button"
+                <ImageButton android:id="@+id/download_location_dropdown_button"
                     android:layout_width="@dimen/edit_text_drop_down_icon_size"
                     android:layout_height="@dimen/edit_text_drop_down_icon_size"
                     android:layout_gravity="center_vertical|right"
                     android:layout_marginRight="@dimen/edit_text_drop_down_icon_padding"
+                    android:src="@drawable/ic_arrow_drop_down"
                     android:background="?android:attr/selectableItemBackground"
-                    android:textSize="@dimen/edit_text_drop_down_icon_text_size"
-                    android:textColor="?android:attr/textColorSecondary"
+                    app:tint="?android:attr/textColorSecondary"
                     tools:ignore="HardcodedText,SpUsage" />
             </FrameLayout>
 

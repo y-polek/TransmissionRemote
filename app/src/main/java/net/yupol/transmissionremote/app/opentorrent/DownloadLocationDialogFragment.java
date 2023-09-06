@@ -122,7 +122,6 @@ public class DownloadLocationDialogFragment extends DialogFragment {
             });
         }
 
-        binding.downloadLocationDropdownButton.setText("{cmd_menu_down}");
         binding.downloadLocationDropdownButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
