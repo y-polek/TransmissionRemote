@@ -79,11 +79,6 @@ dependencies {
     implementation('com.mikepenz:materialdrawer:7.0.0') {
         transitive = true
     }
-    implementation 'com.mikepenz:iconics-core:4.0.2@aar'
-    implementation 'com.mikepenz:iconics-views:4.0.2@aar'
-    implementation 'com.mikepenz:google-material-typeface:3.0.1.4.original-kotlin@aar'
-    implementation 'com.mikepenz:fontawesome-typeface:5.3.1.2-kotlin@aar'
-    implementation 'com.mikepenz:community-material-typeface:3.7.95.4-kotlin@aar'
 
     implementation 'com.github.sevar83:indeterminate-checkbox:1.0.5@aar'
 
