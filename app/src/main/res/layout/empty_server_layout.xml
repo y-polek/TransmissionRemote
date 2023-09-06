@@ -34,5 +34,7 @@
         android:layout_marginTop="@dimen/default_layout_margin"
         android:textSize="@dimen/tr_abc_text_size_button_material"
         android:onClick="openAddServerActivity"
-        android:text="@string/add_server"/>
+        android:text="@string/add_server"
+        android:drawableStart="@drawable/ic_add"
+        android:drawableTint="?android:colorAccent" />
 </RelativeLayout>
