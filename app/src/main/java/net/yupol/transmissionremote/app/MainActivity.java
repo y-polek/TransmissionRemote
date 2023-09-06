@@ -193,7 +193,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
     private MenuItem bottomBarUpSpeedMenuItem;
 
     private SearchView searchView;
-    private MenuItem searchMenuItem;
+    @Nullable private MenuItem searchMenuItem;
     private boolean restoredSearchMenuItemExpanded = false;
     private CharSequence restoredSearchQuery = "";
     private String currentSearchQuery;
@@ -822,7 +822,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
     @Override
     public void onBackPressed() {
         if (drawer.isDrawerOpen()) drawer.closeDrawer();
-        else if (searchMenuItem.isActionViewExpanded()) searchMenuItem.collapseActionView();
+        else if (searchMenuItem != null && searchMenuItem.isActionViewExpanded()) searchMenuItem.collapseActionView();
         else if (binding.addTorrentButton.isExpanded()) binding.addTorrentButton.collapse();
         else super.onBackPressed();
     }

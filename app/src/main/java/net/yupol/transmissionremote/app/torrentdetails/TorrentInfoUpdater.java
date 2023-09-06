@@ -19,8 +19,8 @@ public class TorrentInfoUpdater implements RequestListener<TorrentInfo> {
     private static final String TAG = TorrentInfoUpdater.class.getSimpleName();
     private static final String TIMER_NAME = TorrentInfoUpdater.class.getSimpleName();
 
-    private TransportManager transportManager;
-    private int torrentId;
+    private final TransportManager transportManager;
+    private final int torrentId;
     private final long timeoutMillis;
     private TorrentInfoGetRequest request;
     private Timer timer;

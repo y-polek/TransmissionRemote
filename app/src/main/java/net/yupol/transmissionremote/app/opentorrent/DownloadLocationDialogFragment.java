@@ -97,7 +97,10 @@ public class DownloadLocationDialogFragment extends DialogFragment {
                 @Override
                 public void onShow(DialogInterface dialog) {
                     if (binding.getLoadingInProgress()) {
-                        ((AlertDialog) getDialog()).getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(false);
+                        final AlertDialog alertDialog = (AlertDialog) getDialog();
+                        if (alertDialog != null) {
+                            alertDialog.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(false);
+                        }
                     }
                 }
             });
@@ -317,7 +320,7 @@ public class DownloadLocationDialogFragment extends DialogFragment {
                             clickify(binding.freeSpaceText, useDefaultText, new ClickSpan.OnClickListener() {
                                 @Override
                                 public void onClick() {
-                                    TransmissionRemote app = (TransmissionRemote) getActivity().getApplicationContext();
+                                    TransmissionRemote app = (TransmissionRemote) requireActivity().getApplicationContext();
                                     binding.downloadLocationText.setText(Strings.nullToEmpty(app.getDefaultDownloadDir()));
                                 }
                             });
