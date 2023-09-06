@@ -1,16 +1,16 @@
 package net.yupol.transmissionremote.app.actionbar;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
 import android.util.TypedValue;
 
+import androidx.annotation.ColorRes;
+import androidx.annotation.DrawableRes;
 import androidx.appcompat.widget.AppCompatTextView;
+import androidx.core.widget.TextViewCompat;
 
 import com.google.common.base.Strings;
-import com.mikepenz.iconics.IconicsColor;
-import com.mikepenz.iconics.IconicsDrawable;
-import com.mikepenz.iconics.typeface.library.fonrawesome.FontAwesome;
 
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.utils.CheatSheet;
@@ -20,9 +20,8 @@ import net.yupol.transmissionremote.app.utils.TextUtils;
 public abstract class SpeedTextView extends AppCompatTextView {
 
     private static final int PADDING_LEFT = 5; // dp
-    private static final int PADDING_IMAGE = 8; // dp
 
-    public SpeedTextView(Context context, Drawable drawable) {
+    public SpeedTextView(Context context, @DrawableRes int iconRes, @ColorRes int iconColorRes) {
         super(context);
         int horPadding = (int) MetricsUtils.dp2px(context, PADDING_LEFT);
         setPadding(horPadding, 0, horPadding, 0);
@@ -33,13 +32,8 @@ public abstract class SpeedTextView extends AppCompatTextView {
 
         setSpeed(0);
 
-        setCompoundDrawablePadding((int) MetricsUtils.dp2px(context, PADDING_IMAGE));
-        if (drawable != null) {
-            measure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED);
-            int size = 2 * getMeasuredHeight() / 3;
-            drawable.setBounds(0, 0, size, size);
-        }
-        setCompoundDrawables(drawable, null, null, null);
+        setCompoundDrawablesWithIntrinsicBounds(iconRes, 0, 0, 0);
+        TextViewCompat.setCompoundDrawableTintList(this, ColorStateList.valueOf(context.getColor(iconColorRes)));
     }
 
     public void setSpeed(long speedInBytesPerSec) {
@@ -52,10 +46,7 @@ public abstract class SpeedTextView extends AppCompatTextView {
 
     public static class DownloadSpeedTextView extends SpeedTextView {
         public DownloadSpeedTextView(Context context) {
-            super(context, new IconicsDrawable(context)
-                    .icon(FontAwesome.Icon.faw_arrow_down)
-                    .color(IconicsColor.colorRes(R.color.md_green_A700))
-            );
+            super(context, R.drawable.ic_download, R.color.md_green_A700);
 
             CheatSheet.setup(this, R.string.tooltip_total_download_speed);
         }
@@ -63,10 +54,7 @@ public abstract class SpeedTextView extends AppCompatTextView {
 
     public static class UploadSpeedTextView extends SpeedTextView {
         public UploadSpeedTextView(Context context) {
-            super(context, new IconicsDrawable(context)
-                    .icon(FontAwesome.Icon.faw_arrow_up)
-                    .color(IconicsColor.colorRes(R.color.md_red_A700))
-            );
+            super(context, R.drawable.ic_upload, R.color.md_red_A700);
 
             CheatSheet.setup(this, R.string.tooltip_total_upload_speed);
         }
