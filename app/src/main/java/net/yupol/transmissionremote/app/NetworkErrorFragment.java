@@ -23,13 +23,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
-import com.mikepenz.iconics.IconicsColor;
-import com.mikepenz.iconics.IconicsDrawable;
-import com.mikepenz.iconics.IconicsSize;
-import com.mikepenz.iconics.typeface.library.googlematerial.GoogleMaterial;
-
 import net.yupol.transmissionremote.app.preferences.ServersActivity;
-import net.yupol.transmissionremote.app.utils.ColorUtils;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -70,15 +64,7 @@ public class NetworkErrorFragment extends Fragment {
         String detailedMessage = args.getString(KEY_DETAILED_MESSAGE);
         setErrorMessage(message, detailedMessage);
 
-        final IconicsColor iconColor = IconicsColor.colorInt(
-                ColorUtils.resolveColor(requireContext(), R.attr.colorAccent, R.color.accent)
-        );
-        final IconicsSize iconSize = IconicsSize.res(R.dimen.default_button_icon_size);
-
         Button retryBtn = view.findViewById(R.id.retry_button);
-        retryBtn.setCompoundDrawables(
-                new IconicsDrawable(requireContext()).icon(GoogleMaterial.Icon.gmd_refresh).color(iconColor).size(iconSize),
-                null, null, null);
         retryBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -87,9 +73,6 @@ public class NetworkErrorFragment extends Fragment {
         });
 
         Button serverSettingsBtn = view.findViewById(R.id.server_settings_button);
-        serverSettingsBtn.setCompoundDrawables(
-                new IconicsDrawable(requireContext()).icon(GoogleMaterial.Icon.gmd_account_circle).color(iconColor).size(iconSize),
-                null, null, null);
         serverSettingsBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -100,9 +83,6 @@ public class NetworkErrorFragment extends Fragment {
         });
 
         Button networkSettingsBtn = view.findViewById(R.id.network_settings_button);
-        networkSettingsBtn.setCompoundDrawables(
-                new IconicsDrawable(requireContext()).icon(GoogleMaterial.Icon.gmd_network_wifi).color(iconColor).size(iconSize),
-                null, null, null);
         networkSettingsBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
