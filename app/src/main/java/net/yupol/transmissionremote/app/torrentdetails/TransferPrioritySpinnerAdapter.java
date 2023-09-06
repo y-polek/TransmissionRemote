@@ -1,7 +1,6 @@
 package net.yupol.transmissionremote.app.torrentdetails;
 
 import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,16 +8,10 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-import com.mikepenz.iconics.IconicsColor;
-import com.mikepenz.iconics.IconicsDrawable;
-import com.mikepenz.iconics.IconicsSize;
-import com.mikepenz.iconics.typeface.IIcon;
-import com.mikepenz.iconics.typeface.library.community.material.CommunityMaterial;
-import com.mikepenz.iconics.typeface.library.fonrawesome.FontAwesome;
+import androidx.annotation.DrawableRes;
 
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.model.json.TransferPriority;
-import net.yupol.transmissionremote.app.utils.ColorUtils;
 
 public class TransferPrioritySpinnerAdapter extends BaseAdapter {
 
@@ -55,23 +48,21 @@ public class TransferPrioritySpinnerAdapter extends BaseAdapter {
         text.setCompoundDrawablePadding(parent.getResources()
                 .getDimensionPixelSize(R.dimen.default_text_margin_small));
 
-        IIcon icon = null;
+        @DrawableRes final int iconRes;
         switch (priority) {
             case HIGH:
-                icon = FontAwesome.Icon.faw_angle_up;
+                iconRes = R.drawable.ic_priority_high;
                 break;
             case NORMAL:
-                icon = CommunityMaterial.Icon2.cmd_minus;
+                iconRes = R.drawable.ic_priority_normal;
                 break;
             case LOW:
-                icon = FontAwesome.Icon.faw_angle_down;
+                iconRes = R.drawable.ic_priority_low;
                 break;
+            default:
+                iconRes = 0;
         }
-        Drawable img = new IconicsDrawable(parent.getContext())
-                .icon(icon)
-                .color(IconicsColor.colorInt(ColorUtils.resolveColor(parent.getContext(), android.R.attr.textColorPrimary, R.color.text_primary)))
-                .size(IconicsSize.res(R.dimen.transfer_priority_icon_size));
-        text.setCompoundDrawables(img, null, null, null);
+        text.setCompoundDrawablesWithIntrinsicBounds(iconRes, 0, 0, 0);
 
         return view;
     }
