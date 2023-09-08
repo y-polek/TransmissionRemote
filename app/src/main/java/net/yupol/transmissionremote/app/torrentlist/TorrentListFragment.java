@@ -397,7 +397,7 @@ public class TorrentListFragment extends Fragment implements ChooseLocationDialo
     private void showChooseLocationDialog() {
         ChooseLocationDialogFragment dialog = new ChooseLocationDialogFragment();
         dialog.setTargetFragment(this, 0);
-        dialog.show(getChildFragmentManager(), CHOOSE_LOCATION_FRAGMENT_TAG);
+        dialog.show(requireActivity().getSupportFragmentManager(), CHOOSE_LOCATION_FRAGMENT_TAG);
     }
 
     private class TorrentsAdapter extends RecyclerView.Adapter<ViewHolder> {
