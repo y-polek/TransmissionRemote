@@ -5,7 +5,6 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.preference.PreferenceManager;
 
 import androidx.annotation.NonNull;
@@ -62,7 +61,7 @@ public class TransmissionRemote extends Application implements SharedPreferences
     private static TransmissionRemote instance;
 
     private final List<Server> servers = new LinkedList<>();
-    private Server activeServer;
+    @Nullable private Server activeServer;
     private final List<OnActiveServerChangedListener> activeServerListeners = new LinkedList<>();
 
     private final List<OnServerListChangedListener> serverListListeners = new LinkedList<>();
@@ -172,11 +171,12 @@ public class TransmissionRemote extends Application implements SharedPreferences
         }
     }
 
+    @Nullable
     public Server getActiveServer() {
         return activeServer;
     }
 
-    public void setActiveServer(Server server) {
+    public void setActiveServer(@Nullable Server server) {
         activeServer = server;
         persistActiveServer();
         fireActiveServerChangedEvent();
@@ -428,7 +428,7 @@ public class TransmissionRemote extends Application implements SharedPreferences
     }
 
     public interface OnActiveServerChangedListener {
-        void serverChanged(Server newServer);
+        void serverChanged(@Nullable Server newServer);
     }
 
     public interface OnServerListChangedListener {

@@ -3,6 +3,7 @@ package net.yupol.transmissionremote.app.server;
 import android.os.Parcel;
 import android.os.Parcelable;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
@@ -10,6 +11,7 @@ import com.google.gson.Gson;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 import javax.annotation.Nonnull;
@@ -24,12 +26,12 @@ public class Server implements Parcelable {
     private UUID id;
     private String idStr;
     private String name;
-    private String host;
+    @Nonnull private String host;
     private int port;
     private boolean useAuthentication;
-    private String userName;
-    private String password;
-    private String rpcUrl = DEFAULT_RPC_URL;
+    @Nullable private String userName;
+    @Nullable private String password;
+    @Nonnull private String rpcUrl = DEFAULT_RPC_URL;
     private String lastSessionId;
     private String redirectLocation;
     private boolean useHttps;
@@ -65,6 +67,7 @@ public class Server implements Parcelable {
         this.name = name;
     }
 
+    @Nonnull
     public String getHost() {
         return host;
     }
@@ -89,19 +92,21 @@ public class Server implements Parcelable {
         useAuthentication = isEnabled;
     }
 
+    @Nullable
     public String getUserName() {
         return userName;
     }
 
-    public void setUserName(String userName) {
+    public void setUserName(@Nullable String userName) {
         this.userName = userName;
     }
 
+    @Nullable
     public String getPassword() {
         return password;
     }
 
-    public void setPassword(String password) {
+    public void setPassword(@Nullable String password) {
         this.password = password;
     }
 
@@ -206,9 +211,9 @@ public class Server implements Parcelable {
         if (!id.equals(server.id)) return false;
         if (!name.equals(server.name)) return false;
         if (!host.equals(server.host)) return false;
-        if (userName != null ? !userName.equals(server.userName) : server.userName != null)
+        if (!Objects.equals(userName, server.userName))
             return false;
-        return rpcUrl != null ? rpcUrl.equals(server.rpcUrl) : server.rpcUrl == null;
+        return rpcUrl.equals(server.rpcUrl);
 
     }
 
@@ -220,12 +225,13 @@ public class Server implements Parcelable {
         result = 31 * result + port;
         result = 31 * result + (useAuthentication ? 1 : 0);
         result = 31 * result + (userName != null ? userName.hashCode() : 0);
-        result = 31 * result + (rpcUrl != null ? rpcUrl.hashCode() : 0);
+        result = 31 * result + rpcUrl.hashCode();
         result = 31 * result + (useHttps ? 1 : 0);
         result = 31 * result + (trustSelfSignedSslCert ? 1 : 0);
         return result;
     }
 
+    @NonNull
     @Override
     public String toString() {
         return "Server{" +
