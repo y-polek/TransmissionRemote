@@ -82,6 +82,7 @@ public class TransmissionRemote extends Application implements SharedPreferences
 
     private final Map<Server, Boolean> speedLimitsCache = new WeakHashMap<>();
     private SharedPreferences sharedPreferences;
+    private FeatureManager featureManager;
 
     @Override
     public void onCreate() {
@@ -102,6 +103,8 @@ public class TransmissionRemote extends Application implements SharedPreferences
         }
 
         createNotificationChannel();
+
+        featureManager = new FeatureManager();
     }
 
     @Override
@@ -127,6 +130,11 @@ public class TransmissionRemote extends Application implements SharedPreferences
 
     public static TransmissionRemote getInstance() {
         return instance;
+    }
+
+    @NonNull
+    public FeatureManager getFeatureManager() {
+        return featureManager;
     }
 
     public List<Server> getServers() {
