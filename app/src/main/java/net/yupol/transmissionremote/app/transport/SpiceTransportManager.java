@@ -39,7 +39,7 @@ public class SpiceTransportManager extends SpiceManager implements TransportMana
         request.setServer(server);
         request.setRetryPolicy(RETRY_POLICY_NO_RETRIES);
 
-        Log.d(TAG, "execute " + request.getClass().getSimpleName() + " sessionId: " + request.getServer().getLastSessionId());
+        Log.d(TAG, "execute " + request.getClass().getSimpleName());
         execute(request, new RetryPropagateRequestListener<>(request, listener) {
             @Override
             protected void retry(Request<T> request, @Nullable RequestListener<T> listener) {
