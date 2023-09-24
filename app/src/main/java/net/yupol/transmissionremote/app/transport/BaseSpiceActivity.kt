@@ -27,7 +27,12 @@ abstract class BaseSpiceActivity : BaseActivity() {
     }
 
     override fun onStop() {
-        stopSpiceTransportManagerIfAny()
+        (transportManager as? SpiceTransportManager)?.apply {
+            if (isStarted) {
+                cancelAllRequests()
+                shouldStop()
+            }
+        }
         super.onStop()
     }
 
@@ -43,22 +48,13 @@ abstract class BaseSpiceActivity : BaseActivity() {
 
     private fun updatedTransportManager(server: Server?): TransportManager? {
         if (server == null) {
-            stopSpiceTransportManagerIfAny()
             return null
         }
         if (TransmissionRemote.getInstance().featureManager.useOkHttp()) {
-            stopSpiceTransportManagerIfAny()
             return OkHttpTransportManager(server)
         }
         val spiceTransportManager = (transportManager as? SpiceTransportManager) ?: SpiceTransportManager()
         spiceTransportManager.setServer(server)
         return spiceTransportManager
-    }
-
-    private fun stopSpiceTransportManagerIfAny() {
-        (transportManager as? SpiceTransportManager)?.apply {
-            cancelAllRequests()
-            shouldStop()
-        }
     }
 }
