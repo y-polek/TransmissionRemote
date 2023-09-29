@@ -18,6 +18,7 @@ import androidx.fragment.app.FragmentTransaction;
 
 import net.yupol.transmissionremote.app.ProgressbarFragment;
 import net.yupol.transmissionremote.app.R;
+import net.yupol.transmissionremote.app.TransmissionRemote;
 import net.yupol.transmissionremote.app.model.Dir;
 import net.yupol.transmissionremote.app.model.json.TorrentInfo;
 import net.yupol.transmissionremote.app.transport.BaseSpiceActivity;
@@ -72,6 +73,15 @@ public class FilesPageFragment extends BasePageFragment implements DirectoryFrag
         viewCreated = true;
 
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        TransmissionRemote.getInstance().getAnalytics().logScreenView(
+                "Files page",
+                FilesPageFragment.class
+        );
     }
 
     @Override

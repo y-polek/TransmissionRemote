@@ -12,7 +12,10 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatDelegate;
 
 import com.evernote.android.job.JobManager;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
+import net.yupol.transmissionremote.app.analytics.Analytics;
+import net.yupol.transmissionremote.app.analytics.FirebaseAnalyticsProvider;
 import net.yupol.transmissionremote.app.filtering.Filter;
 import net.yupol.transmissionremote.app.filtering.Filters;
 import net.yupol.transmissionremote.app.model.json.Torrent;
@@ -83,6 +86,7 @@ public class TransmissionRemote extends Application implements SharedPreferences
     private final Map<Server, Boolean> speedLimitsCache = new WeakHashMap<>();
     private SharedPreferences sharedPreferences;
     private FeatureManager featureManager;
+    private Analytics analytics;
 
     @Override
     public void onCreate() {
@@ -105,6 +109,7 @@ public class TransmissionRemote extends Application implements SharedPreferences
         createNotificationChannel();
 
         featureManager = new FeatureManager();
+        analytics = new Analytics(new FirebaseAnalyticsProvider(FirebaseAnalytics.getInstance(this)));
     }
 
     @Override
@@ -135,6 +140,11 @@ public class TransmissionRemote extends Application implements SharedPreferences
     @NonNull
     public FeatureManager getFeatureManager() {
         return featureManager;
+    }
+
+    @NonNull
+    public Analytics getAnalytics() {
+        return analytics;
     }
 
     public List<Server> getServers() {

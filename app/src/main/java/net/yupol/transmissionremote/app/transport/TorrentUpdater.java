@@ -9,6 +9,8 @@ import com.octo.android.robospice.exception.NoNetworkException;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
 
+import net.yupol.transmissionremote.app.TransmissionRemote;
+import net.yupol.transmissionremote.app.analytics.Analytics;
 import net.yupol.transmissionremote.app.model.json.Torrent;
 import net.yupol.transmissionremote.app.model.json.Torrents;
 import net.yupol.transmissionremote.app.transport.request.TorrentGetRequest;
@@ -26,6 +28,7 @@ public class TorrentUpdater {
     @NonNull private final TorrentUpdateListener listener;
     private UpdaterThread updaterThread;
     private TorrentGetRequest currentRequest;
+    @NonNull private final Analytics analytics;
 
     public TorrentUpdater(
             @NonNull TransportManager transportManager,
@@ -35,6 +38,7 @@ public class TorrentUpdater {
         this.transportManager = transportManager;
         this.listener = listener;
         this.timeout = timeout;
+        this.analytics = TransmissionRemote.getInstance().getAnalytics();
     }
 
     /**
@@ -133,6 +137,7 @@ public class TorrentUpdater {
                 @Override
                 public void onRequestSuccess(Torrents torrents) {
                     responseReceived = Boolean.TRUE;
+                    analytics.setTorrentsCount(torrents.size());
                     if (!canceled) {
                         listener.onTorrentUpdate(torrents);
                     }

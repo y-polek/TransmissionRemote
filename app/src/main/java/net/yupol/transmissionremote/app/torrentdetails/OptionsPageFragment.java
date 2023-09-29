@@ -21,6 +21,7 @@ import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
 
 import net.yupol.transmissionremote.app.R;
+import net.yupol.transmissionremote.app.TransmissionRemote;
 import net.yupol.transmissionremote.app.databinding.TorrentDetailsOptionsPageFragmentBinding;
 import net.yupol.transmissionremote.app.model.json.ServerSettings;
 import net.yupol.transmissionremote.app.model.json.TorrentInfo;
@@ -141,6 +142,15 @@ public class OptionsPageFragment extends BasePageFragment implements AdapterView
         viewCreated = true;
 
         return binding.getRoot();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        TransmissionRemote.getInstance().getAnalytics().logScreenView(
+                "Options page",
+                OptionsPageFragment.class
+        );
     }
 
     @Override
@@ -282,7 +292,7 @@ public class OptionsPageFragment extends BasePageFragment implements AdapterView
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+    public void onCreateOptionsMenu(@NonNull Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.torrent_options_menu, menu);
         saveMenuItem = menu.findItem(R.id.action_save);
         saveMenuItem.setEnabled(getTorrentInfo() != null);
