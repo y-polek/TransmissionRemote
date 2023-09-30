@@ -68,6 +68,7 @@ class OkHttpTransportManager(
     private val mainThreadHandler = Handler(Looper.getMainLooper())
 
     override fun <T : Any?> doRequest(request: Request<T>, listener: RequestListener<T>?) {
+        val startTimestamp = System.currentTimeMillis()
         analytics.logOkHttpRequestStart(request.javaClass)
         request.server = server
         val url = HttpUrl.Builder().apply {
@@ -101,20 +102,29 @@ class OkHttpTransportManager(
                                 StringReader(arguments),
                                 request.resultType
                             )
-                            analytics.logOkHttpRequestSuccess(request.javaClass)
+                            analytics.logOkHttpRequestSuccess(
+                                requestClass = request.javaClass,
+                                responseTimeMillis = System.currentTimeMillis() - startTimestamp
+                            )
                             notifyListenerSuccess(result, listener)
                         }
                     } else {
                         val error = SpiceException("Request failed with ${response.code} HTTP status code")
                         request.error = error
-                        notifyListenerFailure(request, error, listener)
+                        notifyListenerFailure(
+                            request = request,
+                            responseTimeMillis = System.currentTimeMillis() - startTimestamp,
+                            error = error,
+                            listener = listener
+                        )
                     }
                 } catch (e: Throwable) {
                     request.error = e
                     notifyListenerFailure(
-                        request,
-                        SpiceException("Failed to execute request", e),
-                        listener
+                        request = request,
+                        responseTimeMillis = System.currentTimeMillis() - startTimestamp,
+                        error = SpiceException("Failed to execute request", e),
+                        listener = listener
                     )
                 }
             }
@@ -122,7 +132,12 @@ class OkHttpTransportManager(
             override fun onFailure(call: Call, e: IOException) {
                 val error = SpiceException(e.message, e)
                 request.error = error
-                notifyListenerFailure(request, error, listener)
+                notifyListenerFailure(
+                    request = request,
+                    responseTimeMillis = System.currentTimeMillis() - startTimestamp,
+                    error = error,
+                    listener = listener
+                )
             }
         })
     }
@@ -134,8 +149,16 @@ class OkHttpTransportManager(
         }
     }
 
-    private fun <T : Any?> notifyListenerFailure(request: Request<T>, error: SpiceException, listener: RequestListener<T>?) {
-        analytics.logOkHttpRequestFailure(request.javaClass)
+    private fun <T : Any?> notifyListenerFailure(
+        request: Request<T>,
+        responseTimeMillis: Long,
+        error: SpiceException,
+        listener: RequestListener<T>?
+    ) {
+        analytics.logOkHttpRequestFailure(
+            requestClass = request.javaClass,
+            responseTimeMillis = responseTimeMillis
+        )
         listener ?: return
         mainThreadHandler.post {
             listener.onRequestFailure(error)

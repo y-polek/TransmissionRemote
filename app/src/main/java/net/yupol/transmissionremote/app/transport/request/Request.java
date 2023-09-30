@@ -109,7 +109,8 @@ public abstract class Request<RESULT> extends GoogleHttpClientSpiceRequest<RESUL
 
     @Override
     public RESULT loadDataFromNetwork() throws Exception {
-        analytics.logRobospiceRequestStart((Class<Request<?>>) getClass());
+        final long startTimestamp = System.currentTimeMillis();
+        analytics.logRobospiceRequestStart(getClass());
         if (server == null) {
             throw new IllegalStateException("Server must be set before executing");
         }
@@ -183,11 +184,11 @@ public abstract class Request<RESULT> extends GoogleHttpClientSpiceRequest<RESUL
                     Log.e(TAG, "Failed to parse response. SC: " + statusCode, e);
                     throw e;
                 }
-                analytics.logRobospiceRequestSuccess((Class<Request<?>>) getClass());
+                analytics.logRobospiceRequestSuccess(getClass(), System.currentTimeMillis() - startTimestamp);
                 return result;
             }
         } catch (Throwable error) {
-            analytics.logRobospiceRequestFailure((Class<Request<?>>) getClass());
+            analytics.logRobospiceRequestFailure(getClass(), System.currentTimeMillis() - startTimestamp);
             throw error;
         } finally {
             response.disconnect();

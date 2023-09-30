@@ -15,45 +15,61 @@ class Analytics(
         )
     }
 
-    fun logOkHttpRequestStart(requestClass: Class<Request<*>>) {
+    fun <T> logOkHttpRequestStart(requestClass: Class<T>) where T : Request<*> {
         analyticsProvider.logEvent(
             name = EVENT_OKHTTP_REQUEST_START,
             PARAM_REQUEST_CLASS to requestClass.simpleName
         )
     }
 
-    fun logOkHttpRequestSuccess(requestClass: Class<Request<*>>) {
+    fun <T> logOkHttpRequestSuccess(
+        requestClass: Class<T>,
+        responseTimeMillis: Long
+    ) where T : Request<*> {
         analyticsProvider.logEvent(
             name = EVENT_OKHTTP_REQUEST_SUCCESS,
-            PARAM_REQUEST_CLASS to requestClass.simpleName
+            PARAM_REQUEST_CLASS to requestClass.simpleName,
+            PARAM_RESPONSE_TIME_MILLIS to "$responseTimeMillis"
         )
     }
 
-    fun logOkHttpRequestFailure(requestClass: Class<Request<*>>) {
+    fun <T> logOkHttpRequestFailure(
+        requestClass: Class<T>,
+        responseTimeMillis: Long
+    ) where T : Request<*> {
         analyticsProvider.logEvent(
             name = EVENT_OKHTTP_REQUEST_FAILURE,
-            PARAM_REQUEST_CLASS to requestClass.simpleName
+            PARAM_REQUEST_CLASS to requestClass.simpleName,
+            PARAM_RESPONSE_TIME_MILLIS to "$responseTimeMillis"
         )
     }
 
-    fun logRobospiceRequestStart(requestClass: Class<Request<*>>) {
+    fun <T> logRobospiceRequestStart(requestClass: Class<T>) where T : Request<*> {
         analyticsProvider.logEvent(
             name = EVENT_ROBOSPICE_REQUEST_START,
             PARAM_REQUEST_CLASS to requestClass.simpleName
         )
     }
 
-    fun logRobospiceRequestSuccess(requestClass: Class<Request<*>>) {
+    fun <T> logRobospiceRequestSuccess(
+        requestClass: Class<T>,
+        responseTimeMillis: Long
+    ) where T : Request<*> {
         analyticsProvider.logEvent(
             name = EVENT_ROBOSPICE_REQUEST_SUCCESS,
-            PARAM_REQUEST_CLASS to requestClass.simpleName
+            PARAM_REQUEST_CLASS to requestClass.simpleName,
+            PARAM_RESPONSE_TIME_MILLIS to "$responseTimeMillis"
         )
     }
 
-    fun logRobospiceRequestFailure(requestClass: Class<Request<*>>) {
+    fun <T> logRobospiceRequestFailure(
+        requestClass: Class<T>,
+        responseTimeMillis: Long
+    ) where T : Request<*> {
         analyticsProvider.logEvent(
             name = EVENT_ROBOSPICE_REQUEST_FAILURE,
-            PARAM_REQUEST_CLASS to requestClass.simpleName
+            PARAM_REQUEST_CLASS to requestClass.simpleName,
+            PARAM_RESPONSE_TIME_MILLIS to "$responseTimeMillis"
         )
     }
 
@@ -73,5 +89,6 @@ class Analytics(
         private const val EVENT_ROBOSPICE_REQUEST_FAILURE = "robospice_request_failure"
 
         private const val PARAM_REQUEST_CLASS = "request_class"
+        private const val PARAM_RESPONSE_TIME_MILLIS = "response_time_millis"
     }
 }
