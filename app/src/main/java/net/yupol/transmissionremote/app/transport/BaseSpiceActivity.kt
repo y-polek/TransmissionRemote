@@ -50,8 +50,9 @@ abstract class BaseSpiceActivity : BaseActivity() {
         if (server == null) {
             return null
         }
-        if (TransmissionRemote.getInstance().featureManager.useOkHttp()) {
-            return OkHttpTransportManager(server)
+        val app = TransmissionRemote.getInstance()
+        if (app.featureManager.useOkHttp()) {
+            return OkHttpTransportManager(server, app.analytics)
         }
         val spiceTransportManager = (transportManager as? SpiceTransportManager) ?: SpiceTransportManager()
         spiceTransportManager.setServer(server)

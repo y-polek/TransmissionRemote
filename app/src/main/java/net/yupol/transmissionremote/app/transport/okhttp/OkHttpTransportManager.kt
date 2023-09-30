@@ -8,6 +8,7 @@ import com.google.api.client.json.jackson2.JacksonFactory
 import com.octo.android.robospice.persistence.exception.SpiceException
 import com.octo.android.robospice.request.listener.RequestListener
 import net.yupol.transmissionremote.app.BuildConfig
+import net.yupol.transmissionremote.app.analytics.Analytics
 import net.yupol.transmissionremote.app.server.Server
 import net.yupol.transmissionremote.app.transport.TransportManager
 import net.yupol.transmissionremote.app.transport.request.Request
@@ -30,7 +31,8 @@ import javax.net.ssl.SSLContext
 import javax.net.ssl.X509TrustManager
 
 class OkHttpTransportManager(
-    private val server: Server
+    private val server: Server,
+    private val analytics: Analytics
 ) : TransportManager {
 
     private val okHttpClient = OkHttpClient.Builder().apply {
@@ -66,6 +68,7 @@ class OkHttpTransportManager(
     private val mainThreadHandler = Handler(Looper.getMainLooper())
 
     override fun <T : Any?> doRequest(request: Request<T>, listener: RequestListener<T>?) {
+        analytics.logOkHttpRequestStart(request.javaClass)
         request.server = server
         val url = HttpUrl.Builder().apply {
             scheme(if (server.useHttps()) "https" else "http")
@@ -98,16 +101,18 @@ class OkHttpTransportManager(
                                 StringReader(arguments),
                                 request.resultType
                             )
+                            analytics.logOkHttpRequestSuccess(request.javaClass)
                             notifyListenerSuccess(result, listener)
                         }
                     } else {
                         val error = SpiceException("Request failed with ${response.code} HTTP status code")
                         request.error = error
-                        notifyListenerFailure(error, listener)
+                        notifyListenerFailure(request, error, listener)
                     }
                 } catch (e: Throwable) {
                     request.error = e
                     notifyListenerFailure(
+                        request,
                         SpiceException("Failed to execute request", e),
                         listener
                     )
@@ -117,7 +122,7 @@ class OkHttpTransportManager(
             override fun onFailure(call: Call, e: IOException) {
                 val error = SpiceException(e.message, e)
                 request.error = error
-                notifyListenerFailure(error, listener)
+                notifyListenerFailure(request, error, listener)
             }
         })
     }
@@ -129,7 +134,8 @@ class OkHttpTransportManager(
         }
     }
 
-    private fun <T : Any?> notifyListenerFailure(error: SpiceException, listener: RequestListener<T>?) {
+    private fun <T : Any?> notifyListenerFailure(request: Request<T>, error: SpiceException, listener: RequestListener<T>?) {
+        analytics.logOkHttpRequestFailure(request.javaClass)
         listener ?: return
         mainThreadHandler.post {
             listener.onRequestFailure(error)

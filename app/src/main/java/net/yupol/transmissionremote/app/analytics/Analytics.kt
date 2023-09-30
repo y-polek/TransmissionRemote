@@ -2,15 +2,58 @@ package net.yupol.transmissionremote.app.analytics
 
 import com.google.firebase.analytics.FirebaseAnalytics.Event
 import com.google.firebase.analytics.FirebaseAnalytics.Param
+import net.yupol.transmissionremote.app.transport.request.Request
 
 class Analytics(
     private val analyticsProvider: AnalyticsProvider
 ) {
     fun logScreenView(screenName: String, screenClass: Class<*>) {
         analyticsProvider.logEvent(
-            Event.SCREEN_VIEW,
+            name = Event.SCREEN_VIEW,
             Param.SCREEN_NAME to screenName,
             Param.SCREEN_CLASS to screenClass.simpleName
+        )
+    }
+
+    fun logOkHttpRequestStart(requestClass: Class<Request<*>>) {
+        analyticsProvider.logEvent(
+            name = EVENT_OKHTTP_REQUEST_START,
+            PARAM_REQUEST_CLASS to requestClass.simpleName
+        )
+    }
+
+    fun logOkHttpRequestSuccess(requestClass: Class<Request<*>>) {
+        analyticsProvider.logEvent(
+            name = EVENT_OKHTTP_REQUEST_SUCCESS,
+            PARAM_REQUEST_CLASS to requestClass.simpleName
+        )
+    }
+
+    fun logOkHttpRequestFailure(requestClass: Class<Request<*>>) {
+        analyticsProvider.logEvent(
+            name = EVENT_OKHTTP_REQUEST_FAILURE,
+            PARAM_REQUEST_CLASS to requestClass.simpleName
+        )
+    }
+
+    fun logRobospiceRequestStart(requestClass: Class<Request<*>>) {
+        analyticsProvider.logEvent(
+            name = EVENT_ROBOSPICE_REQUEST_START,
+            PARAM_REQUEST_CLASS to requestClass.simpleName
+        )
+    }
+
+    fun logRobospiceRequestSuccess(requestClass: Class<Request<*>>) {
+        analyticsProvider.logEvent(
+            name = EVENT_ROBOSPICE_REQUEST_SUCCESS,
+            PARAM_REQUEST_CLASS to requestClass.simpleName
+        )
+    }
+
+    fun logRobospiceRequestFailure(requestClass: Class<Request<*>>) {
+        analyticsProvider.logEvent(
+            name = EVENT_ROBOSPICE_REQUEST_FAILURE,
+            PARAM_REQUEST_CLASS to requestClass.simpleName
         )
     }
 
@@ -20,5 +63,15 @@ class Analytics(
 
     companion object {
         private const val PROPERTY_TORRENTS_COUNT = "torrents_count"
+
+        private const val EVENT_OKHTTP_REQUEST_START = "okhttp_request_start"
+        private const val EVENT_OKHTTP_REQUEST_SUCCESS = "okhttp_request_success"
+        private const val EVENT_OKHTTP_REQUEST_FAILURE = "okhttp_request_failure"
+
+        private const val EVENT_ROBOSPICE_REQUEST_START = "robospice_request_start"
+        private const val EVENT_ROBOSPICE_REQUEST_SUCCESS = "robospice_request_success"
+        private const val EVENT_ROBOSPICE_REQUEST_FAILURE = "robospice_request_failure"
+
+        private const val PARAM_REQUEST_CLASS = "request_class"
     }
 }

@@ -17,6 +17,8 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.common.base.Strings;
 import com.octo.android.robospice.request.googlehttpclient.GoogleHttpClientSpiceRequest;
 
+import net.yupol.transmissionremote.app.TransmissionRemote;
+import net.yupol.transmissionremote.app.analytics.Analytics;
 import net.yupol.transmissionremote.app.server.Server;
 
 import org.apache.commons.lang3.StringUtils;
@@ -48,8 +50,11 @@ public abstract class Request<RESULT> extends GoogleHttpClientSpiceRequest<RESUL
     private String responseBody;
     private Throwable error;
 
+    private final Analytics analytics;
+
     public Request(Class<RESULT> resultClass) {
         super(resultClass);
+        this.analytics = TransmissionRemote.getInstance().getAnalytics();
     }
 
     public void setServer(@Nonnull Server server) {
@@ -104,6 +109,7 @@ public abstract class Request<RESULT> extends GoogleHttpClientSpiceRequest<RESUL
 
     @Override
     public RESULT loadDataFromNetwork() throws Exception {
+        analytics.logRobospiceRequestStart((Class<Request<?>>) getClass());
         if (server == null) {
             throw new IllegalStateException("Server must be set before executing");
         }
@@ -177,8 +183,12 @@ public abstract class Request<RESULT> extends GoogleHttpClientSpiceRequest<RESUL
                     Log.e(TAG, "Failed to parse response. SC: " + statusCode, e);
                     throw e;
                 }
+                analytics.logRobospiceRequestSuccess((Class<Request<?>>) getClass());
                 return result;
             }
+        } catch (Throwable error) {
+            analytics.logRobospiceRequestFailure((Class<Request<?>>) getClass());
+            throw error;
         } finally {
             response.disconnect();
         }
