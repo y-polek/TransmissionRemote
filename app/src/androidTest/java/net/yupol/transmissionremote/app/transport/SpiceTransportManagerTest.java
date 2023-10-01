@@ -56,8 +56,9 @@ public class SpiceTransportManagerTest {
                 requestListener.onRequestFailure(new SpiceException("Fake Exception"));
             }
         };
+        fakeTransportManager.setServer(server);
 
-        fakeTransportManager.doRequest(request, server, requestListener);
+        fakeTransportManager.doRequest(request, requestListener);
 
         verify(requestListener).onRequestFailure(any(SpiceException.class));
         verifyNoMoreInteractions(requestListener);
@@ -80,8 +81,9 @@ public class SpiceTransportManagerTest {
                 requestListener.onRequestFailure(new SpiceException("Fake Exception"));
             }
         };
+        fakeTransportManager.setServer(server);
 
-        fakeTransportManager.doRequest(request, server, requestListener);
+        fakeTransportManager.doRequest(request, requestListener);
 
         verify(requestListener).onRequestFailure(any(SpiceException.class));
         verifyNoMoreInteractions(requestListener);
