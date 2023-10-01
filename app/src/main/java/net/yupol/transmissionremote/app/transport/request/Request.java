@@ -1,7 +1,8 @@
 package net.yupol.transmissionremote.app.transport.request;
 
-import androidx.annotation.Nullable;
 import android.util.Log;
+
+import androidx.annotation.Nullable;
 
 import com.google.api.client.http.ByteArrayContent;
 import com.google.api.client.http.GenericUrl;
@@ -13,10 +14,11 @@ import com.google.api.client.http.HttpResponse;
 import com.google.api.client.http.HttpStatusCodes;
 import com.google.api.client.json.JsonObjectParser;
 import com.google.api.client.json.jackson2.JacksonFactory;
-import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import com.octo.android.robospice.request.googlehttpclient.GoogleHttpClientSpiceRequest;
 
+import net.yupol.transmissionremote.app.TransmissionRemote;
+import net.yupol.transmissionremote.app.analytics.Analytics;
 import net.yupol.transmissionremote.app.server.Server;
 
 import org.apache.commons.lang3.StringUtils;
@@ -26,6 +28,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.Locale;
+import java.util.Optional;
 
 import javax.annotation.Nonnull;
 
@@ -40,8 +43,6 @@ public abstract class Request<RESULT> extends GoogleHttpClientSpiceRequest<RESUL
     private Server server;
     private String responseSessionId;
 
-    private String url;
-
     private int statusCode = -1;
 
     private String redirectLocation;
@@ -49,8 +50,11 @@ public abstract class Request<RESULT> extends GoogleHttpClientSpiceRequest<RESUL
     private String responseBody;
     private Throwable error;
 
+    private final Analytics analytics;
+
     public Request(Class<RESULT> resultClass) {
         super(resultClass);
+        this.analytics = TransmissionRemote.getInstance().getAnalytics();
     }
 
     public void setServer(@Nonnull Server server) {
@@ -63,7 +67,22 @@ public abstract class Request<RESULT> extends GoogleHttpClientSpiceRequest<RESUL
 
     @Nullable
     public String getUrl() {
-        return url;
+        if (server == null) return null;
+
+        final String address = server.getPort() >= 0 ? server.getHost() + ":" + server.getPort() : server.getHost();
+        return String.format(Locale.ROOT, "%s://%s/%s",
+                server.useHttps() ? "https" : "http",
+                address,
+                server.getUrlPath());
+    }
+
+    public void setResponse(int statusCode, String responseBody) {
+        this.statusCode = statusCode;
+        this.responseBody = responseBody;
+    }
+
+    public void setError(Throwable error) {
+        this.error = error;
     }
 
     public int getResponseStatusCode() {
@@ -90,21 +109,18 @@ public abstract class Request<RESULT> extends GoogleHttpClientSpiceRequest<RESUL
 
     @Override
     public RESULT loadDataFromNetwork() throws Exception {
+        final long startTimestamp = System.currentTimeMillis();
+        analytics.logRobospiceRequestStart(getClass());
         if (server == null) {
             throw new IllegalStateException("Server must be set before executing");
         }
 
-        String address = server.getPort() >= 0 ? server.getHost() + ":" + server.getPort() : server.getHost();
-        url = String.format(Locale.ROOT, "%s://%s/%s",
-                server.useHttps() ? "https" : "http",
-                address,
-                server.getUrlPath());
-
         HttpRequestFactory requestFactory = getHttpRequestFactory();
 
-        String body = Optional.fromNullable(createBody()).or("");
+        String body = Optional.ofNullable(createBody()).orElse("");
         HttpContent content = new ByteArrayContent("application/json", body.getBytes());
 
+        final String url = Optional.ofNullable(getUrl()).orElse("");
         HttpRequest request = requestFactory.buildPostRequest(new GenericUrl(url), content);
         request.setThrowExceptionOnExecuteError(false);
         request.setNumberOfRetries(0);
@@ -132,7 +148,7 @@ public abstract class Request<RESULT> extends GoogleHttpClientSpiceRequest<RESUL
                 String location = response.getHeaders().getFirstHeaderStringValue("location");
                 if (StringUtils.isNotEmpty(location)) {
                     if (location.startsWith("/")) {
-                        location = location.substring(1, location.length());
+                        location = location.substring(1);
                     }
                     if (location.endsWith("/")) {
                         location = location.substring(0, location.length() - 1);
@@ -168,14 +184,18 @@ public abstract class Request<RESULT> extends GoogleHttpClientSpiceRequest<RESUL
                     Log.e(TAG, "Failed to parse response. SC: " + statusCode, e);
                     throw e;
                 }
+                analytics.logRobospiceRequestSuccess(getClass(), System.currentTimeMillis() - startTimestamp);
                 return result;
             }
+        } catch (Throwable error) {
+            analytics.logRobospiceRequestFailure(getClass(), System.currentTimeMillis() - startTimestamp);
+            throw error;
         } finally {
             response.disconnect();
         }
     }
 
-    private String createBody() {
+    public String createBody() {
         JSONObject bodyObj = new JSONObject();
         try {
             bodyObj.put("method", getMethod());

@@ -17,7 +17,7 @@
 
         <item name="windowActionModeOverlay">true</item>
 
-        <item name="android:navigationBarColor" tools:targetApi="21">@color/primary_dark</item>
+        <item name="android:navigationBarColor">@color/primary_dark</item>
 
         <!-- MaterialDrawer specific values -->
         <item name="material_drawer_background">@color/drawer_background</item>
@@ -34,6 +34,10 @@
     <style name="AppTheme.NoActionBar" parent="AppTheme">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
+    </style>
+    
+    <style name="AppTheme.Starting" parent="Theme.SplashScreen">
+        <item name="postSplashScreenTheme">@style/AppTheme.NoActionBar</item>
     </style>
 
     <style name="ActionBarTheme" parent="@style/ThemeOverlay.AppCompat.Dark.ActionBar">

@@ -5,7 +5,6 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.preference.PreferenceManager;
 
 import androidx.annotation.NonNull;
@@ -13,7 +12,10 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatDelegate;
 
 import com.evernote.android.job.JobManager;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
+import net.yupol.transmissionremote.app.analytics.Analytics;
+import net.yupol.transmissionremote.app.analytics.FirebaseAnalyticsProvider;
 import net.yupol.transmissionremote.app.filtering.Filter;
 import net.yupol.transmissionremote.app.filtering.Filters;
 import net.yupol.transmissionremote.app.model.json.Torrent;
@@ -62,7 +64,7 @@ public class TransmissionRemote extends Application implements SharedPreferences
     private static TransmissionRemote instance;
 
     private final List<Server> servers = new LinkedList<>();
-    private Server activeServer;
+    @Nullable private Server activeServer;
     private final List<OnActiveServerChangedListener> activeServerListeners = new LinkedList<>();
 
     private final List<OnServerListChangedListener> serverListListeners = new LinkedList<>();
@@ -83,6 +85,8 @@ public class TransmissionRemote extends Application implements SharedPreferences
 
     private final Map<Server, Boolean> speedLimitsCache = new WeakHashMap<>();
     private SharedPreferences sharedPreferences;
+    private FeatureManager featureManager;
+    private Analytics analytics;
 
     @Override
     public void onCreate() {
@@ -103,6 +107,9 @@ public class TransmissionRemote extends Application implements SharedPreferences
         }
 
         createNotificationChannel();
+
+        featureManager = new FeatureManager();
+        analytics = new Analytics(new FirebaseAnalyticsProvider(FirebaseAnalytics.getInstance(this)));
     }
 
     @Override
@@ -128,6 +135,16 @@ public class TransmissionRemote extends Application implements SharedPreferences
 
     public static TransmissionRemote getInstance() {
         return instance;
+    }
+
+    @NonNull
+    public FeatureManager getFeatureManager() {
+        return featureManager;
+    }
+
+    @NonNull
+    public Analytics getAnalytics() {
+        return analytics;
     }
 
     public List<Server> getServers() {
@@ -172,11 +189,12 @@ public class TransmissionRemote extends Application implements SharedPreferences
         }
     }
 
+    @Nullable
     public Server getActiveServer() {
         return activeServer;
     }
 
-    public void setActiveServer(Server server) {
+    public void setActiveServer(@Nullable Server server) {
         activeServer = server;
         persistActiveServer();
         fireActiveServerChangedEvent();
@@ -428,7 +446,7 @@ public class TransmissionRemote extends Application implements SharedPreferences
     }
 
     public interface OnActiveServerChangedListener {
-        void serverChanged(Server newServer);
+        void serverChanged(@Nullable Server newServer);
     }
 
     public interface OnServerListChangedListener {

@@ -1,14 +1,16 @@
 package net.yupol.transmissionremote.app.transport;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import android.util.Log;
 
-import com.octo.android.robospice.exception.NetworkException;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.octo.android.robospice.exception.NoNetworkException;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
 
+import net.yupol.transmissionremote.app.TransmissionRemote;
+import net.yupol.transmissionremote.app.analytics.Analytics;
 import net.yupol.transmissionremote.app.model.json.Torrent;
 import net.yupol.transmissionremote.app.model.json.Torrents;
 import net.yupol.transmissionremote.app.transport.request.TorrentGetRequest;
@@ -22,15 +24,21 @@ public class TorrentUpdater {
     private static final String TAG = TorrentUpdater.class.getSimpleName();
 
     private volatile int timeout;
-    private TransportManager transportManager;
-    private TorrentUpdateListener listener;
+    @NonNull private final TransportManager transportManager;
+    @NonNull private final TorrentUpdateListener listener;
     private UpdaterThread updaterThread;
     private TorrentGetRequest currentRequest;
+    @NonNull private final Analytics analytics;
 
-    public TorrentUpdater(TransportManager transportManager, TorrentUpdateListener listener, int timeout) {
+    public TorrentUpdater(
+            @NonNull TransportManager transportManager,
+            @NonNull TorrentUpdateListener listener,
+            int timeout
+    ) {
         this.transportManager = transportManager;
         this.listener = listener;
         this.timeout = timeout;
+        this.analytics = TransmissionRemote.getInstance().getAnalytics();
     }
 
     /**
@@ -104,14 +112,14 @@ public class TorrentUpdater {
             final TorrentGetRequest request = new TorrentGetRequest();
             currentRequest = request;
 
-            transportManager.doRequest(request, new RequestListener<Torrents>() {
+            transportManager.doRequest(request, new RequestListener<>() {
                 @Override
                 public void onRequestFailure(SpiceException spiceException) {
                     Log.d(TAG, "TorrentGetRequest failed. SC: " + request.getResponseStatusCode());
                     responseReceived = Boolean.TRUE;
                     if (spiceException instanceof NoNetworkException) {
                         listener.onNetworkError(NetworkError.NO_NETWORK, null);
-                    } else if (spiceException instanceof NetworkException) {
+                    } else {
                         Log.d(TAG, "NetworkException: " + spiceException.getMessage() + " status code: " + request.getResponseStatusCode());
                         NetworkError error = NetworkError.OTHER;
                         if (request.getResponseStatusCode() == HttpURLConnection.HTTP_UNAUTHORIZED) {
@@ -129,6 +137,7 @@ public class TorrentUpdater {
                 @Override
                 public void onRequestSuccess(Torrents torrents) {
                     responseReceived = Boolean.TRUE;
+                    analytics.setTorrentsCount(torrents.size());
                     if (!canceled) {
                         listener.onTorrentUpdate(torrents);
                     }
