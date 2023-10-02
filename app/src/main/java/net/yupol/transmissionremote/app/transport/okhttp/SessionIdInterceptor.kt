@@ -3,6 +3,7 @@ package net.yupol.transmissionremote.app.transport.okhttp
 import okhttp3.Interceptor
 import okhttp3.Request
 import okhttp3.Response
+import okhttp3.internal.closeQuietly
 import javax.inject.Inject
 
 class SessionIdInterceptor @Inject constructor(): Interceptor {
@@ -17,6 +18,7 @@ class SessionIdInterceptor @Inject constructor(): Interceptor {
         if (response.code == 409) {
             sessionId = response.header(SESSION_ID_HEADER)
             if (sessionId != null) {
+                response.closeQuietly()
                 return chain.proceed(request.withSessionId())
             }
         }
