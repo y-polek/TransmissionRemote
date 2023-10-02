@@ -36,8 +36,6 @@ public abstract class Request<RESULT> extends GoogleHttpClientSpiceRequest<RESUL
 
     private static final String TAG = Request.class.getSimpleName();
 
-    private static final String HEADER_SESSION_ID = "X-Transmission-Session-Id";
-
     private static final JsonObjectParser JSON_PARSER = new JsonObjectParser.Builder(JacksonFactory.getDefaultInstance()).build();
 
     private Server server;
@@ -126,7 +124,7 @@ public abstract class Request<RESULT> extends GoogleHttpClientSpiceRequest<RESUL
         request.setNumberOfRetries(0);
 
         HttpHeaders headers = new HttpHeaders()
-                .set(HEADER_SESSION_ID, Strings.emptyToNull(server.getLastSessionId()));
+                .set("x-transmission-session-id", Strings.emptyToNull(server.getLastSessionId()));
         if (server.isAuthenticationEnabled()) {
             headers.setBasicAuthentication(server.getUserName(), server.getPassword());
         }
@@ -163,7 +161,7 @@ public abstract class Request<RESULT> extends GoogleHttpClientSpiceRequest<RESUL
                 }
                 throw new IOException("Request redirected");
             } else {
-                responseSessionId = response.getHeaders().getFirstHeaderStringValue(HEADER_SESSION_ID);
+                responseSessionId = response.getHeaders().getFirstHeaderStringValue("X-Transmission-Session-Id");
 
                 RESULT result;
                 try {
