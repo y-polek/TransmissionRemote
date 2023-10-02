@@ -13,8 +13,8 @@ android {
     defaultConfig {
         minSdkVersion 26
         targetSdkVersion 33
-        versionCode 91500
-        versionName '0.9.15'
+        versionCode 91600
+        versionName '0.9.16'
         applicationId 'net.yupol.transmissionremote.app'
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
         testInstrumentationRunnerArguments clearPackageData: 'true'
