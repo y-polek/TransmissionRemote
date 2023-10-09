@@ -15,13 +15,6 @@ class Analytics(
         )
     }
 
-    fun <T> logOkHttpRequestStart(requestClass: Class<T>) where T : Request<*> {
-        analyticsProvider.logEvent(
-            name = EVENT_OKHTTP_REQUEST_START,
-            PARAM_REQUEST_CLASS to requestClass.simpleName
-        )
-    }
-
     fun <T> logOkHttpRequestSuccess(
         requestClass: Class<T>,
         responseTimeMillis: Long
@@ -41,13 +34,6 @@ class Analytics(
             name = EVENT_OKHTTP_REQUEST_FAILURE,
             PARAM_REQUEST_CLASS to requestClass.simpleName,
             PARAM_RESPONSE_TIME_MILLIS to "$responseTimeMillis"
-        )
-    }
-
-    fun <T> logRobospiceRequestStart(requestClass: Class<T>) where T : Request<*> {
-        analyticsProvider.logEvent(
-            name = EVENT_ROBOSPICE_REQUEST_START,
-            PARAM_REQUEST_CLASS to requestClass.simpleName
         )
     }
 
@@ -80,11 +66,9 @@ class Analytics(
     companion object {
         private const val PROPERTY_TORRENTS_COUNT = "torrents_count"
 
-        private const val EVENT_OKHTTP_REQUEST_START = "okhttp_request_start"
         private const val EVENT_OKHTTP_REQUEST_SUCCESS = "okhttp_request_success"
         private const val EVENT_OKHTTP_REQUEST_FAILURE = "okhttp_request_failure"
 
-        private const val EVENT_ROBOSPICE_REQUEST_START = "robospice_request_start"
         private const val EVENT_ROBOSPICE_REQUEST_SUCCESS = "robospice_request_success"
         private const val EVENT_ROBOSPICE_REQUEST_FAILURE = "robospice_request_failure"
 

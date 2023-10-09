@@ -3,8 +3,6 @@ package net.yupol.transmissionremote.app.analytics
 import com.google.firebase.analytics.FirebaseAnalytics.Event
 import com.google.firebase.analytics.FirebaseAnalytics.Param
 import net.yupol.transmissionremote.app.transport.request.AddTorrentRequest
-import net.yupol.transmissionremote.app.transport.request.RenameRequest
-import net.yupol.transmissionremote.app.transport.request.SessionGetRequest
 import net.yupol.transmissionremote.app.transport.request.SetLocationRequest
 import net.yupol.transmissionremote.app.transport.request.TorrentGetRequest
 import net.yupol.transmissionremote.app.transport.request.VerifyTorrentRequest
@@ -34,18 +32,6 @@ class AnalyticsTest {
     }
 
     @Test
-    fun `test logOkHttRequestStart`() {
-        // when
-        analytics.logOkHttpRequestStart(SessionGetRequest::class.java)
-
-        // then
-        verify(analyticsProvider).logEvent(
-            name = "okhttp_request_start",
-            "request_class" to "SessionGetRequest"
-        )
-    }
-
-    @Test
     fun `test logOkHttpRequestSuccess`() {
         // when
         analytics.logOkHttpRequestSuccess(TorrentGetRequest::class.java, 23)
@@ -68,18 +54,6 @@ class AnalyticsTest {
             name = "okhttp_request_failure",
             "request_class" to "AddTorrentRequest",
             "response_time_millis" to "89"
-        )
-    }
-
-    @Test
-    fun `test logRobospiceRequestStart`() {
-        // when
-        analytics.logRobospiceRequestStart(RenameRequest::class.java)
-
-        // then
-        verify(analyticsProvider).logEvent(
-            name = "robospice_request_start",
-            "request_class" to "RenameRequest"
         )
     }
 

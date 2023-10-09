@@ -108,7 +108,6 @@ public abstract class Request<RESULT> extends GoogleHttpClientSpiceRequest<RESUL
     @Override
     public RESULT loadDataFromNetwork() throws Exception {
         final long startTimestamp = System.currentTimeMillis();
-        analytics.logRobospiceRequestStart(getClass());
         if (server == null) {
             throw new IllegalStateException("Server must be set before executing");
         }

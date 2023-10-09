@@ -69,7 +69,6 @@ class OkHttpTransportManager(
 
     override fun <T : Any?> doRequest(request: Request<T>, listener: RequestListener<T>?) {
         val startTimestamp = System.currentTimeMillis()
-        analytics.logOkHttpRequestStart(request.javaClass)
         request.server = server
         val url = HttpUrl.Builder().apply {
             scheme(if (server.useHttps()) "https" else "http")
