@@ -69,7 +69,7 @@ public class FinishedTorrentsNotificationManager {
                 context,
                 TransmissionRemote.NOTIFICATION_CHANNEL_ID
         );
-        builder.setSmallIcon(R.drawable.transmission)
+        builder.setSmallIcon(R.drawable.ic_notification)
                 .setContentTitle(title)
                 .setContentText(text)
                 .setAutoCancel(true)
