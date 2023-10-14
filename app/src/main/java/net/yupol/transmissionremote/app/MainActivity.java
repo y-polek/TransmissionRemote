@@ -79,7 +79,6 @@ import net.yupol.transmissionremote.app.server.AddServerActivity;
 import net.yupol.transmissionremote.app.server.Server;
 import net.yupol.transmissionremote.app.sorting.SortOrder;
 import net.yupol.transmissionremote.app.sorting.SortedBy;
-import net.yupol.transmissionremote.app.splashscreen.IsFeatureManagerInitializedCondition;
 import net.yupol.transmissionremote.app.torrentdetails.TorrentDetailsActivity;
 import net.yupol.transmissionremote.app.torrentlist.EmptyServerFragment;
 import net.yupol.transmissionremote.app.torrentlist.RemoveTorrentsDialogFragment;
@@ -224,13 +223,9 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        SplashScreen.installSplashScreen(this);
         application = TransmissionRemote.getApplication(this);
-        final SplashScreen splashScreen = SplashScreen.installSplashScreen(this);
-        splashScreen.setKeepOnScreenCondition(
-                new IsFeatureManagerInitializedCondition(application.getFeatureManager())
-        );
         super.onCreate(savedInstanceState);
-
         binding = DataBindingUtil.setContentView(this, R.layout.main_activity);
 
         finishedTorrentsNotificationManager = new FinishedTorrentsNotificationManager(this);
