@@ -88,6 +88,9 @@ public class TransmissionRemote extends Application implements SharedPreferences
     private FeatureManager featureManager;
     private Analytics analytics;
 
+    public final long appStartTimestampMillis = System.currentTimeMillis();
+    public boolean appStartupTimeReported = false;
+
     @Override
     public void onCreate() {
         super.onCreate();

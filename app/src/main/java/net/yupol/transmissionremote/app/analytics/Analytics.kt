@@ -63,14 +63,24 @@ class Analytics(
         analyticsProvider.setUserProperty(PROPERTY_TORRENTS_COUNT, TorrentCount.fromCount(count).value)
     }
 
+    fun logStartupTimeSLI(timeMillis: Long) {
+        analyticsProvider.logEvent(
+            name = EVENT_SLI_STARTUP_TIME,
+            PROPERTY_STARTUP_TIME_MILLIS to timeMillis
+        )
+    }
+
     companion object {
         private const val PROPERTY_TORRENTS_COUNT = "torrents_count"
+        private const val PROPERTY_STARTUP_TIME_MILLIS = "startup_time_millis"
 
         private const val EVENT_OKHTTP_REQUEST_SUCCESS = "okhttp_request_success"
         private const val EVENT_OKHTTP_REQUEST_FAILURE = "okhttp_request_failure"
 
         private const val EVENT_ROBOSPICE_REQUEST_SUCCESS = "robospice_request_success"
         private const val EVENT_ROBOSPICE_REQUEST_FAILURE = "robospice_request_failure"
+
+        private const val EVENT_SLI_STARTUP_TIME = "sli_startup_time"
 
         private const val PARAM_REQUEST_CLASS = "request_class"
         private const val PARAM_RESPONSE_TIME_MILLIS = "response_time_millis"
