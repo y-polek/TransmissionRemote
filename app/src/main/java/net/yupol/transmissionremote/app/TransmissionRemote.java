@@ -3,8 +3,10 @@ package net.yupol.transmissionremote.app;
 import android.app.Application;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.UiModeManager;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.preference.PreferenceManager;
 
 import androidx.annotation.NonNull;
@@ -94,7 +96,12 @@ public class TransmissionRemote extends Application implements SharedPreferences
     @Override
     public void onCreate() {
         super.onCreate();
-        AppCompatDelegate.setDefaultNightMode(ThemeUtils.isInNightMode(this) ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            final UiModeManager uiModeManager = (UiModeManager) getSystemService(Context.UI_MODE_SERVICE);
+            uiModeManager.setApplicationNightMode(ThemeUtils.isInNightMode(this) ? UiModeManager.MODE_NIGHT_YES : UiModeManager.MODE_NIGHT_NO);
+        } else {
+            AppCompatDelegate.setDefaultNightMode(ThemeUtils.isInNightMode(this) ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO);
+        }
 
         instance = this;
         restore();

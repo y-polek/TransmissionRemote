@@ -457,7 +457,6 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
     private void switchTheme(boolean nightMode) {
         if (ThemeUtils.isInNightMode(this) != nightMode) {
             ThemeUtils.setIsInNightMode(this, nightMode);
-            recreate();
         }
     }
 
