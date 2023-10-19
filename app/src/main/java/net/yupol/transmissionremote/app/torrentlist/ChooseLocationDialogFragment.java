@@ -63,7 +63,7 @@ public class ChooseLocationDialogFragment extends DialogFragment {
             initialLocation = args.getString(ARG_INITIAL_LOCATION);
         }
         if (initialLocation == null) {
-            initialLocation = TransmissionRemote.getInstance().getDefaultDownloadDir();
+            initialLocation = TransmissionRemote.getInstance().defaultDownloadDir;
         }
     }
 

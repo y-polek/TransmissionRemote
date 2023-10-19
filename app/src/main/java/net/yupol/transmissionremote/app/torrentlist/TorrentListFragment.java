@@ -91,12 +91,9 @@ public class TorrentListFragment extends Fragment implements ChooseLocationDialo
     private Collection<Torrent> allTorrents = Collections.emptyList();
     private final Set<Integer/*torrent ID*/> updateRequests = new HashSet<>();
 
-    private final OnTorrentsUpdatedListener torrentsListener = new OnTorrentsUpdatedListener() {
-        @Override
-        public void torrentsUpdated(Collection<Torrent> torrents) {
-            allTorrents = torrents;
-            TorrentListFragment.this.updateTorrentList();
-        }
+    private final OnTorrentsUpdatedListener torrentsListener = torrents -> {
+        allTorrents = torrents;
+        TorrentListFragment.this.updateTorrentList();
     };
 
     private final OnFilterSelectedListener filterListener = filter -> updateTorrentList();

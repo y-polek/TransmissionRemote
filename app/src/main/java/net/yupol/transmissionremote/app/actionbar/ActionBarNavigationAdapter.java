@@ -44,7 +44,7 @@ public class ActionBarNavigationAdapter extends BaseAdapter {
     @Override
     public int getCount() {
         // server title + servers + filter title + filters
-        return 1 + app.getServers().size() + 1 + app.getAllFilters().length;
+        return 1 + app.getServers().size() + 1 + TransmissionRemote.Companion.getAllFilters().length;
     }
 
     @Override
@@ -57,11 +57,11 @@ public class ActionBarNavigationAdapter extends BaseAdapter {
             case ID_SERVER:
                 return app.getServers().get(position - 1);
             case ID_FILTER:
-                return app.getAllFilters()[position - app.getServers().size() - 2];
+                return TransmissionRemote.Companion.getAllFilters()[position - app.getServers().size() - 2];
         }
         Log.e(TAG, "Unknown item at position " + position +
                 ". Number of servers: " + app.getServers().size() +
-                ", number of filters: " + app.getAllFilters().length);
+                ", number of filters: " + TransmissionRemote.Companion.getAllFilters().length);
         return null;
     }
 

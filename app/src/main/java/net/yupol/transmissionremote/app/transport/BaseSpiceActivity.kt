@@ -17,7 +17,7 @@ abstract class BaseSpiceActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         val app = application as TransmissionRemote
         app.addOnActiveServerChangedListener(activeServerListener)
-        transportManager = updatedTransportManager(app.activeServer)
+        transportManager = updatedTransportManager(app.getActiveServer())
         super.onCreate(savedInstanceState)
     }
 
@@ -50,7 +50,7 @@ abstract class BaseSpiceActivity : BaseActivity() {
         if (server == null) {
             return null
         }
-        val app = TransmissionRemote.getInstance()
+        val app = TransmissionRemote.instance
         if (app.featureManager.useOkHttp()) {
             return OkHttpTransportManager(server, app.analytics)
         }

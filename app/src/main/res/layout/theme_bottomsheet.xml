@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?android:windowBackground"
+    android:orientation="vertical">
+    
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/default_layout_margin"
+        android:textAppearance="@style/TextAppearance.AppCompat.Title"
+        android:text="@string/night_mode" />
+    
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/divider" />
+
+    <RadioGroup
+        android:id="@+id/radio_group"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <RadioButton
+            android:id="@+id/radio_off"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layoutDirection="rtl"
+            android:paddingVertical="@dimen/default_padding_big"
+            android:paddingHorizontal="@dimen/default_padding_big"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:text="@string/night_mode_off" />
+        <RadioButton
+            android:id="@+id/radio_on"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layoutDirection="rtl"
+            android:paddingVertical="@dimen/default_padding_big"
+            android:paddingHorizontal="@dimen/default_padding_big"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:text="@string/night_mode_on" />
+        <RadioButton
+            android:id="@+id/radio_device_settings"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layoutDirection="rtl"
+            android:paddingVertical="@dimen/default_padding_big"
+            android:paddingHorizontal="@dimen/default_padding_big"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:text="@string/night_mode_use_device_settings" />
+    </RadioGroup>
+
+</LinearLayout>

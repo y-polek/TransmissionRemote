@@ -293,6 +293,9 @@
     <string name="cancel">Cancel</string>
 
     <string name="night_mode">Night Mode</string>
+    <string name="night_mode_off">Off</string>
+    <string name="night_mode_on">On</string>
+    <string name="night_mode_use_device_settings">Use device settings</string>
 
     <string name="add_torrent_by_file">File</string>
     <string name="add_torrent_by_address">Address</string>

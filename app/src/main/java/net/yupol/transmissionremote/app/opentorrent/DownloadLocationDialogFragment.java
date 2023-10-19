@@ -86,7 +86,7 @@ public class DownloadLocationDialogFragment extends DialogFragment {
                 .create();
         dialog.setCanceledOnTouchOutside(false);
 
-        String defaultDownloadDir = TransmissionRemote.getInstance().getDefaultDownloadDir();
+        String defaultDownloadDir = TransmissionRemote.getInstance().defaultDownloadDir;
         boolean loadDefaultDownloadDir = defaultDownloadDir == null ||
                 (savedInstanceState != null && savedInstanceState.getBoolean(KEY_LOADING_IN_PROGRESS, false));
         if (!loadDefaultDownloadDir) {
@@ -321,7 +321,7 @@ public class DownloadLocationDialogFragment extends DialogFragment {
                                 @Override
                                 public void onClick() {
                                     TransmissionRemote app = (TransmissionRemote) requireActivity().getApplicationContext();
-                                    binding.downloadLocationText.setText(Strings.nullToEmpty(app.getDefaultDownloadDir()));
+                                    binding.downloadLocationText.setText(Strings.nullToEmpty(app.defaultDownloadDir));
                                 }
                             });
                         }

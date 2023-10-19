@@ -3,8 +3,9 @@ package net.yupol.transmissionremote.app.analytics
 import com.google.firebase.analytics.FirebaseAnalytics.Event
 import com.google.firebase.analytics.FirebaseAnalytics.Param
 import net.yupol.transmissionremote.app.transport.request.Request
+import javax.inject.Inject
 
-class Analytics(
+class Analytics @Inject constructor(
     private val analyticsProvider: AnalyticsProvider
 ) {
     fun logScreenView(screenName: String, screenClass: Class<*>) {

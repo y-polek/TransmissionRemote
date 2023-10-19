@@ -2,18 +2,16 @@ package net.yupol.transmissionremote.app
 
 import android.util.Log
 import com.google.firebase.crashlytics.FirebaseCrashlytics
-import com.google.firebase.ktx.Firebase
 import com.google.firebase.remoteconfig.ConfigUpdate
 import com.google.firebase.remoteconfig.ConfigUpdateListener
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigException
-import com.google.firebase.remoteconfig.ktx.remoteConfig
+import javax.inject.Inject
 
-class FeatureManager {
-
-    private val remoteConfig: FirebaseRemoteConfig = Firebase.remoteConfig
-    private val crashlytics: FirebaseCrashlytics = FirebaseCrashlytics.getInstance()
-
+class FeatureManager @Inject constructor(
+    private val remoteConfig: FirebaseRemoteConfig,
+    private val crashlytics: FirebaseCrashlytics
+) {
     init {
         remoteConfig.activate().addOnCompleteListener { task ->
             if (task.isSuccessful) {

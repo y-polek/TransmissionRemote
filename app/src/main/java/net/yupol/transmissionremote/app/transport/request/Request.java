@@ -52,7 +52,7 @@ public abstract class Request<RESULT> extends GoogleHttpClientSpiceRequest<RESUL
 
     public Request(Class<RESULT> resultClass) {
         super(resultClass);
-        this.analytics = TransmissionRemote.getInstance().getAnalytics();
+        this.analytics = TransmissionRemote.getInstance().analytics;
     }
 
     public void setServer(@Nonnull Server server) {

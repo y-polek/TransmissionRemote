@@ -28,7 +28,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
-import android.widget.CompoundButton;
 import android.widget.SearchView;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -45,14 +44,13 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
-import com.mikepenz.materialdrawer.interfaces.OnCheckedChangeListener;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.SectionDrawerItem;
-import com.mikepenz.materialdrawer.model.SwitchDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
@@ -79,6 +77,8 @@ import net.yupol.transmissionremote.app.server.AddServerActivity;
 import net.yupol.transmissionremote.app.server.Server;
 import net.yupol.transmissionremote.app.sorting.SortOrder;
 import net.yupol.transmissionremote.app.sorting.SortedBy;
+import net.yupol.transmissionremote.app.theme.ThemeBottomSheet;
+import net.yupol.transmissionremote.app.theme.ThemeViewModel;
 import net.yupol.transmissionremote.app.torrentdetails.TorrentDetailsActivity;
 import net.yupol.transmissionremote.app.torrentlist.EmptyServerFragment;
 import net.yupol.transmissionremote.app.torrentlist.RemoveTorrentsDialogFragment;
@@ -95,7 +95,6 @@ import net.yupol.transmissionremote.app.transport.request.SessionSetRequest;
 import net.yupol.transmissionremote.app.transport.request.StartTorrentRequest;
 import net.yupol.transmissionremote.app.transport.request.StopTorrentRequest;
 import net.yupol.transmissionremote.app.transport.request.TorrentRemoveRequest;
-import net.yupol.transmissionremote.app.utils.ThemeUtils;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -114,6 +113,9 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.TorrentUpdateListener,
         SharedPreferences.OnSharedPreferenceChangeListener, TransmissionRemote.OnSpeedLimitChangedListener,
         TorrentListFragment.OnTorrentSelectedListener, TorrentListFragment.ContextualActionBarListener,
@@ -152,7 +154,8 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
     private static final String KEY_FAB_EXPANDED = "key_fab_expanded";
 
     private static final int DRAWER_ITEM_ID_SETTINGS = 101;
-    private static final int DRAWER_ITEM_FREE_SPACE = 102;
+    private static final int DRAWER_ITEM_ID_NIGHT_MODE = 102;
+    private static final int DRAWER_ITEM_FREE_SPACE = 103;
 
     private TransmissionRemote application;
     private TorrentUpdater torrentUpdater;
@@ -307,21 +310,42 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
     }
 
     private void setupDrawer() {
-        PrimaryDrawerItem settingsItem = new PrimaryDrawerItem().withName(R.string.action_settings)
+        final PrimaryDrawerItem settingsItem = new PrimaryDrawerItem()
+                .withName(R.string.action_settings)
                 .withIdentifier(DRAWER_ITEM_ID_SETTINGS)
                 .withIcon(R.drawable.ic_settings)
                 .withSelectable(false);
 
-        SwitchDrawerItem nightModeItem = new SwitchDrawerItem().withName(R.string.night_mode)
-                .withIcon(R.drawable.ic_dark_mode)
+        final PrimaryDrawerItem nightModeItem = new PrimaryDrawerItem()
+                .withName(R.string.night_mode)
+                .withIdentifier(DRAWER_ITEM_ID_NIGHT_MODE)
                 .withSelectable(false)
-                .withChecked(ThemeUtils.isInNightMode(this))
-                .withOnCheckedChangeListener(new OnCheckedChangeListener() {
-                    @Override
-                    public void onCheckedChanged(@NonNull IDrawerItem drawerItem, @NonNull CompoundButton buttonView, boolean isChecked) {
-                        switchTheme(isChecked);
-                    }
+                .withOnDrawerItemClickListener((view, i, iDrawerItem) -> {
+                    ThemeBottomSheet.Companion.newInstance().show(getSupportFragmentManager(), ThemeBottomSheet.TAG);
+                    return true;
                 });
+
+        final ThemeViewModel themeViewModel = new ViewModelProvider(this).get(ThemeViewModel.class);
+        themeViewModel.getNightMode().observe(this, nightMode -> {
+            final int iconRes;
+            switch (nightMode) {
+                case ON:
+                    iconRes = R.drawable.ic_dark_mode;
+                    break;
+                case OFF:
+                    iconRes = R.drawable.ic_light_mode;
+                    break;
+                case AUTO:
+                    iconRes = R.drawable.ic_night_sight_auto;
+                    break;
+                default:
+                    iconRes = 0;
+            }
+            if (iconRes != 0) {
+                nightModeItem.withIcon(iconRes);
+                drawer.updateStickyFooterItem(nightModeItem);
+            }
+        });
 
         headerView = new HeaderView(this);
         headerView.setHeaderListener(new HeaderView.HeaderListener() {
@@ -375,7 +399,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
                 )
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                     @Override
-                    public boolean onItemClick(View view, int position, @NonNull IDrawerItem drawerItem) {
+                    public boolean onItemClick(View view, int position, @NonNull IDrawerItem<?> drawerItem) {
                         if (drawerItem instanceof SortDrawerItem) {
                             handleSortItemClick((SortDrawerItem) drawerItem);
                             return true;
@@ -452,12 +476,6 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
         binding.fabOverlay.setOnClickListener(v -> binding.addTorrentButton.collapse());
 
         binding.fabOverlay.setVisibility(binding.addTorrentButton.isExpanded() ? View.VISIBLE : View.GONE);
-    }
-
-    private void switchTheme(boolean nightMode) {
-        if (ThemeUtils.isInNightMode(this) != nightMode) {
-            ThemeUtils.setIsInNightMode(this, nightMode);
-        }
     }
 
     @Override
@@ -1025,7 +1043,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
                     @Override
                     public void onRequestSuccess(ServerSettings serverSettings) {
                         application.setSpeedLimitEnabled(serverSettings.isAltSpeedLimitEnabled());
-                        application.setDefaultDownloadDir(serverSettings.getDownloadDir());
+                        application.defaultDownloadDir = serverSettings.getDownloadDir();
                         if (drawer != null && !drawer.switchedDrawerContent()) {
                             drawer.updateStickyFooterItem(freeSpaceFooterDrawerItem.withFreeSpace(serverSettings.getDownloadDirFreeSpace()));
                         }
