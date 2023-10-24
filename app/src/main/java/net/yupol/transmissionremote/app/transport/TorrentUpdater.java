@@ -115,6 +115,9 @@ public class TorrentUpdater {
             transportManager.doRequest(request, new RequestListener<>() {
                 @Override
                 public void onRequestFailure(SpiceException spiceException) {
+                    if (canceled) {
+                        return;
+                    }
                     Log.d(TAG, "TorrentGetRequest failed. SC: " + request.getResponseStatusCode());
                     responseReceived = Boolean.TRUE;
                     if (spiceException instanceof NoNetworkException) {

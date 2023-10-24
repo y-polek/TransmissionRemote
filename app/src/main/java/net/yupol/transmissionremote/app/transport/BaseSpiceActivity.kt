@@ -47,15 +47,13 @@ abstract class BaseSpiceActivity : BaseActivity() {
     }
 
     private fun updatedTransportManager(server: Server?): TransportManager? {
-        if (server == null) {
-            return null
-        }
         val app = TransmissionRemote.instance
-        if (app.featureManager.useOkHttp()) {
-            return OkHttpTransportManager(server, app.analytics)
+        return if (app.featureManager.useOkHttp()) {
+            server?.let { OkHttpTransportManager(server, app.analytics) }
+        } else {
+            ((transportManager as? SpiceTransportManager) ?: SpiceTransportManager()).apply {
+                setServer(server)
+            }
         }
-        val spiceTransportManager = (transportManager as? SpiceTransportManager) ?: SpiceTransportManager()
-        spiceTransportManager.setServer(server)
-        return spiceTransportManager
     }
 }
