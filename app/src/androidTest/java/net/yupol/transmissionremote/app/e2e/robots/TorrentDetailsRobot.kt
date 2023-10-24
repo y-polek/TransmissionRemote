@@ -3,7 +3,6 @@ package net.yupol.transmissionremote.app.e2e.robots
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.contrib.ViewPagerActions
-import androidx.test.espresso.contrib.ViewPagerActions.*
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import net.yupol.transmissionremote.app.R
 import net.yupol.transmissionremote.app.e2e.utils.assertViewWithIdDisplayed

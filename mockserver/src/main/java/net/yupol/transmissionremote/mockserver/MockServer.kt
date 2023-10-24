@@ -27,8 +27,12 @@ import javax.inject.Inject
 
 @OptIn(ExperimentalSerializationApi::class)
 class MockServer @Inject constructor() {
+    val hostName: String
+        get() = mockWebServer.hostName
+    val port: Int
+        get() = mockWebServer.port
 
-    val mockWebServer = MockWebServer()
+    private val mockWebServer = MockWebServer()
     private val json = Json {
         encodeDefaults = true
         ignoreUnknownKeys = true
@@ -68,7 +72,7 @@ class MockServer @Inject constructor() {
                     }
                     "torrent-set-location" -> TODO()
                     "torrent-rename-path" -> TODO()
-                    "session-set" -> setSession()
+                    "session-set" -> TODO()
                     "session-get" -> getSession()
                     "session-stats" -> TODO()
                     "blocklist-update" -> TODO()
@@ -91,8 +95,27 @@ class MockServer @Inject constructor() {
         }
     }
 
-    private fun setSession(): MockResponse {
-        return successResponse()
+    fun start(port: Int = 0) = mockWebServer.start(port)
+
+    fun shutdown() = mockWebServer.shutdown()
+
+    fun addTorrent(
+        name: String,
+        totalSize: Long,
+        sizeWhenDone: Long = totalSize,
+        paused: Boolean = false,
+
+    ) {
+        torrents.torrents += RpcTorrent(
+            id = nextTorrentId++,
+            name = name,
+            status = if (paused) RpcStatus.STOPPED.status else RpcStatus.DOWNLOAD.status,
+            totalSize = totalSize,
+            sizeWhenDone = sizeWhenDone,
+            addedDate = Date().time / 1000,
+            leftUntilDone = sizeWhenDone,
+            queuePosition = torrents.torrents.size + 1
+        )
     }
 
     private fun getSession(): MockResponse {
@@ -113,19 +136,11 @@ class MockServer @Inject constructor() {
         val bytes = Base64.getDecoder().decode(metaInfo.replace("\n", "", false))
         val data = Bencode().decode(bytes, Type.DICTIONARY)
         val bencodeTorrent = BencodeTorrent.fromMap(data)
-        val torrent = RpcTorrent(
-            id = nextTorrentId++,
+        addTorrent(
             name = bencodeTorrent.info.name,
-            status = if (paused) RpcStatus.STOPPED.status else RpcStatus.DOWNLOAD.status,
             totalSize = bencodeTorrent.totalSize,
-            sizeWhenDone = bencodeTorrent.totalSize,
-            addedDate = Date().time / 1000,
-            leftUntilDone = bencodeTorrent.totalSize,
-            queuePosition = torrents.torrents.size + 1
+            paused = paused
         )
-
-        torrents.torrents += torrent
-
         return successResponse()
     }
 
