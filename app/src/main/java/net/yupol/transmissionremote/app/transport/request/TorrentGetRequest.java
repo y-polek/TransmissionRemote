@@ -41,7 +41,7 @@ public class TorrentGetRequest extends Request<Torrents> {
             TorrentMetadata.DONE_DATE
     );
 
-    private JSONObject args = new JSONObject();
+    private final JSONObject args;
 
     public TorrentGetRequest() {
         super(Torrents.class);
