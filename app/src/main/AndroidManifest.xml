@@ -25,7 +25,6 @@
         <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:launchMode="singleInstance"
             android:uiOptions="splitActionBarWhenNarrow"
             android:windowSoftInputMode="adjustResize"
             android:theme="@style/AppTheme.Starting">
