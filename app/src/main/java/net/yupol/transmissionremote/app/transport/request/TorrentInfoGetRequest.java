@@ -47,7 +47,6 @@ public class TorrentInfoGetRequest extends Request<TorrentInfo> {
             TorrentMetadata.CORRUPT_EVER,
             TorrentMetadata.UPLOADED_EVER,
             TorrentMetadata.ADDED_DATE,
-            TorrentMetadata.ACTIVITY_DATE,
             TorrentMetadata.SECONDS_DOWNLOADING,
             TorrentMetadata.SECONDS_SEEDING,
             TorrentMetadata.PEERS,
@@ -56,7 +55,7 @@ public class TorrentInfoGetRequest extends Request<TorrentInfo> {
             TorrentMetadata.MAGNET_LINK
     );
 
-    private int id;
+    private final int id;
 
     public TorrentInfoGetRequest(int id) {
         super(TorrentInfo.class);

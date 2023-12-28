@@ -48,6 +48,7 @@
     <string name="drawer_sort_by_upload_ratio">Arány</string>
 
     <!-- Preferences -->
+    <string name="drawer_sort_by_last_activity">Utolsó aktivitás</string>
     <string name="action_settings">Beállítások</string>
     <string name="notifications_pref_title">Értesítések</string>
     <string name="notification_settings">Értesítés beállítások</string>

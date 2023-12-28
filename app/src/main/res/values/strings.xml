@@ -45,6 +45,7 @@
     <string name="drawer_sort_by_size">Size</string>
     <string name="drawer_sort_by_time_remaining">Time remaining</string>
     <string name="drawer_sort_by_date_added">Date added</string>
+    <string name="drawer_sort_by_last_activity">Last activity</string>
     <string name="drawer_sort_by_progress">Progress</string>
     <string name="drawer_sort_by_queue_position">Queue order</string>
     <string name="drawer_sort_by_upload_ratio">Ratio</string>

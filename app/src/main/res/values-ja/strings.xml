@@ -52,6 +52,7 @@
     <string name="drawer_sort_by_state">ステータス</string>
 
     <!-- Preferences -->
+    <string name="drawer_sort_by_last_activity">最終アクティビティ</string>
     <string name="action_settings">設定</string>
     <string name="notifications_pref_title">通知</string>
     <string name="notification_settings">通知の設定</string>

@@ -48,6 +48,7 @@
     <string name="drawer_sort_by_upload_ratio">Ratio</string>
 
     <!-- Preferences -->
+    <string name="drawer_sort_by_last_activity">Dernière activité</string>
     <string name="action_settings">Paramètres</string>
     <string name="notifications_pref_title">Notifications</string>
     <string name="notification_settings">Paramètres de notification</string>

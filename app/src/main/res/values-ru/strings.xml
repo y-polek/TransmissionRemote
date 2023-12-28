@@ -7,6 +7,7 @@
     <string name="action_remove_torrent">Удалить торрент</string>
     <string name="action_remove_torrents">Удалить выбранные торренты</string>
     <string name="action_select_all">Выбрать все</string>
+    <string name="drawer_sort_by_last_activity">Последняя активность</string>
     <string name="action_settings">Настройки</string>
     <string name="action_start">Возобновить</string>
     <string name="action_start_all_torrents">Возобновить все раздачи</string>

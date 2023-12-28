@@ -38,7 +38,8 @@ public class TorrentGetRequest extends Request<Torrents> {
             TorrentMetadata.WEBSEEDS_SENDING_TO_US,
             TorrentMetadata.QUEUE_POSITION,
             TorrentMetadata.RECHECK_PROGRESS,
-            TorrentMetadata.DONE_DATE
+            TorrentMetadata.DONE_DATE,
+            TorrentMetadata.ACTIVITY_DATE
     );
 
     private final JSONObject args;

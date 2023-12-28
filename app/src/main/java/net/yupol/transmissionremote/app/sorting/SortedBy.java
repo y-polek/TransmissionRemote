@@ -1,6 +1,7 @@
 package net.yupol.transmissionremote.app.sorting;
 
-import com.google.common.base.Optional;
+import static java.util.Optional.ofNullable;
+
 import com.google.common.collect.ComparisonChain;
 import com.google.common.primitives.Ints;
 
@@ -10,26 +11,26 @@ import java.util.Comparator;
 
 public enum SortedBy {
 
-    NAME(new Comparator<Torrent>() {
+    NAME(new Comparator<>() {
         @Override
         public int compare(Torrent t1, Torrent t2) {
-            String name1 = Optional.fromNullable(t1.getName()).or("");
-            String name2 = Optional.fromNullable(t2.getName()).or("");
+            String name1 = ofNullable(t1.getName()).orElse("");
+            String name2 = ofNullable(t2.getName()).orElse("");
             return name1.compareToIgnoreCase(name2);
         }
     }),
 
-    SIZE(new Comparator<Torrent>() {
+    SIZE(new Comparator<>() {
         @Override
         public int compare(Torrent t1, Torrent t2) {
             return ComparisonChain.start()
-                    .compare(t1.getTotalSize(), t2. getTotalSize())
+                    .compare(t1.getTotalSize(), t2.getTotalSize())
                     .compare(t1, t2, NAME.comparator)
                     .result();
         }
     }),
 
-    TIME_REMAINING(new Comparator<Torrent>() {
+    TIME_REMAINING(new Comparator<>() {
         @Override
         public int compare(Torrent t1, Torrent t2) {
             return ComparisonChain.start()
@@ -40,7 +41,7 @@ public enum SortedBy {
         }
     }),
 
-    DATE_ADDED(new Comparator<Torrent>() {
+    DATE_ADDED(new Comparator<>() {
         @Override
         public int compare(Torrent t1, Torrent t2) {
             return ComparisonChain.start()
@@ -50,7 +51,7 @@ public enum SortedBy {
         }
     }),
 
-    PROGRESS(new Comparator<Torrent>() {
+    PROGRESS(new Comparator<>() {
         @Override
         public int compare(Torrent t1, Torrent t2) {
             return ComparisonChain.start()
@@ -60,14 +61,14 @@ public enum SortedBy {
         }
     }),
 
-    QUEUE_POSITION(new Comparator<Torrent>() {
+    QUEUE_POSITION(new Comparator<>() {
         @Override
         public int compare(Torrent t1, Torrent t2) {
             return Ints.compare(t1.getQueuePosition(), t2.getQueuePosition());
         }
     }),
 
-    UPLOAD_RATIO(new Comparator<Torrent>() {
+    UPLOAD_RATIO(new Comparator<>() {
         @Override
         public int compare(Torrent t1, Torrent t2) {
             return ComparisonChain.start()
@@ -77,7 +78,7 @@ public enum SortedBy {
         }
     }),
 
-    ACTIVITY(new Comparator<Torrent>() {
+    ACTIVITY(new Comparator<>() {
         @Override
         public int compare(Torrent t1, Torrent t2) {
             return ComparisonChain.start()
@@ -87,7 +88,7 @@ public enum SortedBy {
         }
     }),
 
-    STATE(new Comparator<Torrent>() {
+    STATE(new Comparator<>() {
         @Override
         public int compare(Torrent t1, Torrent t2) {
             return ComparisonChain.start()
@@ -95,9 +96,19 @@ public enum SortedBy {
                     .compare(t1, t2, QUEUE_POSITION.comparator)
                     .result();
         }
+    }),
+
+    LAST_ACTIVITY(new Comparator<>() {
+        @Override
+        public int compare(Torrent t1, Torrent t2) {
+            return ComparisonChain.start()
+                    .compare(t2.getActivityDate(), t1.getActivityDate())
+                    .compare(t2.getAddedDate(), t2.getAddedDate())
+                    .result();
+        }
     });
 
-    private Comparator<Torrent> comparator;
+    private final Comparator<Torrent> comparator;
 
     SortedBy(Comparator<Torrent> comparator) {
         this.comparator = comparator;

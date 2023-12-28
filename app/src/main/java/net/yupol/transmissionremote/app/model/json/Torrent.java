@@ -3,6 +3,8 @@ package net.yupol.transmissionremote.app.model.json;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.annotation.NonNull;
+
 import com.google.api.client.util.Key;
 
 import net.yupol.transmissionremote.app.model.ID;
@@ -31,6 +33,7 @@ public class Torrent implements ID, Parcelable {
     @Key private int queuePosition;
     @Key private double recheckProgress;
     @Key private long doneDate;
+    @Key private long activityDate;
 
     public Torrent() {}
 
@@ -57,6 +60,7 @@ public class Torrent implements ID, Parcelable {
         webseedsSendingToUs = in.readInt();
         queuePosition = in.readInt();
         doneDate = in.readLong();
+        activityDate = in.readLong();
     }
 
     public int getId() {
@@ -172,6 +176,10 @@ public class Torrent implements ID, Parcelable {
         return getDownloadRate() + getUploadRate();
     }
 
+    public long getActivityDate() {
+        return activityDate;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -201,9 +209,10 @@ public class Torrent implements ID, Parcelable {
         out.writeInt(webseedsSendingToUs);
         out.writeInt(queuePosition);
         out.writeLong(doneDate);
+        out.writeLong(activityDate);
     }
 
-    public static final Creator<Torrent> CREATOR = new Creator<Torrent>() {
+    public static final Creator<Torrent> CREATOR = new Creator<>() {
         @Override
         public Torrent createFromParcel(Parcel in) {
             return new Torrent(in);
@@ -215,6 +224,7 @@ public class Torrent implements ID, Parcelable {
         }
     };
 
+    @NonNull
     @Override
     public String toString() {
         return "Torrent{" +
@@ -268,8 +278,8 @@ public class Torrent implements ID, Parcelable {
         TRACKER_ERROR(2, false),
         LOCAL_ERROR(3, false);
 
-        private int id;
-        private boolean isWarning;
+        private final int id;
+        private final boolean isWarning;
 
         Error(int id, boolean isWarning) {
             this.id = id;
@@ -290,7 +300,7 @@ public class Torrent implements ID, Parcelable {
 
     public static class Builder {
 
-        private Torrent torrent;
+        private final Torrent torrent;
 
         public Builder() {
             torrent = new Torrent();
