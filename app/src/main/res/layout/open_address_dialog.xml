@@ -1,16 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <EditText android:id="@+id/address_text"
+    <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="top|start"
-        android:singleLine="true"
-        android:lines="4"
-        android:scrollHorizontally="false"
-        android:imeOptions="actionDone"
-        android:inputType="textMultiLine" />
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/default_layout_margin">
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/address_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:lines="4"
+            android:scrollHorizontally="false"
+            android:scrollbars="vertical"
+            android:imeOptions="actionDone"
+            android:inputType="textMultiLine"
+            android:gravity="top|start"
+            tools:text="Magnet link" />
+    </com.google.android.material.textfield.TextInputLayout>
 
 </FrameLayout>

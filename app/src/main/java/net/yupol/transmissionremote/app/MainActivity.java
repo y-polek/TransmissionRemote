@@ -754,7 +754,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
                 updateSpeedLimitServerPrefs();
                 return true;
             case R.id.action_open_torrent:
-                new OpenByDialogFragment().show(getFragmentManager(), TAG_OPEN_TORRENT_DIALOG);
+                new OpenByDialogFragment().show(getSupportFragmentManager(), TAG_OPEN_TORRENT_DIALOG);
                 return true;
             case R.id.action_start_all_torrents:
                 startAllTorrents();
@@ -926,7 +926,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
 
     @Override
     public void onOpenTorrentByAddress() {
-        new OpenAddressDialogFragment().show(getFragmentManager(), MainActivity.TAG_OPEN_TORRENT_BY_ADDRESS_DIALOG);
+        new OpenAddressDialogFragment().show(getSupportFragmentManager(), TAG_OPEN_TORRENT_BY_ADDRESS_DIALOG);
     }
 
     @Override
