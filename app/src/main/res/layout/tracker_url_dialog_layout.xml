@@ -10,10 +10,16 @@
         android:hint="@string/trackers_url_hint"
         app:hintEnabled="true"
         app:hintAnimationEnabled="false">
-    <com.google.android.material.textfield.TextInputEditText
-        android:id="@+id/url"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:inputType="textUri" />
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/url"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="top|start"
+            android:inputType="textMultiLine"
+            android:imeOptions="actionDone"
+            android:scrollHorizontally="false"
+            android:scrollbars="vertical"
+            android:lines="4"
+            android:minLines="4" />
     </com.google.android.material.textfield.TextInputLayout>
 </layout>

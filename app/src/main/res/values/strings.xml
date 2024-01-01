@@ -261,6 +261,8 @@
     <string name="trackers_url_hint">URL</string>
     <string name="trackers_add_button">Add</string>
     <string name="trackers_done_button">Done</string>
+    <string name="trackers_failed_to_add_tracker">Failed to add tracker</string>
+    <string name="trackers_failed_to_edit_tracker">Failed to edit tracker</string>
 
     <string name="trackers_sort_by">Sort by</string>
     <string name="trackers_sort_by_tiers">Tiers</string>
