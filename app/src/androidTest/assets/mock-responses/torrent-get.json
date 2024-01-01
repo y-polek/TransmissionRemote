@@ -2,6 +2,7 @@
   "arguments": {
     "torrents": [
       {
+        "activityDate": 0,
         "addedDate": 1663530580,
         "doneDate": 0,
         "error": 0,
@@ -26,6 +27,7 @@
         "webseedsSendingToUs": 0
       },
       {
+        "activityDate": 1674403869,
         "addedDate": 1663528851,
         "doneDate": 0,
         "error": 0,
