@@ -53,7 +53,7 @@ public class OptionsPageFragment extends BasePageFragment implements AdapterView
     private TorrentDetailsOptionsPageFragmentBinding binding;
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         Activity activity = getActivity();
         if (activity instanceof BaseSpiceActivity) {
@@ -89,7 +89,7 @@ public class OptionsPageFragment extends BasePageFragment implements AdapterView
         setHasOptionsMenu(true);
 
         sessionGetRequest = new SessionGetRequest();
-        transportManager.doRequest(sessionGetRequest, new RequestListener<ServerSettings>() {
+        transportManager.doRequest(sessionGetRequest, new RequestListener<>() {
             @Override
             public void onRequestFailure(SpiceException spiceException) {
                 Log.e(TAG, "Failed to retrieve server settings");
@@ -386,7 +386,7 @@ public class OptionsPageFragment extends BasePageFragment implements AdapterView
 
         saveStarted();
 
-        transportManager.doRequest(request, new RequestListener<Void>() {
+        transportManager.doRequest(request, new RequestListener<>() {
             @Override
             public void onRequestFailure(SpiceException spiceException) {
                 Toast.makeText(getActivity(), getString(R.string.options_update_failed), Toast.LENGTH_LONG).show();
@@ -401,7 +401,7 @@ public class OptionsPageFragment extends BasePageFragment implements AdapterView
     }
 
     private void sendTorrentUpdateRequest() {
-        transportManager.doRequest(new TorrentInfoGetRequest(getTorrent().getId()), new RequestListener<TorrentInfo>() {
+        transportManager.doRequest(new TorrentInfoGetRequest(getTorrent().getId()), new RequestListener<>() {
             @Override
             public void onRequestFailure(SpiceException spiceException) {
                 Toast.makeText(getActivity(), getString(R.string.options_update_failed), Toast.LENGTH_LONG).show();
