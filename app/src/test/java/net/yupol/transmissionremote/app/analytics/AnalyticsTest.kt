@@ -2,10 +2,6 @@ package net.yupol.transmissionremote.app.analytics
 
 import com.google.firebase.analytics.FirebaseAnalytics.Event
 import com.google.firebase.analytics.FirebaseAnalytics.Param
-import net.yupol.transmissionremote.app.transport.request.AddTorrentRequest
-import net.yupol.transmissionremote.app.transport.request.SetLocationRequest
-import net.yupol.transmissionremote.app.transport.request.TorrentGetRequest
-import net.yupol.transmissionremote.app.transport.request.VerifyTorrentRequest
 import org.junit.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
@@ -32,63 +28,23 @@ class AnalyticsTest {
     }
 
     @Test
-    fun `test logOkHttpRequestSuccess`() {
-        // when
-        analytics.logOkHttpRequestSuccess(TorrentGetRequest::class.java, 23)
-
-        // then
-        verify(analyticsProvider).logEvent(
-            name = "okhttp_request_success",
-            "request_class" to "TorrentGetRequest",
-            "response_time_millis" to "23"
-        )
-    }
-
-    @Test
-    fun `test logOkHttpRequestFailure`() {
-        // when
-        analytics.logOkHttpRequestFailure(AddTorrentRequest::class.java, 89)
-
-        // then
-        verify(analyticsProvider).logEvent(
-            name = "okhttp_request_failure",
-            "request_class" to "AddTorrentRequest",
-            "response_time_millis" to "89"
-        )
-    }
-
-    @Test
-    fun `test logRobospiceRequestSuccess`() {
-        // when
-        analytics.logRobospiceRequestSuccess(SetLocationRequest::class.java, 58)
-
-        // then
-        verify(analyticsProvider).logEvent(
-            name = "robospice_request_success",
-            "request_class" to "SetLocationRequest",
-            "response_time_millis" to "58"
-        )
-    }
-
-    @Test
-    fun `test logRobospiceRequestFailure`() {
-        // when
-        analytics.logRobospiceRequestFailure(VerifyTorrentRequest::class.java, 123)
-
-        // then
-        verify(analyticsProvider).logEvent(
-            name = "robospice_request_failure",
-            "request_class" to "VerifyTorrentRequest",
-            "response_time_millis" to "123"
-        )
-    }
-
-    @Test
     fun `test setTorrentsCount`() {
         // when
         analytics.setTorrentsCount(42)
 
         // then
         verify(analyticsProvider).setUserProperty("torrents_count", "41-50")
+    }
+
+    @Test
+    fun `test logStartupTimeSLI`() {
+        // when
+        analytics.logStartupTimeSLI(345L)
+
+        // then
+        verify(analyticsProvider).logEvent(
+            name = "sli_startup_time",
+            "startup_time_millis" to 345L
+        )
     }
 }
