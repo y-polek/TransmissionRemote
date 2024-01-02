@@ -49,6 +49,7 @@
     <string name="drawer_sort_by_upload_ratio">分享率</string>
 
     <!-- Preferences -->
+    <string name="drawer_sort_by_last_activity">最后活动</string>
     <string name="action_settings">设置</string>
     <string name="notifications_pref_title">通知</string>
     <string name="notification_settings">通知设置</string>

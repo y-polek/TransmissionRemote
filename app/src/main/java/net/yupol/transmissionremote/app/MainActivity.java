@@ -291,14 +291,11 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
         if (bottomToolbar == null) return;
 
         turtleModeButton = bottomToolbar.findViewById(R.id.turtle_mode_button);
-        turtleModeButton.setEnableChangedListener(new TurtleModeButton.OnEnableChangedListener() {
-            @Override
-            public void onEnableChanged(boolean isEnabled) {
-                if (isEnabled == application.isSpeedLimitEnabled()) return;
+        turtleModeButton.setEnableChangedListener(isEnabled -> {
+            if (isEnabled == application.isSpeedLimitEnabled()) return;
 
-                application.setSpeedLimitEnabled(!application.isSpeedLimitEnabled());
-                updateSpeedLimitServerPrefs();
-            }
+            application.setSpeedLimitEnabled(!application.isSpeedLimitEnabled());
+            updateSpeedLimitServerPrefs();
         });
 
         bottomToolbar.inflateMenu(R.menu.bottom_toolbar_menu);
@@ -374,6 +371,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
                 new SortDrawerItem(SortedBy.QUEUE_POSITION).withName(R.string.drawer_sort_by_queue_position),
                 new SortDrawerItem(SortedBy.ACTIVITY).withName(R.string.drawer_sort_by_activity),
                 new SortDrawerItem(SortedBy.DATE_ADDED).withName(R.string.drawer_sort_by_date_added),
+                new SortDrawerItem(SortedBy.LAST_ACTIVITY).withName(R.string.drawer_sort_by_last_activity),
                 new SortDrawerItem(SortedBy.NAME).withName(R.string.drawer_sort_by_name),
                 new SortDrawerItem(SortedBy.PROGRESS).withName(R.string.drawer_sort_by_progress),
                 new SortDrawerItem(SortedBy.SIZE).withName(R.string.drawer_sort_by_size),
@@ -445,20 +443,14 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
 
     private void setupFloatingActionButton() {
 
-        binding.addTorrentByFileButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                binding.addTorrentButton.collapse();
-                onOpenTorrentByFile();
-            }
+        binding.addTorrentByFileButton.setOnClickListener(v -> {
+            binding.addTorrentButton.collapse();
+            onOpenTorrentByFile();
         });
 
-        binding.addTorrentByMagnetButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                binding.addTorrentButton.collapse();
-                onOpenTorrentByAddress();
-            }
+        binding.addTorrentByMagnetButton.setOnClickListener(v -> {
+            binding.addTorrentButton.collapse();
+            onOpenTorrentByAddress();
         });
 
         binding.addTorrentButton.setOnFloatingActionsMenuUpdateListener(new FloatingActionsMenu.OnFloatingActionsMenuUpdateListener() {
@@ -762,7 +754,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
                 updateSpeedLimitServerPrefs();
                 return true;
             case R.id.action_open_torrent:
-                new OpenByDialogFragment().show(getFragmentManager(), TAG_OPEN_TORRENT_DIALOG);
+                new OpenByDialogFragment().show(getSupportFragmentManager(), TAG_OPEN_TORRENT_DIALOG);
                 return true;
             case R.id.action_start_all_torrents:
                 startAllTorrents();
@@ -934,7 +926,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
 
     @Override
     public void onOpenTorrentByAddress() {
-        new OpenAddressDialogFragment().show(getFragmentManager(), MainActivity.TAG_OPEN_TORRENT_BY_ADDRESS_DIALOG);
+        new OpenAddressDialogFragment().show(getSupportFragmentManager(), TAG_OPEN_TORRENT_BY_ADDRESS_DIALOG);
     }
 
     @Override
@@ -1034,7 +1026,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
         prefsUpdateTimer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                getTransportManager().doRequest(new SessionGetRequest(), new RequestListener<ServerSettings>() {
+                getTransportManager().doRequest(new SessionGetRequest(), new RequestListener<>() {
                     @Override
                     public void onRequestFailure(SpiceException spiceException) {
                         Log.e(TAG, "Failed to obtain server settings");
@@ -1131,7 +1123,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
             Log.e(TAG, "Failed to create session arguments JSON object", e);
         }
 
-        getTransportManager().doRequest(new SessionSetRequest(sessionArgs), new RequestListener<Void>() {
+        getTransportManager().doRequest(new SessionSetRequest(sessionArgs), new RequestListener<>() {
             @Override
             public void onRequestFailure(SpiceException spiceException) {
                 Log.d(TAG, "Failed to update session settings");
@@ -1172,7 +1164,6 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
     }
 
     private void openTorrentByLocalFile(final InputStream fileStream) {
-        DialogFragment dialog = new DownloadLocationDialogFragment();
         Bundle args = new Bundle();
         args.putInt(DownloadLocationDialogFragment.KEY_REQUEST_CODE, DownloadLocationDialogFragment.REQUEST_CODE_BY_LOCAL_FILE);
         try {
@@ -1188,24 +1179,25 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
                 Log.e(TAG, "Failed to close input stream", e);
             }
         }
+        final DialogFragment dialog = new DownloadLocationDialogFragment();
         dialog.setArguments(args);
         dialog.show(getSupportFragmentManager(), TAG_DOWNLOAD_LOCATION_DIALOG);
     }
 
     private void openTorrentByRemoteFile(final Uri fileUri) {
-        DialogFragment dialog = new DownloadLocationDialogFragment();
         Bundle args = new Bundle();
         args.putInt(DownloadLocationDialogFragment.KEY_REQUEST_CODE, DownloadLocationDialogFragment.REQUEST_CODE_BY_REMOTE_FILE);
         args.putParcelable(DownloadLocationDialogFragment.KEY_FILE_URI, fileUri);
+        final DialogFragment dialog = new DownloadLocationDialogFragment();
         dialog.setArguments(args);
         dialog.show(getSupportFragmentManager(), TAG_DOWNLOAD_LOCATION_DIALOG);
     }
 
     private void openTorrentByMagnet(final String magnetUri) {
-        DialogFragment dialog = new DownloadLocationDialogFragment();
         Bundle bundle = new Bundle();
         bundle.putInt(DownloadLocationDialogFragment.KEY_REQUEST_CODE, DownloadLocationDialogFragment.REQUEST_CODE_BY_MAGNET);
         bundle.putString(DownloadLocationDialogFragment.KEY_MAGNET_URI, magnetUri);
+        final DialogFragment dialog = new DownloadLocationDialogFragment();
         dialog.setArguments(bundle);
         dialog.show(getSupportFragmentManager(), TAG_DOWNLOAD_LOCATION_DIALOG);
     }

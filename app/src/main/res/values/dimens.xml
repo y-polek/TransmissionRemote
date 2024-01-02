@@ -19,7 +19,7 @@
     <dimen name="header_settings_padding">16dp</dimen>
     <dimen name="header_server_current_size">64dp</dimen>
     <dimen name="header_server_secondary_size">40dp</dimen>
-    <dimen name="header_server_margin_left">16dp</dimen>
+    <dimen name="header_server_margin_horizontal">16dp</dimen>
     <dimen name="header_server_margin_top">16dp</dimen>
     <dimen name="header_text_padding_left">16dp</dimen>
     <dimen name="header_text_padding_top">16dp</dimen>

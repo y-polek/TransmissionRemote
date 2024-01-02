@@ -50,7 +50,7 @@ public abstract class BasePageFragment extends BaseFragment implements OnDataAva
     }
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NonNull Context context) {
         super.onAttach(context);
 
         if (getActivity() instanceof TorrentDetailsActivity) {

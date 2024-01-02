@@ -31,21 +31,15 @@ public class TorrentInfoPageFragment extends BasePageFragment {
 
         binding = DataBindingUtil.inflate(inflater, R.layout.torrent_details_info_page_fragment, container, false);
 
-        binding.commentText.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                copyCommentToClipboard();
-                return true;
-            }
+        binding.commentText.setOnLongClickListener(v -> {
+            copyCommentToClipboard();
+            return true;
         });
 
         binding.magnetText.setMovementMethod(LinkMovementMethod.getInstance());
-        binding.magnetText.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                copyMagnetLinkToClipboard();
-                return true;
-            }
+        binding.magnetText.setOnLongClickListener(v -> {
+            copyMagnetLinkToClipboard();
+            return true;
         });
 
         binding.setTorrent(getTorrent());

@@ -44,16 +44,13 @@ public class FilesPageFragment extends BasePageFragment implements DirectoryFrag
 
         View view = inflater.inflate(R.layout.torrent_details_file_page_fragment, container, false);
         breadcrumbView = view.findViewById(R.id.breadcrumb_view);
-        breadcrumbView.setOnNodeSelectedListener(new BreadcrumbView.OnNodeSelectedListener() {
-            @Override
-            public void onNodeSelected(int position) {
-                if (position >= path.size() - 1) return;
-                for (int i=path.size()-1; i>position; i--) {
-                    path.remove(i);
-                }
-                breadcrumbView.setPath(path);
-                showDirectory(path.peek(), AnimationDirection.LEFT_TO_RIGHT);
+        breadcrumbView.setOnNodeSelectedListener(position -> {
+            if (position >= path.size() - 1) return;
+            for (int i=path.size()-1; i>position; i--) {
+                path.remove(i);
             }
+            breadcrumbView.setPath(path);
+            showDirectory(path.peek(), AnimationDirection.LEFT_TO_RIGHT);
         });
 
         if (savedInstanceState != null) {
@@ -91,7 +88,7 @@ public class FilesPageFragment extends BasePageFragment implements DirectoryFrag
     }
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         if (!(getActivity() instanceof BaseSpiceActivity)) {
             Log.e(TAG, "Fragment should be used with BaseSpiceActivity");

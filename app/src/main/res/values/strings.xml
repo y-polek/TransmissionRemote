@@ -45,6 +45,7 @@
     <string name="drawer_sort_by_size">Size</string>
     <string name="drawer_sort_by_time_remaining">Time remaining</string>
     <string name="drawer_sort_by_date_added">Date added</string>
+    <string name="drawer_sort_by_last_activity">Last activity</string>
     <string name="drawer_sort_by_progress">Progress</string>
     <string name="drawer_sort_by_queue_position">Queue order</string>
     <string name="drawer_sort_by_upload_ratio">Ratio</string>
@@ -260,6 +261,8 @@
     <string name="trackers_url_hint">URL</string>
     <string name="trackers_add_button">Add</string>
     <string name="trackers_done_button">Done</string>
+    <string name="trackers_failed_to_add_tracker">Failed to add tracker</string>
+    <string name="trackers_failed_to_edit_tracker">Failed to edit tracker</string>
 
     <string name="trackers_sort_by">Sort by</string>
     <string name="trackers_sort_by_tiers">Tiers</string>

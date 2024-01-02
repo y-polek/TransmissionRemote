@@ -26,18 +26,19 @@
             android:layout_height="@dimen/header_server_current_size"
             android:layout_alignParentLeft="true"
             android:layout_alignParentTop="true"
-            android:layout_marginLeft="@dimen/header_server_margin_left"
+            android:layout_marginLeft="@dimen/header_server_margin_horizontal"
             android:layout_marginTop="@dimen/header_server_margin_top"
             android:clickable="true"
             app:elevation="2dp"/>
         <LinearLayout
+            android:id="@+id/circle_secondary_layout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:layout_alignParentRight="true"
             android:layout_alignParentTop="true"
-            android:layout_marginTop="40dp"
-            android:layout_marginRight="16dp">
+            android:layout_marginTop="@dimen/header_server_margin_top"
+            android:layout_marginRight="@dimen/header_server_margin_horizontal">
             <com.mikepenz.materialdrawer.view.BezelImageView
                 android:id="@+id/circle_1"
                 android:layout_width="@dimen/header_server_secondary_size"
@@ -48,7 +49,7 @@
                 android:id="@+id/circle_2"
                 android:layout_width="@dimen/header_server_secondary_size"
                 android:layout_height="@dimen/header_server_secondary_size"
-                android:layout_marginLeft="@dimen/header_server_margin_left"
+                android:layout_marginLeft="@dimen/header_server_margin_horizontal"
                 android:clickable="true"
                 app:elevation="2dp" />
         </LinearLayout>

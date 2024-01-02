@@ -2,7 +2,6 @@
   "arguments": {
     "torrents": [
       {
-        "activityDate": 0,
         "addedDate": 1673628011,
         "bandwidthPriority": 0,
         "comment": "openSUSE-Leap-15.4-NET-x86_64-Build243.2-Media.iso",

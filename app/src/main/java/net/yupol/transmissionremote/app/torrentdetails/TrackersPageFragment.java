@@ -1,10 +1,12 @@
 package net.yupol.transmissionremote.app.torrentdetails;
 
+import static net.yupol.transmissionremote.app.transport.SpiceExceptionExtensionsKt.getResponseFailureMessage;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
+
 import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -14,7 +16,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -63,7 +64,7 @@ public class TrackersPageFragment extends BasePageFragment implements TrackersAd
     private SharedPreferences preferences;
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         Activity activity = getActivity();
         if (activity instanceof BaseSpiceActivity) {
@@ -152,18 +153,15 @@ public class TrackersPageFragment extends BasePageFragment implements TrackersAd
         SortOrder sortOrder = currentSortOrder();
         sortingAdapter.setCurrentSorting(sortedBy, sortOrder);
         popup.setAdapter(sortingAdapter);
-        popup.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                TrackersSortedBy sorting = sortingAdapter.getItem(position);
-                SortOrder order = SortOrder.ASCENDING;
-                if (sorting == currentSorting()) {
-                    order = currentSortOrder().reversed();
-                }
-                setCurrentSorting(sorting, order);
-                sortingAdapter.setCurrentSorting(sorting, order);
-                adapter.setSorting(sorting, order);
+        popup.setOnItemClickListener((parent, view, position, id) -> {
+            TrackersSortedBy sorting = sortingAdapter.getItem(position);
+            SortOrder order = SortOrder.ASCENDING;
+            if (sorting == currentSorting()) {
+                order = currentSortOrder().reversed();
             }
+            setCurrentSorting(sorting, order);
+            sortingAdapter.setCurrentSorting(sorting, order);
+            adapter.setSorting(sorting, order);
         });
 
         popup.setAnchorView(binding.getRoot());
@@ -217,12 +215,7 @@ public class TrackersPageFragment extends BasePageFragment implements TrackersAd
         new AlertDialog.Builder(requireContext())
                 .setTitle(R.string.trackers_remove_confirmation_title)
                 .setMessage(R.string.trackers_remove_confirmation_message)
-                .setPositiveButton(R.string.remove, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        removeTracker(tracker.id);
-                    }
-                })
+                .setPositiveButton(R.string.remove, (dialog, which) -> removeTracker(tracker.id))
                 .setNegativeButton(R.string.cancel, null)
                 .show();
     }
@@ -234,7 +227,7 @@ public class TrackersPageFragment extends BasePageFragment implements TrackersAd
 
     @Override
     public void onCopyTrackerUrlClicked(TrackerStats tracker) {
-        String url = StringUtils.isNotEmpty(tracker.host) ? tracker.host : tracker.announce;
+        String url = StringUtils.isNotEmpty(tracker.announce) ? tracker.announce : tracker.host;
         ClipData clip = ClipData.newPlainText(url, url);
         clipboardManager().setPrimaryClip(clip);
         Toast.makeText(getContext(), getString(R.string.copied), Toast.LENGTH_SHORT).show();
@@ -268,7 +261,7 @@ public class TrackersPageFragment extends BasePageFragment implements TrackersAd
 
     private void addTracker(String url) {
         binding.swipeRefresh.setRefreshing(true);
-        transportManager.doRequest(new TrackerAddRequest(getTorrent().getId(), url), new RequestListener<Void>() {
+        transportManager.doRequest(new TrackerAddRequest(getTorrent().getId(), url), new RequestListener<>() {
             @Override
             public void onRequestSuccess(Void aVoid) {
                 binding.swipeRefresh.setRefreshing(false);
@@ -277,6 +270,14 @@ public class TrackersPageFragment extends BasePageFragment implements TrackersAd
 
             @Override
             public void onRequestFailure(SpiceException spiceException) {
+                @Nullable final String responseFailureMessage = getResponseFailureMessage(spiceException);
+                final String failureMessage;
+                if (isNotBlank(responseFailureMessage)) {
+                    failureMessage = responseFailureMessage;
+                } else {
+                    failureMessage = getString(R.string.trackers_failed_to_add_tracker);
+                }
+                Toast.makeText(requireContext(), failureMessage, Toast.LENGTH_LONG).show();
                 binding.swipeRefresh.setRefreshing(false);
                 refresh();
             }
@@ -285,7 +286,7 @@ public class TrackersPageFragment extends BasePageFragment implements TrackersAd
 
     private void editTracker(@NonNull TrackerStats tracker, String url) {
         binding.swipeRefresh.setRefreshing(true);
-        transportManager.doRequest(new TrackerReplaceRequest(getTorrent().getId(), tracker.id, url), new RequestListener<Void>() {
+        transportManager.doRequest(new TrackerReplaceRequest(getTorrent().getId(), tracker.id, url), new RequestListener<>() {
             @Override
             public void onRequestSuccess(Void aVoid) {
                 binding.swipeRefresh.setRefreshing(false);
@@ -294,6 +295,14 @@ public class TrackersPageFragment extends BasePageFragment implements TrackersAd
 
             @Override
             public void onRequestFailure(SpiceException spiceException) {
+                @Nullable final String responseFailureMessage = getResponseFailureMessage(spiceException);
+                final String failureMessage;
+                if (isNotBlank(responseFailureMessage)) {
+                    failureMessage = responseFailureMessage;
+                } else {
+                    failureMessage = getString(R.string.trackers_failed_to_edit_tracker);
+                }
+                Toast.makeText(requireContext(), failureMessage, Toast.LENGTH_LONG).show();
                 binding.swipeRefresh.setRefreshing(false);
                 refresh();
             }

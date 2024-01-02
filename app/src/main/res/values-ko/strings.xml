@@ -48,6 +48,7 @@
     <string name="drawer_sort_by_upload_ratio">배포 비율</string>
 
     <!-- Preferences -->
+    <string name="drawer_sort_by_last_activity">최근 활성 시각</string>
     <string name="action_settings">설정</string>
     <string name="notifications_pref_title">알림</string>
     <string name="notification_settings">알림 설정</string>

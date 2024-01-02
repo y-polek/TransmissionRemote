@@ -106,23 +106,17 @@ public class HeaderView extends RelativeLayout implements View.OnClickListener {
         serverListButton = findViewById(R.id.server_list_button);
         serverListButton.setImageResource(serverListExpanded ? R.drawable.ic_arrow_drop_up : R.drawable.ic_arrow_drop_down);
         View serverTextSection = findViewById(R.id.header_text_section);
-        serverTextSection.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (serverListExpanded) {
-                    hideServersList();
-                } else {
-                    showServersList();
-                }
+        serverTextSection.setOnClickListener(v -> {
+            if (serverListExpanded) {
+                hideServersList();
+            } else {
+                showServersList();
             }
         });
 
         ImageButton settingsButton = findViewById(R.id.settings_button);
-        settingsButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (listener != null) listener.onSettingsPressed();
-            }
+        settingsButton.setOnClickListener(v -> {
+            if (listener != null) listener.onSettingsPressed();
         });
 
         serverCircleCurrent = findViewById(R.id.circle_current);
@@ -132,7 +126,10 @@ public class HeaderView extends RelativeLayout implements View.OnClickListener {
         serverCircleSmallSecond = findViewById(R.id.circle_2);
         serverCircleSmallSecond.setOnClickListener(this);
 
-        ((LayoutParams) serverCircleCurrent.getLayoutParams()).topMargin += getStatusBarHeight();
+        final int statusBarHeight = getStatusBarHeight();
+        ((LayoutParams) serverCircleCurrent.getLayoutParams()).topMargin += statusBarHeight;
+        final View circleSecondaryLayout = findViewById(R.id.circle_secondary_layout);
+        ((LayoutParams) circleSecondaryLayout.getLayoutParams()).topMargin += statusBarHeight;
     }
 
     private int getStatusBarHeight() {
