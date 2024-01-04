@@ -3,12 +3,13 @@ package net.yupol.transmissionremote.app.e2e
 import androidx.test.ext.junit.rules.activityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
+import androidx.test.rule.GrantPermissionRule
 import net.yupol.transmissionremote.app.MainActivity
-import net.yupol.transmissionremote.app.e2e.mockserver.mockWebServer
 import net.yupol.transmissionremote.app.e2e.robots.AddServerRobot.Companion.addServer
 import net.yupol.transmissionremote.app.e2e.robots.TorrentDetailsRobot.Companion.torrentDetails
 import net.yupol.transmissionremote.app.e2e.robots.TorrentListRobot.Companion.torrentList
 import net.yupol.transmissionremote.app.e2e.robots.WelcomeRobot.Companion.welcome
+import net.yupol.transmissionremote.mockserver.MockServer
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -20,36 +21,26 @@ import org.junit.runner.RunWith
 class TorrentDetailsTest {
 
     @get:Rule
-    var activityScenarioRule = activityScenarioRule<MainActivity>()
+    val activityScenarioRule = activityScenarioRule<MainActivity>()
 
-    private val server = mockWebServer {
-        "session-get" to {
-            response = {
-                filePath = "session-get.json"
-            }
-        }
-        "torrent-get" to {
-            response = {
-                filePath = "torrent-get.json"
-            }
-        }
-        "torrent-get" to {
-            ids = listOf(1)
-            response = {
-                filePath = "torrent-get-1.json"
-            }
-        }
-        "torrent-get" to {
-            ids = listOf(2)
-            response = {
-                filePath = "torrent-get-2.json"
-            }
-        }
-    }
+    @get:Rule
+    val grantNotificationsPermissionRule: GrantPermissionRule = GrantPermissionRule.grant(
+        android.Manifest.permission.POST_NOTIFICATIONS
+    )
+
+    private val server = MockServer()
 
     @Before
     fun setup() {
         server.start()
+        server.addTorrent(
+            name = "openSUSE-Leap-15.4-NET-x86_64-Build243.2-Media.iso",
+            totalSize = 181403648L
+        )
+        server.addTorrent(
+            name = "ubuntu-22.04.1-desktop-amd64.iso",
+            totalSize = 3826831360L
+        )
     }
 
     @After
@@ -69,7 +60,7 @@ class TorrentDetailsTest {
             clickOk()
         }
         torrentList {
-            clickTorrentAtPosition(7)
+            clickTorrentAtPosition(0)
         }
         torrentDetails {
             assertInfoPageOpen()
@@ -80,7 +71,7 @@ class TorrentDetailsTest {
             exit()
         }
         torrentList {
-            clickTorrentAtPosition(9)
+            clickTorrentAtPosition(1)
         }
         torrentDetails {
             assertOptionsPageOpen()

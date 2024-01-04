@@ -26,5 +26,8 @@ data class RpcTorrent(
     @SerialName("peersSendingToUs") val peersSendingToUs: Int = 0,
     @SerialName("webseedsSendingToUs") val webseedsSendingToUs: Int = 0,
     @SerialName("error") val errorId: Int = 0,
-    @SerialName("errorString") val errorString: String = ""
+    @SerialName("errorString") val errorString: String = "",
+    @SerialName("files") val files: List<RpcFile>,
+    @SerialName("fileStats") val fileStats: List<RpcFileStats>,
+    @SerialName("peers") val peers: List<RpcPeer> = emptyList()
 )

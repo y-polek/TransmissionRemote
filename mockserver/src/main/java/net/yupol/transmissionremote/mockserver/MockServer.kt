@@ -10,6 +10,8 @@ import kotlinx.serialization.json.decodeFromStream
 import kotlinx.serialization.json.encodeToJsonElement
 import net.yupol.transmissionremote.mockserver.bencode.BencodeTorrent
 import net.yupol.transmissionremote.mockserver.rpc.RpcArguments
+import net.yupol.transmissionremote.mockserver.rpc.RpcFile
+import net.yupol.transmissionremote.mockserver.rpc.RpcFileStats
 import net.yupol.transmissionremote.mockserver.rpc.RpcFreeSpace
 import net.yupol.transmissionremote.mockserver.rpc.RpcRequest
 import net.yupol.transmissionremote.mockserver.rpc.RpcResponse
@@ -59,7 +61,7 @@ class MockServer @Inject constructor() {
                     "torrent-reannounce" -> TODO()
                     "torrent-set" -> TODO()
                     "torrent-get" -> {
-                        getTorrents()
+                        getTorrents(ids = rpcRequest.getIntArrayArgument(key = "ids").orEmpty())
                     }
                     "torrent-add" -> {
                         addTorrent(
@@ -103,8 +105,7 @@ class MockServer @Inject constructor() {
         name: String,
         totalSize: Long,
         sizeWhenDone: Long = totalSize,
-        paused: Boolean = false,
-
+        paused: Boolean = false
     ) {
         torrents.torrents += RpcTorrent(
             id = nextTorrentId++,
@@ -114,7 +115,18 @@ class MockServer @Inject constructor() {
             sizeWhenDone = sizeWhenDone,
             addedDate = Date().time / 1000,
             leftUntilDone = sizeWhenDone,
-            queuePosition = torrents.torrents.size + 1
+            queuePosition = torrents.torrents.size + 1,
+            files = listOf(
+                RpcFile(
+                    name = name,
+                    length = totalSize
+                )
+            ),
+            fileStats = listOf(
+                RpcFileStats(
+                    wanted = true
+                )
+            )
         )
     }
 
@@ -122,8 +134,15 @@ class MockServer @Inject constructor() {
         return successResponse(arguments = session)
     }
 
-    private fun getTorrents(): MockResponse {
-        return successResponse(arguments = torrents)
+    private fun getTorrents(ids: List<Int>): MockResponse {
+        val selectedTorrents = if (ids.isEmpty()) {
+            torrents.torrents
+        } else {
+            torrents.torrents.filter { torrent ->
+                ids.contains(torrent.id)
+            }
+        }
+        return successResponse(arguments = torrents.copy(torrents = selectedTorrents))
     }
 
     private fun getFreeSpace(path: String?): MockResponse {
