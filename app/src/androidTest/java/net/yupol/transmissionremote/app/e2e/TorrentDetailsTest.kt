@@ -10,6 +10,7 @@ import net.yupol.transmissionremote.app.e2e.robots.TorrentDetailsRobot.Companion
 import net.yupol.transmissionremote.app.e2e.robots.TorrentListRobot.Companion.torrentList
 import net.yupol.transmissionremote.app.e2e.robots.WelcomeRobot.Companion.welcome
 import net.yupol.transmissionremote.mockserver.MockServer
+import net.yupol.transmissionremote.mockserver.model.Torrent
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -35,11 +36,15 @@ class TorrentDetailsTest {
         server.start()
         server.addTorrent(
             name = "openSUSE-Leap-15.4-NET-x86_64-Build243.2-Media.iso",
-            totalSize = 181403648L
+            size = Torrent.Size(
+                totalSize = 181403648L
+            )
         )
         server.addTorrent(
             name = "ubuntu-22.04.1-desktop-amd64.iso",
-            totalSize = 3826831360L
+            size = Torrent.Size(
+                totalSize = 3826831360L
+            )
         )
     }
 

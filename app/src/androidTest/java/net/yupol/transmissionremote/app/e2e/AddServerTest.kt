@@ -3,11 +3,13 @@ package net.yupol.transmissionremote.app.e2e
 import androidx.test.ext.junit.rules.activityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
+import androidx.test.rule.GrantPermissionRule
 import net.yupol.transmissionremote.app.MainActivity
 import net.yupol.transmissionremote.app.e2e.robots.AddServerRobot.Companion.addServer
 import net.yupol.transmissionremote.app.e2e.robots.TorrentListRobot.Companion.torrentList
 import net.yupol.transmissionremote.app.e2e.robots.WelcomeRobot.Companion.welcome
 import net.yupol.transmissionremote.mockserver.MockServer
+import net.yupol.transmissionremote.mockserver.model.Torrent
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -19,7 +21,12 @@ import org.junit.runner.RunWith
 class AddServerTest {
 
     @get:Rule
-    var activityScenarioRule = activityScenarioRule<MainActivity>()
+    val activityScenarioRule = activityScenarioRule<MainActivity>()
+
+    @get:Rule
+    val grantNotificationsPermissionRule: GrantPermissionRule = GrantPermissionRule.grant(
+        android.Manifest.permission.POST_NOTIFICATIONS
+    )
 
     private val server = MockServer()
 
@@ -51,11 +58,15 @@ class AddServerTest {
 
         server.addTorrent(
             name = "ubuntu-22.04.3-live-server-amd64.iso",
-            totalSize = 2_130_000_000
+            size = Torrent.Size(
+                totalSize = 2_130_000_000
+            )
         )
         server.addTorrent(
             name = "Fedora-KDE-Live-x86_64-38",
-            totalSize = 2_410_000_000
+            size = Torrent.Size(
+                totalSize = 2_410_000_000
+            )
         )
 
         torrentList {

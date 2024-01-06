@@ -9,6 +9,7 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.decodeFromStream
 import kotlinx.serialization.json.encodeToJsonElement
 import net.yupol.transmissionremote.mockserver.bencode.BencodeTorrent
+import net.yupol.transmissionremote.mockserver.model.Torrent
 import net.yupol.transmissionremote.mockserver.rpc.RpcArguments
 import net.yupol.transmissionremote.mockserver.rpc.RpcFile
 import net.yupol.transmissionremote.mockserver.rpc.RpcFileStats
@@ -19,12 +20,12 @@ import net.yupol.transmissionremote.mockserver.rpc.RpcSession
 import net.yupol.transmissionremote.mockserver.rpc.RpcStatus
 import net.yupol.transmissionremote.mockserver.rpc.RpcTorrent
 import net.yupol.transmissionremote.mockserver.rpc.RpcTorrents
+import net.yupol.transmissionremote.mockserver.utils.nowSeconds
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.RecordedRequest
 import java.util.Base64
-import java.util.Date
 import javax.inject.Inject
 
 @OptIn(ExperimentalSerializationApi::class)
@@ -103,30 +104,55 @@ class MockServer @Inject constructor() {
 
     fun addTorrent(
         name: String,
-        totalSize: Long,
-        sizeWhenDone: Long = totalSize,
-        paused: Boolean = false
+        paused: Boolean = false,
+        size: Torrent.Size,
+        dates: Torrent.Dates = Torrent.Dates(
+            added = System.currentTimeMillis() / 1000,
+            created = System.currentTimeMillis() / 1000
+        ),
+        secondsDownloading: Int = 0,
+        secondsSeeding: Int = 0,
+        downloadDir: String = "/",
+        creator: String = "",
+        comment: String = "",
+        magnetLink: String = ""
     ) {
         torrents.torrents += RpcTorrent(
             id = nextTorrentId++,
             name = name,
             status = if (paused) RpcStatus.STOPPED.status else RpcStatus.DOWNLOAD.status,
-            totalSize = totalSize,
-            sizeWhenDone = sizeWhenDone,
-            addedDate = Date().time / 1000,
-            leftUntilDone = sizeWhenDone,
+            totalSize = size.totalSize,
+            sizeWhenDone = size.sizeWhenDone,
+            leftUntilDone = size.leftUntilDone,
+            desiredAvailable = size.desiredAvailable,
+            haveUnchecked = size.haveUnchecked,
+            haveValid = size.haveValid,
+            downloadedEver = size.downloadedEver,
+            uploadedEver = size.uploadedEver,
+            secondsDownloading = secondsDownloading,
+            secondsSeeding = secondsSeeding,
+            pieceSize = size.pieceSize,
+            pieceCount = size.pieceCount,
+            addedDate = dates.added,
+            dateCreated = dates.created,
+            doneDate = dates.done,
+            activityDate = dates.activity,
             queuePosition = torrents.torrents.size + 1,
             files = listOf(
                 RpcFile(
                     name = name,
-                    length = totalSize
+                    length = size.totalSize
                 )
             ),
             fileStats = listOf(
                 RpcFileStats(
                     wanted = true
                 )
-            )
+            ),
+            downloadDir = downloadDir,
+            creator = creator,
+            comment = comment,
+            magnetLink = magnetLink
         )
     }
 
@@ -157,8 +183,16 @@ class MockServer @Inject constructor() {
         val bencodeTorrent = BencodeTorrent.fromMap(data)
         addTorrent(
             name = bencodeTorrent.info.name,
-            totalSize = bencodeTorrent.totalSize,
-            paused = paused
+            paused = paused,
+            size = Torrent.Size(
+                totalSize = bencodeTorrent.totalSize
+            ),
+            dates = Torrent.Dates(
+                added = nowSeconds(),
+                created = bencodeTorrent.creationDate
+            ),
+            creator = bencodeTorrent.createdBy.orEmpty(),
+            comment = bencodeTorrent.comment
         )
         return successResponse()
     }
