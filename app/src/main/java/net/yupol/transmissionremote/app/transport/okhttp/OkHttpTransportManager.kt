@@ -14,7 +14,6 @@ import net.yupol.transmissionremote.app.transport.request.Request
 import net.yupol.transmissionremote.app.transport.request.ResponseFailureException
 import okhttp3.Call
 import okhttp3.Callback
-import okhttp3.Dispatcher
 import okhttp3.HttpUrl
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
@@ -34,7 +33,6 @@ class OkHttpTransportManager(
 ) : TransportManager {
 
     private val okHttpClient = OkHttpClient.Builder().apply {
-        dispatcher(Dispatcher())
         addInterceptor(SessionIdInterceptor())
         if (BuildConfig.DEBUG) {
             addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
@@ -67,15 +65,23 @@ class OkHttpTransportManager(
 
     override fun <T : Any?> doRequest(request: Request<T>, listener: RequestListener<T>?) {
         request.server = server
-        val url = HttpUrl.Builder().apply {
-            scheme(if (server.useHttps()) "https" else "http")
-            port(server.port)
-            host(server.host)
-            if (server.rpcUrl.isNotBlank()) {
-                val rpcPath = server.rpcUrl.trim('/', '\\')
-                addPathSegments("$rpcPath/")
-            }
-        }.build()
+        val url = try {
+            HttpUrl.Builder().apply {
+                scheme(if (server.useHttps()) "https" else "http")
+                port(server.port)
+                host(server.host.trim('/', '\\'))
+                if (server.rpcUrl.isNotBlank()) {
+                    val rpcPath = server.rpcUrl.trim('/', '\\')
+                    addPathSegments("$rpcPath/")
+                }
+            }.build()
+        } catch (e: Throwable) {
+            notifyListenerFailure(
+                error = SpiceException("Invalid host, port or RPC path", e),
+                listener = listener
+            )
+            return
+        }
         val okHttpRequest = okhttp3.Request.Builder()
             .post(request.createBody().toRequestBody(MEDIA_TYPE_JSON))
             .url(url)

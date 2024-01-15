@@ -131,7 +131,7 @@ public class TorrentUpdater {
 
                         String url = request.getUrl();
                         String responseBody = request.getResponseBody();
-                        String errorMessage = request.getError() != null ? errorMessage(request.getError()) : null;
+                        String errorMessage = request.getError() != null ? errorMessage(request.getError()) : spiceException.getMessage();
                         String errorText = "<p><u>" + url + "</u></p>" + (responseBody != null ? responseBody : errorMessage);
                         listener.onNetworkError(error, errorText);
                     }
