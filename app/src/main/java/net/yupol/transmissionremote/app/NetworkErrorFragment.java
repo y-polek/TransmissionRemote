@@ -52,12 +52,9 @@ public class NetworkErrorFragment extends Fragment {
         messageView = view.findViewById(R.id.error_message);
         detailedMessageView = view.findViewById(R.id.detailed_error_text);
         detailedMessageView.setMovementMethod(LinkMovementMethod.getInstance());
-        detailedMessageView.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                copyDetailedErrorMessageToClipboard();
-                return true;
-            }
+        detailedMessageView.setOnLongClickListener(v -> {
+            copyDetailedErrorMessageToClipboard();
+            return true;
         });
 
         String message = Optional.ofNullable(args.getString(KEY_MESSAGE)).orElse("");
@@ -65,30 +62,21 @@ public class NetworkErrorFragment extends Fragment {
         setErrorMessage(message, detailedMessage);
 
         Button retryBtn = view.findViewById(R.id.retry_button);
-        retryBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (listener != null) listener.onRefreshPressed();
+        retryBtn.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onRefreshPressed();
             }
         });
 
         Button serverSettingsBtn = view.findViewById(R.id.server_settings_button);
-        serverSettingsBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getContext(), ServersActivity.class);
-                intent.putExtra(ServersActivity.KEY_SERVER_UUID, TransmissionRemote.getApplication(requireContext()).getActiveServer().getId());
-                startActivity(intent);
-            }
+        serverSettingsBtn.setOnClickListener(v -> {
+            Intent intent = new Intent(getContext(), ServersActivity.class);
+            intent.putExtra(ServersActivity.KEY_SERVER_UUID, TransmissionRemote.getApplication(requireContext()).getActiveServer().getId());
+            startActivity(intent);
         });
 
         Button networkSettingsBtn = view.findViewById(R.id.network_settings_button);
-        networkSettingsBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
-            }
-        });
+        networkSettingsBtn.setOnClickListener(v -> startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS)));
 
         return view;
     }
