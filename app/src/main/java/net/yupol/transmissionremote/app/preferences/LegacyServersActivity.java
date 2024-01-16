@@ -18,9 +18,9 @@ import net.yupol.transmissionremote.app.server.AddServerActivity;
 import net.yupol.transmissionremote.app.server.Server;
 import net.yupol.transmissionremote.app.server.ServerDetailsFragment;
 
-public class ServersActivity extends BaseActivity {
+public class LegacyServersActivity extends BaseActivity {
 
-    private static final String TAG = ServersActivity.class.getSimpleName();
+    private static final String TAG = LegacyServersActivity.class.getSimpleName();
 
     private static final String TAG_SERVERS = "tag_servers";
     private static final String TAG_SERVER_DETAILS = "tag_server_details";

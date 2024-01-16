@@ -71,8 +71,8 @@ import net.yupol.transmissionremote.app.opentorrent.DownloadLocationDialogFragme
 import net.yupol.transmissionremote.app.opentorrent.OpenAddressDialogFragment;
 import net.yupol.transmissionremote.app.opentorrent.OpenByDialogFragment;
 import net.yupol.transmissionremote.app.preferences.PreferencesActivity;
+import net.yupol.transmissionremote.app.preferences.ServerActivityLauncher;
 import net.yupol.transmissionremote.app.preferences.ServerPreferencesActivity;
-import net.yupol.transmissionremote.app.preferences.ServersActivity;
 import net.yupol.transmissionremote.app.server.AddServerActivity;
 import net.yupol.transmissionremote.app.server.Server;
 import net.yupol.transmissionremote.app.sorting.SortOrder;
@@ -112,6 +112,8 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
+
+import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -214,6 +216,9 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
     private boolean showFab;
     private FreeSpaceFooterDrawerItem freeSpaceFooterDrawerItem;
     private FinishedTorrentsNotificationManager finishedTorrentsNotificationManager;
+
+    @Inject
+    ServerActivityLauncher serverActivityLauncher;
 
     private final ActivityResultLauncher<String> requestPermissionLauncher = registerForActivityResult(
             new ActivityResultContracts.RequestPermission(),
@@ -363,7 +368,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
 
             @Override
             public void onManageServersPressed() {
-                startActivity(new Intent(MainActivity.this, ServersActivity.class));
+                serverActivityLauncher.launchServerActivity(MainActivity.this);
             }
         });
 

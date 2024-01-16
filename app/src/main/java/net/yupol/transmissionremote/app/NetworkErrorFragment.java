@@ -23,7 +23,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
-import net.yupol.transmissionremote.app.preferences.ServersActivity;
+import net.yupol.transmissionremote.app.preferences.LegacyServersActivity;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -70,8 +70,8 @@ public class NetworkErrorFragment extends Fragment {
 
         Button serverSettingsBtn = view.findViewById(R.id.server_settings_button);
         serverSettingsBtn.setOnClickListener(v -> {
-            Intent intent = new Intent(getContext(), ServersActivity.class);
-            intent.putExtra(ServersActivity.KEY_SERVER_UUID, TransmissionRemote.getApplication(requireContext()).getActiveServer().getId());
+            Intent intent = new Intent(getContext(), LegacyServersActivity.class);
+            intent.putExtra(LegacyServersActivity.KEY_SERVER_UUID, TransmissionRemote.getApplication(requireContext()).getActiveServer().getId());
             startActivity(intent);
         });
 

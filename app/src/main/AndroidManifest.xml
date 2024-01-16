@@ -102,13 +102,13 @@
             android:label="@string/server_preferences">
             <meta-data android:name="android.support.PARENT_ACTIVITY" android:value=".MainActivity"/>
         </activity>
-        <activity android:name=".preferences.ServersActivity"
+        <activity android:name=".preferences.LegacyServersActivity"
             android:exported="false"
             android:label="@string/servers">
-            <intent-filter>
-                <action android:name=".preferences.ServersActivity"/>
-                <category android:name="android.intent.category.DEFAULT"/>
-            </intent-filter>
+        </activity>
+        <activity android:name=".preferences.server.ServerActivity"
+            android:exported="false"
+            android:label="@string/servers">
         </activity>
         <activity android:name=".torrentdetails.TorrentDetailsActivity"
             android:label="@string/torrent_details"
