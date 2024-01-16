@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<defaults>
+  <entry>
+    <key>use_legacy_server_activity</key>
+    <value>true</value>
+  </entry>
+  <entry>
+    <key>use_okhttp</key>
+    <value>false</value>
+  </entry>
+</defaults>

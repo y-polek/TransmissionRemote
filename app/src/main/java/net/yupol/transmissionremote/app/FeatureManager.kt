@@ -13,6 +13,7 @@ class FeatureManager @Inject constructor(
     private val crashlytics: FirebaseCrashlytics
 ) {
     init {
+        remoteConfig.setDefaultsAsync(R.xml.remote_config_defaults)
         remoteConfig.activate().addOnCompleteListener { task ->
             if (task.isSuccessful) {
                 crashlytics.log("Remote config activated")
@@ -32,6 +33,10 @@ class FeatureManager @Inject constructor(
 
     fun useOkHttp(): Boolean {
         return remoteConfig.getBoolean("use_okhttp")
+    }
+
+    fun useLegacyServerActivity(): Boolean {
+        return remoteConfig.getBoolean("use_legacy_server_activity")
     }
 
     private fun logConfig() {
