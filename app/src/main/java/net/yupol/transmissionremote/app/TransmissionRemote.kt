@@ -34,7 +34,7 @@ import javax.inject.Inject
 
 @HiltAndroidApp
 class TransmissionRemote : Application(), OnSharedPreferenceChangeListener {
-    private val servers: MutableList<Server?> = LinkedList()
+    private val servers: MutableList<Server> = LinkedList()
     private var activeServer: Server? = null
     private val activeServerListeners: MutableList<OnActiveServerChangedListener> = LinkedList()
     private val serverListListeners: MutableList<OnServerListChangedListener> = LinkedList()
@@ -125,18 +125,18 @@ class TransmissionRemote : Application(), OnSharedPreferenceChangeListener {
         }
     }
 
-    fun getServers(): List<Server?> {
+    fun getServers(): List<Server> {
         return servers
     }
 
     fun getServerById(id: String): Server? {
         for (server in servers) {
-            if (id == server!!.id) return server
+            if (id == server.id) return server
         }
         return null
     }
 
-    fun addServer(server: Server?) {
+    fun addServer(server: Server) {
         servers.add(server)
         persistServers()
         for (l in serverListListeners) {
@@ -158,7 +158,7 @@ class TransmissionRemote : Application(), OnSharedPreferenceChangeListener {
         }
     }
 
-    fun updateServer(server: Server?) {
+    fun updateServer(server: Server) {
         persistServers()
         for (l in serverListListeners) {
             l.serverUpdated(server)

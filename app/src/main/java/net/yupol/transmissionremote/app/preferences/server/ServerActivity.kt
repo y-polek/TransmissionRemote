@@ -5,13 +5,18 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.material.Text
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class ServerActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            Text("ServerActivity")
+            ServersScene(
+                onBackClicked = {
+                    finish()
+                }
+            )
         }
     }
 
