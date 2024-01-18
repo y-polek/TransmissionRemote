@@ -3,7 +3,6 @@ package net.yupol.transmissionremote.app.preferences.server
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
@@ -18,6 +17,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.lifecycle.viewmodel.compose.viewModel
 import net.yupol.transmissionremote.app.R
+import net.yupol.transmissionremote.app.theme.AppTheme
 
 @Composable
 fun ServersScene(
@@ -26,7 +26,7 @@ fun ServersScene(
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
-    MaterialTheme {
+    AppTheme {
         Scaffold(
             topBar = {
                 TopAppBar(
