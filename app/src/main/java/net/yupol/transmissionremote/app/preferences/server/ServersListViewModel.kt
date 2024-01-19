@@ -37,6 +37,8 @@ class ServersListViewModel @Inject constructor(
     }
 
     fun onServerSelected(server: Server) {
-
+        _uiState.value = _uiState.value.copy(
+            selectedServerId = server.id
+        )
     }
 }

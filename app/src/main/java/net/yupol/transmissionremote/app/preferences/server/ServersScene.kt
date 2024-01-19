@@ -16,6 +16,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import net.yupol.transmissionremote.app.R
 import net.yupol.transmissionremote.app.theme.AppTheme
 
@@ -25,6 +28,7 @@ fun ServersScene(
     onBackClicked: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val navController = rememberNavController()
 
     AppTheme {
         Scaffold(
@@ -56,13 +60,28 @@ fun ServersScene(
                 )
             }
         ) { paddingValues ->
-            ServersList(
+            NavHost(
                 modifier = Modifier.padding(paddingValues),
-                servers = uiState.servers,
-                selectedServerId = uiState.selectedServerId,
-                onServerClicked = viewModel::onServerClicked,
-                onServerSelected = viewModel::onServerSelected
-            )
+                navController = navController,
+                startDestination = "servers"
+            ) {
+                composable(route = "servers") {
+                    ServersList(
+                        servers = uiState.servers,
+                        selectedServerId = uiState.selectedServerId,
+                        onServerClicked = { server ->
+                            // TODO: move to ViewModel
+                            navController.navigate("servers/${server.id}")
+                            viewModel.onServerClicked(server)
+                        },
+                        onServerSelected = viewModel::onServerSelected
+                    )
+                }
+
+                composable("servers/{server_id}") { backStackEntry ->
+                    ServerScene(backStackEntry.arguments?.getString("server_id"))
+                }
+            }
         }
     }
 }
