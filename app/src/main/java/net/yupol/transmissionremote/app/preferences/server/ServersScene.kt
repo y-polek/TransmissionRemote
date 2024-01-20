@@ -28,7 +28,11 @@ fun ServersScene(
     onBackClicked: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val navigateToEvent by viewModel.navigateTo.collectAsState()
     val navController = rememberNavController()
+    navigateToEvent?.getContentIfNotHandled()?.let { destination ->
+        navController.navigate(destination)
+    }
 
     AppTheme {
         Scaffold(
@@ -69,11 +73,7 @@ fun ServersScene(
                     ServersList(
                         servers = uiState.servers,
                         selectedServerId = uiState.selectedServerId,
-                        onServerClicked = { server ->
-                            // TODO: move to ViewModel
-                            navController.navigate("servers/${server.id}")
-                            viewModel.onServerClicked(server)
-                        },
+                        onServerClicked = viewModel::onServerClicked,
                         onServerSelected = viewModel::onServerSelected
                     )
                 }

@@ -7,11 +7,12 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import net.yupol.transmissionremote.app.preferences.PreferencesRepository
 import net.yupol.transmissionremote.app.server.Server
+import net.yupol.transmissionremote.app.utils.Event
 import javax.inject.Inject
 
 @HiltViewModel
 class ServersListViewModel @Inject constructor(
-    preferencesRepository: PreferencesRepository
+    private val preferencesRepository: PreferencesRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(
@@ -21,6 +22,9 @@ class ServersListViewModel @Inject constructor(
         )
     )
     val uiState: StateFlow<ServersListViewState> = _uiState.asStateFlow()
+
+    private val _navigateTo = MutableStateFlow<Event<String>?>(null)
+    val navigateTo: StateFlow<Event<String>?> = _navigateTo.asStateFlow()
 
     init {
         _uiState.value = _uiState.value.copy(
@@ -33,12 +37,13 @@ class ServersListViewModel @Inject constructor(
     }
 
     fun onServerClicked(server: Server) {
-
+        _navigateTo.value = Event("servers/${server.id}")
     }
 
     fun onServerSelected(server: Server) {
         _uiState.value = _uiState.value.copy(
             selectedServerId = server.id
         )
+        preferencesRepository.setActiveServer(server)
     }
 }
