@@ -23,10 +23,8 @@ import net.yupol.transmissionremote.app.R
 import net.yupol.transmissionremote.app.theme.AppTheme
 
 @Composable
-fun ServersScene(
-    viewModel: ServersListViewModel = viewModel(),
-    onBackClicked: () -> Unit
-) {
+fun ServersScene(onBackClicked: () -> Unit) {
+    val viewModel: ServersListViewModel = viewModel()
     val uiState by viewModel.uiState.collectAsState()
     val navigateToEvent by viewModel.navigateTo.collectAsState()
     val navController = rememberNavController()
@@ -78,8 +76,8 @@ fun ServersScene(
                     )
                 }
 
-                composable("servers/{server_id}") { backStackEntry ->
-                    ServerScene(backStackEntry.arguments?.getString("server_id"))
+                composable("servers/{server_id}") {
+                    ServerScene()
                 }
             }
         }
