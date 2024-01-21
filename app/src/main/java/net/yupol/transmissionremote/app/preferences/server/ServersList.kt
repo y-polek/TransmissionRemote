@@ -27,19 +27,18 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import net.yupol.transmissionremote.app.R
+import net.yupol.transmissionremote.app.navigation.NavigationEvent
 import net.yupol.transmissionremote.app.server.Server
 
 @Composable
 fun ServersList(
     modifier: Modifier = Modifier,
-    navigateTo: (String) -> Unit
+    navigateTo: (NavigationEvent) -> Unit
 ) {
     val viewModel: ServersListViewModel = hiltViewModel()
     val uiState by viewModel.uiState.collectAsState()
     val navigateToEvent by viewModel.navigateTo.collectAsState()
-    navigateToEvent?.getContentIfNotHandled()?.let { destination ->
-        navigateTo(destination)
-    }
+    navigateToEvent?.handleIfNotHandled { navigateTo(it) }
 
     Scaffold(
         modifier = modifier,

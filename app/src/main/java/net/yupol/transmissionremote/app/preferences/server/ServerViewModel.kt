@@ -7,8 +7,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import net.yupol.transmissionremote.app.logging.Logger
+import net.yupol.transmissionremote.app.navigation.NavigationEvent
 import net.yupol.transmissionremote.app.preferences.PreferencesRepository
-import net.yupol.transmissionremote.app.utils.Event
 import javax.inject.Inject
 
 @HiltViewModel
@@ -25,11 +25,11 @@ class ServerViewModel @Inject constructor(
     )
     val uiState: StateFlow<ServerViewState> = _uiState.asStateFlow()
 
-    private val _navigateTo = MutableStateFlow<Event<String>?>(null)
-    val navigateTo: StateFlow<Event<String>?> = _navigateTo.asStateFlow()
+    private val _navigateTo = MutableStateFlow<NavigationEvent?>(null)
+    val navigateTo: StateFlow<NavigationEvent?> = _navigateTo.asStateFlow()
 
     fun onBackClicked() {
-
+        _navigateTo.value = NavigationEvent.NavigateUp()
     }
 
     fun onRemoveServerClicked() {
@@ -38,9 +38,10 @@ class ServerViewModel @Inject constructor(
         } else {
             logger.log("Server is null when trying to remove server")
         }
+        _navigateTo.value = NavigationEvent.NavigateUp()
     }
 
     fun onSaveClicked() {
-
+        _navigateTo.value = NavigationEvent.NavigateUp()
     }
 }

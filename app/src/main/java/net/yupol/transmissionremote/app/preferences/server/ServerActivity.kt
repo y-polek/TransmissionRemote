@@ -12,7 +12,9 @@ class ServerActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            ServersScene()
+            ServersScene(
+                onFinish = ::finish
+            )
         }
     }
 

@@ -1,6 +1,6 @@
 package net.yupol.transmissionremote.app.utils
 
-class Event<out T>(private val content: T) {
+open class Event<out T>(private val content: T) {
 
     private var hasBeenHandled = false
 

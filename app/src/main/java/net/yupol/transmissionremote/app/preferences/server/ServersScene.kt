@@ -6,10 +6,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import net.yupol.transmissionremote.app.navigation.NavigationEvent
+import net.yupol.transmissionremote.app.navigation.navigate
 import net.yupol.transmissionremote.app.theme.AppTheme
 
 @Composable
-fun ServersScene() {
+fun ServersScene(onFinish: () -> Unit) {
     val navController = rememberNavController()
 
     AppTheme {
@@ -18,9 +20,12 @@ fun ServersScene() {
             startDestination = "servers"
         ) {
             composable(route = "servers") {
-                ServersList { route ->
-                    navController.navigateUp()
-                    navController.navigate(route)
+                ServersList { navigationEvent ->
+                    if (navigationEvent is NavigationEvent.NavigateUp) {
+                        onFinish()
+                    } else {
+                        navController.navigate(navigationEvent)
+                    }
                 }
             }
 
@@ -33,8 +38,8 @@ fun ServersScene() {
                     }
                 )
             ) {
-                ServerScene { route ->
-                    navController.navigate(route)
+                ServerScene { navigationEvent ->
+                    navController.navigate(navigationEvent)
                 }
             }
         }
