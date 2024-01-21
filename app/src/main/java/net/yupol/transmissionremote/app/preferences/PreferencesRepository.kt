@@ -44,6 +44,10 @@ class PreferencesRepository @Inject constructor(
         (applicationContext as TransmissionRemote).setActiveServer(server)
     }
 
+    fun removeServer(server: Server) {
+        (applicationContext as TransmissionRemote).removeServer(server)
+    }
+
     companion object {
         private val KEY_NIGHT_MODE = stringPreferencesKey("key_night_mode")
     }

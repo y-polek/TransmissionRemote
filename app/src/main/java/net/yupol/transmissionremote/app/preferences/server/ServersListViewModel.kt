@@ -32,12 +32,16 @@ class ServersListViewModel @Inject constructor(
         )
     }
 
-    fun onAddServerClicked() {
+    fun onBackClicked() {
 
     }
 
+    fun onAddServerClicked() {
+        _navigateTo.value = Event("servers/server?server_id=null")
+    }
+
     fun onServerClicked(server: Server) {
-        _navigateTo.value = Event("servers/${server.id}")
+        _navigateTo.value = Event("servers/server?server_id=${server.id}")
     }
 
     fun onServerSelected(server: Server) {

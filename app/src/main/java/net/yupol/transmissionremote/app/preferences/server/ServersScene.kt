@@ -1,83 +1,40 @@
 package net.yupol.transmissionremote.app.preferences.server
 
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextOverflow
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import net.yupol.transmissionremote.app.R
+import androidx.navigation.navArgument
 import net.yupol.transmissionremote.app.theme.AppTheme
 
 @Composable
-fun ServersScene(onBackClicked: () -> Unit) {
-    val viewModel: ServersListViewModel = viewModel()
-    val uiState by viewModel.uiState.collectAsState()
-    val navigateToEvent by viewModel.navigateTo.collectAsState()
+fun ServersScene() {
     val navController = rememberNavController()
-    navigateToEvent?.getContentIfNotHandled()?.let { destination ->
-        navController.navigate(destination)
-    }
 
     AppTheme {
-        Scaffold(
-            topBar = {
-                TopAppBar(
-                    title = {
-                        Text(
-                            text = stringResource(id = R.string.servers),
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    },
-                    navigationIcon = {
-                        IconButton(onClick = onBackClicked) {
-                            Icon(
-                                imageVector = Icons.Filled.ArrowBack,
-                                contentDescription = "Go back"
-                            )
-                        }
-                    },
-                    actions = {
-                        IconButton(onClick = { viewModel.onAddServerClicked() }) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_add),
-                                contentDescription = "Localized description"
-                            )
-                        }
+        NavHost(
+            navController = navController,
+            startDestination = "servers"
+        ) {
+            composable(route = "servers") {
+                ServersList { route ->
+                    navController.navigateUp()
+                    navController.navigate(route)
+                }
+            }
+
+            composable(
+                route = "servers/server?server_id={server_id}",
+                arguments = listOf(
+                    navArgument("server_id") {
+                        type = NavType.StringType
+                        nullable = true
                     }
                 )
-            }
-        ) { paddingValues ->
-            NavHost(
-                modifier = Modifier.padding(paddingValues),
-                navController = navController,
-                startDestination = "servers"
             ) {
-                composable(route = "servers") {
-                    ServersList(
-                        servers = uiState.servers,
-                        selectedServerId = uiState.selectedServerId,
-                        onServerClicked = viewModel::onServerClicked,
-                        onServerSelected = viewModel::onServerSelected
-                    )
-                }
-
-                composable("servers/{server_id}") {
-                    ServerScene()
+                ServerScene { route ->
+                    navController.navigate(route)
                 }
             }
         }
