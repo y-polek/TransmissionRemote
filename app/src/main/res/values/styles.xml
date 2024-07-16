@@ -74,6 +74,7 @@
     <style name="InfoPageSecondColumnStyle">
         <item name="android:textSize">@dimen/tr_abc_text_size_body_1_material</item>
         <item name="android:textColor">?android:attr/textColorPrimary</item>
+        <item name="android:textIsSelectable">true</item>
     </style>
 
     <style name="InfoPageTitleStyle">
