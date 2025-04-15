@@ -14,7 +14,7 @@
     <string name="action_pause">暫停</string>
     <string name="action_start">開始</string>
     <string name="action_start_now">現在開始（不排隊）</string>
-    <string name="action_verify">校驗本地資料</string>
+    <string name="action_verify">校驗本機資料</string>
     <string name="action_request_more_peers">尋求更多節點</string>
     <string name="action_set_location">設定儲存位置</string>
 
@@ -35,7 +35,7 @@
     <string name="filter_empty_paused">沒有暫停的種子</string>
     <string name="filter_empty_download_completed">沒有下載完成的種子</string>
     <string name="filter_empty_finished">沒有已完成的種子</string>
-    <string name="filter_empty_name">沒有匹配的種子</string>
+    <string name="filter_empty_name">沒有符合的種子</string>
 
     <!-- Sort by -->
     <string name="drawer_sort_by">排序方式</string>
@@ -50,14 +50,14 @@
     <string name="action_settings">設定</string>
     <string name="notifications_pref_title">通知</string>
     <string name="notification_settings">通知設定</string>
-    <string name="advanced_pref_title">高階選項</string>
+    <string name="advanced_pref_title">進階選項</string>
 
     <!-- Servers -->
     <string name="add_new_server_title">新增新伺服器</string>
     <string name="server_parameters">伺服器參數</string>
     <string name="server_name_hint">伺服器名稱</string>
     <string name="server_host_hint">主機名或 IP 位址</string>
-    <string name="server_port_hint">埠</string>
+    <string name="server_port_hint">連接埠</string>
     <string name="server_rpc_url_hint">RPC 地址</string>
     <string name="trust_self_signed_ssl_cert">信任自簽 SSL 證書</string>
     <string name="authentication">認證</string>
@@ -99,9 +99,9 @@
     <string name="preferences_update_failed">更新伺服器選項失敗</string>
     <string name="preferences_notifications_title">通知</string>
     <string name="preferences_notifications_summary">種子完成通知</string>
-    <string name="preferences_advanced_title">高階</string>
-    <string name="preferences_advanced_summary">高階選項</string>
-    <string name="disable_free_space_check_title">禁用剩餘空間檢查</string>
+    <string name="preferences_advanced_title">進階</string>
+    <string name="preferences_advanced_summary">進階選項</string>
+    <string name="disable_free_space_check_title">停用剩餘空間檢查</string>
     <string name="disable_free_space_check_summary">允許不檢查剩餘空間就新增種子</string>
 
     <!-- Torrent List -->
@@ -141,7 +141,7 @@
     <string name="storage_permission_deny">拒絕</string>
 
     <!-- Torrent details -->
-    <string name="torrent_details">種子詳情</string>
+    <string name="torrent_details">種子詳細資訊</string>
     <string name="info">資訊</string>
     <string name="files">檔案</string>
     <string name="options">選項</string>
@@ -163,14 +163,14 @@
     <string name="save_torrent_options">儲存</string>
     <string name="options_update_failed">無法更新種子選項</string>
     <string name="three_dots">&#8230;</string>
-    <string name="disabled">已禁用</string>
+    <string name="disabled">已停用</string>
     <string name="total_size_text">%1$s（%2$d 個 %3$s 的塊）</string>
     <string name="have_size_text">%1$s，共 %2$s（%3$.1f%%）</string>
     <string name="have_size_100p_text">%1$s（100%%）</string>
     <string name="have_unverified_size_text">，%1$s 未驗證</string>
     <string name="available_text">%1$.1f%%</string>
     <string name="privacy_public_torrent">公開種子</string>
-    <string name="privacy_private_torrent">私有種子，已禁用 DHT 和 PeX 種子交換</string>
+    <string name="privacy_private_torrent">私有種子，已停用 DHT 和 PeX 種子交換</string>
     <string name="downloaded_ever_text">%1$s（損壞 %2$s）</string>
     <string name="uploaded_ever_text">%1$s（比率：%2$.2f）</string>
     <string name="today_time">今天 %1$s</string>
@@ -201,7 +201,7 @@
     <string name="network_error_message_no_network">無法連線到伺服器。請檢查網路設定。</string>
     <string name="network_error_message_connection_error">無法連線到伺服器。請檢查伺服器設定。</string>
     <string name="network_error_message_unauthorized">操作未授權。請檢查伺服器設定中的使用者名稱和密碼。</string>
-    <string name="error_retrieve_torrent_details">無法獲取種子詳情。請再試一次。</string>
+    <string name="error_retrieve_torrent_details">無法取得種子詳細資訊。請再試一次。</string>
 
     <string name="tooltip_turtle_mode">限速模式</string>
     <string name="tooltip_total_download_speed">總下載速度</string>
@@ -210,7 +210,7 @@
     <string name="welcome">歡迎！</string>
     <string name="error_msg_open_torrent_no_server">新增種子前需要先設定伺服器</string>
 
-    <string name="apply">應用</string>
+    <string name="apply">套用</string>
     <string name="move_data">移動資料</string>
 
     <plurals name="torrents">
