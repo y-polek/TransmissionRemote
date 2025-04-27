@@ -19,6 +19,7 @@
     <string name="action_set_location">Set location</string>
     <string name="action_rename">Rename</string>
     <string name="action_share_magnet">Share Magnet Link</string>
+    <string name="action_open_stats">Statistics</string>
 
     <!-- Filters -->
     <string name="filters">Filters</string>
@@ -315,5 +316,10 @@
     </plurals>
 
     <string name="notification_channel_name">Torrent Downloading Finished</string>
+
+    <string name="stats_current_session">Current Session</string>
+    <string name="stats_total">Total</string>
+    <string name="stats_uploaded">Uploaded</string>
+    <string name="stats_downloaded">Downloaded</string>
 
 </resources>

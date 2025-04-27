@@ -137,6 +137,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
     private static final String TAG_OPEN_TORRENT_DIALOG = "tag_open_torrent_dialog";
     private static final String TAG_OPEN_TORRENT_BY_ADDRESS_DIALOG = "tag_open_torrent_by_address_dialog";
     private static final String TAG_DOWNLOAD_LOCATION_DIALOG = "tag_download_location_dialog";
+    private static final String TAG_SERVER_STATS_DIALOG = "tag_server_stats_dialog";
 
     private static final String MIME_TYPE_TORRENT = "application/x-bittorrent";
     private static final String SCHEME_MAGNET = "magnet";
@@ -762,6 +763,8 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
             case R.id.action_pause_all_torrents:
                 pauseAllTorrents();
                 return true;
+            case R.id.action_open_stats:
+                new StatsDialogFragment().show(getSupportFragmentManager(), TAG_SERVER_STATS_DIALOG);
             default:
                 return super.onOptionsItemSelected(item);
         }
