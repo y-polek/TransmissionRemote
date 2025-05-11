@@ -287,7 +287,7 @@ public class DirectoryAdapter extends RecyclerView.Adapter<DirectoryAdapter.View
                 @Override
                 public void onClick(View v) {
                     if (getItemViewType() == R.id.view_type_directory) {
-                        listener.onDirectorySelected(getAdapterPosition());
+                        listener.onDirectorySelected(getBindingAdapterPosition());
                     } else {
                         if (binding.checkbox.isEnabled()) {
                             binding.checkbox.setChecked(!binding.checkbox.isChecked());
@@ -299,12 +299,12 @@ public class DirectoryAdapter extends RecyclerView.Adapter<DirectoryAdapter.View
                 @Override
                 public void onStateChanged(IndeterminateCheckBox buttonView, @Nullable Boolean isChecked) {
                     if (getItemViewType() == R.id.view_type_directory) {
-                        boolean changed = isChecked != isDirectoryChecked(getDir(getAdapterPosition()));
-                        if (isChecked != null && changed) listener.onDirectoryChecked(getAdapterPosition(), isChecked);
+                        boolean changed = isChecked != isDirectoryChecked(getDir(getBindingAdapterPosition()));
+                        if (isChecked != null && changed) listener.onDirectoryChecked(getBindingAdapterPosition(), isChecked);
                     } else {
-                        Integer fileIndex = getItem(getAdapterPosition());
+                        Integer fileIndex = getItem(getBindingAdapterPosition());
                         assert isChecked != null;
-                        boolean changed = isChecked != isFileChecked(getAdapterPosition());
+                        boolean changed = isChecked != isFileChecked(getBindingAdapterPosition());
                         if (changed) {
                             listener.onFileChecked(fileIndex, isChecked);
                         }
@@ -323,7 +323,7 @@ public class DirectoryAdapter extends RecyclerView.Adapter<DirectoryAdapter.View
                         public void onItemClick(AdapterView<?> parent, View view, int priorityPosition, long id) {
                             Priority priority = (Priority) parent.getItemAtPosition(priorityPosition);
 
-                            int position = getAdapterPosition();
+                            int position = getBindingAdapterPosition();
                             if (getItemViewType() == R.id.view_type_directory) {
                                 listener.onDirectoryPriorityChanged(position, priority);
                                 setDirPriority(getDir(position), priority);

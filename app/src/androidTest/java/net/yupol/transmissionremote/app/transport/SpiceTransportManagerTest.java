@@ -16,6 +16,7 @@ import com.octo.android.robospice.request.listener.RequestListener;
 import net.yupol.transmissionremote.app.server.Server;
 import net.yupol.transmissionremote.app.transport.request.Request;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,7 +28,7 @@ public class SpiceTransportManagerTest {
 
     private static final String SESSION_ID = "fake_session_id";
     private static final String REDIRECT_LOCATION = "fake_redirect_location";
-
+    private AutoCloseable closeable;
     private Server server;
 
     @Mock private Request<String> request;
@@ -35,7 +36,7 @@ public class SpiceTransportManagerTest {
 
     @Before
     public void setup() {
-        MockitoAnnotations.initMocks(this);
+        closeable = MockitoAnnotations.openMocks(this);
 
         server = new Server("Test Server", "http://localhost", 9091);
     }
@@ -88,5 +89,10 @@ public class SpiceTransportManagerTest {
         verify(requestListener).onRequestFailure(any(SpiceException.class));
         verifyNoMoreInteractions(requestListener);
         assertThat(server.getRedirectLocation()).isEqualTo(REDIRECT_LOCATION);
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        closeable.close();
     }
 }

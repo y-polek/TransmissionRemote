@@ -1,10 +1,11 @@
 package net.yupol.transmissionremote.app.torrentlist;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+
 import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
 
@@ -52,12 +53,12 @@ public class RemoveTorrentsDialogFragment extends DialogFragment {
     }
 
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
+    public void onAttach(Context context) {
+        super.onAttach(context);
         try {
-            listener = (OnRemoveTorrentSelectionListener) activity;
+            listener = (OnRemoveTorrentSelectionListener) context;
         } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString() + " must implement " + OnRemoveTorrentSelectionListener.class.getSimpleName());
+            throw new ClassCastException(context.toString() + " must implement " + OnRemoveTorrentSelectionListener.class.getSimpleName());
         }
     }
 

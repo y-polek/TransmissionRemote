@@ -15,7 +15,10 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.view.MenuHost;
+import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Lifecycle;
 
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
@@ -45,7 +48,6 @@ public class ServerPreferencesFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
     }
 
     @Override
@@ -81,31 +83,33 @@ public class ServerPreferencesFragment extends Fragment {
             serverSettings = savedInstanceState.getParcelable(KEY_SERVER_SETTINGS);
         }
         updateUi();
+
+        MenuHost menuHost = requireActivity();
+        menuHost.addMenuProvider(new MenuProvider() {
+            @Override
+            public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
+                menuInflater.inflate(R.menu.server_preferences_menu, menu);
+                ServerPreferencesFragment.this.menu = menu; // Save menu reference
+            }
+
+            @Override
+            public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
+                if (menuItem.getItemId() == R.id.action_save) {
+                    SessionSetRequest.Builder builder = getPreferencesRequestBuilder();
+                    if (builder.isChanged()) {
+                        sendUpdateOptionsRequest(builder.build());
+                    }
+                    return true;
+                }
+                return false;
+            }
+        }, getViewLifecycleOwner(), Lifecycle.State.RESUMED);
     }
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelable(KEY_SERVER_SETTINGS, serverSettings);
-    }
-
-    @Override
-    public void onCreateOptionsMenu(@NonNull Menu menu, MenuInflater inflater) {
-        this.menu = menu;
-        inflater.inflate(R.menu.server_preferences_menu, menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_save:
-                SessionSetRequest.Builder builder = getPreferencesRequestBuilder();
-                if (builder.isChanged()) {
-                    sendUpdateOptionsRequest(builder.build());
-                }
-                return true;
-        }
-        return false;
     }
 
     public SessionSetRequest.Builder getPreferencesRequestBuilder() {

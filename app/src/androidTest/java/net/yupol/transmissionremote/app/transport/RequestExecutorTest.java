@@ -19,6 +19,7 @@ import com.octo.android.robospice.request.listener.RequestListener;
 import net.yupol.transmissionremote.app.server.Server;
 import net.yupol.transmissionremote.app.transport.request.Request;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -49,10 +50,11 @@ public class RequestExecutorTest {
     @Mock private RequestListener<String> mockListener;
 
     @Captor private ArgumentCaptor<SpiceException> spiceExceptionArgumentCaptor;
+    private AutoCloseable closeable;
 
     @Before
     public void setup() throws Exception {
-        MockitoAnnotations.initMocks(this);
+        closeable = MockitoAnnotations.openMocks(this);
 
         when(mockRequest.getResultType())
                 .thenReturn(String.class);
@@ -200,5 +202,9 @@ public class RequestExecutorTest {
             return new CountDownRequestListenerWrapper<>(listener, latch);
         }
     }
-    //endregion
+
+    @After
+    public void tearDown() throws Exception {
+        closeable.close();
+    }
 }

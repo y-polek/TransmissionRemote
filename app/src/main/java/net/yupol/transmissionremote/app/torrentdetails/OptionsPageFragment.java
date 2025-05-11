@@ -15,7 +15,10 @@ import android.widget.AdapterView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.view.MenuProvider;
 import androidx.databinding.DataBindingUtil;
+import androidx.lifecycle.Lifecycle;
 
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
@@ -86,8 +89,6 @@ public class OptionsPageFragment extends BasePageFragment implements AdapterView
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setHasOptionsMenu(true);
-
         sessionGetRequest = new SessionGetRequest();
         transportManager.doRequest(sessionGetRequest, new RequestListener<>() {
             @Override
@@ -142,6 +143,33 @@ public class OptionsPageFragment extends BasePageFragment implements AdapterView
         viewCreated = true;
 
         return binding.getRoot();
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view,@Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        // Add MenuProvider
+        requireActivity().addMenuProvider(new MenuProvider() {
+            @Override
+            public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
+                menuInflater.inflate(R.menu.torrent_options_menu, menu);
+                saveMenuItem = menu.findItem(R.id.action_save);
+                saveMenuItem.setEnabled(getTorrentInfo() != null);
+            }
+
+            @Override
+            public boolean onMenuItemSelected(@NonNull MenuItem item) {
+                if (item.getItemId() == R.id.action_save) {
+                    TorrentSetRequest.Builder requestBuilder = getSaveOptionsRequestBuilder();
+                    if (requestBuilder.isChanged()) {
+                        sendUpdateOptionsRequest(requestBuilder.build());
+                    }
+                    return true;
+                }
+                return false;
+            }
+        }, getViewLifecycleOwner(), Lifecycle.State.RESUMED);
     }
 
     @Override
@@ -289,27 +317,6 @@ public class OptionsPageFragment extends BasePageFragment implements AdapterView
         } catch (NumberFormatException e) {
             return getTorrentInfo().getSeedIdleLimit();
         }
-    }
-
-    @Override
-    public void onCreateOptionsMenu(@NonNull Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.torrent_options_menu, menu);
-        saveMenuItem = menu.findItem(R.id.action_save);
-        saveMenuItem.setEnabled(getTorrentInfo() != null);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_save:
-                TorrentSetRequest.Builder requestBuilder = getSaveOptionsRequestBuilder();
-                if (requestBuilder.isChanged()) {
-                    sendUpdateOptionsRequest(requestBuilder.build());
-                }
-                return true;
-        }
-
-        return false;
     }
 
     @Override

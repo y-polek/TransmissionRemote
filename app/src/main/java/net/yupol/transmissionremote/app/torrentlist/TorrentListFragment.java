@@ -5,7 +5,6 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.Spanned;
@@ -27,6 +26,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentResultListener;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -55,6 +55,7 @@ import net.yupol.transmissionremote.app.transport.request.VerifyTorrentRequest;
 import net.yupol.transmissionremote.app.utils.ColorUtils;
 import net.yupol.transmissionremote.app.utils.DividerItemDecoration;
 import net.yupol.transmissionremote.app.utils.TextUtils;
+import net.yupol.transmissionremote.app.utils.TransmissionRemotePreferenceManager;
 import net.yupol.transmissionremote.app.utils.diff.Equals;
 import net.yupol.transmissionremote.app.utils.diff.ListDiff;
 import net.yupol.transmissionremote.app.utils.diff.Range;
@@ -286,7 +287,7 @@ public class TorrentListFragment extends Fragment implements ChooseLocationDialo
     public void onResume() {
         super.onResume();
 
-        boolean showFab = PreferenceManager.getDefaultSharedPreferences(getContext())
+        boolean showFab = TransmissionRemotePreferenceManager.getDefaultSharedPreferences(getContext())
                 .getBoolean(getString(R.string.show_add_torrent_fab_key), true);
         recyclerView.setPadding(0, 0, 0, showFab ? getResources().getDimensionPixelOffset(R.dimen.fab_size_normal) : 0);
     }
@@ -392,8 +393,20 @@ public class TorrentListFragment extends Fragment implements ChooseLocationDialo
     }
 
     private void showChooseLocationDialog() {
+        getParentFragmentManager().setFragmentResultListener(
+                "location_result",  // requestKey
+                getViewLifecycleOwner(),
+                new FragmentResultListener() {
+                    @Override
+                    public void onFragmentResult(@NonNull String requestKey, @NonNull Bundle result) {
+                        String selectedLocation = result.getString("selected_location");
+                        boolean checked = result.getBoolean("move_data_checked");
+                        onLocationSelected(selectedLocation, checked);
+                    }
+                }
+        );
+
         ChooseLocationDialogFragment dialog = new ChooseLocationDialogFragment();
-        dialog.setTargetFragment(this, 0);
         dialog.show(requireActivity().getSupportFragmentManager(), CHOOSE_LOCATION_FRAGMENT_TAG);
     }
 
@@ -441,7 +454,7 @@ public class TorrentListFragment extends Fragment implements ChooseLocationDialo
                         }
                     } else {
                         v.setSelected(true);
-                        toggleSelection(viewHolder.getAdapterPosition());
+                        toggleSelection(viewHolder.getBindingAdapterPosition());
                     }
                 }
             });
@@ -454,7 +467,7 @@ public class TorrentListFragment extends Fragment implements ChooseLocationDialo
                     }
 
                     actionMode = requireActivity().startActionMode(actionModeCallback);
-                    toggleSelection(viewHolder.getAdapterPosition());
+                    toggleSelection(viewHolder.getBindingAdapterPosition());
                     return true;
                 }
             });

@@ -31,7 +31,7 @@ public class FilesPageFragment extends BasePageFragment implements DirectoryFrag
     private static final String TAG_PROGRESSBAR_FRAGMENT = "tag_progressbar_fragment";
     private static final String TAG_DIRECTORY_FRAGMENT = "tag_directory_fragment";
     private static final String KEY_PATH = "key_path";
-
+    private boolean isVisibleToUser = false;
     private boolean viewCreated;
     private final Stack<Dir> path = new Stack<>();
     private BreadcrumbView breadcrumbView;
@@ -75,6 +75,7 @@ public class FilesPageFragment extends BasePageFragment implements DirectoryFrag
     @Override
     public void onResume() {
         super.onResume();
+        isVisibleToUser = true;
         TransmissionRemote.getInstance().getAnalytics().logScreenView(
                 "Files page",
                 FilesPageFragment.class
@@ -102,6 +103,11 @@ public class FilesPageFragment extends BasePageFragment implements DirectoryFrag
         outState.putStringArray(KEY_PATH, pathNames);
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        isVisibleToUser = false;
+    }
 
     @Override
     public void setTorrentInfo(TorrentInfo torrentInfo) {
@@ -176,7 +182,7 @@ public class FilesPageFragment extends BasePageFragment implements DirectoryFrag
 
     @Override
     public boolean onBackPressed() {
-        if (getUserVisibleHint() && path.size() > 1) {
+        if (isVisibleToUser && path.size() > 1) {
             path.pop();
             breadcrumbView.setPath(path);
             showDirectory(path.peek(), AnimationDirection.LEFT_TO_RIGHT);

@@ -38,7 +38,7 @@ public class ActionBarNavigationAdapter extends BaseAdapter {
         textColorPrimary = ColorUtils.resolveColor(context, android.R.attr.textColorPrimary, R.color.text_primary);
         textColorPrimaryInverse = ColorUtils.resolveColor(context, android.R.attr.textColorPrimaryInverse, R.color.text_primary_inverse);
         accentColor = ColorUtils.resolveColor(context, R.attr.colorAccent, R.color.accent);
-        alternativeAccentColor = context.getResources().getColor(R.color.alternative_accent);
+        alternativeAccentColor = context.getResources().getColor(R.color.alternative_accent, null);
     }
 
     @Override

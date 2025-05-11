@@ -1,9 +1,8 @@
 package net.yupol.transmissionremote.app;
 
-import static android.preference.PreferenceManager.getDefaultSharedPreferences;
-
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.SearchManager;
 import android.content.ActivityNotFoundException;
@@ -14,10 +13,8 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.provider.OpenableColumns;
 import android.util.Log;
@@ -95,6 +92,8 @@ import net.yupol.transmissionremote.app.transport.request.SessionSetRequest;
 import net.yupol.transmissionremote.app.transport.request.StartTorrentRequest;
 import net.yupol.transmissionremote.app.transport.request.StopTorrentRequest;
 import net.yupol.transmissionremote.app.transport.request.TorrentRemoveRequest;
+import net.yupol.transmissionremote.app.utils.TorrentLoader;
+import net.yupol.transmissionremote.app.utils.TransmissionRemotePreferenceManager;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -106,7 +105,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.util.Collection;
 import java.util.List;
 import java.util.Timer;
@@ -214,6 +212,8 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
     private boolean showFab;
     private FreeSpaceFooterDrawerItem freeSpaceFooterDrawerItem;
     private FinishedTorrentsNotificationManager finishedTorrentsNotificationManager;
+    private ActivityResultLauncher<Intent> chooseTorrentLauncher;
+    private ActivityResultLauncher<Intent> addServerLauncher;
 
     private final ActivityResultLauncher<String> requestPermissionLauncher = registerForActivityResult(
             new ActivityResultContracts.RequestPermission(),
@@ -245,6 +245,41 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
             openTorrentUri = savedInstanceState.getParcelable(KEY_OPEN_TORRENT_URI);
             openTorrentScheme = savedInstanceState.getString(KEY_OPEN_TORRENT_SCHEME);
         }
+
+        chooseTorrentLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == Activity.RESULT_OK) {
+                        Intent data = result.getData();
+                        if (data != null) {
+                            Uri uri = data.getData();
+                            try {
+                                InputStream inputStream = getContentResolver().openInputStream(uri);
+                                openTorrentByLocalFile(inputStream);
+                            } catch (FileNotFoundException e) {
+                                throw new RuntimeException(e);
+                            }
+                        }
+                    }
+                }
+        );
+
+        addServerLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == Activity.RESULT_OK) {
+                        Intent data = result.getData();
+                        if (data != null) {
+                            Server server = data.getParcelableExtra(AddServerActivity.EXTRA_SEVER);
+                            addNewServer(server);
+                            switchServer(server);
+                            if (application.getServers().size() == 1 && application.isNotificationEnabled()) {
+                                requestNotificationsPermissionIfRequired();
+                            }
+                        }
+                    }
+                }
+        );
     }
 
     private void logAppStartupTime() {
@@ -559,7 +594,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
     protected void onResume() {
         super.onResume();
         isActivityResumed = true;
-        getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
+        TransmissionRemotePreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
 
         List<Server> servers = application.getServers();
         if (servers.isEmpty()) {
@@ -576,7 +611,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
 
         binding.addTorrentButton.collapseImmediately();
 
-        showFab = PreferenceManager.getDefaultSharedPreferences(this)
+        showFab = TransmissionRemotePreferenceManager.getDefaultSharedPreferences(this)
                 .getBoolean(getString(R.string.show_add_torrent_fab_key), true);
         boolean isListVisible = getTorrentListFragment() != null;
         binding.addTorrentButton.setVisibility(showFab && isListVisible ? View.VISIBLE : View.GONE);
@@ -602,7 +637,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
 
         stopPreferencesUpdateTimer();
 
-        getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(this);
+        TransmissionRemotePreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(this);
         application.persist();
     }
 
@@ -770,20 +805,9 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_CODE_SERVER_PARAMS) {
-            if (resultCode == RESULT_OK) {
-                Server server = data.getParcelableExtra(AddServerActivity.EXTRA_SEVER);
-                addNewServer(server);
-                switchServer(server);
-                if (application.getServers().size() == 1 && application.isNotificationEnabled()) {
-                    requestNotificationsPermissionIfRequired();
-                }
-            }
-        } else if (requestCode == REQUEST_CODE_CHOOSE_TORRENT) {
-            if (resultCode == RESULT_OK) {
-                openTorrentUri = data.getData();
-                openTorrentUriOnResume = true;
-            }
+        if (requestCode == REQUEST_CODE_CHOOSE_TORRENT && resultCode == RESULT_OK) {
+           openTorrentUri = data.getData();
+           openTorrentUriOnResume = true;
         }
     }
 
@@ -942,22 +966,28 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
                         new AddTorrentByFileRequest(args.getByteArray(DownloadLocationDialogFragment.KEY_FILE_BYTES), downloadDir, !startWhenAdded),
                         addTorrentResultListener);
                 break;
+
             case DownloadLocationDialogFragment.REQUEST_CODE_BY_REMOTE_FILE:
                 Uri fileUri = args.getParcelable(DownloadLocationDialogFragment.KEY_FILE_URI);
-                new RetrieveTorrentContentAsyncTask() {
+                TorrentLoader.loadTorrentFromUri(fileUri, new TorrentLoader.Callback() {
                     @Override
-                    protected void onPostExecute(byte[] bytes) {
-                        if (bytes != null) {
-                            TransportManager tm = getTransportManager();
-                            if (tm.isStarted()) {
-                                tm.doRequest(new AddTorrentByFileRequest(bytes, downloadDir, !startWhenAdded), addTorrentResultListener);
-                            }
-                        } else {
-                            Toast.makeText(MainActivity.this, getString(R.string.error_cannot_read_file_msg), Toast.LENGTH_SHORT).show();
+                    public void onSuccess(byte[] data) {
+                        TransportManager tm = getTransportManager();
+                        if (tm.isStarted()) {
+                            tm.doRequest(new AddTorrentByFileRequest(data, downloadDir, !startWhenAdded), addTorrentResultListener);
                         }
                     }
-                }.execute(fileUri);
+
+                    @Override
+                    public void onError() {
+                        Toast.makeText(MainActivity.this,
+                                getString(R.string.error_cannot_read_file_msg),
+                                Toast.LENGTH_SHORT
+                        ).show();
+                    }
+                });
                 break;
+
             case DownloadLocationDialogFragment.REQUEST_CODE_BY_MAGNET:
                 String magnetUri = args.getString(DownloadLocationDialogFragment.KEY_MAGNET_URI);
                 if (magnetUri != null) {
@@ -984,7 +1014,7 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
 
     public void openAddServerActivity(View view) {
         Intent intent = new Intent(this, AddServerActivity.class);
-        startActivityForResult(intent, REQUEST_CODE_SERVER_PARAMS);
+        addServerLauncher.launch(intent);
     }
 
     private void addNewServer(Server server) {
@@ -1153,9 +1183,8 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
         intent.addCategory(Intent.CATEGORY_OPENABLE);
 
         try {
-            startActivityForResult(
-                    Intent.createChooser(intent, getResources().getString(R.string.select_torrent_file)),
-                    MainActivity.REQUEST_CODE_CHOOSE_TORRENT);
+            Intent chooser = Intent.createChooser(intent, getResources().getString(R.string.select_torrent_file));
+            chooseTorrentLauncher.launch(chooser);
         } catch (ActivityNotFoundException ex) {
             Toast.makeText(this,
                     getResources().getString(R.string.error_install_file_manager_msg),
@@ -1210,27 +1239,5 @@ public class MainActivity extends BaseSpiceActivity implements TorrentUpdater.To
     private void pauseAllTorrents() {
         getTransportManager().doRequest(new StopTorrentRequest(application.getTorrents()), null);
         torrentUpdater.scheduleUpdate(UPDATE_REQUEST_DELAY);
-    }
-
-    private static abstract class RetrieveTorrentContentAsyncTask extends AsyncTask<Uri, Void, byte[]> {
-
-        @Override
-        protected byte[] doInBackground(Uri... torrentFileUris) {
-            String uri = torrentFileUris[0].toString();
-            InputStream inputStream = null;
-            try {
-                inputStream = new URL(uri).openConnection().getInputStream();
-                return IOUtils.toByteArray(inputStream);
-            } catch (IOException e) {
-                Log.e(TAG, "Failed to retrieve Uri '" + uri + "'", e);
-            } finally {
-                if (inputStream != null) try {
-                    inputStream.close();
-                } catch (IOException e) {
-                    Log.e(TAG, "Failed to close InputStream", e);
-                }
-            }
-            return null;
-        }
     }
 }

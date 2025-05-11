@@ -27,7 +27,7 @@ public abstract class SpeedTextView extends AppCompatTextView {
         setPadding(horPadding, 0, horPadding, 0);
 
         setTextSize(TypedValue.COMPLEX_UNIT_PX, getResources().getDimensionPixelSize(R.dimen.speed_text_size));
-        setTextColor(context.getResources().getColor(R.color.text_primary_inverse));
+        setTextColor(context.getResources().getColor(R.color.text_primary_inverse, null));
         setTypeface(null, Typeface.BOLD);
 
         setSpeed(0);

@@ -1,9 +1,9 @@
 package net.yupol.transmissionremote.app.torrentdetails;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.res.TypedArray;
 import android.os.Bundle;
-import androidx.fragment.app.Fragment;
 import android.text.InputFilter;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -14,6 +14,10 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 
 import net.yupol.transmissionremote.app.R;
 
@@ -36,9 +40,9 @@ public class BandwidthLimitFragment extends Fragment implements View.OnFocusChan
     private boolean disableableLimits;
 
     @Override
-    public void onInflate(Activity activity, AttributeSet attrs, Bundle savedInstanceState) {
-        super.onInflate(activity, attrs, savedInstanceState);
-
+    public void onInflate(@NonNull Context context, @NonNull AttributeSet attrs, @Nullable Bundle savedInstanceState) {
+        super.onInflate(context, attrs, savedInstanceState);
+        Activity activity = (Activity) context;
         TypedArray a = activity.obtainStyledAttributes(attrs, R.styleable.BandwidthLimitFragment);
         disableableLimits = a.getBoolean(R.styleable.BandwidthLimitFragment_disableable_limits, true);
         a.recycle();

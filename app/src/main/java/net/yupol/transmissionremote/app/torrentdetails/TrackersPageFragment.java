@@ -9,7 +9,6 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -22,9 +21,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.ListPopupWindow;
+import androidx.core.view.MenuProvider;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.Lifecycle;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
@@ -46,6 +47,7 @@ import net.yupol.transmissionremote.app.transport.request.TrackerReplaceRequest;
 import net.yupol.transmissionremote.app.utils.DividerItemDecoration;
 import net.yupol.transmissionremote.app.utils.MetricsUtils;
 import net.yupol.transmissionremote.app.utils.Size;
+import net.yupol.transmissionremote.app.utils.TransmissionRemotePreferenceManager;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -77,8 +79,7 @@ public class TrackersPageFragment extends BasePageFragment implements TrackersAd
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
-        preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+        preferences = TransmissionRemotePreferenceManager.getDefaultSharedPreferences(getContext());
     }
 
     @Override
@@ -112,6 +113,30 @@ public class TrackersPageFragment extends BasePageFragment implements TrackersAd
     }
 
     @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        requireActivity().addMenuProvider(new MenuProvider() {
+            @Override
+            public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
+                menuInflater.inflate(R.menu.torrent_trackers_menu, menu);
+            }
+
+            @Override
+            public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
+                int itemId = menuItem.getItemId();
+                if (itemId == R.id.action_add) {
+                    showEditTrackerUrlDialog(null);
+                    return true;
+                } else if (itemId == R.id.action_sort_trackers) {
+                    showSortingList();
+                    return true;
+                }
+                return false;
+            }
+        }, getViewLifecycleOwner(), Lifecycle.State.RESUMED);
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
         TransmissionRemote.getInstance().getAnalytics().logScreenView(
@@ -124,24 +149,6 @@ public class TrackersPageFragment extends BasePageFragment implements TrackersAd
     public void onDestroyView() {
         super.onDestroyView();
         viewCreated = false;
-    }
-
-    @Override
-    public void onCreateOptionsMenu(@NonNull Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.torrent_trackers_menu, menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_add:
-                showEditTrackerUrlDialog(null);
-                return true;
-            case R.id.action_sort_trackers:
-                showSortingList();
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     private void showSortingList() {

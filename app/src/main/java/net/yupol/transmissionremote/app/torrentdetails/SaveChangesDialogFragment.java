@@ -3,9 +3,10 @@ package net.yupol.transmissionremote.app.torrentdetails;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
+
+import androidx.fragment.app.DialogFragment;
 
 import net.yupol.transmissionremote.app.R;
 

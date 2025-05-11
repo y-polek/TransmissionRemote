@@ -1,11 +1,12 @@
 package net.yupol.transmissionremote.app.preferences;
 
 import android.os.Bundle;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.appcompat.app.ActionBar;
 import android.util.Log;
 import android.view.MenuItem;
+
+import androidx.appcompat.app.ActionBar;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
@@ -96,7 +97,7 @@ public class ServerPreferencesActivity extends BaseSpiceActivity implements Save
         SessionSetRequest.Builder requestBuilder = fragment.getPreferencesRequestBuilder();
         if (requestBuilder.isChanged()) {
             saveChangesRequest = requestBuilder.build();
-            new SaveChangesDialogFragment().show(getFragmentManager(), TAG_SAVE_CHANGES_DIALOG);
+            new SaveChangesDialogFragment().show(getSupportFragmentManager(), TAG_SAVE_CHANGES_DIALOG);
         } else {
             super.onBackPressed();
         }

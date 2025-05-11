@@ -2,7 +2,6 @@ package net.yupol.transmissionremote.app.torrentdetails;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -14,7 +13,10 @@ import android.widget.AdapterView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.ListPopupWindow;
+import androidx.core.view.MenuHost;
+import androidx.core.view.MenuProvider;
 import androidx.databinding.DataBindingUtil;
+import androidx.lifecycle.Lifecycle;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
@@ -28,6 +30,7 @@ import net.yupol.transmissionremote.app.sorting.SortOrder;
 import net.yupol.transmissionremote.app.utils.DividerItemDecoration;
 import net.yupol.transmissionremote.app.utils.MetricsUtils;
 import net.yupol.transmissionremote.app.utils.Size;
+import net.yupol.transmissionremote.app.utils.TransmissionRemotePreferenceManager;
 
 public class PeersPageFragment extends BasePageFragment {
 
@@ -42,8 +45,7 @@ public class PeersPageFragment extends BasePageFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
-        preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+        preferences = TransmissionRemotePreferenceManager.getDefaultSharedPreferences(getContext());
     }
 
     @Override
@@ -76,6 +78,28 @@ public class PeersPageFragment extends BasePageFragment {
     }
 
     @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        MenuHost menuHost = requireActivity();
+        menuHost.addMenuProvider(new MenuProvider() {
+            @Override
+            public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
+                menuInflater.inflate(R.menu.torrent_peers_menu, menu);
+            }
+
+            @Override
+            public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
+                if (menuItem.getItemId() == R.id.action_sort_peers) {
+                    showSortingList();
+                    return true;
+                }
+                return false;
+            }
+        }, getViewLifecycleOwner(), Lifecycle.State.RESUMED);
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
         TransmissionRemote.getInstance().getAnalytics().logScreenView(
@@ -88,21 +112,6 @@ public class PeersPageFragment extends BasePageFragment {
     public void onDestroyView() {
         super.onDestroyView();
         viewCreated = false;
-    }
-
-    @Override
-    public void onCreateOptionsMenu(@NonNull Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.torrent_peers_menu, menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_sort_peers:
-                showSortingList();
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     private void showSortingList() {

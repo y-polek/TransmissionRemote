@@ -1,13 +1,14 @@
 package net.yupol.transmissionremote.app.torrentdetails;
 
-import androidx.databinding.DataBindingUtil;
-import androidx.annotation.NonNull;
-import androidx.appcompat.widget.PopupMenu;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.widget.PopupMenu;
+import androidx.databinding.DataBindingUtil;
+import androidx.recyclerview.widget.RecyclerView;
 
 import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.databinding.TrackerItemLayoutBinding;
@@ -96,7 +97,7 @@ public class TrackersAdapter extends RecyclerView.Adapter<TrackersAdapter.ViewHo
 
         @Override
         public boolean onMenuItemClick(MenuItem item) {
-            int position = getAdapterPosition();
+            int position = getBindingAdapterPosition();
             if (position == RecyclerView.NO_POSITION) return false;
 
             switch (item.getItemId()) {

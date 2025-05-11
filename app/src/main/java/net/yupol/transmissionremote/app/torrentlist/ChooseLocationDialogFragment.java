@@ -14,7 +14,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.Fragment;
 
 import com.octo.android.robospice.exception.RequestCancelledException;
 import com.octo.android.robospice.persistence.exception.SpiceException;
@@ -34,7 +33,6 @@ import net.yupol.transmissionremote.app.utils.TextUtils;
 public class ChooseLocationDialogFragment extends DialogFragment {
 
     public static final String ARG_INITIAL_LOCATION = "arg_initial_location";
-
     private OnLocationSelectedListener listener;
     private SetLocationDialogBinding binding;
     private FreeSpaceRequest runningFreeSpaceRequest;
@@ -43,15 +41,9 @@ public class ChooseLocationDialogFragment extends DialogFragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-
-        Fragment targetFragment = getTargetFragment();
-        if (targetFragment instanceof OnLocationSelectedListener) {
-            listener = (OnLocationSelectedListener) targetFragment;
-        } else {
-            Activity activity = getActivity();
-            if (activity instanceof OnLocationSelectedListener) {
-                listener = (OnLocationSelectedListener) activity;
-            }
+        Activity activity = getActivity();
+        if (activity instanceof OnLocationSelectedListener) {
+            listener = (OnLocationSelectedListener) activity;
         }
     }
 
@@ -87,13 +79,18 @@ public class ChooseLocationDialogFragment extends DialogFragment {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     if (listener != null) {
-                        listener.onLocationSelected(binding.locationEdit.getText().toString(),
-                                binding.moveDataCheckbox.isChecked());
+                        listener.onLocationSelected(binding.locationEdit.getText().toString(), binding.moveDataCheckbox.isChecked());
+                        return;
                     }
+
+                    Bundle result = new Bundle();
+                    result.putString("selected_location", binding.locationEdit.getText().toString());
+                    result.putBoolean("move_data_checked", binding.moveDataCheckbox.isChecked());
+                    getParentFragmentManager().setFragmentResult("location_result", result);
+                    dismiss();
                 }
             });
         builder.setNegativeButton(android.R.string.cancel, null);
-
         return builder.create();
     }
 

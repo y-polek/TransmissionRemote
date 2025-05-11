@@ -3,7 +3,6 @@ package net.yupol.transmissionremote.app.torrentdetails;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.Menu;
@@ -38,6 +37,7 @@ import net.yupol.transmissionremote.app.transport.request.TorrentInfoGetRequest;
 import net.yupol.transmissionremote.app.transport.request.TorrentRemoveRequest;
 import net.yupol.transmissionremote.app.transport.request.TorrentSetRequest;
 import net.yupol.transmissionremote.app.transport.request.VerifyTorrentRequest;
+import net.yupol.transmissionremote.app.utils.TransmissionRemotePreferenceManager;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -75,7 +75,7 @@ public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveCha
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.torrent_details_layout);
 
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(TorrentDetailsActivity.this);
+        sharedPreferences = TransmissionRemotePreferenceManager.getDefaultSharedPreferences(TorrentDetailsActivity.this);
 
         torrent = getIntent().getParcelableExtra(EXTRA_TORRENT);
         setupPager();
@@ -242,7 +242,7 @@ public class TorrentDetailsActivity extends BaseSpiceActivity implements SaveCha
         }
 
         if (saveChangesRequests.size() > 0) {
-            new SaveChangesDialogFragment().show(getFragmentManager(), TAG_SAVE_CHANGES_DIALOG);
+            new SaveChangesDialogFragment().show(getSupportFragmentManager(), TAG_SAVE_CHANGES_DIALOG);
         } else {
             finish();
             return true;

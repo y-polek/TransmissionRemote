@@ -2,7 +2,6 @@ package net.yupol.transmissionremote.app.drawer;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
@@ -23,6 +22,7 @@ import net.yupol.transmissionremote.app.R;
 import net.yupol.transmissionremote.app.TransmissionRemote;
 import net.yupol.transmissionremote.app.server.Server;
 import net.yupol.transmissionremote.app.utils.ColorUtils;
+import net.yupol.transmissionremote.app.utils.TransmissionRemotePreferenceManager;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -149,7 +149,7 @@ public class HeaderView extends RelativeLayout implements View.OnClickListener {
         }
 
         TransmissionRemote app = TransmissionRemote.getApplication(getContext());
-        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getContext());
+        SharedPreferences sp = TransmissionRemotePreferenceManager.getDefaultSharedPreferences(getContext());
         List<String> orderedServers;
         if (sp.contains(KEY_ORDERED_SERVERS)) {
             orderedServers = serversFromJson(sp.getString(KEY_ORDERED_SERVERS, ""));

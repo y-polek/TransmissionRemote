@@ -1,15 +1,19 @@
 package net.yupol.transmissionremote.app.preferences;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.appcompat.app.ActionBar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
+
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.appcompat.app.ActionBar;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import net.yupol.transmissionremote.app.BaseActivity;
 import net.yupol.transmissionremote.app.R;
@@ -30,6 +34,7 @@ public class ServersActivity extends BaseActivity {
     public static final String KEY_SERVER_UUID = "key_server_uuid";
 
     private TransmissionRemote app;
+    private ActivityResultLauncher<Intent> addServerLauncher;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,6 +80,20 @@ public class ServersActivity extends BaseActivity {
                 invalidateOptionsMenu();
             }
         });
+
+        addServerLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == Activity.RESULT_OK) {
+                        Intent data = result.getData();
+                        if (data != null) {
+                            Server server = data.getParcelableExtra(AddServerActivity.EXTRA_SEVER);
+                            app.addServer(server);
+                            app.setActiveServer(server);
+                        }
+                    }
+                }
+        );
     }
 
     private void showServerDetails(Server server) {
@@ -101,7 +120,7 @@ public class ServersActivity extends BaseActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_add:
-                startActivityForResult(new Intent(this, AddServerActivity.class), REQUEST_CODE_NEW_SERVER);
+                addServerLauncher.launch(new Intent(this, AddServerActivity.class));
                 return true;
             case R.id.action_remove:
                 new AlertDialog.Builder(this)
@@ -151,16 +170,6 @@ public class ServersActivity extends BaseActivity {
             } else {
                 finish();
                 return true;
-            }
-        }
-    }
-
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_CODE_NEW_SERVER) {
-            if (resultCode == RESULT_OK) {
-                Server server = data.getParcelableExtra(AddServerActivity.EXTRA_SEVER);
-                app.addServer(server);
-                app.setActiveServer(server);
             }
         }
     }
